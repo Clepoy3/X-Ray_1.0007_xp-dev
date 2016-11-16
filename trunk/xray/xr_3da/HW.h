@@ -24,7 +24,7 @@ public:
 	D3DDEVTYPE				DevT;
 	D3DPRESENT_PARAMETERS	DevPP;
 
-	int						maxRefreshRate;  // alpet: для ограничения через настройки 
+	int						maxRefreshRate;  // alpet: для ограничения через настройки
 
 	CHW()
 	{

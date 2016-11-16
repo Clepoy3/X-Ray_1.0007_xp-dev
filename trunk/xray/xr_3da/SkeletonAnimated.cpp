@@ -11,7 +11,7 @@ extern int	psSkeletonUpdate;
 //////////////////////////////////////////////////////////////////////////
 // BoneInstance methods
 void		CBlendInstance::construct()
-{	
+{
 	ZeroMemory			(this,sizeof(*this));
 }
 void		CBlendInstance::blend_add	(CBlend* H)

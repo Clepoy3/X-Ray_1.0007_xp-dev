@@ -22,6 +22,7 @@ void CUIProgressShape::SetPos(float pos){
 }
 
 void CUIProgressShape::SetPos(int pos, int max){
+	R_ASSERT2(max != 0, "[CUIProgressShape::SetPos] Second arg == 0 !"); //KRodin: при попытке деления на ноль пусть будет вылет (warning C4723)
 	m_stage					= float(pos)/float(max);
 	if (m_bText)
 	{

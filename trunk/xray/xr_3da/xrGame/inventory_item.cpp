@@ -246,7 +246,7 @@ u32		CInventoryItem::GetSlot() const
 		{
 			Msg("!#WARN: no active slot for object %s  class %s",
 				object().Name_script(), typeid((*this)).name());
-			R_ASSERT(0, "slot not configured for inventory item");
+			R_ASSERT(0/*, "slot not configured for inventory item"*/); //Второй аргумент тут не нужен
 		}
 		return NO_ACTIVE_SLOT;
 	}

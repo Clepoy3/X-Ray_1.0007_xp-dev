@@ -53,7 +53,7 @@ void CObjectActionShow::initialize		()
 	VERIFY							(m_item);
 
 	u32 slot = m_item->GetSlot();
-	R_ASSERT2 (slot < (u8)NO_ACTIVE_SLOT, m_item->Name());
+	R_ASSERT2(slot < (u8)NO_ACTIVE_SLOT, m_item->Name());
 
 	CInventory &inv = object().inventory();
 	PIItem item = inv.m_slots[slot].m_pIItem;

@@ -685,7 +685,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	LPCSTR						verb_level_name = "-verbosity ";
 	if (LPCSTR arg = strstr(lpCmdLine, verb_level_name)) {
 		arg						+= xr_strlen(verb_level_name);
-		sscanf_s				(arg,"%d", &verbosity_level, 4);		
+		sscanf_s				(arg,"%d", &verbosity_level/*, 4*/); //KRodin: убрал лишний аргумент
 		clamp<u32>				(verbosity_level, 0, 9);
 	}
 
