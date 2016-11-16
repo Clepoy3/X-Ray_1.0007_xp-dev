@@ -167,12 +167,6 @@ typedef void ALCvoid;
 #define ALC_ALL_ATTRIBUTES                       0x1003
 
 /**
- * ALC_ENUMERATE_ALL_EXT enums
- */
-#define ALC_DEFAULT_ALL_DEVICES_SPECIFIER        0x1012
-#define ALC_ALL_DEVICES_SPECIFIER                0x1013
-
-/**
  * Capture extension
  */
 #define ALC_CAPTURE_DEVICE_SPECIFIER             0x310
@@ -277,5 +271,10 @@ typedef void           (ALC_APIENTRY *LPALCCAPTURESAMPLES)( ALCdevice *device, A
 #if defined(__cplusplus)
 }
 #endif
+
+typedef void __cdecl log_fn_ptr_type(char*);
+extern ALC_API log_fn_ptr_type*	pLog ;
+
+void AlLog(char* format, ...);
 
 #endif /* AL_ALC_H */

@@ -70,8 +70,8 @@ extern "C" {
 	/*
 	* EAX OpenAL Extension {4FF53B81-1CE0-11d3-AAB8-00A0C95949D5}
 	*/
-	typedef ALenum (*EAXSet)(const GUID*, ALuint, ALuint, ALvoid*, ALuint);
-	typedef ALenum (*EAXGet)(const GUID*, ALuint, ALuint, ALvoid*, ALuint);
+	typedef ALenum (__cdecl *EAXSet)(const GUID*, ALuint, ALuint, ALvoid*, ALuint);
+	typedef ALenum (__cdecl *EAXGet)(const GUID*, ALuint, ALuint, ALvoid*, ALuint);
 #endif
 
 #pragma pack(push, 4)
