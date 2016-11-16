@@ -12,10 +12,11 @@ class CInventory;
 #include "UIOutfitInfo.h"
 #include "UIItemInfo.h"
 
-#if defined(INV_NEW_SLOTS_SYSTEM)
+/*
+#ifdef INV_NEW_SLOTS_SYSTEM //KRodin: выключил.
 	#include "UISleepWnd.h"
 #endif
-
+*/
 #include "../inventory_space.h"
 
 class CArtefact;
@@ -95,7 +96,7 @@ protected:
 	CUIDragDropListEx*			m_pUIAutomaticList;
 
 #if defined(INV_NEW_SLOTS_SYSTEM)	
-	CUISleepWnd					UISleepWnd;
+	//CUISleepWnd					UISleepWnd;//KRodin: выключил
 	CUIDragDropListEx*			m_pUIKnifeList;
 	CUIDragDropListEx*			m_pUIBinocularList;
 	CUIDragDropListEx*			m_pUIDetectorList;

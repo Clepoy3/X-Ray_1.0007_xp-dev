@@ -473,7 +473,7 @@ static unsigned oc_int_frag_satd_thresh_mmxext(const unsigned char *_src,
   OC_ALIGN8(ogg_int16_t  buf[64]);
   ogg_int16_t           *bufp;
   unsigned               ret1;
-  unsigned               ret2;
+  //unsigned               ret2;
   bufp=buf;
   __asm{
 #define SRC esi
@@ -707,7 +707,7 @@ unsigned oc_enc_frag_intra_satd_mmxext(const unsigned char *_src,
   OC_ALIGN8(ogg_int16_t  buf[64]);
   ogg_int16_t           *bufp;
   unsigned               ret1;
-  unsigned               ret2;
+ // unsigned               ret2;
   bufp=buf;
   __asm{
 #define SRC eax

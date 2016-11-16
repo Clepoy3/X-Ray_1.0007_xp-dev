@@ -400,9 +400,9 @@ typedef int               gsi_bool;
 	#endif
 #endif // GSI_UNICODE
 
-#if defined(_WIN32)
-	#define snprintf _snprintf
-#endif // _WIN32
+//#if defined(_WIN32)
+//	#define snprintf _snprintf
+//#endif // _WIN32
 
 #if defined(_WIN32) && !defined(GS_UNDER_CE)
 	#define strcasecmp _stricmp

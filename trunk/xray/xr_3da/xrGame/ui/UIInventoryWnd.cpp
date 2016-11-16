@@ -84,7 +84,8 @@ void CUIInventoryWnd::Init()
 
 	UIDescrWnd.AttachChild				(&UIItemInfo);
 	UIItemInfo.Init						(0, 0, UIDescrWnd.GetWidth(), UIDescrWnd.GetHeight(), INVENTORY_ITEM_XML);
-	
+
+/* //KRodin: Убрано, т.к вызывало ошибки при сборке
 #ifdef INV_NEW_SLOTS_SYSTEM
 	if (GameID() == GAME_SINGLE){
 		AttachChild							(&UISleepWnd);
@@ -92,7 +93,8 @@ void CUIInventoryWnd::Init()
 		UISleepWnd.SetWindowName("sleep_wnd");  // для лучшего нахождения через GetStatic
 	}
 #endif
-	
+*/
+
 	AttachChild							(&UIPersonalWnd);
 	xml_init.InitFrameWindow			(uiXml, "character_frame_window", 0, &UIPersonalWnd);
 

@@ -6,7 +6,8 @@
 #include "xrdebug.h"
 #include "resource.h"
 #include "dbghelp.h"
- 
+#include <new.h> // KRodin: for _set_new_mode
+
 #include "dxerr9.h"
 
 #ifdef __BORLANDC__
@@ -313,10 +314,11 @@ namespace std{
         ::SetUnhandledExceptionFilter	( UnhandledFilter );	// exception handler to all "unhandled" exceptions
     }
 #else
+/* //KRodin: вроде бы это более не нужно.
     typedef int		(__cdecl * _PNH)( size_t );
     _CRTIMP int		__cdecl _set_new_mode( int );
     _CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
-
+*/
     void	xrDebug::_initialize		(const bool &dedicated)
     {
 		handler							= 0;

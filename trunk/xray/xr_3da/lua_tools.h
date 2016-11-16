@@ -8,9 +8,9 @@
 #pragma once
 #include "stdafx.h"
 extern "C" {
-#include <lua.h>
-#include <luajit.h>
-#include <lcoco.h>
+	#include "../LuaJIT/src/lua.h" //#include <lua.h> //KRodin: исправил инклуды
+	#include "../LuaJIT/src/luajit.h" //#include <luajit.h>
+	#include "../LuaJIT/src/lcoco.h" //#include <lcoco.h>
 };
 
 

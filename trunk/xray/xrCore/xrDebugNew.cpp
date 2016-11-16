@@ -293,7 +293,7 @@ void gather_info		(const char *expression, const char *description, const char *
 	memory_monitor::flush_each_time	(false);
 #endif // USE_MEMORY_MONITOR	
 
-	MsgCB("$#DUMP_CONTEXT"); // alpet: вывод контекста, перед построением стека вызовов
+	MsgCB("$#DUMP_CONTEXT"); // alpet: вывод контекста, перед построением стека вызовов //KRodin: Походу, это нужно только при использовании lua-перехватчика. Да и вообще, у меня оно ничего кроме пустых трок в лог не выводит.
 	if (!strstr(GetCommandLine(),"-no_call_stack_assert")) {
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
@@ -335,6 +335,7 @@ void xrDebug::do_exit	(const std::string &message)
 	TerminateProcess	(GetCurrentProcess(),1);
 }
 
+HWND game_hwnd;
 void xrDebug::backend	(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, bool &ignore_always)
 {
 	force_flush_log = true;
@@ -347,18 +348,8 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 	CS.Enter			();
 
-	error_after_dialog	= true;
-
 	string4096			assertion_info;
 	gather_info			(expression, description, argument0, argument1, file, line, function, assertion_info);
-
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-	LPCSTR				endline = "\r\n";
-	LPSTR				buffer = assertion_info + xr_strlen(assertion_info);
-	buffer				+= sprintf(buffer, MSG_PRESS_CANCEL,   endline,endline);
-	buffer				+= sprintf(buffer, MSG_PRESS_RETRY,    endline);
-	buffer				+= sprintf(buffer, MSG_PRESS_CONTINUE, endline,endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 	if (handler)
 		handler			();
@@ -369,39 +360,47 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 #ifdef XRCORE_STATIC
 	MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 #else
-#	ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		ShowWindow(GetTopWindow(NULL), SW_MINIMIZE);
-		ShowCursor(TRUE);
-		int					result = 
-			MessageBox(
-				GetTopWindow(NULL),
-				assertion_info,
-				"Фатальная Ошибка",
-				MB_CANCELTRYCONTINUE|MB_ICONERROR|MB_SYSTEMMODAL
-			);
+#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
+	LPCSTR				endline = "\r\n";
+	LPSTR				buffer = assertion_info + xr_strlen(assertion_info);
+	buffer				+= sprintf(buffer, MSG_PRESS_CANCEL,   endline,endline);
+	buffer				+= sprintf(buffer, MSG_PRESS_RETRY,    endline);
+	buffer				+= sprintf(buffer, MSG_PRESS_CONTINUE, endline,endline);
 
-		switch (result) {
-			case IDCANCEL : {
-				DEBUG_INVOKE;
-				break;
-			}
-			case IDTRYAGAIN : {
-				error_after_dialog	= false;
-				break;
-			}
-			case IDCONTINUE : {
-				error_after_dialog	= false;
-				ignore_always	= true;
-				break;
-			}
-			default : NODEFAULT;
+	game_hwnd = GetForegroundWindow();
+	ShowWindow(game_hwnd, SW_MINIMIZE); //KRodin: теперь окно точно сворачивается
+	error_after_dialog = true;
+
+	int result = MessageBox( //KRodin: Теперь сообщение об ошибке действительно выводится, но курсор внутри окна не виден. Как это исправить - понятия не имею
+		NULL,
+		assertion_info,
+		"Фатальная Ошибка",
+		MB_CANCELTRYCONTINUE|MB_ICONERROR|MB_SYSTEMMODAL
+	);
+	switch (result) {
+		case IDCANCEL : {
+			DEBUG_INVOKE;
+			break;
 		}
-#	else // USE_OWN_ERROR_MESSAGE_WINDOW
+		case IDTRYAGAIN : {
+			ShowWindow(game_hwnd, SW_MAXIMIZE); //KRodin: разворачиваем окно
+			error_after_dialog	= false;
+			break;
+		}
+		case IDCONTINUE : {
+			ShowWindow(game_hwnd, SW_MAXIMIZE); //KRodin: разворачиваем окно
+			error_after_dialog	= false;
+			ignore_always	= true;
+			break;
+		}
+		default : NODEFAULT;
+	}
+#else // USE_OWN_ERROR_MESSAGE_WINDOW
 #		ifdef USE_BUG_TRAP
 			BT_SetUserMessage	(assertion_info);
 #		endif // USE_BUG_TRAP
 		DEBUG_INVOKE;
-#	endif // USE_OWN_ERROR_MESSAGE_WINDOW
+#endif // USE_OWN_ERROR_MESSAGE_WINDOW
 #endif
 
 	if (get_on_dialog())
@@ -858,10 +857,11 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 //		::SetUnhandledExceptionFilter	(UnhandledFilter);	// exception handler to all "unhandled" exceptions
     }
 #else
+/* //KRodin: вроде бы это более не нужно.
     typedef int		(__cdecl * _PNH)( size_t );
     _CRTIMP int		__cdecl _set_new_mode( int );
     _CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
-
+*/
 #ifndef USE_BUG_TRAP
 	void _terminate		()
 	{

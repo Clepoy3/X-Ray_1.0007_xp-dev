@@ -13,9 +13,13 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#include <dplay8.h>
+#include "include\DPlay\dplay8.h" //KRodin: добавил недостающий файл
+#include "dxerr.h" //KRodin: перенёс сюда из NET_Client.cpp и NET_Server.cpp
+#ifdef DEBUG
+	#pragma comment (lib, "dxerr.lib") //KRodin: лучше подключать так, чем через Additional Dependencies
+	int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf; //KRodin: исправление проблемы : http://stackoverflow.com/questions/31053670/unresolved-external-symbol-vsnprintf-in-dxerr-lib
+#endif
 #pragma warning(pop)
-
 #include "NET_Shared.h"
 
 #define _RELEASE(x)			{ if(x) { (x)->Release();       (x)=NULL; } }

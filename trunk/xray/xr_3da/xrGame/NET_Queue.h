@@ -45,7 +45,7 @@ public:
 			P.r				(&*data.begin(),size);
 		}
 	}
-	void				export		(NET_Packet& P)
+	void				_export		(NET_Packet& P) //KRodin: добавил _ перед export
 	{
 		u16	ID			=	M_EVENT;
 		P.w_begin		(ID			);

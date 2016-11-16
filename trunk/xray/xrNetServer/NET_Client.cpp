@@ -9,7 +9,6 @@
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
-#include "dxerr.h"
 //#pragma warning(pop)
 
 static	INetLog* pClNetLog = NULL; 

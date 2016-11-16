@@ -84,6 +84,7 @@ add_to_type_list(COutfitScript)
 #undef script_type_list
 #define script_type_list save_type_list(COutfitScript)
 
+class CWeaponMagazined; //KRodin: опережающее объявление класса. Без него была ошибка C2061: синтаксическая ошибка: идентификатор "CWeaponMagazined"
 
 class	CWeaponScript
 {

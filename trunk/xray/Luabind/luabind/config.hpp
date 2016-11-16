@@ -91,7 +91,7 @@ namespace std
 	#define LUABIND_MAX_BASES 1
 #endif
 
-#if _SECURE_SCL > 0 || _ITERATOR_DEBUG_LEVEL > 0
+#if _SECURE_SCL > 0 || _ITERATOR_DEBUG_LEVEL > 0 //KRodin: луабинд в дебаге нельзя собирать, что-ли...
 #error "Это не работает в X-Ray!"
 #endif
 

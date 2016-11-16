@@ -845,7 +845,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 			static float rot_d = deg2rad(0.5f);
 			static float mov_d = 0.01f;
 			bool shift = !!pInput->iGetAsyncKeyState(DIK_LSHIFT);
-			flag = true;
+			bool flag = true; //KRodin: не был указан тип bool
 			switch (dik)
 			{
 				// Shift +x
