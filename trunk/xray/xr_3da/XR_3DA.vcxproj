@@ -537,7 +537,7 @@
       <AdditionalIncludeDirectories>..\xrCore;..\Luabind;..\LuaJIT\src;..\..\3rd party\Xiph\libtheora\include;..\..\3rd party\Xiph\libogg\include;..\..\3rd party\boost;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -567,7 +567,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;msacm32.lib;vfw32.lib;lua5.1.lib;luabind.lib;xrNetServer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;msacm32.lib;vfw32.lib;luaJIT.lib;luabind.lib;xrNetServer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>

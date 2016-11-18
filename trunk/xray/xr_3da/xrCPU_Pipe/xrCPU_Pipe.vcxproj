@@ -242,7 +242,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>..\..\..\..\libraries\$(ProjectName).lib</ImportLibrary>
-      <AdditionalDependencies>lua5.1.lib;luabind.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>luaJIT.lib;luabind.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <AdditionalLibraryDirectories>..\..\..\..\libraries\</AdditionalLibraryDirectories>
     </Link>
