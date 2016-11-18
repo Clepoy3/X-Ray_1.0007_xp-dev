@@ -284,7 +284,8 @@ void CSheduler::ProcessStep			()
 	// Normal priority
 	u32		dwTime					= Device.dwTimeGlobal;
 	CTimer							eTimer;	
-	for (int i=0;!Items.empty() && Top().dwTimeForExecute < dwTime; ++i) {
+	for (int i=0;!Items.empty() && Top().dwTimeForExecute < dwTime; ++i)
+	{
 		u32		delta_ms			= dwTime - Top().dwTimeForExecute;
 
 		// Update
@@ -295,11 +296,12 @@ void CSheduler::ProcessStep			()
 		u32		Elapsed				= dwTime-T.dwTimeOfLastExecute;
 		bool	condition;
 		
-#ifndef DEBUG
-		__try {
+/*#ifndef DEBUG //KRodin: закомментировал из за error C2712: Невозможно использовать __try в функциях, требующих уничтожения объектов
+		__try { //В ЗП без этого обходятся, к стати.
 #endif // DEBUG
-			condition				= (NULL==T.Object || !T.Object->shedule_Needed());
-#ifndef DEBUG
+*/
+		condition				= (NULL==T.Object || !T.Object->shedule_Needed());
+/*#ifndef DEBUG
 		}
 		__except(EXCEPTION_EXECUTE_HANDLER) {
 			Msg						("Scheduler tried to update object %s",*T.scheduled_name);
@@ -308,7 +310,7 @@ void CSheduler::ProcessStep			()
 			continue;
 		}
 #endif // DEBUG
-
+*/
 		if (condition) {
 			// Erase element
 #ifdef DEBUG_SCHEDULER
@@ -325,9 +327,9 @@ void CSheduler::ProcessStep			()
 		// Insert into priority Queue
 		Pop							();
 
-#ifndef DEBUG
-		__try {
-#endif // DEBUG
+//#ifndef DEBUG //KRodin: тоже самое что и выше.
+//		__try {
+//#endif // DEBUG
 			// Real update call
 			// Msg						("------- %d:",Device.dwFrame);
 #ifdef DEBUG
@@ -376,6 +378,7 @@ void CSheduler::ProcessStep			()
 				Msg	("* xrSheduler: too much time consumed by object [%s] (%dms)",	_obj_name, execTime	);
 			}
 #endif
+/*
 #ifndef DEBUG
 		}
 		__except(EXCEPTION_EXECUTE_HANDLER) {
@@ -385,7 +388,7 @@ void CSheduler::ProcessStep			()
 			continue;
 		}
 #endif // DEBUG
-
+*/
 		// 
 		if ((i % 3) != (3 - 1))
 			continue;
