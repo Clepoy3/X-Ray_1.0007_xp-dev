@@ -7,6 +7,10 @@
 # Precompiled Headers
 *.gch
 *.pch
+*.ipch
+*.VC.db
+*.VC.opendb
+*.suo
 
 # Compiled Dynamic libraries
 *.so
