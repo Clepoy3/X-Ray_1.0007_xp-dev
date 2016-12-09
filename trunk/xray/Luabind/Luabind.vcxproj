@@ -100,7 +100,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\..\libraries\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xrCore.lib;luaJIT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xrCore.lib;$(SolutionDir)..\luajit\bin\$(PlatformShortName)\LuaJIT.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\libraries\luabind.lib</ImportLibrary>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <LinkTimeCodeGeneration>
