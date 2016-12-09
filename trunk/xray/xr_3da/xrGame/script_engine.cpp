@@ -445,4 +445,3 @@ DLL_API LPCSTR try_call_luafunc(LPCSTR func_name, LPCSTR param)
 {
 	return ai().script_engine().try_call(func_name, param);
 }
-

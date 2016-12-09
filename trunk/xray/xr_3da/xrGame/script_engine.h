@@ -16,7 +16,6 @@
 extern "C" {
 	#include "../LuaJIT/src/lua.h" //#include <lua.h> //KRodin: исправил инклуды
 	#include "../LuaJIT/src/luajit.h" //#include <luajit.h>
-	//#include "../LuaJIT/src/lcoco.h" //#include <lcoco.h>
 };
 //#define DBG_DISABLE_SCRIPTS
 

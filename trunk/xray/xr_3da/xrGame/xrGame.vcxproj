@@ -1120,7 +1120,6 @@
     <ClInclude Include="damage_manager_inline.h" />
     <ClInclude Include="DamageSource.h" />
     <ClInclude Include="raypick.h" />
-    <ClInclude Include="script_additional_libs.h" />
     <ClInclude Include="wrapper_abstract.h" />
     <ClInclude Include="wrapper_abstract_inline.h" />
     <ClInclude Include="action_management_config.h" />
@@ -1881,10 +1880,6 @@
     <ClInclude Include="base_client_classes.h" />
     <ClInclude Include="base_client_classes_wrappers.h" />
     <ClInclude Include="script_callback_ex.h" />
-    <ClInclude Include="script_callback_ex_generators.h" />
-    <ClInclude Include="script_callback_ex_inline.h" />
-    <ClInclude Include="script_callback_ex_nonvoid.h" />
-    <ClInclude Include="script_callback_ex_void.h" />
     <ClInclude Include="script_lanim.h" />
     <ClInclude Include="script_fcolor.h" />
     <ClInclude Include="script_particles.h" />
@@ -2793,7 +2788,6 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_w_STLPORT|x64'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="script_additional_libs.cpp" />
     <ClCompile Include="script_property_evaluator_wrapper.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|x64'">pch_script.h</PrecompiledHeaderFile>
