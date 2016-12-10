@@ -396,7 +396,7 @@ void CUIDragDropListEx::SetItem(CUICellItem* itm, Fvector2 abs_pos) // start at 
 void CUIDragDropListEx::SetItem(CUICellItem* itm, Ivector2 cell_pos) // start at cell
 {
 	if(m_container->AddSimilar(itm))	return;
-	R_ASSERT						(m_container->IsRoomFree(cell_pos, itm->GetGridSize(true)));
+	//R_ASSERT						(m_container->IsRoomFree(cell_pos, itm->GetGridSize(true))); //KRodin: нечего тут вылетать
 #ifdef DEBUG_SLOTS
 	Msg("# drag-drop list SetItem (0x%p) ", itm);
 #endif
@@ -585,8 +585,8 @@ Ivector2 CUICellContainer::FindFreeCell	(const Ivector2& _size)
 				if(IsRoomFree(tmp,_size))
 					return  tmp;
 
-		Msg("FindFreeCell for window %s: item size = %d x %d, m_cellsCapacity = %d x %d ", m_windowName.c_str(), size.x, size.y, m_cellsCapacity.x, m_cellsCapacity.y);
-		R_ASSERT2(0, "there are no free room to place item ");
+		Msg("! FindFreeCell for window %s: item size = %d x %d, m_cellsCapacity = %d x %d ", m_windowName.c_str(), size.x, size.y, m_cellsCapacity.x, m_cellsCapacity.y);
+		//R_ASSERT2(0, "there are no free room to place item "); //KRodin: нечего тут вылетать
 	}
 	return			tmp;
 }
@@ -654,7 +654,7 @@ Ivector2 CUICellContainer::TopVisibleCell()
 
 CUICell& CUICellContainer::GetCellAt(const Ivector2& pos)
 {
-	R_ASSERT			(ValidCell(pos));
+	//R_ASSERT			(ValidCell(pos)); //KRodin: нечего тут вылетать
 	CUICell&	c		= m_cells[m_cellsCapacity.x*pos.y+pos.x];
 	return				c;
 }
