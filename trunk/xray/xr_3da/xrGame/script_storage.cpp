@@ -55,41 +55,6 @@ LPCSTR	file_header = 0;
 #	include "script_debugger.h"
 #endif
 
-#ifndef PURE_ALLOC
-#	ifndef USE_MEMORY_MONITOR
-#		define USE_DL_ALLOCATOR
-#	endif // USE_MEMORY_MONITOR
-#endif // PURE_ALLOC
-
-#ifndef USE_DL_ALLOCATOR
-static void *lua_alloc_xr	(void *ud, void *ptr, size_t osize, size_t nsize) {
-  (void)ud;
-  (void)osize;
-  if (nsize == 0) {
-    xr_free	(ptr);
-    return	NULL;
-  }
-  else
-#ifdef DEBUG_MEMORY_NAME
-    return Memory.mem_realloc		(ptr, nsize, "LUA");
-#else // DEBUG_MEMORY_MANAGER
-    return Memory.mem_realloc		(ptr, nsize);
-#endif // DEBUG_MEMORY_MANAGER
-}
-#else // USE_DL_ALLOCATOR
-static void *lua_alloc_dl	(void *ud, void *ptr, size_t osize, size_t nsize) {
-  (void)ud;
-  (void)osize;
-  if (nsize == 0)	{	dlfree			(ptr);	 return	NULL;  }
-  else				return dlrealloc	(ptr, nsize);
-}
-
-u32 game_lua_memory_usage	()
-{
-	return					((u32)dlmallinfo().uordblks);
-}
-#endif // USE_DL_ALLOCATOR
-
 CScriptStorage::CScriptStorage		()
 {
 	m_current_thread		= 0;
@@ -101,34 +66,30 @@ CScriptStorage::CScriptStorage		()
 	m_virtual_machine		= 0;
 }
 
-CScriptStorage::~CScriptStorage		()
+CScriptStorage::~CScriptStorage()
 {
-	if (m_virtual_machine)
-		lua_close			(m_virtual_machine);
+	if (m_virtual_machine) {
+		Msg("* [CScriptStorage::~CScriptStorage] Closing LuaJIT");
+		lua_close(m_virtual_machine);
+	}
 }
 
-void CScriptStorage::reinit	()
+void CScriptStorage::reinit()
 {
 	if (m_virtual_machine)
-		lua_close			(m_virtual_machine);
-
-#ifndef USE_DL_ALLOCATOR
-	m_virtual_machine		= lua_newstate(lua_alloc_xr, NULL);
-#else // USE_DL_ALLOCATOR
-	m_virtual_machine		= lua_newstate(lua_alloc_dl, NULL);
-#endif // USE_DL_ALLOCATOR
-
-	if (!m_virtual_machine) {
-		Msg					("! ERROR : Cannot initialize script virtual machine!");
-		return;
+	{
+		Msg("* [CScriptStorage::reinit] Closing LuaJIT");
+		lua_close(m_virtual_machine);
 	}
-	
-	luaL_openlibs(m_virtual_machine);	//RvP
+	Msg("* [CScriptStorage::reinit] Starting LuaJIT");
+	m_virtual_machine = luaL_newstate();
+	R_ASSERT2(m_virtual_machine, "! ERROR : Cannot initialize script virtual machine!");
+	luaL_openlibs(m_virtual_machine); //RvP
 
 #ifdef LUAICP_COMPAT
  #include "luaicp_attach.inc" // added by alpet 05.07.14
 #endif
-	
+
 	if (strstr(Core.Params,"-_g"))
 		file_header			= file_header_new;
 	else
