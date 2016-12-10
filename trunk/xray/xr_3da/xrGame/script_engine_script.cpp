@@ -16,84 +16,29 @@
 
 using namespace luabind;
 
-void LuaLog(LPCSTR caMessage)
-{
-	ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeMessage,"%s",caMessage);
-#ifdef USE_DEBUGGER
-	if( ai().script_engine().debugger() ){
-		ai().script_engine().debugger()->Write(caMessage);
-	}
-#endif
-}
-
-void ErrorLog(LPCSTR caMessage)
-{
-	ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"%s",caMessage);
-#ifdef USE_DEBUGGER
-	if( ai().script_engine().debugger() ){
-		ai().script_engine().debugger()->Write(caMessage);
-	}
-#endif
-}
-
-void FlushLogs()
-{
-#ifdef DEBUG
-	FlushLog();
-	ai().script_engine().flush_log();
-#endif // DEBUG
-}
-
 void verify_if_thread_is_running()
 {
-	THROW2	(ai().script_engine().current_thread(),"coroutine.yield() is called outside the LUA thread!");
+	THROW2(ai().script_engine().current_thread(),"coroutine.yield() is called outside the LUA thread!");
 }
 
 bool editor()
 {
 #ifdef XRGAME_EXPORTS
-	return		(false);
+	return false;
 #else
-	return		(true);
+	return true;
 #endif
 }
 
 #ifdef XRGAME_EXPORTS
-CRenderDevice *get_device()
-{
-	return		(&Device);
-}
+CRenderDevice *get_device() { return &Device; }
 #endif
-
-int bit_and(int i, int j)
-{
-	return			(i & j);
-}
-
-int bit_or(int i, int j)
-{
-	return			(i | j);
-}
-
-int bit_xor(int i, int j)
-{
-	return			(i ^ j);
-}
-
-int bit_not(int i)
-{
-	return			(~i);
-}
-
-LPCSTR user_name()
-{
-	return			(Core.UserName);
-}
-
-void prefetch_module(LPCSTR file_name)
-{
-	ai().script_engine().process_file(file_name);
-}
+int bit_and(int i, int j) { return i&j; }
+int bit_or(int i, int j) { return i | j; }
+int bit_xor(int i, int j) { return i^j; }
+int bit_not(int i) { return ~i; }
+const char *user_name() { return Core.UserName; }
+void prefetch_module(LPCSTR file_name) { ai().script_engine().process_file(file_name); }
 
 struct profile_timer_script {
 	u64							m_start_cpu_tick_count;
@@ -187,9 +132,9 @@ CApplication *get_application() { return pApp; }
 #pragma optimize("s",on)
 void CScriptEngine::script_register(lua_State *L)
 {
-	module(L)[
-		def("log1",	(void(*)(LPCSTR)) &Log),	//RvP		
-
+	module(L)
+	[
+		def("log1",	(void(*)(LPCSTR)) &Log),	//RvP
 		class_<profile_timer_script>("profile_timer")
 			.def(constructor<>())
 			.def(constructor<profile_timer_script&>())
@@ -201,25 +146,20 @@ void CScriptEngine::script_register(lua_State *L)
 			.def("time",&profile_timer_script::time)
 		,
 		class_<CApplication>("CApplication")
-		.def("set_load_texture",				&CApplication::SetLoadTexture),
-		def("get_application",					&get_application)
-
-	];
-
-	function	(L,	"log",							LuaLog);
-	function	(L,	"error_log",					ErrorLog);
-	function	(L,	"flush",						FlushLogs);
-	function	(L,	"prefetch",						prefetch_module);
-	function	(L,	"verify_if_thread_is_running",	verify_if_thread_is_running);
-	function	(L,	"editor",						editor);
-	function	(L,	"bit_and",						bit_and);
-	function	(L,	"bit_or",						bit_or);
-	function	(L,	"bit_xor",						bit_xor);
-	function	(L,	"bit_not",						bit_not);
-	function	(L, "user_name",					user_name);
-	function	(L, "time_global",					script_time_global);
-	function	(L, "bind_to_dik",					get_action_dik);
+			.def("set_load_texture", &CApplication::SetLoadTexture),
+		def("get_application", &get_application),
+		def("prefetch", &prefetch_module),
+		def("verify_if_thread_is_running", &verify_if_thread_is_running),
+		def("editor", &editor),
+		def("bit_and", &bit_and),
+		def("bit_or", &bit_or),
+		def("bit_xor", &bit_xor),
+		def("bit_not", &bit_not),
+		def("user_name", &user_name),
+		def("time_global", &script_time_global),
 #ifdef XRGAME_EXPORTS
-	function	(L,	"device",						get_device);
+		def("device", &get_device),
 #endif
+		def("bind_to_dik", &get_action_dik)
+	];
 }
