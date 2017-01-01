@@ -331,6 +331,9 @@ void gather_info		(const char *expression, const char *description, const char *
 void xrDebug::do_exit	(const std::string &message)
 {
 	FlushLog			();
+
+	ShowWindow(GetForegroundWindow(), SW_MINIMIZE); //KRodin: попытка свернуть окно игры
+
 	MessageBox			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	TerminateProcess	(GetCurrentProcess(),1);
 }
@@ -358,6 +361,8 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 		get_on_dialog()	(true);
 
 #ifdef XRCORE_STATIC
+	ShowWindow(GetForegroundWindow(), SW_MINIMIZE); //KRodin: попытка свернуть окно игры
+
 	MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 #else
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
@@ -814,6 +819,8 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()	(true);
 
+		ShowWindow(GetForegroundWindow(), SW_MINIMIZE); //KRodin: попытка свернуть окно игры
+
 		MessageBox(NULL, MSG_FATAL_ERROR_OK, "Fatal error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 	}
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
@@ -893,6 +900,8 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		// LPCSTR					endline = "\r\n";
 		LPSTR					buffer = assertion_info + xr_strlen(assertion_info);
 		buffer					+= sprintf(buffer, MSG_OK_TO_ABORT);
+
+		ShowWindow(GetForegroundWindow(), SW_MINIMIZE); //KRodin: попытка свернуть окно игры
 
 		MessageBox				(
 			GetTopWindow(NULL),
