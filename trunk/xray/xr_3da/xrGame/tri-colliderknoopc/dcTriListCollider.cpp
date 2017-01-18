@@ -29,7 +29,10 @@ int dCollideBP (const dxGeom* o1, const dxGeom* o2, int flags, dContactGeom *con
 
 
 #define CONTACT(Ptr, Stride) ((dContactGeom*) (((byte*)Ptr) + (Stride)))
-#define SURFACE(Ptr, Stride) ((dSurfaceParameters*) (((byte*)Ptr) + (Stride-sizeof(dSurfaceParameters))))
+//#define SURFACE(Ptr, Stride) ((dSurfaceParameters*) (((byte*)Ptr) + (Stride-sizeof(dSurfaceParameters))))
+//KRodin: Фикс физики на x64. Вдруг когда-то вздумаю делать порт на х64. Так что исправлю сразу, чтоб потом не возиться.
+// http://www.gameru.net/forum/index.php?showtopic=55777&view=findpost&p=1561662
+#define SURFACE(Ptr, Stride) ((dSurfaceParameters*) (((char*)Ptr) + (Stride - offsetof(dContact, geom) + offsetof(dContact, surface))))
 
 int dcTriListCollider::CollideBox(dxGeom* Box, int Flags, dContactGeom* Contacts, int Stride)
 {
