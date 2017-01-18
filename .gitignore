@@ -1,29 +1,10 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
 # Precompiled Headers
 *.gch
 *.pch
 *.ipch
+
+# KRodin: всякий ненужный мусор:
 *.VC.db
 *.VC.opendb
 *.suo
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-
-# Fortran module files
-*.mod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-
-# Executables
-*.out
-*.app
+*.user
