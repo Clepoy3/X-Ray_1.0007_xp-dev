@@ -1,0 +1,3 @@
+[submodule "trunk\\xray\\Luabind"]
+	path = trunk\\xray\\Luabind
+	url = https://github.com/KRodinn/luabind-deboostified
