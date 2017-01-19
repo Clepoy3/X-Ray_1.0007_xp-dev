@@ -81,7 +81,7 @@
     </Link>
     <PreBuildEvent>
       <Command>
-		if not exist "..\..\luajit\bin\$(PlatformShortName)LuaJIT.dll" (
+		if not exist "..\..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" (
 			cd "..\..\luajit\src"
 			call "msvcbuild_all.bat"
 		)
@@ -128,7 +128,7 @@
     </Link>
     <PreBuildEvent>
       <Command>
-		if not exist "..\..\luajit\bin\$(PlatformShortName)LuaJIT.dll" (
+		if not exist "..\..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" (
 			cd "..\..\luajit\src"
 			call "msvcbuild_all.bat"
 		)
