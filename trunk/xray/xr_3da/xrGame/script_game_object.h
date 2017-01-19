@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "pch_script.h" //#include "script_space_forward.h"
+#include "pch_script.h"
 #include "script_bind_macroses.h"
 #include "script_export_space.h"
 #include "xr_time.h"

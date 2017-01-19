@@ -243,8 +243,6 @@
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
       <ImportLibrary>..\..\..\..\libraries\$(ProjectName).lib</ImportLibrary>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <AdditionalLibraryDirectories>..\..\..\..\libraries\</AdditionalLibraryDirectories>
     </Link>

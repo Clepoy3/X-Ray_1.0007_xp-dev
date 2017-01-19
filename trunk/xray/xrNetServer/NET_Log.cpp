@@ -137,7 +137,7 @@ void		INetLog::LogData(u32 Time, void* data, u32 size, bool IsIn)
 	m_cs.Leave();
 }
 
-
+//#define LOG_PACKET_ERRORS //KRodin: пусть пока будет выключено.
 /*#define PRINT_SCRIPT_TRACEBACK
 
 #ifdef PRINT_SCRIPT_TRACEBACK
@@ -146,7 +146,7 @@ void		INetLog::LogData(u32 Time, void* data, u32 size, bool IsIn)
 
 DLL_API void LogPacketError(LPCSTR format, ...)
 {
-//#ifdef LOG_PACKET_ERRORS //KRodin: пусть всегда будет включено, посмотрим.
+#ifdef LOG_PACKET_ERRORS
 	va_list mark;
 	string1024	buf;
 	va_start	(mark, format );
@@ -164,5 +164,5 @@ DLL_API void LogPacketError(LPCSTR format, ...)
 	LogStackTrace("problem here:");
 	if (IsDebuggerPresent())
 		DebugBreak ();
-//#endif
+#endif
 }

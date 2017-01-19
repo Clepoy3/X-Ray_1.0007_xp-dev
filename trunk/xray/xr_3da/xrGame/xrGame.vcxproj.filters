@@ -6529,7 +6529,6 @@
     <ClInclude Include="derived_client_classes.h">
       <Filter>AI\AScript\ScriptClasses\DerivedClientClasses</Filter>
     </ClInclude>
-    <ClInclude Include="script_space_forward.h" />
     <!--ClInclude Include="script_vars_storage.h" /-->
   </ItemGroup>
   <ItemGroup>
