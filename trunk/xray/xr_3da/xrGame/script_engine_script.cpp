@@ -17,9 +17,7 @@
 using namespace luabind;
 
 void verify_if_thread_is_running()
-{
-	THROW2(ai().script_engine().current_thread(),"coroutine.yield() is called outside the LUA thread!");
-}
+{ THROW2(ai().script_engine().current_thread(),"coroutine.yield() is called outside the LUA thread!"); }
 
 bool editor()
 {
@@ -33,9 +31,10 @@ bool editor()
 #ifdef XRGAME_EXPORTS
 CRenderDevice *get_device() { return &Device; }
 #endif
-int bit_and(int i, int j) { return i&j; }
+
+int bit_and(int i, int j) { return i & j; }
 int bit_or(int i, int j) { return i | j; }
-int bit_xor(int i, int j) { return i^j; }
+int bit_xor(int i, int j) { return i ^ j; }
 int bit_not(int i) { return ~i; }
 const char *user_name() { return Core.UserName; }
 void prefetch_module(LPCSTR file_name) { ai().script_engine().process_file(file_name); }
@@ -87,7 +86,8 @@ struct profile_timer_script {
 
 	IC		void					stop					()
 	{
-		THROW					(m_recurse_mark);
+		if (!m_recurse_mark)
+			return;
 		--m_recurse_mark;
 		
 		if (m_recurse_mark)
@@ -115,11 +115,10 @@ IC	profile_timer_script	operator+	(const profile_timer_script &portion0, const p
 	return					(result);
 }
 
-//IC	std::ostream& operator<<(std::ostream &stream, profile_timer_script &timer)
-//{
-//	stream					<< timer.time();
-//	return					(stream);
-//}
+std::ostream& operator<<(std::ostream& os, const profile_timer_script& pt) //KRodin: Раскомментировал, так же сделано в OpenXray
+{
+	return os << pt.time();
+}
 
 #ifdef XRGAME_EXPORTS
 ICF	u32	script_time_global	()	{ return Device.dwTimeGlobal; }
@@ -134,22 +133,23 @@ void CScriptEngine::script_register(lua_State *L)
 {
 	module(L)
 	[
-		def("log1",	(void(*)(LPCSTR)) &Log),	//RvP
+		def("log1",	(void(*)(LPCSTR)) &Log),	//RvP		
+
 		class_<profile_timer_script>("profile_timer")
 			.def(constructor<>())
 			.def(constructor<profile_timer_script&>())
 			.def(const_self + profile_timer_script())
 			.def(const_self < profile_timer_script())
-//			.def(tostring(self))
+			.def(tostring(self)) //KRodin: раскомментировал
 			.def("start",&profile_timer_script::start)
 			.def("stop",&profile_timer_script::stop)
 			.def("time",&profile_timer_script::time)
 		,
 		class_<CApplication>("CApplication")
-			.def("set_load_texture", &CApplication::SetLoadTexture),
+		.def("set_load_texture", &CApplication::SetLoadTexture),
 		def("get_application", &get_application),
 		def("prefetch", &prefetch_module),
-		def("verify_if_thread_is_running", &verify_if_thread_is_running),
+		def("verify_if_thread_is_running", &verify_if_thread_is_running), //KRodin: это вообще ЧТО?
 		def("editor", &editor),
 		def("bit_and", &bit_and),
 		def("bit_or", &bit_or),

@@ -5,7 +5,6 @@
 #include "ParticlesObject.h"
 #include "script_process.h"
 #include "script_engine.h"
-#include "script_engine_space.h"
 #include "level.h"
 #include "game_cl_base.h"
 #include "../x_ray.h"

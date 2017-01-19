@@ -143,7 +143,7 @@ void CScriptActor::script_register(lua_State *L)
 			.def("get_wound_total_size",				&get_wound_total_size)
 			.property("class_name",						&get_lua_class_name)
 			,
-			class_ <CActorConditionObject, bases<CActorCondition, CEntityCondition>>("CActorCondition") // нормальное наследование свойств происходит через ∆ (
+			class_ <CActorConditionObject, bases<CActorCondition, CEntityCondition>>("CActorCondition") // нормальное наследование свойств происходит через ∆ ( //KRodin: бл€, где враппер???
 			,
 			class_<CPHMovementControl>("CPHMovementControl")
 			.def_readwrite("ph_mass", &CPHMovementControl::fMass)
@@ -155,7 +155,7 @@ void CScriptActor::script_register(lua_State *L)
 			.property("jump_up_velocity",				&get_jump_up_velocity,					&CPHMovementControl::SetJumpUpVelocity)
 			.property("class_name",						&get_lua_class_name)
 			,
-			class_<CActor, bases<CInventoryOwner, CGameObject>>("CActorBase")
+			class_<CActor, bases<CInventoryOwner, CGameObject>>("CActorBase") //KRodin: и тут нет враппера
 			.property  ("condition",					&get_actor_condition)
 			.property  ("immunities",					&get_immunities)
 			.def_readwrite("hit_slowmo",				&CActor::hit_slowmo)
@@ -191,7 +191,7 @@ void CScriptActor::script_register(lua_State *L)
 			.def("is_zoom_aiming_mode",					&CActor::IsZoomAimingMode)
 			// Real Wolf. End. 14.10.2014.
 			,
-			class_<CActorObject, bases<CActor, CEntityAlive>>("CActor")	// хак с наследованием нужен дл€ переопределени€ свойств. Luabind не поддерживает property getters override			
+			class_<CActorObject, bases<CActor, CEntityAlive>>("CActor")	// хак с наследованием нужен дл€ переопределени€ свойств. Luabind не поддерживает property getters override //KRodin: враппера нет и тут
 			
 // #pragma todo(" alpet : пон€ть почему затираетс€ свойство class_name дл€ объекта актора. CInventoryOwner?")
 			

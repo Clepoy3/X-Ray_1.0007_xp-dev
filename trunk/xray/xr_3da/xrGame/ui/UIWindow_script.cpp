@@ -72,8 +72,8 @@ CUIWindow *find_child_window(CUIWindow *wnd, LPCSTR name) // script wrapper LPCS
 	return wnd->FindChild(name);
 }
 
-
 using namespace luabind;
+using namespace luabind::policy;
 
 #pragma optimize("s",on)
 void CUIWindow::script_register(lua_State *L)
@@ -104,7 +104,7 @@ void CUIWindow::script_register(lua_State *L)
 
 		class_<CUIWindow>("CUIWindow")
 		.def(							constructor<>())
-		.def("AttachChild",				&CUIWindow::AttachChild, adopt(_2))
+		.def("AttachChild",				&CUIWindow::AttachChild, adopt<2>())
 		.def("DetachChild",				&CUIWindow::DetachChild)
 		.def("FindChild",				&find_child_window)	
 		.def("DetachFromParent",		&CUIWindow::DetachFromParent)

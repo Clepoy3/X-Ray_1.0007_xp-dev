@@ -17,6 +17,7 @@
 #include "ui/UIDialogWnd.h"
 #include "ui/UIInventoryWnd.h"
 #include "../lua_tools.h"
+#include <luabind/raw_policy.hpp>
 
 /* Декларация о стиле экспорта свойств и методов:
      * Свойства объектов экспортируются по возможности так, как они выглядят в файлах конфигурации (*.ltx), а не так как они названы в исходниках движка
@@ -27,6 +28,8 @@
 
 
 using namespace luabind;
+using namespace luabind::policy;
+
 #pragma optimize("s", on)
 
 extern LPCSTR get_lua_class_name(luabind::object O);
@@ -52,6 +55,7 @@ void CAnomalyZoneScript::script_register(lua_State *L)
 	module(L)
 		[	
 			class_<CSpaceRestrictor, CGameObject>("CSpaceRestrictor")
+			.def(constructor<>()) //KRodin: перенесено из space_restrictor_script.cpp. Какого чёрта этот класс два раза регистрировали???
 			.property("restrictor_center"				,				&get_restrictor_center)
 			.property("restrictor_type"					,				&CSpaceRestrictor::restrictor_type)
 			.property("radius"							,				&CSpaceRestrictor::Radius)						
@@ -106,7 +110,7 @@ void CEatableItemScript::script_register(lua_State *L)
 			.def_readwrite("eat_portions_num"			,			&CEatableItem::m_iPortionsNum)
 			.def_readwrite("eat_max_power"				,			&CEatableItem::m_iStartPortionsNum)			
 			,
-			class_<CEatableItemObject, bases<CEatableItem, CGameObject>>("CEatableItemObject")
+			class_<CEatableItemObject, bases<CEatableItem, CGameObject>>("CEatableItemObject") //KRodin: Надо подумать что с этим делать. Тут враппера нету же.
 		];
 }
 
@@ -197,7 +201,7 @@ void item_to_ruck(CInventory *I, lua_State *L)
 #ifdef INV_NEW_SLOTS_SYSTEM
 void get_slots(luabind::object O)
 {
-	lua_State *L = O.lua_state();
+	lua_State *L = O.interpreter();
 	CInventoryItem *itm = luabind::object_cast<CInventoryItem*> (O);
 	lua_createtable (L, 0, 0);
 	int tidx = lua_gettop(L);
@@ -231,11 +235,11 @@ void CInventoryScript::script_register(lua_State *L)
 			.property("cost"							,			&CInventoryItem::Cost,  &CInventoryItem::SetCost)
 			.property("slot"							,			&CInventoryItem::GetSlot, &CInventoryItem::SetSlot)
 #ifdef INV_NEW_SLOTS_SYSTEM
-			.property("slots"							,			&get_slots,    &fake_set_slots, raw(_2))	
+			.property("slots"							,			&get_slots,    &fake_set_slots, raw<2>())
 #endif
 			.property("description"						,			&get_item_description, &set_item_description)
 			,
-			class_<CInventoryItemObject, bases<CInventoryItem, CGameObject>>("CInventoryItemObject"),
+			class_<CInventoryItemObject, bases<CInventoryItem, CGameObject>>("CInventoryItemObject"), //KRodin: тут тоже подумать, враппера нету.
 
 			class_ <CInventory>("CInventory")
 			.def_readwrite("max_belt"					,			&CInventory::m_iMaxBelt)
@@ -246,9 +250,9 @@ void CInventoryScript::script_register(lua_State *L)
 			.property	  ("selected_item"				,			&inventory_selected_item)
 			.property	  ("target"						,			&get_inventory_target)
 			.property	  ("class_name"					,			&get_lua_class_name)
-			.def		  ("to_belt"					,			&item_to_slot,   raw(_2))
-			.def		  ("to_slot"					,			&item_to_slot,   raw(_2))
-			.def		  ("to_ruck"					,			&item_to_ruck,   raw(_2))
+			.def		  ("to_belt"					,			&item_to_slot, raw<2>())
+			.def		  ("to_slot"					,			&item_to_slot, raw<2>())
+			.def		  ("to_ruck"					,			&item_to_ruck, raw<2>())
 			,
 			class_<CInventoryOwner>("CInventoryOwner")
 			.def_readonly ("inventory"					,			&CInventoryOwner::m_inventory)
@@ -271,7 +275,7 @@ void CMonsterScript::script_register(lua_State *L)
 {
 	module(L)
 		[
-			class_<CBaseMonster, bases<CInventoryOwner, CEntityAlive>>("CBaseMonster")
+			class_<CBaseMonster, bases<CInventoryOwner, CEntityAlive>>("CBaseMonster") //KRodin: тут тоже нет враппера, что за хрень? Так разве можно?
 			.def_readwrite("agressive"					,			&CBaseMonster::m_bAggressive)
 			.def_readwrite("angry"						,			&CBaseMonster::m_bAngry)
 			.def_readwrite("damaged"					,			&CBaseMonster::m_bDamaged)
@@ -337,14 +341,14 @@ luabind::object CWeaponScript::get_fire_modes(CWeaponMagazined *wpn)
    return t;
 }
 
-void CWeaponScript::set_fire_modes(CWeaponMagazined *wpn, luabind::object const& t)
+void CWeaponScript::set_fire_modes(CWeaponMagazined *wpn, luabind::adl::object const& t)
 {
-	if (LUA_TTABLE != t.type()) return;
+	if (LUA_TTABLE != luabind::type(t)) return;
 	auto &vector = wpn->m_aFireModes;
 	vector.clear();
-	for (auto it = t.begin(); it != t.end(); ++it)
+	for (luabind::iterator I(t), E; I != E; ++I) //for (auto it = t.begin(); it != t.end(); ++it)
 	{
-		int m = object_cast<int>(*it);
+		int m = object_cast<int>(*I);
 		vector.push_back(m);
 	}	
 }
@@ -365,7 +369,7 @@ luabind::object CWeaponScript::get_hit_power(CWeapon *wpn)
 
 void CWeaponScript::set_hit_power(CWeapon *wpn, luabind::object const& t)
 {
-	if (LUA_TTABLE != t.type()) return;
+	if (LUA_TTABLE != luabind::type(t)) return;
 	auto &vector = wpn->fvHitPower;
 
 	vector.x = object_cast<float>(t[1]);
@@ -486,7 +490,7 @@ void CCustomMonsterScript::script_register(lua_State *L)
 {
 	module(L)
 		[
-			class_<CCustomMonster, bases<CEntityAlive>>("CCustomMonster")
+			class_<CCustomMonster, bases<CEntityAlive>>("CCustomMonster") //KRodin: и тут враппера нет
 			.def("get_dest_vertex_id", &CCustomMonsterScript::GetDestVertexId)
 		];
 }

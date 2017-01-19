@@ -422,7 +422,7 @@ min_gain(lzo_uint ahead, lzo_uint lit1, lzo_uint lit2, int l1, int l2, int l3)
 //
 ************************************************************************/
 
-#if !defined(NDEBUG)
+#ifdef DEBUG
 static
 void assert_match( const lzo_swd_p swd, lzo_uint m_len, lzo_uint m_off )
 {

@@ -551,7 +551,7 @@ public:
 		if (!bMapFound)
 		{
 			Msg("! Level [%s] not registered for [%s]!", LevelName, GameType);
-#ifdef NDEBUG
+#ifndef DEBUG
 			return;
 #endif
 		}

@@ -101,7 +101,7 @@ void raw_get_object_by_id(lua_State *L)
 		if (result)
 		{
 			result->set_lua_state(L);
-			luabind::detail::convert_to_lua<CScriptGameObject*>(L, result);
+			luabind::detail::push_to_lua(L, result); //luabind::detail::convert_to_lua<CScriptGameObject*>(L, result);
 			return;
 		}
 	}
@@ -685,10 +685,16 @@ void reinit_shown_ui()
 }
 
 
+#ifdef LUAICP_COMPAT
+#include <luabind/raw_policy.hpp>
+#endif
 
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
+#ifdef LUAICP_COMPAT
+	using namespace luabind::policy;
+#endif
 	class_<CEnvDescriptor>("CEnvDescriptor")
 	.def_readonly("fog_density", &CEnvDescriptor::fog_density)
 	.def_readonly("far_plane", &CEnvDescriptor::far_plane),
@@ -706,7 +712,7 @@ void CLevel::script_register(lua_State *L)
 
 		// obsolete\deprecated
 #ifdef LUAICP_COMPAT
-		def("object_by_id",						raw_get_object_by_id, raw(_1)),
+		def("object_by_id",						raw_get_object_by_id, raw<1>()),
 #else
 		def("object_by_id",						get_object_by_id),
 #endif

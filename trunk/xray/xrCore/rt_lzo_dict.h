@@ -214,7 +214,7 @@ extern "C" {
 
 
 #if !defined(DVAL_ASSERT)
-#if defined(__LZO_HASH_INCREMENTAL) && !defined(NDEBUG)
+#if defined(__LZO_HASH_INCREMENTAL) && defined(DEBUG)
 static void DVAL_ASSERT(lzo_xint dv, const lzo_bytep p)
 {
     lzo_xint df;

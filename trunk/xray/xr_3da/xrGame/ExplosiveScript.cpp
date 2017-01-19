@@ -32,7 +32,7 @@ void CExplosive::script_register(lua_State *L)
 
 			.def("explode",					(&CExplosive::Explode))
 			,
-			class_<CGrenade, bases<CExplosive, CMissile>>("CGrenade")
+			class_<CGrenade, bases<CExplosive, CMissile>>("CGrenade") //KRodin: тут тоже нету враппера
 	];
 }
 

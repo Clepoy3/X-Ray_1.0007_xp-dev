@@ -15,8 +15,10 @@
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	((ltx->line_exist(section,name)) ? (ltx->method(section,name)) : (default_value))
 
-
-#if XRAY_EXCEPTIONS
+#if (defined(_DEBUG) || defined(MIXED) || defined(DEBUG)) && !defined(FORCE_NO_EXCEPTIONS)
+#if !defined(_CPPUNWIND)
+#	error Please enable exceptions...
+#endif
 IC	xr_string	string2xr_string(LPCSTR s) {return *shared_str(s ? s : "");}
 IC	void		throw_and_log(const xr_string &s) {Msg("! %s",s.c_str()); throw *shared_str(s.c_str());}
 #	define		THROW(xpr)				if (!(xpr)) {throw_and_log (__FILE__LINE__" Expression \""#xpr"\"");}

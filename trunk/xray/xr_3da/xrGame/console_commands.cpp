@@ -19,7 +19,6 @@
 #include "Actor_Flags.h"
 #include "customzone.h"
 #include "script_engine.h"
-#include "script_engine_space.h"
 #include "script_process.h"
 #include "xrServer_Objects.h"
 #include "ui/UIMainIngameWnd.h"
@@ -120,15 +119,15 @@ CUIOptConCom g_OptConCom;
 /*
 #ifndef PURE_ALLOC
 #	ifndef USE_MEMORY_MONITOR
-#		define SEVERAL_ALLOCATORS
+#		define SEVERAL_ALLOCATORS //Закомментировал, т.к LuaJIT теперь использует свой механизм работы с памятью, вместо кривого движкового
 #	endif // USE_MEMORY_MONITOR
 #endif // PURE_ALLOC
+*/
 
 #ifdef SEVERAL_ALLOCATORS
 	ENGINE_API 	u32 engine_lua_memory_usage	();
 	extern		u32 game_lua_memory_usage	();
 #endif // SEVERAL_ALLOCATORS
-*/
 
 class CCC_MemStats : public IConsole_Command
 {
@@ -138,13 +137,11 @@ public:
 		Memory.mem_compact		();
 		u32		_crt_heap		= mem_usage_impl((HANDLE)_get_heap_handle(),0,0);
 		u32		_process_heap	= mem_usage_impl(GetProcessHeap(),0,0);
-/*
 #ifdef SEVERAL_ALLOCATORS
 		u32		_game_lua		= game_lua_memory_usage();
 		u32		_engine_lua		= engine_lua_memory_usage();
 		u32		_render			= ::Render->memory_usage();
 #endif // SEVERAL_ALLOCATORS
-*/
 		int		_eco_strings	= (int)g_pStringContainer->stat_economy			();
 		int		_eco_smem		= (int)g_pSharedMemoryContainer->stat_economy	();
 		u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
@@ -155,11 +152,11 @@ public:
 		
 		Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
 
-//#ifndef SEVERAL_ALLOCATORS
+#ifndef SEVERAL_ALLOCATORS
 		Msg		("* [x-ray]: crt heap[%d K], process heap[%d K]",_crt_heap/1024,_process_heap/1024);
-//#else // SEVERAL_ALLOCATORS
-//		Msg		("* [x-ray]: crt heap[%d K], process heap[%d K], game lua[%d K], engine lua[%d K], render[%d K]",_crt_heap/1024,_process_heap/1024,_game_lua/1024,_engine_lua/1024,_render/1024);
-//#endif // SEVERAL_ALLOCATORS
+#else // SEVERAL_ALLOCATORS
+		Msg		("* [x-ray]: crt heap[%d K], process heap[%d K], game lua[%d K], engine lua[%d K], render[%d K]",_crt_heap/1024,_process_heap/1024,_game_lua/1024,_engine_lua/1024,_render/1024);
+#endif // SEVERAL_ALLOCATORS
 
 		Msg		("* [x-ray]: economy: strings[%d K], smem[%d K]",_eco_strings/1024,_eco_smem);
 
@@ -984,13 +981,13 @@ public:
 };
 
 // #ifdef DEBUG
-extern void print_help(lua_State *L);
+//extern void print_help(lua_State *L);
 
 struct CCC_LuaHelp : public IConsole_Command {
 	CCC_LuaHelp(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-
 	virtual void Execute(LPCSTR args) {
-		print_help(ai().script_engine().lua());
+		Msg("! KRodin: LuaHelp not supported!");
+		//print_help(ai().script_engine().lua());
 	}
 };
 

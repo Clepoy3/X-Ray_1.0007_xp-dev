@@ -4,24 +4,19 @@
 //  Modified 	: 23.10.2014
 //	Author		: Dmitriy Iassenev
 //	Description : Script Engine help
+//  KRODIN: ВЫКЛЮЧЕНО! ВСЁ ЭТО НАДО ПЕРЕДЕЛАТЬ К ПОД НОВЫЙ LUABIND!!!! ИЛИ ВЗЯТЬ ГОТОВОЕ ИЗ OPENXRAY, ЕСЛИ ОНО ТАМ СДЕЛАНО!!!
+// НАДО ВКЛЮЧИТЬ И ПОПРАВИТЬ.
 ////////////////////////////////////////////////////////////////////////////
 
 #include "pch_script.h"
 #include "../../Luabind/luabind/detail/class_rep.hpp"
 
-
 static IWriter *dumper = NULL;
 string1024 line_buf;
 
-// дефайн LUABIND_NO_ERROR_CHECKING3 надо включать в config.hpp рядом с LUABIND_NO_ERROR_CHECKING2 
+#ifndef LUABIND_NO_ERROR_CHECKING //KRodin: а оно, собственно, зачем? Оно в релизе не работает что ли? С этим разбираться надо, сравнивать со старым луабиндом.
 
-#ifndef LUABIND_NO_ERROR_CHECKING3
-
-#ifndef BOOST_NO_STRINGSTREAM
-#	include <sstream>
-#else
-#	include <strstream>
-#endif
+#include <sstream>
 
 // redefinition for fast save
 void OpenDumper()
@@ -64,29 +59,22 @@ void FastMsg (LPCSTR format, ...)
 
 }
 
-xr_string to_string					(luabind::object const& o)
+xr_string to_string					(luabind::adl::object const& o)
 {
 	using namespace luabind;
-	if (o.type() == LUA_TSTRING) return object_cast<xr_string>(o);
-	lua_State* L = o.lua_state();
+	if (luabind::type(o) == LUA_TSTRING) return object_cast<xr_string>(o);
+	lua_State* L = o.interpreter();
 	LUABIND_CHECK_STACK(L);
 
-#ifdef BOOST_NO_STRINGSTREAM
-	std::strstream s;
-#else
 	std::stringstream s;
-#endif
 
-	if (o.type() == LUA_TNUMBER)
+	if (luabind::type(o) == LUA_TNUMBER)
 	{
 		s << object_cast<float>(o);
 		return xr_string(s.str().c_str());
 	}
 
-	s << "<" << lua_typename(L, o.type()) << ">";
-#ifdef BOOST_NO_STRINGSTREAM
-	s << std::ends;
-#endif
+	s << "<" << lua_typename(L, luabind::type(o)) << ">";
 	return s.str().c_str();
 }
 
@@ -128,16 +116,15 @@ xr_string &extract_last_params               (xr_string &str)
 }
 
 
-xr_string member_to_string			(luabind::object const& e, LPCSTR function_signature)
+xr_string member_to_string			(luabind::adl::object const& e, LPCSTR function_signature)
 {
-#if !defined(LUABIND_NO_ERROR_CHECKING3)
     using namespace luabind;
-	lua_State* L = e.lua_state();
+	lua_State* L = e.interpreter();
 	LUABIND_CHECK_STACK(L);
 
-	if (e.type() == LUA_TFUNCTION)
+	if (luabind::type(e) == LUA_TFUNCTION)
 	{
-		e.pushvalue();
+		e.push(L);
 		detail::stack_pop p(L, 1);
 
 		{
@@ -145,12 +132,7 @@ xr_string member_to_string			(luabind::object const& e, LPCSTR function_signatur
 			detail::stack_pop p2(L, 1);
 			if (lua_touserdata(L, -1) != reinterpret_cast<void*>(0x1337)) return to_string(e);
 		}
-
-#ifdef BOOST_NO_STRINGSTREAM
-		std::strstream s;
-#else
 		std::stringstream s;
-#endif
 		{
 			lua_getupvalue(L, -1, 2);
 			detail::stack_pop p2(L, 1);
@@ -171,16 +153,10 @@ xr_string member_to_string			(luabind::object const& e, LPCSTR function_signatur
 				s << function_signature << process_signature(str) << ";";
 			}
 		}
-#ifdef BOOST_NO_STRINGSTREAM
-		s << std::ends;
-#endif
 		return s.str().c_str();
 	}
 
     return to_string(e);
-#else
-    return "";
-#endif
 }
 
 void print_class						(lua_State *L, luabind::detail::class_rep *crep)
@@ -206,9 +182,7 @@ void print_class						(lua_State *L, luabind::detail::class_rep *crep)
 	// print class constants
 	{
 		const luabind::detail::class_rep::STATIC_CONSTANTS	&constants = crep->static_constants();
-		luabind::detail::class_rep::STATIC_CONSTANTS::const_iterator	I = constants.begin();
-		luabind::detail::class_rep::STATIC_CONSTANTS::const_iterator	E = constants.end();
-		for ( ; I != E; ++I)
+		for (luabind::iterator I(constants), E; I != E; ++I)
 #ifndef USE_NATIVE_LUA_STRINGS
 			FastMsg		("    const %s = %d;",(*I).first,(*I).second);
 #else
@@ -258,9 +232,7 @@ void print_class						(lua_State *L, luabind::detail::class_rep *crep)
 	
 	{
 		const std::vector<luabind::detail::construct_rep::overload_t>	&constructors = crep->constructors().overloads;
-		std::vector<luabind::detail::construct_rep::overload_t>::const_iterator	I = constructors.begin();
-		std::vector<luabind::detail::construct_rep::overload_t>::const_iterator	E = constructors.end();
-		for ( ; I != E; ++I) {
+		for (luabind::iterator I(constructors), E; I != E; ++I)
 			xr_string S;
 			(*I).get_signature(L,S);
 			strreplaceall	(S,"custom [","");
@@ -279,7 +251,7 @@ void print_class						(lua_State *L, luabind::detail::class_rep *crep)
 		crep->get_table	(L);
 		luabind::object	table(L);
 		table.set		();
-		for (luabind::object::iterator i = table.begin(); i != table.end(); ++i) {
+		for (luabind::iterator i(table), e; i != e; ++i) {
 			luabind::object	object = *i;
 			xr_string	S;
 			S			= "    function ";		
@@ -304,12 +276,10 @@ void print_class						(lua_State *L, luabind::detail::class_rep *crep)
 void print_free_functions				(lua_State *L, const luabind::object &object, LPCSTR header, const xr_string &indent)
 {
 	u32							count = 0;
-	luabind::object::iterator	I = object.begin();
-	luabind::object::iterator	E = object.end();
-	for ( ; I != E; ++I) {
-		if ((*I).type() != LUA_TFUNCTION)
+	for (luabind::iterator I(object), E; I != E; ++I)
+		if (luabind::type((*I)) != LUA_TFUNCTION)
 			continue;
-		(*I).pushvalue();
+		(*I).push(L);
 		luabind::detail::free_functions::function_rep* rep = 0;
 		if (lua_iscfunction(L, -1))
 		{
@@ -324,10 +294,8 @@ void print_free_functions				(lua_State *L, const luabind::object &object, LPCST
 							FastMsg("\n%snamespace %s {",indent.c_str(),header);
 						++count;
 						rep = static_cast<luabind::detail::free_functions::function_rep*>(lua_touserdata(L, -1));
-						std::vector<luabind::detail::free_functions::overload_rep>::const_iterator	i = rep->overloads().begin();
-						std::vector<luabind::detail::free_functions::overload_rep>::const_iterator	e = rep->overloads().end();
-						for ( ; i != e; ++i) {
-							xr_string	S;
+						for (luabind::iterator i(rep->overloads()), e; i != e; ++i)
+							xr_string S;
 							(*i).get_signature(L,S);
 							FastMsg("    %sfunction %s%s;",indent.c_str(),rep->name(), process_signature(S).c_str());
 						}
@@ -346,7 +314,7 @@ void print_free_functions				(lua_State *L, const luabind::object &object, LPCST
 		xr_string				last_key = "?";
 		_indent.append			("    ");
 		
-		object.pushvalue();
+		object.push(L);
 		int n_table = lua_gettop(L);
 		// Msg("# n_table = %d ", n_table);
 		lua_pushnil		(L);		
@@ -449,7 +417,7 @@ void print_help							(lua_State *L)
 		__try
 		{
 #endif
-			print_free_functions(L, luabind::get_globals(L), "", " ");
+			print_free_functions(L, luabind::globals(L), "", " ");
 			FastMsg("End of list of the namespaces exported to LUA\n");
 #if !defined(_CPPUNWIND)
 		}

@@ -16,8 +16,8 @@ protected:
 	typedef CObjectItemAbstract inherited;
 
 protected:
-	luabind::object								m_client_creator;
-	luabind::object								m_server_creator;
+	mutable luabind::functor<ObjectFactory::CLIENT_BASE_CLASS *, luabind::policy::adopt<0>> m_client_creator;
+	mutable luabind::functor<ObjectFactory::SERVER_BASE_CLASS *, luabind::policy::adopt<0>> m_server_creator;
 
 public:
 												CObjectItemScript	(

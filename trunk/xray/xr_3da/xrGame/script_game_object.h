@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_space_forward.h"
+#include "pch_script.h" //#include "script_space_forward.h"
 #include "script_bind_macroses.h"
 #include "script_export_space.h"
 #include "xr_time.h"
@@ -281,7 +281,7 @@ public:
 			void				DisableTrade		();
 			bool				IsTradeEnabled		();
 
-			void				IterateInventory	(luabind::functor<void> functor, luabind::object object);
+			void				IterateInventory	(luabind::functor<void> functor, luabind::adl::object object);
 			void				MarkItemDropped		(CScriptGameObject *item);
 			bool				MarkedDropped		(CScriptGameObject *item);
 			void				UnloadMagazine		();
@@ -338,15 +338,15 @@ public:
 			
 	// Callbacks			
 			void				SetCallback			(GameObject::ECallbackType type, const luabind::functor<void> &functor);
-			void				SetCallback			(GameObject::ECallbackType type, const luabind::functor<void> &functor, const luabind::object &object);
+			void				SetCallback			(GameObject::ECallbackType type, const luabind::functor<void> &functor, const luabind::adl::object &object);
 			void				SetCallback			(GameObject::ECallbackType type);
 
 			void				set_patrol_extrapolate_callback(const luabind::functor<bool> &functor);
-			void				set_patrol_extrapolate_callback(const luabind::functor<bool> &functor, const luabind::object &object);
+			void				set_patrol_extrapolate_callback(const luabind::functor<bool> &functor, const luabind::adl::object &object);
 			void				set_patrol_extrapolate_callback();
 
 			void				set_enemy_callback	(const luabind::functor<bool> &functor);
-			void				set_enemy_callback	(const luabind::functor<bool> &functor, const luabind::object &object);
+			void				set_enemy_callback	(const luabind::functor<bool> &functor, const luabind::adl::object &object);
 			void				set_enemy_callback	();
 	
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -355,7 +355,7 @@ public:
 			void				SetTipTextDefault	();
 			void				SetNonscriptUsable	(bool nonscript_usable);
 ///////////////////////////////////////////////////////////////////////////////////////////
-			void				set_fastcall		(const luabind::functor<bool> &functor, const luabind::object &object);
+			void				set_fastcall		(const luabind::functor<bool> &functor, const luabind::adl::object &object);
 			void				set_const_force		(const Fvector &dir,float value,u32  time_interval)							;
 //////////////////////////////////////////////////////////////////////////
 
@@ -704,13 +704,16 @@ extern void	lua_pushgameobject(lua_State *L, CGameObject *obj);
 template <typename T>
 IC bool test_pushobject(lua_State *L, CGameObject* obj)
 {	
+	Msg("! KRodin: Called test_pushobject !!!");
+/* KRodin: Надо адаптировать под новый луабинд
 	using namespace luabind::detail;
 	T *pObj = smart_cast<T*> (obj);
 	if (pObj && get_class_rep<T>(L))
-	{		
-		convert_to_lua<T*>(L, pObj);  // обязательно конвертировать указатель, а не значение. Иначе вызов деструктора при сборке мусора!
+	{
+		push_to_lua(L, pObj); //convert_to_lua<T*>(L, pObj);  // обязательно конвертировать указатель, а не значение. Иначе вызов деструктора при сборке мусора!
 		return true;		
 	}
+*/
 	return false;
 }
 

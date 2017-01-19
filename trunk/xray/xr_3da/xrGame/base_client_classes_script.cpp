@@ -25,11 +25,13 @@
 #include "xrServer_Objects_ALife.h"
 #include "../lua_tools.h"
 #include <typeinfo>
+#include <luabind/raw_policy.hpp>
 
 
 struct CGlobalFlags { };
 
 using namespace luabind;
+using namespace luabind::policy;
 
 #pragma optimize("s",on)
 void SLargeInteger::script_register(lua_State *L)
@@ -47,7 +49,7 @@ void DLL_PureScript::script_register	(lua_State *L)
 {
 	module(L)
 	[
-		class_<DLL_Pure,CDLL_PureWrapper>("DLL_Pure")
+		class_<DLL_Pure, no_bases, default_holder, CDLL_PureWrapper>("DLL_Pure")
 			.def(constructor<>())
 			.def("_construct",&DLL_Pure::_construct,&CDLL_PureWrapper::_construct_static)
 	];
@@ -58,7 +60,7 @@ void ISpatialScript::script_register	(lua_State *L)
 {
 	module(L)
 	[
-		class_<ISpatial,CISpatialWrapper>("ISpatial")
+		class_<ISpatial, no_bases, default_holder, CISpatialWrapper>("ISpatial")
 			.def(constructor<>())
 			.def("spatial_register",	&ISpatial::spatial_register,	&CISpatialWrapper::spatial_register_static)
 			.def("spatial_unregister",	&ISpatial::spatial_unregister,	&CISpatialWrapper::spatial_unregister_static)
@@ -87,7 +89,7 @@ void ISheduledScript::script_register	(lua_State *L)
 {
 	module(L)
 	[
-		class_<ISheduled,CISheduledWrapper>("ISheduled")
+		class_<ISheduled, no_bases, default_holder, CISheduledWrapper>("ISheduled")
 		.def_readwrite("updated_times",			&ISheduled::updated_times)		 	 // может потребоваться сброс счетчиков после сверки	
 		.property("schedule_max",				&get_schedule_max)
 		.property("schedule_min",				&get_schedule_min)
@@ -103,7 +105,7 @@ void IRenderableScript::script_register	(lua_State *L)
 {
 	module(L)
 	[
-		class_<IRenderable,CIRenderableWrapper>("IRenderable")
+		class_<IRenderable, no_bases, default_holder, CIRenderableWrapper>("IRenderable")
 //			.def(constructor<>())
 //			.def("renderable_Render",&IRenderable::renderable_Render,&CIRenderableWrapper::renderable_Render_static)
 //			.def("renderable_ShadowGenerate",&IRenderable::renderable_ShadowGenerate,&CIRenderableWrapper::renderable_ShadowGenerate_static)
@@ -150,7 +152,7 @@ DLL_API LPCSTR raw_lua_class_name(lua_State *L)
 	for (int i = lua_gettop(L) - 1; i > 0; i--) // обычно аргумент (-2) ,    int(CSE_ALifeObject:: объект
 	if (lua_isuserdata(L, i))
 	{
-		object_rep *rep = is_class_object(L, i); 
+		object_rep *rep = get_instance(L, i); //is_class_object(L, i); 
 		if (rep)			
 			return rep->crep()->name();		
 	}
@@ -158,9 +160,9 @@ DLL_API LPCSTR raw_lua_class_name(lua_State *L)
 }
 
 
-LPCSTR get_lua_class_name(luabind::object O)
+LPCSTR get_lua_class_name(luabind::adl::object O)
 {			
-	lua_State *L = O.lua_state();				
+	lua_State *L = O.interpreter();
 	if (L)
 		return raw_lua_class_name(L);	
 	return "?";
@@ -217,7 +219,7 @@ void CObjectScript::script_register		(lua_State *L)
 {
 	module(L)
 	[
-//		class_<CObject,bases<DLL_Pure,ISheduled,ICollidable,IRenderable>,CObjectWrapper>("CObject")
+//		class_<CObject,bases<DLL_Pure,ISheduled,ICollidable,IRenderable>, default_holder, CObjectWrapper>("CObject")
 //			.def(constructor<>())
 //			.def("_construct",			&CObject::_construct,&CObjectWrapper::_construct_static)
 /*			
@@ -236,7 +238,7 @@ void CObjectScript::script_register		(lua_State *L)
 //			.def("renderable_ShadowReceive",&CObject::renderable_ShadowReceive,&CObjectWrapper::renderable_ShadowReceive_static)
 //			.def("Visual",					&CObject::Visual)
 
-		class_<CGameObject,bases<DLL_Pure,ISheduled,ICollidable,IRenderable>,CGameObjectWrapper>("CGameObject")
+		class_<CGameObject,bases<DLL_Pure,ISheduled,ICollidable,IRenderable>, default_holder, CGameObjectWrapper>("CGameObject")
 			.def(constructor<>())
 			.def("_construct",			&CGameObject::_construct,&CGameObjectWrapper::_construct_static)
 			.def("Visual",				&CGameObject::Visual)			
@@ -330,7 +332,7 @@ void CObjectScript::script_register		(lua_State *L)
 //		,class_<CPhysicsShellHolder,CGameObject>("CPhysicsShellHolder")
 //			.def(constructor<>())
 
-//		,class_<CEntity,CPhysicsShellHolder,CEntityWrapper>("CEntity")
+//		,class_<CEntity,CPhysicsShellHolder, default_holder, CEntityWrapper>("CEntity")
 //			.def(constructor<>())
 //			.def("HitSignal",&CEntity::HitSignal,&CEntityWrapper::HitSignal_static)
 //			.def("HitImpulse",&CEntity::HitImpulse,&CEntityWrapper::HitImpulse_static)
@@ -632,7 +634,7 @@ void script_texture_cast(lua_State *L)
 	using namespace luabind::detail;
 	CTexture *result = (CTexture*) lua_topointer(L, 1);
 	if (!IsBadReadPtr(result, sizeof(CTexture)))
-		convert_to_lua<CTexture*> (L, result); // for default 
+		push_to_lua(L, result); //convert_to_lua<CTexture*> (L, result); // for default 
 	else
 		lua_pushnil(L);
 }
@@ -653,7 +655,7 @@ void CTextureScript::script_register(lua_State *L)
 			.def("get_name",			&script_texture_getname)
 			.def("set_name",			&script_texture_setname)
 			.def("get_surface",			&CTexture::surface_get)
-			.def("cast_texture",		&script_texture_cast, raw(_1))	
+			.def("cast_texture",		&script_texture_cast, raw<1>())
 			.def_readonly("ref_count",  &CTexture::dwReference)
 			
 		];
@@ -669,7 +671,7 @@ void cast_ptr_CTexture(lua_State *L)
 {
 	CTexture *t = (CTexture*) (lua_topointer(L, 1));
 	if (t)
-		luabind::detail::convert_to_lua<CTexture*>(L, t);
+		luabind::detail::push_to_lua(L, t); //luabind::detail::convert_to_lua<CTexture*>(L, t);
 	else
 		lua_pushnil(L);
 }
@@ -712,9 +714,9 @@ void CResourceManagerScript::script_register(lua_State *L)
 	module(L) [ 
 		// added by alpet
 		class_<CResourceManager>("CResourceManager")
-		.def("get_loaded_textures",  &get_loaded_textures, raw(_2))
+		.def("get_loaded_textures",  &get_loaded_textures, raw<2>())
 		,
-		def("cast_ptr_CTexture",	&cast_ptr_CTexture, raw(_1)),
+		def("cast_ptr_CTexture",	&cast_ptr_CTexture, raw<1>()),
 		def("get_resource_manager", &get_resource_manager),
 		def("texture_create",		&script_texture_create),
 		def("texture_delete",		&script_texture_delete),

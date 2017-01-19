@@ -195,7 +195,7 @@ void CUIWindow::Update()
 		Frect				r;
 		GetAbsoluteRect		(r);
 		cursor_on_window	= !!r.in(temp);
-#ifndef NDEBUG
+#ifdef DEBUG
 		if(cursor_on_window&&g_show_wnd_rect){
 			Frect r;
 			GetAbsoluteRect(r);

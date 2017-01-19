@@ -10,312 +10,265 @@
 #include "script_storage.h"
 #include "script_thread.h"
 #include <stdarg.h>
-#include "doug_lea_memory_allocator.h"
 #include "../lua_tools.h"
 #include "../../build_config_defines.h"
-
-LPCSTR	file_header_old = "\
-local function script_name() \
-return \"%s\" \
-end \
-local this = {} \
-%s this %s \
-setmetatable(this, {__index = _G}) \
-setfenv(1, this) \
-		";
-
-LPCSTR	file_header_new = "\
-local function script_name() \
-return \"%s\" \
-end \
-local this = {} \
-this._G = _G \
-%s this %s \
-setfenv(1, this) \
-		";
-
-LPCSTR	file_header = 0;
-
-#ifndef ENGINE_BUILD
-#	include "script_engine.h"
-#	include "ai_space.h"
-#else
-#	define NO_XRGAME_SCRIPT_ENGINE
+#include "script_engine.h"
+#include "ai_space.h"
+#ifdef DEBUG
+#	include "ai_debug.h" //Поглядеть, чего там
 #endif
-
-#ifndef XRGAME_EXPORTS
-#	define NO_XRGAME_SCRIPT_ENGINE
-#endif
-
-#ifndef NO_XRGAME_SCRIPT_ENGINE
-#	include "ai_debug.h"
-#endif
-
 #ifdef USE_DEBUGGER
 #	include "script_debugger.h"
 #endif
 
-CScriptStorage::CScriptStorage		()
-{
-	m_current_thread		= 0;
 
-#ifdef DEBUG
-	m_stack_is_ready		= false;
-#endif // DEBUG
-	
-	m_virtual_machine		= 0;
+#define SCRIPT_GLOBAL_NAMESPACE "_G"
+const char *const CScriptStorage::GlobalNamespace = SCRIPT_GLOBAL_NAMESPACE;
+
+LPCSTR file_header_old = "\
+local function script_name() \
+return \"%s\" \
+end \
+local this = {} \
+%s this %s \
+setmetatable(this, {__index = " SCRIPT_GLOBAL_NAMESPACE "}) \
+setfenv(1, this) ";
+
+LPCSTR file_header_new = "\
+local function script_name() \
+return \"%s\" \
+end \
+local this = {} \
+this." SCRIPT_GLOBAL_NAMESPACE " = " SCRIPT_GLOBAL_NAMESPACE " \
+%s this %s \
+setfenv(1, this) ";
+
+
+LPCSTR file_header = nullptr;
+
+CScriptStorage::CScriptStorage() //fixed
+{
+	m_current_thread = nullptr;
+	m_virtual_machine = nullptr;
 }
 
-CScriptStorage::~CScriptStorage()
+CScriptStorage::~CScriptStorage() //fixed
 {
-	if (m_virtual_machine) {
-		Msg("* [CScriptStorage::~CScriptStorage] Closing LuaJIT");
-		lua_close(m_virtual_machine);
-	}
-}
-
-void CScriptStorage::reinit()
-{
+	Msg("[CScriptStorage] Closing LuaJIT - start");
 	if (m_virtual_machine)
+		lua_close(m_virtual_machine); //Вот тут закрывается LuaJIT.
+
+	if (scriptBuffer)
+		xr_free(scriptBuffer);
+	Msg("[CScriptStorage] Closing LuaJIT - end");
+}
+
+void CScriptStorage::reinit(lua_State *LSVM) //KRodin: fixed
+{
+	if (m_virtual_machine) //Как выяснилось, такое происходит при загрузке игры на этапе старта сервера 
 	{
-		Msg("* [CScriptStorage::reinit] Closing LuaJIT");
+		Msg("[CScriptStorage] Found working LuaJIT WM! Close it!");
 		lua_close(m_virtual_machine);
 	}
-	Msg("* [CScriptStorage::reinit] Starting LuaJIT");
-	m_virtual_machine = luaL_newstate();
-	R_ASSERT2(m_virtual_machine, "! ERROR : Cannot initialize script virtual machine!");
-	luaL_openlibs(m_virtual_machine); //RvP
-
+	m_virtual_machine = LSVM;
 #ifdef LUAICP_COMPAT
- #include "luaicp_attach.inc" // added by alpet 05.07.14
+	#include "luaicp_attach.inc" // added by alpet 05.07.14
 #endif
-
 	if (strstr(Core.Params,"-_g"))
 		file_header			= file_header_new;
 	else
 		file_header			= file_header_old;
+
+	scriptBufferSize = 1024 * 1024;
+	scriptBuffer = xr_alloc<char>(scriptBufferSize);
 }
 
-int CScriptStorage::vscript_log		(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, va_list marker)
+void CScriptStorage::print_stack() //KRodin: fixed
 {
-#ifndef NO_XRGAME_SCRIPT_ENGINE
-#	ifdef DEBUG
-	if (!psAI_Flags.test(aiLua) && (tLuaMessageType != ScriptStorage::eLuaMessageTypeError))
-		return(0);
-#	endif
-#endif
+	lua_State *L = lua();
+	LPCSTR traceback = get_lua_traceback(L, 0);
+	Msg("%s", traceback);
+}
 
-#ifndef DEBUG
-	return		(0);
-#else // DEBUG
-
-	LPCSTR		S = "", SS = "";
-	LPSTR		S1;
-	string4096	S2;
-	switch (tLuaMessageType) {
-		case ScriptStorage::eLuaMessageTypeInfo : {
-			S	= "* [LUA] ";
-			SS	= "[INFO]        ";
+int CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...) //Используется в очень многих местах //Очень много пишет в лог, из многих мест. Наверное надо только в дебаге использовать
+{
+	va_list marker;
+	va_start(marker, caFormat);
+	//
+	LPCSTR S = "";
+	LPSTR S1;
+	string4096 S2;
+	switch (tLuaMessageType)
+	{
+		case ScriptStorage::eLuaMessageTypeInfo: {
+			S = "[LUA INFO]";
 			break;
 		}
-		case ScriptStorage::eLuaMessageTypeError : {
-			S	= "! [LUA] ";
-			SS	= "[ERROR]       ";
+		case ScriptStorage::eLuaMessageTypeError: {
+			S = "[LUA ERROR]";
 			break;
 		}
-		case ScriptStorage::eLuaMessageTypeMessage : {
-			S	= "[LUA] ";
-			SS	= "[MESSAGE]     ";
+		case ScriptStorage::eLuaMessageTypeMessage: {
+			S = "[LUA MESSAGE]";
 			break;
 		}
-		case ScriptStorage::eLuaMessageTypeHookCall : {
-			S	= "[LUA][HOOK_CALL] ";
-			SS	= "[CALL]        ";
+		case ScriptStorage::eLuaMessageTypeHookCall: {
+			S = "[LUA HOOK_CALL]";
 			break;
 		}
-		case ScriptStorage::eLuaMessageTypeHookReturn : {
-			S	= "[LUA][HOOK_RETURN] ";
-			SS	= "[RETURN]      ";
+		case ScriptStorage::eLuaMessageTypeHookReturn: {
+			S = "[LUA HOOK_RETURN]";
 			break;
 		}
-		case ScriptStorage::eLuaMessageTypeHookLine : {
-			S	= "[LUA][HOOK_LINE] ";
-			SS	= "[LINE]        ";
+		case ScriptStorage::eLuaMessageTypeHookLine: {
+			S = "[LUA HOOK_LINE]";
 			break;
 		}
-		case ScriptStorage::eLuaMessageTypeHookCount : {
-			S	= "[LUA][HOOK_COUNT] ";
-			SS	= "[COUNT]       ";
+		case ScriptStorage::eLuaMessageTypeHookCount: {
+			S = "[LUA HOOK_COUNT]";
 			break;
 		}
-		case ScriptStorage::eLuaMessageTypeHookTailReturn : {
-			S	= "[LUA][HOOK_TAIL_RETURN] ";
-			SS	= "[TAIL_RETURN] ";
+		case ScriptStorage::eLuaMessageTypeHookTailReturn: {
+			S = "[LUA HOOK_TAIL_RETURN]";
 			break;
 		}
-		default : NODEFAULT;
+		default: NODEFAULT;
 	}
-	
-	strcpy	(S2,S);
-	S1		= S2 + xr_strlen(S);
-	int		l_iResult = vsprintf(S1,caFormat,marker);
-	Msg		("%s",S2);
-	
-	strcpy	(S2,SS);
-	S1		= S2 + xr_strlen(SS);
-	vsprintf(S1,caFormat,marker);
-	strcat	(S2,"\r\n");
-
-#ifndef ENGINE_BUILD
-#	ifdef DEBUG
-		ai().script_engine().m_output.w(S2,xr_strlen(S2)*sizeof(char));
-#	endif // DEBUG
-#endif // DEBUG
-
-	return	(l_iResult);
-#endif
+	xr_strcpy(S2, S);
+	S1 = S2 + xr_strlen(S);
+	int result = vsprintf(S1, caFormat, marker);
+	Msg("-----------------------------------------");
+	Msg("[script_log] %s", S2);
+	ai().script_engine().print_stack();
+	Msg("-----------------------------------------");
+	va_end(marker);
+	//
+	return result;
 }
 
-#ifdef DEBUG
-void CScriptStorage::print_stack		()
+/* //Эта функция ломает скрипты, вернул старую.
+bool CScriptStorage::parse_namespace(LPCSTR caNamespaceName, LPSTR b, u32 b_size, LPSTR c, u32 c_size) //KRodin: fixed, но если будут проблемы, надо портировать STRCONCAT
 {
-	if (!m_stack_is_ready)
-		return;
-
-	m_stack_is_ready		= false;
-
-	lua_State				*L = lua();
-	lua_Debug				l_tDebugInfo;
-	for (int i=0; lua_getstack(L,i,&l_tDebugInfo);++i ) {
-		lua_getinfo			(L,"nSlu",&l_tDebugInfo);
-		if (!l_tDebugInfo.name)
-			script_log		(ScriptStorage::eLuaMessageTypeError,"%2d : [%s] %s(%d) : %s",i,l_tDebugInfo.what,l_tDebugInfo.short_src,l_tDebugInfo.currentline,"");
+	*b = 0;
+	*c = 0;
+	LPSTR S2;
+	strcat(S2, caNamespaceName); //Может заменить на STRCONCAT ? Но это не так просто.
+	LPSTR S = S2;
+	for (int i = 0;; i++)
+	{
+		if (!xr_strlen(S))
+		{
+			script_log(ScriptStorage::eLuaMessageTypeError, "the namespace name %s is incorrect!", caNamespaceName);
+			return false;
+		}
+		LPSTR S1 = strchr(S, '.');
+		if (S1)
+			*S1 = 0;
+		if (i)
+			xr_strcat(b, b_size, "{");
+		xr_strcat(b, b_size, S);
+		xr_strcat(b, b_size, "=");
+		if (i)
+			xr_strcat(c, c_size, "}");
+		if (S1)
+			S = ++S1;
 		else
-			if (!xr_strcmp(l_tDebugInfo.what,"C"))
-				script_log	(ScriptStorage::eLuaMessageTypeError,"%2d : [C  ] %s",i,l_tDebugInfo.name);
-			else
-				script_log	(ScriptStorage::eLuaMessageTypeError,"%2d : [%s] %s(%d) : %s",i,l_tDebugInfo.what,l_tDebugInfo.short_src,l_tDebugInfo.currentline,l_tDebugInfo.name);
+			break;
 	}
+	return true;
 }
-#endif
-
-int __cdecl CScriptStorage::script_log	(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...)
-{
-
-	va_list		marker;
-	va_start	(marker,caFormat);
-	int			result = vscript_log(tLuaMessageType,caFormat,marker);
-	va_end		(marker);
-
-#ifdef DEBUG
-#	ifndef ENGINE_BUILD
-	static bool	reenterability = false;
-	if (!reenterability) {
-		reenterability = true;
-		if (eLuaMessageTypeError == tLuaMessageType)
-			ai().script_engine().print_stack	();
-		reenterability = false;
-	}
-#	endif
-#endif
-
-	return		(result);
-}
-
+*/
 bool CScriptStorage::parse_namespace(LPCSTR caNamespaceName, LPSTR b, LPSTR c)
 {
-	strcpy			(b,"");
-	strcpy			(c,"");
-	LPSTR			S2	= xr_strdup(caNamespaceName);
-	LPSTR			S	= S2;
-	for (int i=0;;++i) {
-		if (!xr_strlen(S)) {
-			script_log	(ScriptStorage::eLuaMessageTypeError,"the namespace name %s is incorrect!",caNamespaceName);
-			xr_free		(S2);
-			return		(false);
+	strcpy(b, "");
+	strcpy(c, "");
+	LPSTR S2 = xr_strdup(caNamespaceName);
+	LPSTR S = S2;
+	for (int i = 0;; ++i)
+	{
+		if (!xr_strlen(S))
+		{
+			script_log(ScriptStorage::eLuaMessageTypeError, "the namespace name %s is incorrect!", caNamespaceName);
+			xr_free(S2);
+			return false;
 		}
-		LPSTR			S1 = strchr(S,'.');
+		LPSTR S1 = strchr(S, '.');
 		if (S1)
-			*S1				= 0;
+			*S1 = 0;
 
 		if (i)
-			strcat		(b,"{");
-		strcat			(b,S);
-		strcat			(b,"=");
+			strcat(b, "{");
+		strcat(b, S);
+		strcat(b, "=");
 		if (i)
-			strcat		(c,"}");
+			strcat(c, "}");
 		if (S1)
-			S			= ++S1;
+			S = ++S1;
 		else
 			break;
 	}
-	xr_free			(S2);
-	return			(true);
+	xr_free(S2);
+	return true;
 }
 
-bool CScriptStorage::load_buffer	(lua_State *L, LPCSTR caBuffer, size_t tSize, LPCSTR caScriptName, LPCSTR caNameSpaceName)
+bool CScriptStorage::load_buffer(lua_State *L, LPCSTR caBuffer, size_t tSize, LPCSTR caScriptName, LPCSTR caNameSpaceName) //KRodin: fixed
 {
-	int					l_iErrorCode;
-	if (caNameSpaceName && xr_strcmp("_G",caNameSpaceName)) {
-		string512		insert, a, b;
-
-		LPCSTR			header = file_header;
-
-		if (!parse_namespace(caNameSpaceName,a,b))
-			return		(false);
-		sprintf_s			(insert,header,caNameSpaceName,a,b);
-		u32				str_len = xr_strlen(insert);
-		LPSTR			script = xr_alloc<char>(str_len + tSize);
-		strcpy			(script,insert);
-		CopyMemory	(script + str_len,caBuffer,u32(tSize));
-//		try 
+	int l_iErrorCode;
+	if (caNameSpaceName && xr_strcmp(GlobalNamespace, caNameSpaceName))
+	{
+		string512 insert, a, b;
+		LPCSTR header = file_header;
+		if (!parse_namespace(caNameSpaceName, a, /*sizeof(a),*/ b/*, sizeof(b)*/))
 		{
-			l_iErrorCode= luaL_loadbuffer(L,script,tSize + str_len,caScriptName);
+			Msg("! [CScriptStorage::load_buffer] Can't parse namespace: [%s]", caNameSpaceName);
+			return false;
 		}
-//		catch(...) {
-//			l_iErrorCode= LUA_ERRSYNTAX;
-//		}
-		xr_free			(script);
-	}
-	else {
-//		try
+		//Msg("! [CScriptStorage::load_buffer] before xr_sprintf: insert: [%s], header: [%s], caNameSpaceName: [%s], a: [%s], b: [%s]", insert, header, caNameSpaceName, a, b);
+		xr_sprintf(insert, header, caNameSpaceName, a, b);
+		//Msg("! [CScriptStorage::load_buffer] insert after xr_sprintf: [%s]", insert);
+		u32 str_len = xr_strlen(insert);
+		u32 const total_size = str_len + tSize;
+		if (total_size >= scriptBufferSize)
 		{
-			l_iErrorCode= luaL_loadbuffer(L,caBuffer,tSize,caScriptName);
+			scriptBufferSize = total_size;
+			scriptBuffer = (char *)xr_realloc(scriptBuffer, scriptBufferSize);
 		}
-//		catch(...) {
-//			l_iErrorCode= LUA_ERRSYNTAX;
-//		}
+		xr_strcpy(scriptBuffer, total_size, insert);
+		CopyMemory(scriptBuffer + str_len, caBuffer, u32(tSize));
+		//Msg("[CScriptStorage::load_buffer(1)] Loading buffer: %s", scriptBuffer);
+		l_iErrorCode = luaL_loadbuffer(L, scriptBuffer, tSize + str_len, caScriptName);
 	}
-
-	if (l_iErrorCode) {
-// #ifdef DEBUG
-		print_output(L,caScriptName,l_iErrorCode);
-// #endif
-		return			(false);
+	else
+		//Msg("[CScriptStorage::load_buffer(2)] Loading buffer: %s", caBuffer);
+		l_iErrorCode = luaL_loadbuffer(L, caBuffer, tSize, caScriptName);
+	if (l_iErrorCode)
+	{
+		print_output(L, caScriptName, l_iErrorCode);
+		return false;
 	}
-	return				(true);
+	return true;
 }
 
-bool CScriptStorage::do_file	(LPCSTR caScriptName, LPCSTR caNameSpaceName)
+bool CScriptStorage::do_file(LPCSTR caScriptName, LPCSTR caNameSpaceName) //KRodin: fixed
 {
-	int				start = lua_gettop(lua());
-	string_path		l_caLuaFileName;
-	IReader			*l_tpFileReader = FS.r_open(caScriptName);
+	int start = lua_gettop(lua());
+	string_path l_caLuaFileName;
+	IReader *l_tpFileReader = FS.r_open(caScriptName);
 	if (!l_tpFileReader) {
-		script_log	(eLuaMessageTypeError,"Cannot open file \"%s\"",caScriptName);
-		return		(false);
+		script_log(eLuaMessageTypeError,"Cannot open file \"%s\"",caScriptName);
+		return false;
 	}
-	strconcat		(sizeof(l_caLuaFileName),l_caLuaFileName,"@",caScriptName);
-	
-	if (!load_buffer(lua(),static_cast<LPCSTR>(l_tpFileReader->pointer()),(size_t)l_tpFileReader->length(),l_caLuaFileName,caNameSpaceName)) {
-//		VERIFY		(lua_gettop(lua()) >= 4);
-//		lua_pop		(lua(),4);
-//		VERIFY		(lua_gettop(lua()) == start - 3);
-		lua_settop	(lua(),start);
-		FS.r_close	(l_tpFileReader);
-		return		(false);
+	strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName);
+	if (!load_buffer(lua(), static_cast<LPCSTR>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->length(), l_caLuaFileName, caNameSpaceName))
+	{
+//		VERIFY(lua_gettop(lua()) >= 4);
+//		lua_pop(lua(),4);
+//		VERIFY(lua_gettop(lua()) == start - 3);
+		lua_settop(lua(),start);
+		FS.r_close(l_tpFileReader);
+		return false;
 	}
-	FS.r_close		(l_tpFileReader);
+	FS.r_close(l_tpFileReader);
 
 	int errFuncId = -1;
 #ifdef LUAICP_COMPAT2 // exception dangerous
@@ -325,242 +278,210 @@ bool CScriptStorage::do_file	(LPCSTR caScriptName, LPCSTR caNameSpaceName)
 	else
 	    lua_pop(lua(), 1);
 #endif
-
 #ifdef USE_DEBUGGER
 	if( ai().script_engine().debugger() && errFuncId < 0 )
 	    errFuncId = ai().script_engine().debugger()->PrepareLua(lua());
 #endif
-	if (0)	//.
-	{
-		for (int i = 0; lua_type(lua(), -i - 1); i++)
-		{
-			Msg("%2d : %s", -i - 1, lua_typename(lua(), lua_type(lua(), -i - 1)));			
-		}
-	}
-
-	// because that's the first and the only call of the main chunk - there is no point to compile it
-//	luaJIT_setmode	(lua(),0,LUAJIT_MODE_ENGINE|LUAJIT_MODE_OFF);						// Oles
-	int	l_iErrorCode = lua_pcall(lua(),0,0,(-1==errFuncId)?0:errFuncId);				// new_Andy
-//	luaJIT_setmode	(lua(),0,LUAJIT_MODE_ENGINE|LUAJIT_MODE_ON);						// Oles
-
+	int	l_iErrorCode = lua_pcall(lua(), 0, 0, (-1 == errFuncId) ? 0 : errFuncId);
 #ifdef USE_DEBUGGER
 	if( ai().script_engine().debugger() )
 		ai().script_engine().debugger()->UnPrepareLua(lua(),errFuncId);
 #endif
-	if (l_iErrorCode) {
-#ifdef LUAICP_COMPAT
+	if (l_iErrorCode)
+	{
 		print_output(lua(), caScriptName, l_iErrorCode);
-#endif
-#ifdef DEBUG
-		print_output(lua(),caScriptName,l_iErrorCode);
-#endif
-		lua_settop	(lua(),start);
-		return		(false);
+		lua_settop(lua(),start);
+		return false;
 	}
-
-	return			(true);
+	return true;
 }
 
-bool CScriptStorage::load_file_into_namespace(LPCSTR caScriptName, LPCSTR caNamespaceName)
+bool CScriptStorage::load_file_into_namespace(LPCSTR caScriptName, LPCSTR caNamespaceName) //KRodin: fixed
 {
-	int				start = lua_gettop(lua());
-	if (!do_file(caScriptName,caNamespaceName)) {
-		lua_settop	(lua(),start);
-		return		(false);
+	int start = lua_gettop(lua());
+	if (!do_file(caScriptName,caNamespaceName))
+	{
+		lua_settop (lua(),start);
+		return false;
 	}
-	VERIFY			(lua_gettop(lua()) == start);
-	return			(true);
+	VERIFY (lua_gettop(lua()) == start);
+	return true;
 }
 
-bool CScriptStorage::namespace_loaded(LPCSTR N, bool remove_from_stack)
+bool CScriptStorage::namespace_loaded(LPCSTR name, bool remove_from_stack) //KRodin: fixed
 {
-	int						start = lua_gettop(lua());
-	lua_pushstring 			(lua(),"_G"); 
-	lua_rawget 				(lua(),LUA_GLOBALSINDEX); 
-	string256				S2;
-	strcpy					(S2,N);
-	LPSTR					S = S2;
-	for (;;) { 
+	int start = lua_gettop(lua());
+	lua_pushstring(lua(), GlobalNamespace);
+	lua_rawget(lua(), LUA_GLOBALSINDEX); 
+	string256 S2;
+	xr_strcpy(S2, name);
+	LPSTR S = S2;
+	for (;;)
+	{
 		if (!xr_strlen(S))
-			return			(false); 
-		LPSTR				S1 = strchr(S,'.'); 
-		if (S1)
-			*S1				= 0; 
-		lua_pushstring 		(lua(),S); 
-		lua_rawget 			(lua(),-2); 
-		if (lua_isnil(lua(),-1)) { 
-//			lua_settop		(lua(),0);
-			VERIFY			(lua_gettop(lua()) >= 2);
-			lua_pop			(lua(),2); 
-			VERIFY			(start == lua_gettop(lua()));
-			return			(false);	//	there is no namespace!
-		}
-		else 
-			if (!lua_istable(lua(),-1)) { 
-//				lua_settop	(lua(),0);
-				Msg("!ERROR: in stack value type = %s", lua_typename(lua(), -1));
-				VERIFY		(lua_gettop(lua()) >= 1);
-				lua_pop		(lua(),1); 
-				VERIFY		(start == lua_gettop(lua()));
-				// FATAL		(" Error : the namespace name is already being used by the non-table object!\n");				
-				Debug.fatal		(DEBUG_INFO, " Error : the namespace name %s is already being used by the non-table object!\n", S);
-				return		(false); 
-			} 
-			lua_remove		(lua(),-2); 
-			if (S1)
-				S			= ++S1; 
-			else
-				break; 
-	} 
-	if (!remove_from_stack) {
-		VERIFY				(lua_gettop(lua()) == start + 1);
-	}
-	else {
-		VERIFY				(lua_gettop(lua()) >= 1);
-		lua_pop				(lua(),1);
-		VERIFY				(lua_gettop(lua()) == start);
-	}
-	return					(true); 
-}
-
-bool CScriptStorage::object	(LPCSTR identifier, int type)
-{
-	int						start = lua_gettop(lua());
-	lua_pushnil				(lua()); 
-	while (lua_next(lua(), -2)) { 
-		if ((lua_type(lua(), -1) == type) && !xr_strcmp(identifier,lua_tostring(lua(), -2))) { 
-			VERIFY			(lua_gettop(lua()) >= 3);
-			lua_pop			(lua(), 3); 
-			VERIFY			(lua_gettop(lua()) == start - 1);
-			return			(true); 
-		} 
-		lua_pop				(lua(), 1); 
-	} 
-	VERIFY					(lua_gettop(lua()) >= 1);
-	lua_pop					(lua(), 1); 
-	VERIFY					(lua_gettop(lua()) == start - 1);
-	return					(false); 
-}
-
-bool CScriptStorage::object	(LPCSTR namespace_name, LPCSTR identifier, int type)
-{
-	int						start = lua_gettop(lua());
-	if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name,false)) {
-		VERIFY				(lua_gettop(lua()) == start);
-		return				(false); 
-	}
-	bool					result = object(identifier,type);
-	VERIFY					(lua_gettop(lua()) == start);
-	return					(result); 
-}
-
-luabind::object CScriptStorage::name_space(LPCSTR namespace_name)
-{
-	string256			S1;
-	strcpy				(S1,namespace_name);
-	LPSTR				S = S1;
-	luabind::object		lua_namespace = luabind::get_globals(lua());
-	for (;;) {
-		if (!xr_strlen(S))
-			return		(lua_namespace);
-		LPSTR			I = strchr(S,'.');
-		if (!I)
-			return		(lua_namespace[S]);
-		*I				= 0;
-		lua_namespace	= lua_namespace[S];
-		S				= I + 1;
-	}
-}
-
-bool CScriptStorage::print_output(lua_State *L, LPCSTR caScriptFileName, int iErorCode)
-{
-	if (iErorCode)	
-		print_error(L, iErorCode);		
-	
-
-	if (!lua_isstring(L,-1))
-		return			(false);
-
-	LPCSTR				S = lua_tostring(L,-1);
-	if (!xr_strcmp(S,"cannot resume dead coroutine")) {
-		VERIFY2	("Please do not return any values from main!!!",caScriptFileName);
-#ifdef USE_DEBUGGER
-		if(ai().script_engine().debugger() && ai().script_engine().debugger()->Active() ){
-			ai().script_engine().debugger()->Write(S);
-			ai().script_engine().debugger()->ErrorBreak();
-		}
-#endif
-	}
-	else {
-		if (!iErorCode)
-			script_log	(ScriptStorage::eLuaMessageTypeInfo,"Output from %s",caScriptFileName);
-
-		script_log		(iErorCode ? ScriptStorage::eLuaMessageTypeError : ScriptStorage::eLuaMessageTypeMessage,"%s",S);
-#ifdef USE_DEBUGGER
-
-		if (iErorCode)
 		{
-			if (strstr(S, "no overload of  'net_packet:r_vec3'"))  // при загрузке серверных объектов выполняются их корявые скрипты с тыщей таких ошибок :(
-				 return (true);
-			
-			Msg("!LUA_ERROR: %s", S);			
-#ifdef LUAICP_COMPAT
-			lua_getglobal(L, "DebugDumpAll");
-			lua_pcall(L, 0, 0, -1);
-#else
-			LPCSTR traceback = get_lua_traceback(L, 0);
-			Msg("! %s", caScriptFileName, iErorCode, traceback);
-#endif 
-
+			VERIFY(lua_gettop(lua()) >= 1); //кусок взят из OpenXray
+			lua_pop(lua(), 1);
+			VERIFY(start == lua_gettop(lua()));
+			return false;
 		}
+		LPSTR S1 = strchr(S, '.');
+		if (S1)
+			*S1 = 0; 
+		lua_pushstring(lua(),S); 
+		lua_rawget(lua(),-2); 
+		if (lua_isnil(lua(), -1))
+		{ 
+			//lua_settop(lua(),0);
+			VERIFY(lua_gettop(lua()) >= 2);
+			lua_pop(lua(),2); 
+			VERIFY(start == lua_gettop(lua()));
+			return false; //there is no namespace!
+		}
+		else if (!lua_istable(lua(),-1))
+		{ 
+			//lua_settop(lua(), 0);
+			VERIFY(lua_gettop(lua()) >= 1);
+			lua_pop(lua(), 1); 
+			VERIFY(start == lua_gettop(lua()));
+			Debug.fatal(DEBUG_INFO, " Error : the namespace name %s is already being used by the non-table object!\n", S);
+			return false; 
+		} 
+		lua_remove(lua(), -2); 
+		if (S1)
+			S = ++S1; 
+		else
+			break; 
+	} 
+	if (!remove_from_stack)
+		VERIFY(lua_gettop(lua()) == start + 1);
+	else
+	{
+		VERIFY(lua_gettop(lua()) >= 1);
+		lua_pop(lua(), 1);
+		VERIFY(lua_gettop(lua()) == start);
+	}
+	return true; 
+}
 
+bool CScriptStorage::object(LPCSTR identifier, int type) //KRodin: fixed
+{
+	int start = lua_gettop(lua());
+	lua_pushnil(lua()); 
+	while (lua_next(lua(), -2))
+	{ 
+		if (lua_type(lua(), -1) == type && !xr_strcmp(identifier, lua_tostring(lua(), -2)))
+		{ 
+			VERIFY(lua_gettop(lua()) >= 3);
+			lua_pop(lua(), 3); 
+			VERIFY(lua_gettop(lua()) == start - 1);
+			return true; 
+		} 
+		lua_pop(lua(), 1); 
+	} 
+	VERIFY(lua_gettop(lua()) >= 1);
+	lua_pop(lua(), 1); 
+	VERIFY(lua_gettop(lua()) == start - 1);
+	return false; 
+}
 
-		if (ai().script_engine().debugger() && ai().script_engine().debugger()->Active()) {
+bool CScriptStorage::object(LPCSTR namespace_name, LPCSTR identifier, int type) //KRodin: fixed
+{
+	int start = lua_gettop(lua());
+	if (xr_strlen(namespace_name) && !namespace_loaded(namespace_name, false))
+	{
+		VERIFY(lua_gettop(lua()) == start);
+		return false; 
+	}
+	bool result = object(identifier, type);
+	VERIFY(lua_gettop(lua()) == start);
+	return result; 
+}
+
+luabind::object CScriptStorage::name_space(LPCSTR namespace_name) //KRodin: fixed
+{
+	string256 S1;
+	xr_strcpy(S1,namespace_name);
+	LPSTR S = S1;
+	luabind::object lua_namespace = luabind::globals(lua());
+	for (;;)
+	{
+		if (!xr_strlen(S))
+			return lua_namespace;
+		LPSTR I = strchr(S, '.');
+		if (!I)
+			return lua_namespace[(const char*)S];
+		*I = 0;
+		lua_namespace = lua_namespace[(const char*)S];
+		S = I + 1;
+	}
+}
+
+bool CScriptStorage::print_output(lua_State *L, LPCSTR caScriptFileName, int errorCode) //KRodin: fixed, вызывается из нескольких мест, в т.ч. из калбеков lua_error, lua_pcall_failed, lua_cast_failed, lua_panic
+{
+	LPCSTR Prefix = "";
+	if (errorCode) {
+		switch (errorCode){
+			case LUA_ERRRUN: {
+				Prefix = "SCRIPT RUNTIME ERROR";
+				break;
+			}
+			case LUA_ERRMEM: {
+				Prefix = "SCRIPT ERROR (memory allocation)";
+				break;
+			}
+			case LUA_ERRERR: {
+				Prefix = "SCRIPT ERROR (while running the error handler function)";
+				break;
+			}
+			case LUA_ERRFILE: {
+				Prefix = "SCRIPT ERROR (while running file)";
+				break;
+			}
+			case LUA_ERRSYNTAX: {
+				Prefix = "SCRIPT SYNTAX ERROR";
+				break;
+			}
+			case LUA_YIELD: {
+				Prefix = "Thread is yielded";
+				break;
+			}
+			default: NODEFAULT;
+		}
+	}
+
+	LPCSTR traceback = get_lua_traceback(L, 0);
+
+	if (!lua_isstring(L, -1)) //НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
+	{
+		Msg("----------------------------------------------");
+		Msg("[print_output(%s)] %s!\n%s", caScriptFileName, Prefix, traceback);
+		Msg("----------------------------------------------");
+		return false;
+	}
+
+	LPCSTR S = lua_tostring(L, -1);
+	//if (strstr(S, "cannot resume dead coroutine")) //???
+	//	R_ASSERT2(0, "[print_output] Please do not return any values from main!!!"); //Сюда надо добавить больше инфы, наверно.
+	//else
+	//{
+		//if (strstr(S, "[print_output] no overload of 'net_packet:r_vec3'"))  // при загрузке серверных объектов выполняются их корявые скрипты с тыщей таких ошибок :( //KRodin: лично я таких ошиюок не вижу, по крайней мере на кордоне в начале игры.
+		//	 return true;
+
+		Msg("----------------------------------------------");
+		Msg("[print_output(%s)] %s:\n%s\n%s", caScriptFileName, Prefix, S, traceback);
+		Msg("----------------------------------------------");
+#ifdef LUAICP_COMPAT
+		lua_getglobal(L, "DebugDumpAll");
+		lua_pcall(L, 0, 0, -1);
+#endif
+#ifdef USE_DEBUGGER //Проверить надо чего тут внутри происходит
+		if (ai().script_engine().debugger() && ai().script_engine().debugger()->Active())
+		{
 			ai().script_engine().debugger()->Write		(S);
 			ai().script_engine().debugger()->ErrorBreak	();
 		}
 #endif
-	}
-	return				(true);
+	//}
+	return true;
 }
-
-void CScriptStorage::print_error(lua_State *L, int iErrorCode)
-{
-	switch (iErrorCode) {
-		case LUA_ERRRUN : {
-			script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR");
-			break;
-		}
-		case LUA_ERRMEM : {
-			script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT ERROR (memory allocation)");
-			break;
-		}
-		case LUA_ERRERR : {
-			script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT ERROR (while running the error handler function)");
-			break;
-		}
-		case LUA_ERRFILE : {
-			script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT ERROR (while running file)");
-			break;
-		}
-		case LUA_ERRSYNTAX : {
-			script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT SYNTAX ERROR");
-			break;
-		}
-		case LUA_YIELD : {
-			script_log (ScriptStorage::eLuaMessageTypeInfo,"Thread is yielded");
-			break;
-		}
-		default : NODEFAULT;
-	}
-}
-
-#ifdef DEBUG
-void CScriptStorage::flush_log()
-{
-	string_path			log_file_name;
-	strconcat           (sizeof(log_file_name),log_file_name,Core.ApplicationName,"_",Core.UserName,"_lua.log");
-	FS.update_path      (log_file_name,"$logs$",log_file_name);
-	m_output.save_to	(log_file_name);
-}
-#endif // DEBUG

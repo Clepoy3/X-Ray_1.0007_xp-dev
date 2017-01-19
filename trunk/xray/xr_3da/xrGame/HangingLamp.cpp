@@ -341,7 +341,7 @@ void	CHangingLamp::Hit					(SHit* pHDS)
 		HDS.bone()
 		);
 
-#ifdef HLAMP_AFFECT_IMMUNITIES
+#ifdef HLAMP_AFFECT_IMMUNITIES //KRodin: выключено из за нерабочести. Надо просто дефайн снять
 	HDS.power = CHitImmunity::AffectHit(HDS.power,HDS.hit_type);	
 	inherited::Hit(pHDS);
 #endif
@@ -433,7 +433,7 @@ void CHangingLamp::script_register(lua_State *L)
 {
 	luabind::module(L)
 	[
-		luabind::class_<CHangingLamp,CGameObject,CHitImmunity>("hanging_lamp")
+		luabind::class_<CHangingLamp,CGameObject, luabind::default_holder, CHitImmunity>("hanging_lamp") //KRodin: добавил default_holder (попытка исправить error C2664)
 			.def(luabind::constructor<>())
 			.def("turn_on",		&CHangingLamp::TurnOn)
 			.def("turn_off",	&CHangingLamp::TurnOff)

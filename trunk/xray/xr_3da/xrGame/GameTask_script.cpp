@@ -2,6 +2,7 @@
 #include "GameTask.h"
 
 using namespace luabind;
+using namespace luabind::policy;
 
 #pragma optimize("s",on)
 void CGameTask::script_register(lua_State *L)
@@ -39,7 +40,6 @@ void CGameTask::script_register(lua_State *L)
 				.def("add_on_complete_func",				&SGameTaskObjective::AddOnCompleteFunc_script		)
 				.def("add_on_fail_func",					&SGameTaskObjective::AddOnFailFunc_script			)
 				
-				.def("get_state",							&SGameTaskObjective::TaskState						)
 				.def("get_idx",								&SGameTaskObjective::GetIDX_script					)
 				.def("get_state",							&SGameTaskObjective::TaskState						),
 
@@ -51,7 +51,7 @@ void CGameTask::script_register(lua_State *L)
 				.def("get_title",							&CGameTask::GetTitle_script						)
 				.def("set_priority",						&CGameTask::SetPriority_script					)
 				.def("get_priority",						&CGameTask::GetPriority_script					)
-				.def("add_objective",						&CGameTask::AddObjective_script,		adopt(_2))
+				.def("add_objective",						&CGameTask::AddObjective_script, adopt<2>())
 				.def("get_objective",						&CGameTask::GetObjective_script					)
 				.def("get_id",								&CGameTask::GetID_script						)
 				.def("set_id",								&CGameTask::SetID_script						)

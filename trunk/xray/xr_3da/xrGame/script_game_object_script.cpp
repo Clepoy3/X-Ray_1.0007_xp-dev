@@ -31,7 +31,7 @@ void CScriptGameObject::script_register(lua_State *L)
 	module(L)
 		[
 			class_<CSightParams>("CSightParams")
-			.enum_("bla-bla")
+			.enum_("bla-bla") //ÿ“Œ???
 			[
 				value("eSightTypeCurrentDirection", int(SightManager::eSightTypeCurrentDirection)),
 				value("eSightTypePathDirection", int(SightManager::eSightTypePathDirection)),

@@ -53,6 +53,7 @@
 #include "UIColorAnimatorWrapper.h"
 #include "../game_news.h"
 #include "../pch_script.h"
+#include <luabind/raw_policy.hpp>
 
 
 #ifdef DEBUG
@@ -977,7 +978,7 @@ bool test_push_window(lua_State *L, CUIWindow *wnd)
 	T* derived = smart_cast<T*>(wnd);
 	if (derived)
 	{		
-		luabind::detail::convert_to_lua<T*>(L, derived);
+		luabind::detail::push_to_lua(L, derived); //luabind::detail::convert_to_lua<T*>(L, derived);
 		return true;
 	}
 	return false;
@@ -1021,19 +1022,17 @@ void GetStaticRaw(CUIMainIngameWnd *wnd, lua_State *L)
 #pragma optimize("s",on)
 void CUIMainIngameWnd::script_register(lua_State *L)
 {
-
+	using namespace luabind::policy;
 	module(L)
 		[
-
 			class_<CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd")
-			.def("GetStatic",		 &GetStaticRaw, raw(_2)),
+			.def("GetStatic",		 &GetStaticRaw, raw<2>()),
 			// .def("turn_off_icon", &TurnOffWarningIcon),
 			def("get_main_window",   &GetMainIngameWindow) // get_mainingame_window better??
 #ifdef SCRIPT_ICONS_CONTROL
 			, def("setup_game_icon", &SetupGameIcon)
 #endif			
 		];
-
 }
 #pragma optimize("",on)
 

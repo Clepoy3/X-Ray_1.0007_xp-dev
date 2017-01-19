@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UIDialogWnd.h"
-#include "../script_space_forward.h"
+#include "../pch_script.h"
 #include "../script_export_space.h"
 
 struct SCallbackInfo;
@@ -25,7 +25,8 @@ public:
 								CUIDialogWndEx		();
 	virtual						~CUIDialogWndEx		();
 			void				AddCallback			(LPCSTR control_id, s16 event, const luabind::functor<void> &lua_function);
-			void				AddCallback			(LPCSTR control_id, s16 event, const luabind::functor<void> &functor, const luabind::object &object);
+			void				AddCallback			(LPCSTR control_id, s16 event, const luabind::functor<void> &functor, const luabind::adl::object &object);
+			void AddCallback(LPCSTR controlId, s16 event, const luabind::adl::object &functor, const luabind::adl::object &object); //KRodin: добавил специально, без этого даже главное меню не хотело запускаться
 	virtual void				Update				();
 	virtual bool				OnKeyboard			(int dik, EUIMessages keyboard_action);
 	virtual bool				Dispatch			(int cmd, int param)				{return true;}

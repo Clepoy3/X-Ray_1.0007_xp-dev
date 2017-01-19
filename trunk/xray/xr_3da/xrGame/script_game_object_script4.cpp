@@ -161,7 +161,7 @@ void lua_pushgameobject(lua_State *L, CGameObject *obj)
 
 	if (smart_cast<CActor*>(obj))
 	{
-		luabind::detail::convert_to_lua<CActorObject*>(L, (CActorObject*)obj);
+		luabind::detail::push_to_lua(L, (CActorObject*)obj); //luabind::detail::convert_to_lua<CActorObject*>(L, (CActorObject*)obj);
 		return;
 	}
 
@@ -175,7 +175,7 @@ void lua_pushgameobject(lua_State *L, CGameObject *obj)
 		 test_pushobject<CEntity>					(L, obj)	 
 	   ) return;
 
-	convert_to_lua<CGameObject*> (L, obj); // for default 
+	push_to_lua(L, obj); //convert_to_lua<CGameObject*> (L, obj); // for default
 }
 
 CGameObject *lua_togameobject(lua_State *L, int index)
@@ -186,11 +186,13 @@ CGameObject *lua_togameobject(lua_State *L, int index)
 
 	if (lua_isuserdata(L, index))
 	{
-		object_rep* rep = is_class_object(L, index);
+		object_rep* rep = get_instance(L, index); //is_class_object(L, index);
 		if (rep && strstr(rep->crep()->name(), "game_object"))
 		{
-			script_obj = (CScriptGameObject *)rep->ptr();
-			obj = &script_obj->object();
+			//script_obj = (CScriptGameObject *)rep->ptr();
+			//obj = &script_obj->object();
+			Msg("! KRodin: Called lua_togameobject with userdata!!! Return actor object!");
+			obj = client_obj(65535);
 		}
 
 	}
@@ -261,7 +263,7 @@ LPCSTR script_object_class_name(lua_State *L) // для raw-функции. Так-же см. get
 
 	if (lua_isuserdata(L, 1))
 	{
-		object_rep* rep = is_class_object(L, 1);
+		object_rep* rep = get_instance(L, 1); //is_class_object(L, 1);
 		if (rep)
 			strcpy_s(class_name, 63, rep->crep()->name());
 	}
@@ -295,10 +297,12 @@ void raw_get_interface(CScriptGameObject *script_obj, lua_State *L) // deprecate
 
 #pragma message(" get_interface raw function")
 using namespace luabind;
+#include <luabind/raw_policy.hpp>
+using namespace luabind::policy;
 
 void get_interface(object O)
 {	
-	lua_State *L = O.lua_state();
+	lua_State *L = O.interpreter();
 	dynamic_engine_object(L);	
 }
 
@@ -341,7 +345,7 @@ LPCSTR obj_level_name(CScriptGameObject *O) { return get_level_name_by_id ( obj_
 class_<CScriptGameObject> &script_register_game_object3(class_<CScriptGameObject> &instance)
 {
 	instance
-		#pragma message("+ game_object.extensions export begin")
+		//#pragma message("+ game_object.extensions export begin")
 		// alpet: export object cast		 
 		.def("get_game_object",				&CScriptGameObject::object)
 		.def("get_alife_object",			&CScriptGameObject::alife_object)
@@ -353,7 +357,7 @@ class_<CScriptGameObject> &script_register_game_object3(class_<CScriptGameObject
 		.def("get_grenade",					&script_game_object_cast<CGrenade>)
 		.def("get_inventory_item",			&script_game_object_cast<CInventoryItemObject>)
 		.def("get_inventory_owner",			&script_game_object_cast<CInventoryOwner>)
-		.def("get_interface",				&raw_get_interface, raw(_2))
+		.def("get_interface",				&raw_get_interface, raw<2>())
 		.def("get_missile",					&script_game_object_cast<CMissile>)
 		.def("get_outfit",					&script_game_object_cast<CCustomOutfit>)
 		.def("get_space_restrictor",		&script_game_object_cast<CSpaceRestrictor>)
@@ -364,7 +368,7 @@ class_<CScriptGameObject> &script_register_game_object3(class_<CScriptGameObject
 		.def("get_weapon_hud",				&CScriptGameObject::GetWeaponHUD)
 		.def("get_hud_visual",				&CScriptGameObject::GetWeaponHUD_Visual)
 		.def("load_hud_visual",				&CScriptGameObject::LoadWeaponHUD_Visual)
-		.property("interface",				&get_interface,  &fake_set_interface, raw(_2))	
+		.property("interface",				&get_interface,  &fake_set_interface, raw<2>())
 		.property("inventory",				&get_obj_inventory)
 		.property("immunities",				&get_obj_immunities)
 		.property("is_alive",				&get_obj_alive)
@@ -373,11 +377,11 @@ class_<CScriptGameObject> &script_register_game_object3(class_<CScriptGameObject
 		.property("level_name",				&obj_level_name)
 		,
 
-		def("script_object_class_name",		&script_object_class_name, raw(_1)),
-		def("engine_object",				&dynamic_engine_object, raw(_1)),		
+		def("script_object_class_name",		&script_object_class_name, raw<1>()),
+		def("engine_object",				&dynamic_engine_object, raw<1>()),
 		def("get_actor_obj",				&Actor),
 		def("get_level_id",					&get_level_id)
 
-		#pragma message("+ game_object.extensions export end")
+		//#pragma message("+ game_object.extensions export end")
 	; return instance;
 }

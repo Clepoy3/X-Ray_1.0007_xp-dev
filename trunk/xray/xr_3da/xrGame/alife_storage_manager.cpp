@@ -21,7 +21,9 @@
 #include "saved_game_wrapper.h"
 #include "string_table.h"
 #include "../igame_persistent.h"
+#ifdef SCRIPT_VARS_STORAGE
 #include "script_vars_storage.h"
+#endif
 
 using namespace ALife;
 

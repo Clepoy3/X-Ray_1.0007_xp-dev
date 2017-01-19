@@ -9,13 +9,49 @@
 #include	"shader.h"
 #include	"tss_def.h"
 #include	"TextureDescrManager.h"
-// refs
+
 struct		lua_State;
 
 // defs
-class ENGINE_API CResourceManager
-{
+class ENGINE_API CResourceManager {
 private:
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// На скорую руку написал скриптовый движок. KRodin (c)
+// Когда-то надо будет скриптовый двигатель сделать общим и для рендера и для xr_Game. В отдельном dll.
+const char *const GlobalNamespace = "_G";
+size_t scriptBufferSize = 0;
+char *scriptBuffer = nullptr;
+LPCSTR file_header_old = "\
+local function script_name() \
+return \"%s\" \
+end \
+local this = {} \
+%s this %s \
+setmetatable(this, {__index = _G}) \
+setfenv(1, this) ";
+LPCSTR file_header_new = "\
+local function script_name() \
+return \"%s\" \
+end \
+local this = {} \
+this._G = _G \
+%s this %s \
+setfenv(1, this) ";
+bool load_file_into_namespace(lua_State* LSVM, LPCSTR caScriptName, LPCSTR caNamespaceName);
+bool OBJECT_2(lua_State* LSVM, LPCSTR namespace_name, LPCSTR identifier, int type);
+bool OBJECT_1(lua_State* LSVM, LPCSTR identifier, int type);
+bool do_file(lua_State* LSVM, LPCSTR caScriptName, LPCSTR caNameSpaceName);
+static bool print_output(lua_State *L, LPCSTR caScriptFileName, int errorCode);
+bool namespace_loaded(lua_State* LSVM, LPCSTR name, bool remove_from_stack);
+bool load_buffer(lua_State *L, LPCSTR caBuffer, size_t tSize, LPCSTR caScriptName, LPCSTR caNameSpaceName);
+bool parse_namespace(LPCSTR caNamespaceName, LPSTR b, LPSTR c);
+void LuaError(lua_State* L);
+//void lua_cast_failed(lua_State *L, const luabind::type_id &info);
+static int lua_pcall_failed(lua_State *L);
+static int lua_panic(lua_State *L);
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	struct str_pred : public std::binary_function<char*, char*, bool>	{
 		IC bool operator()(LPCSTR x, LPCSTR y) const
 		{	return xr_strcmp(x,y)<0;	}
@@ -67,7 +103,7 @@ public:
 	CTextureDescrMngr									m_textures_description;
 //.	CInifile*											m_textures_description;
 	xr_vector<std::pair<shared_str,R_constant_setup*> >	v_constant_setup;
-	lua_State*											LSVM;
+	lua_State*											LSVM = nullptr;
 	BOOL												bDeferredLoad;
 private:
 	void							LS_Load				();

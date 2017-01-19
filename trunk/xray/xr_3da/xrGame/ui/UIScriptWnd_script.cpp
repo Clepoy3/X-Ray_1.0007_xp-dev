@@ -43,7 +43,7 @@ export_class &script_register_ui_window1(export_class &instance)
 		.def(					constructor<>())
 
 		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&))&BaseType::AddCallback)
-		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&, const luabind::object&))&BaseType::AddCallback)
+		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::object&, const luabind::object&))&BaseType::AddCallback) //Поправил KRodin, без этого меню не работает. Ещё функцию добавил.
 
 		.def("Register",		(void (BaseType::*)(CUIWindow*))&BaseType::Register)
 		.def("Register",		(void (BaseType::*)(CUIWindow*,LPCSTR))&BaseType::Register)

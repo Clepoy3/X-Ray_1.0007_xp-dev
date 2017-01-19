@@ -11,6 +11,7 @@
 #include "../../xrNetServer/net_utils.h"
 
 using namespace luabind;
+using namespace luabind::policy;
 
 u32 packet_length(NET_Packet *self)
 {
@@ -88,15 +89,16 @@ void CScriptNetPacket::script_register(lua_State *L)
 			.def("w_stringZ",		(void (NET_Packet::*)(LPCSTR))(&NET_Packet::w_stringZ	))
 			.def("w_matrix",		&NET_Packet::w_matrix		)
 			.def("w_clientID",		&NET_Packet::w_clientID		)
-			.def("w_chunk_open8",	&NET_Packet::w_chunk_open8	)
+			.def("w_chunk_open8",	&NET_Packet::w_chunk_open8, out_value<2>())
 			.def("w_chunk_close8",	&NET_Packet::w_chunk_close8	)
-			.def("w_chunk_open16",	&NET_Packet::w_chunk_open16	)
+			.def("w_chunk_open16",	&NET_Packet::w_chunk_open16, out_value<2>())
 			.def("w_chunk_close16",	&NET_Packet::w_chunk_close16)
-			.def("r_begin",			&NET_Packet::r_begin		)
+			.def("r_begin",			&NET_Packet::r_begin, out_value<2>())
 //			.def("r",				&NET_Packet::r				)
 			.def("r_seek",			&NET_Packet::r_seek			)
 			.def("r_tell",			&NET_Packet::r_tell			)
-			.def("r_vec3",			(void (NET_Packet::*)(Fvector&))(&NET_Packet::r_vec3)			,pure_out_value(_2))
+			.def("r_vec3",			(void (NET_Packet::*)(Fvector&))(&NET_Packet::r_vec3), pure_out_value<2>())
+/* Это не работает с новым луабиндом
 			.def("r_float",			(void (NET_Packet::*)(float&))(&NET_Packet::r_float		))
 			.def("r_u64",			(void (NET_Packet::*)(u64&	))(&NET_Packet::r_u64		))
 			.def("r_s64",			(void (NET_Packet::*)(s64&	))(&NET_Packet::r_s64		))
@@ -107,6 +109,7 @@ void CScriptNetPacket::script_register(lua_State *L)
 			.def("r_s16",			(void (NET_Packet::*)(s16&	))(&NET_Packet::r_s16		))
 			.def("r_u8",			(void (NET_Packet::*)(u8&)	)(&NET_Packet::r_u8			))
 			.def("r_s8",			(void (NET_Packet::*)(s8&)	)(&NET_Packet::r_s8			))
+*/
 			.def("r_bool",			&r_bool						)
 			.def("r_float",			(float	(NET_Packet::*)()	)(&NET_Packet::r_float		))
 			.def("r_u64",			(u64	(NET_Packet::*)()	)(&NET_Packet::r_u64		))
@@ -118,10 +121,12 @@ void CScriptNetPacket::script_register(lua_State *L)
 			.def("r_s16",			(s16	(NET_Packet::*)()	)(&NET_Packet::r_s16		))
 			.def("r_u8",			(u8		(NET_Packet::*)()	)(&NET_Packet::r_u8			))
 			.def("r_s8",			(s8		(NET_Packet::*)()	)(&NET_Packet::r_s8			))
+/* Это не работает с новым луабиндом
 			.def("r_float_q16",		(void	(NET_Packet::*)(float&,float,float)	)(&NET_Packet::r_float_q16)	)
 			.def("r_float_q8",		(void	(NET_Packet::*)(float&,float,float)	)(&NET_Packet::r_float_q8)	)
-			.def("r_angle16",		&NET_Packet::r_angle16		)
-			.def("r_angle8",		&NET_Packet::r_angle8		)
+*/
+			.def("r_angle16",		&NET_Packet::r_angle16, out_value<2>())
+			.def("r_angle8",		&NET_Packet::r_angle8, out_value<2>())
 			.def("r_dir",			&NET_Packet::r_dir			)
 			.def("r_sdir",			&NET_Packet::r_sdir			)
 			.def("r_stringZ",		&r_stringZ)

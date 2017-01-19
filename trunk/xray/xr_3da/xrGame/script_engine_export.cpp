@@ -12,7 +12,7 @@
 #include "script_export_space.h"
 #include "script_engine_export.h"
 
-#pragma optimize("s",on)
+//#pragma optimize("s",on)
 template <typename TList> struct Register
 {
 	ASSERT_TYPELIST(TList);
@@ -20,11 +20,9 @@ template <typename TList> struct Register
 	static void _Register(lua_State *L)
 	{
 		Register<TList::Tail>::_Register(L);
-#ifdef XRGAME_EXPORTS
-#	ifdef _DEBUG
-		Msg("Exporting %s",typeid(TList::Head).name());
-#	endif
-#endif
+//#ifdef _DEBUG
+		Msg("Exporting %s", typeid(TList::Head).name());
+//#endif
 		TList::Head::script_register(L);
 	}
 };

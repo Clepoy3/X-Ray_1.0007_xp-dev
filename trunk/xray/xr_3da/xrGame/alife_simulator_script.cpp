@@ -415,14 +415,14 @@ void CALifeSimulator::script_register			(lua_State *L)
 				"Duplicated story id description!"
 			);
 
-		luabind::class_<class_exporter<CALifeSimulator> >	instance("story_ids");
+		class_<class_exporter<CALifeSimulator> >	instance("story_ids");
 
 		STORY_PAIRS::const_iterator	I = story_ids.begin();
 		STORY_PAIRS::const_iterator	E = story_ids.end();
 		for ( ; I != E; ++I)
-			instance.enum_		("_story_ids")[luabind::value(*(*I).first,(*I).second)];
+			instance.enum_		("_story_ids")[value(*(*I).first,(*I).second)];
 
-		luabind::module			(L)[instance];
+		module			(L)[instance];
 	}
 
 	{
@@ -437,14 +437,14 @@ void CALifeSimulator::script_register			(lua_State *L)
 				"Duplicated spawn story id description!"
 			);
 
-		luabind::class_<class_exporter<class_exporter<CALifeSimulator> > >	instance("spawn_story_ids");
+		class_<class_exporter<class_exporter<CALifeSimulator> > >	instance("spawn_story_ids");
 
 		SPAWN_STORY_PAIRS::const_iterator	I = spawn_story_ids.begin();
 		SPAWN_STORY_PAIRS::const_iterator	E = spawn_story_ids.end();
 		for ( ; I != E; ++I)
-			instance.enum_		("_spawn_story_ids")[luabind::value(*(*I).first,(*I).second)];
+			instance.enum_		("_spawn_story_ids")[value(*(*I).first,(*I).second)];
 
-		luabind::module			(L)[instance];
+		module			(L)[instance];
 	}
 }
 
@@ -461,7 +461,7 @@ void CALifeSimulator::validate			()
 	const_vertex_iterator		I = spawns().spawns().vertices().begin();
 	const_vertex_iterator		E = spawns().spawns().vertices().end();
 	for ( ; I != E; ++I) {
-		luabind::wrap_base		*base = smart_cast<luabind::wrap_base*>(&(*I).second->data()->object());
+		wrap_base		*base = smart_cast<wrap_base*>(&(*I).second->data()->object());
 		if (!base)
 			continue;
 

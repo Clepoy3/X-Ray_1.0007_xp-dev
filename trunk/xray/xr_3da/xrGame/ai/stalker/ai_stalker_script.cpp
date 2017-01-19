@@ -20,7 +20,7 @@ void CAI_Stalker::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CStalkerPlanner>("stalker_ids")
+		class_<CStalkerPlanner, CScriptActionPlanner>("stalker_ids") //KRodin: добавлено наследование от CScriptActionPlanner. Без этого вылетало из за отсутствия метода add_evaluator у :motivation_action_manager()
 			.enum_("properties")
 			[
 				luabind::value("property_alive",							StalkerDecisionSpace::eWorldPropertyAlive),

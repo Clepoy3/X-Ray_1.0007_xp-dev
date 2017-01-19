@@ -11,7 +11,7 @@ void CCar::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CCar,bases<CGameObject,CHolderCustom> >("CCar")
+		class_<CCar,bases<CGameObject,CHolderCustom> >("CCar") //KRodin: тут тоже нет враппера
 			.enum_("wpn_action")
 				[
 					value("eWpnDesiredDir",							int(CCarWeapon::eWpnDesiredDir)),

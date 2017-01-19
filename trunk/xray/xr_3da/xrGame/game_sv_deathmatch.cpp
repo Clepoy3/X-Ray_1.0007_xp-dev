@@ -929,7 +929,7 @@ void	game_sv_Deathmatch::SpawnWeaponsForActor(CSE_Abstract* pE, game_PlayerState
 		SpawnWeapon4Actor	(pA->ID, *m_strWeaponsData->GetItemName(ItemID& 0x00FF), u8((ItemID & 0xFF00)>>0x08));
 		Game().m_WeaponUsageStatistic->OnWeaponBought(ps, *m_strWeaponsData->GetItemName(ItemID& 0x00FF));
 	};
-#ifndef	NDEBUG
+#ifdef DEBUG
 	if (!g_sv_dm_bDMIgnore_Money_OnBuy)
 #endif
 		Player_AddMoney(ps, ps->LastBuyAcount);

@@ -74,6 +74,14 @@ void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, const luabind::fu
 
 void CUIDialogWndEx::AddCallback (LPCSTR control_id, s16 event, const luabind::functor<void> &functor, const luabind::object &object)
 {
+	SCallbackInfo* c = NewCallback();
+	c->m_callback.set(functor, object);
+	c->m_controlName = control_id;
+	c->m_event = event;
+}
+
+void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, const luabind::object &functor, const luabind::object &object) //KRodin: добавил ещё один метод, без него даже меню не работает.
+{
 	SCallbackInfo* c	= NewCallback ();
 	c->m_callback.set	(functor,object);
 	c->m_controlName	= control_id;

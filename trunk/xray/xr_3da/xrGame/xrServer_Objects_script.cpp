@@ -86,7 +86,7 @@ void CPureServerObject::script_register(lua_State *L)
 			("ipure_alife_load_object"),
 		class_<IPureSavableObject<IWriter> >
 			("ipure_alife_save_object"),
-		class_<IPureSerializeObject<IReader,IWriter>,bases<IPureLîadableObject<IReader>,IPureSavableObject<IWriter> > >
+		class_<IPureSerializeObject<IReader,IWriter>,bases<IPureLîadableObject<IReader>,IPureSavableObject<IWriter> > > //KRodin: ìîæåò òóò default_holder äîáàâèòü?
 			("ipure_alife_load_save_object"),
 		class_<IPureServerObject,IPureSerializeObject<IReader,IWriter> >
 			("ipure_server_object"),
@@ -101,7 +101,7 @@ void CSE_Abstract::script_register(lua_State *L)
 	typedef CWrapperBase<CSE_Abstract> WrapType;
 	typedef CSE_Abstract BaseType;
 	module(L)[
-		class_<CSE_Abstract,WrapType,CPureServerObject>	("cse_abstract")
+		class_<CSE_Abstract, CPureServerObject, default_holder, WrapType>	("cse_abstract")
 			.def_readonly	("id",				&BaseType::ID)
 			.def_readonly	("parent_id",		&BaseType::ID_Parent)
 			.def_readonly	("script_version",	&BaseType::m_script_version)

@@ -8,6 +8,7 @@
 #include "UIComboBox.h"
 
 using namespace luabind;
+using namespace luabind::policy;
 
 bool CUIListWnd::AddItem_script(CUIListItem* item){
 	return AddItem(item, -1);
@@ -34,7 +35,7 @@ void CUIListWnd::script_register(lua_State *L)
 		class_<CUIListWnd, CUIWindow>("CUIListWnd")
 		.def(							constructor<>())
 //		.def("AddText",					&CUIListWnd::AddText_script)
-		.def("AddItem",                 &CUIListWnd::AddItem_script, adopt(_2))
+		.def("AddItem",                 &CUIListWnd::AddItem_script, adopt<2>())
 		.def("RemoveItem",				&CUIListWnd::RemoveItem)
 		.def("RemoveAll",				&CUIListWnd::RemoveAll)
 		.def("EnableScrollBar",			&CUIListWnd::EnableScrollBar)
@@ -61,10 +62,10 @@ void CUIListWnd::script_register(lua_State *L)
 		.def("GetSelectedItem",			&CUIListWnd::GetSelectedItem)
 		.def("ResetFocusCapture",		&CUIListWnd::ResetFocusCapture),
 
-		class_<CUIListItem, CUIButton, CUIListItemWrapper>("CUIListItem")
+		class_<CUIListItem, CUIButton, default_holder, CUIListItemWrapper>("CUIListItem") //KRodin: добавил default_holder (попытка исправить error C2664)
 		.def(							constructor<>()),
 
-		class_<CUIListItemEx, CUIListItem/**/, CUIListItemExWrapper/**/>("CUIListItemEx")
+		class_<CUIListItemEx, CUIListItem, default_holder, CUIListItemExWrapper>("CUIListItemEx") //KRodin: добавил default_holder (попытка исправить error C2664)
 		.def(							constructor<>())
 		.def("SetSelectionColor",		&CUIListItemEx::SetSelectionColor),
 

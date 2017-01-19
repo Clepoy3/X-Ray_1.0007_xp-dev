@@ -16,8 +16,6 @@
 #include "gameobject.h"
 #include "level.h"
 
-//#define DBG_DISABLE_SCRIPTS
-
 CScriptBinder::CScriptBinder		()
 {
 	init					();
@@ -79,7 +77,6 @@ void CScriptBinder::reload			(LPCSTR section)
 	if (g_bMEMO)
 		start							= Memory.mem_usage();
 #endif // DEBUG_MEMORY_MANAGER
-#ifndef DBG_DISABLE_SCRIPTS
 	VERIFY					(!m_object);
 	if (!pSettings->line_exist(section,"script_binding"))
 		return;
@@ -108,7 +105,6 @@ void CScriptBinder::reload			(LPCSTR section)
 			clear			();
 		}
 	}
-#endif
 #ifdef DEBUG_MEMORY_MANAGER
 	if (g_bMEMO) {
 //		lua_gc				(ai().script_engine().lua(),LUA_GCCOLLECT,0);
