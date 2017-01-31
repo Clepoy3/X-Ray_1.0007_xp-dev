@@ -142,6 +142,7 @@ bool CResourceManager::load_buffer(lua_State *L, LPCSTR caBuffer, size_t tSize, 
 	if (l_iErrorCode)
 	{
 		print_output(L, caScriptName, l_iErrorCode);
+		R_ASSERT(0);
 		return false;
 	}
 	return true;
@@ -188,6 +189,7 @@ bool CResourceManager::do_file(lua_State* LSVM, LPCSTR caScriptName, LPCSTR caNa
 	if (l_iErrorCode)
 	{
 		print_output(LSVM, caScriptName, l_iErrorCode);
+		R_ASSERT(0);
 		lua_settop(LSVM, start);
 		return false;
 	}

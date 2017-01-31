@@ -244,6 +244,7 @@ bool CScriptStorage::load_buffer(lua_State *L, LPCSTR caBuffer, size_t tSize, LP
 	if (l_iErrorCode)
 	{
 		print_output(L, caScriptName, l_iErrorCode);
+		R_ASSERT(0);
 		return false;
 	}
 	return true;
@@ -290,6 +291,7 @@ bool CScriptStorage::do_file(LPCSTR caScriptName, LPCSTR caNameSpaceName) //KRod
 	if (l_iErrorCode)
 	{
 		print_output(lua(), caScriptName, l_iErrorCode);
+		R_ASSERT(0);
 		lua_settop(lua(),start);
 		return false;
 	}
