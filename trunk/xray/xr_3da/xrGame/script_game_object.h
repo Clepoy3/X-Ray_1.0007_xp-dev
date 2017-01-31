@@ -705,15 +705,13 @@ template <typename T>
 IC bool test_pushobject(lua_State *L, CGameObject* obj)
 {	
 	Msg("! KRodin: Called test_pushobject !!!");
-/* KRodin: Надо адаптировать под новый луабинд
 	using namespace luabind::detail;
 	T *pObj = smart_cast<T*> (obj);
-	if (pObj && get_class_rep<T>(L))
+	if (pObj /*&& get_class_rep<T>(L)*/) //KRodin: вроде бы закомментированный кусок больше не нужен.
 	{
 		push_to_lua(L, pObj); //convert_to_lua<T*>(L, pObj);  // обязательно конвертировать указатель, а не значение. Иначе вызов деструктора при сборке мусора!
 		return true;		
 	}
-*/
 	return false;
 }
 

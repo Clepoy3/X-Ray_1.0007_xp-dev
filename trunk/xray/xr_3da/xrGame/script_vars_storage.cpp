@@ -545,8 +545,8 @@ void CScriptVarsTable::set(lua_State *L, LPCSTR k, int index, int key_type)
 		if (rep && strstr(rep->crep()->name(), "net_packet"))
 		{
 			sv.smart_alloc(LUA_TNETPACKET); // избежание утечек памяти
-			NET_Packet *src = (NET_Packet *)rep->ptr();
-			sv.size = src->B.count;			
+			NET_Packet *src = (NET_Packet *)rep/*->ptr()*/;
+			sv.size = src->B.count;
 			sv.P = xr_new<NET_Packet>();
 			sv.P->B.count = sv.size;
 			sv.P->r_seek(src->r_tell());			
@@ -659,7 +659,7 @@ int script_vars_export(lua_State *L)  // сохранение таблицы переменных в нет-пак
 	object_rep* rep = get_instance(L, 2); //is_class_object(L, 2);
 	if (rep && strstr(rep->crep()->name(), "net_packet"))
 	{		
-		NET_Packet *dst = (NET_Packet *)rep->ptr();
+		NET_Packet *dst = (NET_Packet *)rep/*->ptr()*/;
 		dst->w(stream.pointer(), stream.size());
 		lua_pushinteger(L, stream.size());
 	}
@@ -683,7 +683,7 @@ int script_vars_import(lua_State *L) // загрузка таблицы переменных из нет-пакет
 	object_rep* rep = get_instance(L, 2); //is_class_object(L, 2);
 	if (rep && strstr(rep->crep()->name(), "net_packet"))
 	{
-		NET_Packet *src = (NET_Packet *)rep->ptr();		
+		NET_Packet *src = (NET_Packet *)rep/*->ptr()*/; //Возможно, тут и во всех подобных случаях надо получать m_instance. Но тогда надо выводить его из привата. Но это неточно.
 		void *from = &src->B.data[src->r_pos];
 		IReader reader(from, src->r_elapsed());
 		svt->load(reader);

@@ -189,10 +189,11 @@ CGameObject *lua_togameobject(lua_State *L, int index)
 		object_rep* rep = get_instance(L, index); //is_class_object(L, index);
 		if (rep && strstr(rep->crep()->name(), "game_object"))
 		{
-			//script_obj = (CScriptGameObject *)rep->ptr();
-			//obj = &script_obj->object();
-			Msg("! KRodin: Called lua_togameobject with userdata!!! Return actor object!");
-			obj = client_obj(65535);
+			Msg("! KRodin: Called lua_togameobject with userdata!");
+			script_obj = (CScriptGameObject *)rep/*->ptr()*/;
+			obj = &script_obj->object();
+			///Msg("! KRodin: Called lua_togameobject with userdata!!! Return actor object!"); //Это надо удалить наверно.
+			///obj = client_obj(65535);
 		}
 
 	}
