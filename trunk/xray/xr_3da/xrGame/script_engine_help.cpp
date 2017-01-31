@@ -1,451 +1,385 @@
-////////////////////////////////////////////////////////////////////////////
-//	Module 		: script_engine_help.cpp
-//	Created 	: 01.04.2004
-//  Modified 	: 23.10.2014
-//	Author		: Dmitriy Iassenev
-//	Description : Script Engine help
-//  KRODIN: ВЫКЛЮЧЕНО! ВСЁ ЭТО НАДО ПЕРЕДЕЛАТЬ К ПОД НОВЫЙ LUABIND!!!! ИЛИ ВЗЯТЬ ГОТОВОЕ ИЗ OPENXRAY, ЕСЛИ ОНО ТАМ СДЕЛАНО!!!
-// НАДО ВКЛЮЧИТЬ И ПОПРАВИТЬ.
-////////////////////////////////////////////////////////////////////////////
-
 #include "pch_script.h"
-#include "../../Luabind/luabind/detail/class_rep.hpp"
+#include "script_engine_help.hpp"
 
-static IWriter *dumper = NULL;
-string1024 line_buf;
+#pragma warning(push)
+#pragma warning(disable:4995)
+#include <regex>
+#pragma warning(pop)
 
-#ifndef LUABIND_NO_ERROR_CHECKING //KRodin: а оно, собственно, зачем? Оно в релизе не работает что ли? С этим разбираться надо, сравнивать со старым луабиндом.
-
-#include <sstream>
-
-// redefinition for fast save
-void OpenDumper()
+int BindingsDumper::GetIdentSize() const
 {
-	string_path  dump_name;
-	strcpy_s(dump_name, 260, "lua_help.script");
-
-	if (FS.path_exist("$logs$"))
-		FS.update_path(dump_name, "$logs$", dump_name);
-
-	dumper = FS.w_open(dump_name);
+	return options.ShiftWidth * shiftLevel;
 }
 
-void CloseDumper()
+void BindingsDumper::Print(const char* s)
 {
-	if (dumper)
+	writer->w(s, xr_strlen(s));
+}
+
+void BindingsDumper::Print(const char* s, int len)
+{
+	writer->w(s, len);
+}
+
+void BindingsDumper::Printf(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	writer->VPrintf(format, args);
+	va_end(args);
+}
+
+void BindingsDumper::PrintIndented(const char* s)
+{
+	writer->w_printf("%*s"
+		"%s",
+		GetIdentSize(), "", s);
+}
+
+void BindingsDumper::PrintfIndented(const char* format, ...)
+{
+	writer->w_printf("%*s", GetIdentSize(), "");
+	va_list args;
+	va_start(args, format);
+	writer->VPrintf(format, args);
+	va_end(args);
+}
+
+namespace
+{
+	luabind::detail::function_object* get_upvalue_function(lua_State* ls, int n)
 	{
-		FS.w_close(dumper);
-		xr_delete(dumper);
-		dumper = NULL;
+		using namespace luabind::detail;
+		function_object* f = nullptr;
+		if (lua_getupvalue(ls, -1, n)) {
+			int ltype = lua_type(ls, -1);
+			if (ltype == LUA_TFUNCTION) {
+				if (lua_getupvalue(ls, -1, 1)) {
+					if (lua_type(ls, -1) == LUA_TUSERDATA) f = *static_cast<function_object**>(lua_touserdata(ls, -1));
+					lua_pop(ls, 1);  // upvalue
+				}
+			}
+			lua_pop(ls, 1);  // upvalue
+		}
+		return f;
+	}
+
+	void ReplaceArg(lua_State* ls, int argIndex, const char* subst)
+	{
+		lua_pushstring(ls, subst);
+		lua_replace(ls, argIndex - 1);
+	}
+
+	int StripArg(lua_State* ls, int argIndex, bool commaOnly = true)
+	{
+		int removed = 1;
+		lua_remove(ls, argIndex);
+		const char* comma = lua_tostring(ls, argIndex + 1);
+		if (!commaOnly || !xr_strcmp(comma, ",")) {
+			lua_remove(ls, argIndex + 1);
+			removed++;
+		}
+		return removed;
 	}
 }
 
-void FastMsg (LPCSTR format, ...)
-{	
-	static u32 saldo = 0;
-	va_list mark;	
-	va_start(mark, format);
-	int sz = _vsnprintf(line_buf, sizeof(line_buf)-1, format, mark); 
-	
-	line_buf[sizeof(line_buf) - 1] = 0;
-	va_end(mark);
-	dumper->w_printf("%s\r\n", line_buf);
-	saldo += xr_strlen(line_buf);
-	if (saldo >= 32768)
-	{
-		saldo = 0;
-		dumper->flush();
+void BindingsDumper::PrintFunction(SignatureFormatter formatter, const void* fcontext /*= nullptr*/)
+{
+	using namespace luabind::detail;
+	bool done = false;
+	int cfunc = lua_iscfunction(ls, -1);
+	int luabindFunc = is_luabind_function(ls, -1);
+	bool hasupvalue = lua_getupvalue(ls, -1, 1) != nullptr;
+	if (hasupvalue) {
+		if (luabindFunc) {
+			if (lua_type(ls, -1) == LUA_TUSERDATA) {
+				auto fobj = *static_cast<function_object**>(lua_touserdata(ls, -1));
+				if (formatter) {
+					SignatureFormatterParams params;
+					params.Function = fobj;
+					params.Context = fcontext;
+					(this->*formatter)(params);
+				}
+				else
+				{
+					int signatureLen = fobj->format_signature(ls, fobj->name.c_str());
+					auto signature = lua_tostring(ls, -1);
+					PrintfIndented("%s;\n", signature);
+					lua_pop(ls, signatureLen);
+				}
+				done = true;
+			}
+		}
+		lua_pop(ls, 1);  // pop upvalue
 	}
-
+	if (cfunc && !done && hasupvalue)  // property
+	{
+		const char* propName = lua_tostring(ls, -2);
+		function_object* getter = get_upvalue_function(ls, 1);
+		function_object* setter = get_upvalue_function(ls, 2);
+		R_ASSERT(getter);
+		int signatureLen = getter->format_signature(ls, "#");
+		const char* signature = lua_tostring(ls, -1);
+		int typeLen = std::strchr(signature, '#') - signature - 1;
+		PrintIndented("");
+		Print(signature, typeLen);
+		Printf(" %s { get;", propName);
+		if (setter) Print(" set;");
+		Print(" }\n");
+		lua_pop(ls, signatureLen);
+	}
 }
 
-xr_string to_string					(luabind::adl::object const& o)
+void BindingsDumper::FormatStaticFunction(const SignatureFormatterParams& params)
+{
+	using namespace luabind::detail;
+	function_object* fobj = params.Function;
+	int signatureLen = fobj->format_signature(ls, fobj->name.c_str());
+	const char* signature = lua_tostring(ls, -1);
+	PrintfIndented("static %s;\n", signature);
+	lua_pop(ls, signatureLen);
+};
+
+void BindingsDumper::PrintStaticFunction()
+{
+	PrintFunction(&BindingsDumper::FormatStaticFunction);
+}
+
+void BindingsDumper::FormatMemberFunction(const SignatureFormatterParams& params)
+{
+	auto refClassName = static_cast<const char*>(params.Context);
+	bool stripReturnValue = false;  // for constructors and operators
+	xr_string funcName;
+	auto refFuncName = params.Function->name;
+	if (refFuncName == "__init") {
+		funcName = refClassName;
+		stripReturnValue = true;
+	}
+	else  // check operators
+	{
+		auto it = operatorSubst.find(refFuncName);
+		if (it != operatorSubst.end()) {
+			funcName = it->second;
+			stripReturnValue = true;
+		}
+		else
+			funcName = refFuncName.c_str();
+	}
+	bool concat = !(options.IgnoreDerived || options.StripThis || stripReturnValue);
+	int signLen = params.Function->format_signature(ls, funcName.c_str(), concat);
+	if (!concat) {
+		int argCount = (signLen - 4) / 2;
+		//R_ASSERT(argCount > 0); KRodin: не знаю, зачем это нужно, но без него вроде бы норм. работает.
+		//      -n+0   -n+1  -n+2    -n+3 -n+4              -1
+		// [return_type][ ][func_name][(][arg1][,][arg2]...[)]
+		int offset = 0;
+		if (stripReturnValue) {
+			offset = StripArg(ls, -signLen, false);
+			signLen -= offset;
+		}
+		int argIndex = -signLen + 4 - offset;
+		xr_string arg = lua_tostring(ls, argIndex);
+		xr_string className = refClassName;
+		// check if arg matches 'className[ const]{*|&}'
+		std::regex matcher(className + "( const)?(\\*|&)$");
+		if (std::regex_match(arg, matcher))  // non-derived member function
+		{
+			if (options.StripThis) signLen -= StripArg(ls, argIndex);
+		}
+		else
+		{
+			// check special cases: opertators and constructors
+			// void __tostring(lua_State*, ClassName&); // operator
+			// void __init(luabind::argument const&, int); // constructor
+			if (arg == "lua_State*" && argCount > 1)  // operator?
+			{
+				// 1] check next argument:
+				int nextArgIndex = argIndex + 2;
+				const char* nextArg = lua_tostring(ls, nextArgIndex);
+				if (className.append("&") != nextArg)  // derived?
+				{
+					// if next!=className && ignoreDerived => ignore
+					if (options.IgnoreDerived) {
+						lua_pop(ls, signLen);
+						return;
+					}
+				}
+				// 2] remove arg+comma
+				signLen -= StripArg(ls, argIndex);
+				// 3] if stripThis => remove next
+				argIndex = nextArgIndex;
+			}
+			else if (arg == "luabind::argument const&")  // constructor?
+			{
+				if (!options.StripThis) ReplaceArg(ls, argIndex, className.append("&").c_str());
+			}
+			else if (options.IgnoreDerived)  // some derived function, ignore?
+			{
+				lua_pop(ls, signLen);
+				return;
+			}
+			if (options.StripThis) signLen -= StripArg(ls, argIndex);
+		}
+		lua_concat(ls, signLen);
+	}
+	const char* signature = lua_tostring(ls, -1);
+	PrintfIndented("%s;\n", signature);
+	lua_pop(ls, 1);  // pop concatenated signature
+};
+
+void BindingsDumper::PrintMemberFunction(const char* className)
+{
+	PrintFunction(&BindingsDumper::FormatMemberFunction, className);
+}
+
+void BindingsDumper::PrintFunction()
+{
+	PrintFunction(nullptr);
+}
+
+void BindingsDumper::PrintIntConstant(const char* name, int value)
+{
+	PrintfIndented("const int %s = %d;\n", name, value);
+}
+
+void BindingsDumper::PrintClass()
 {
 	using namespace luabind;
-	if (luabind::type(o) == LUA_TSTRING) return object_cast<xr_string>(o);
-	lua_State* L = o.interpreter();
-	LUABIND_CHECK_STACK(L);
-
-	std::stringstream s;
-
-	if (luabind::type(o) == LUA_TNUMBER)
-	{
-		s << object_cast<float>(o);
-		return xr_string(s.str().c_str());
-	}
-
-	s << "<" << lua_typename(L, luabind::type(o)) << ">";
-	return s.str().c_str();
-}
-
-void strreplaceall						(xr_string &str, LPCSTR S, LPCSTR N)
-{
-	LPCSTR	A;
-	int		S_len = xr_strlen(S);
-	while ((A = strstr(str.c_str(),S)) != 0)
-		str.replace(A - str.c_str(),S_len,N);
-}
-
-xr_string &process_signature				(xr_string &str)
-{
-	strreplaceall	(str,"custom [","");
-	strreplaceall	(str,"]","");
-	strreplaceall	(str,"float","number");
-	strreplaceall	(str,"lua_State*, ",  "thread");
-	strreplaceall	(str," ,lua_State*",  "thread");
-	return			(str);
-}
-
-xr_string &extract_last_params               (xr_string &str)
-{
-	process_signature(str);
-	LPCSTR s = str.c_str();
-	LPCSTR c1 = strstr(s, "(");
-	LPCSTR c2 = strstr(s, "*");
-	LPCSTR c3 = strstr(s, ", ");
-	if (c1 && c2 && c3 && c2 < c3 )
-	{
-		str.erase(str.find('('), str.find(", ") + 1);
-		if (str.at(0) == ' ')
-			str.erase(0, 1);
-		str = "(" + str;
-	}
-
-
-	return			(str);
-}
-
-
-xr_string member_to_string			(luabind::adl::object const& e, LPCSTR function_signature)
-{
-    using namespace luabind;
-	lua_State* L = e.interpreter();
-	LUABIND_CHECK_STACK(L);
-
-	if (luabind::type(e) == LUA_TFUNCTION)
-	{
-		e.push(L);
-		detail::stack_pop p(L, 1);
-
-		{
-			if (lua_getupvalue(L, -1, 3) == 0) return to_string(e);
-			detail::stack_pop p2(L, 1);
-			if (lua_touserdata(L, -1) != reinterpret_cast<void*>(0x1337)) return to_string(e);
-		}
-		std::stringstream s;
-		{
-			lua_getupvalue(L, -1, 2);
-			detail::stack_pop p2(L, 1);
-		}
-
-		{
-			lua_getupvalue(L, -1, 1);
-			detail::stack_pop p2(L, 1);
-			detail::method_rep* m = static_cast<detail::method_rep*>(lua_touserdata(L, -1));
-
-			for (std::vector<detail::overload_rep>::const_iterator i = m->overloads().begin();
-				i != m->overloads().end(); ++i)
-			{
-				xr_string str;
-				i->get_signature(L, str);
-				if (i != m->overloads().begin())
-					s << "\n";
-				s << function_signature << process_signature(str) << ";";
-			}
-		}
-		return s.str().c_str();
-	}
-
-    return to_string(e);
-}
-
-void print_class						(lua_State *L, luabind::detail::class_rep *crep)
-{
-	xr_string			S;
-	// print class and bases
-	{
-		S				= (crep->get_class_type() != luabind::detail::class_rep::cpp_class) ? "LUA class " : "C++ class ";
-		S.append		(crep->name());
-		typedef std::vector<luabind::detail::class_rep::base_info> BASES;
-		const BASES &bases = crep->bases();
-		BASES::const_iterator	I = bases.begin(), B = I;
-		BASES::const_iterator	E = bases.end();
-		if (B != E)
-			S.append	(" : ");
-		for ( ; I != E; ++I) {
-			if (I != B)
-				S.append(",");
-			S.append	((*I).base->name());
-		}
-		FastMsg				("%s {",S.c_str());
-	}
-	// print class constants
-	{
-		const luabind::detail::class_rep::STATIC_CONSTANTS	&constants = crep->static_constants();
-		for (luabind::iterator I(constants), E; I != E; ++I)
-#ifndef USE_NATIVE_LUA_STRINGS
-			FastMsg		("    const %s = %d;",(*I).first,(*I).second);
-#else
-			FastMsg		("    const %s = %d;",getstr((*I).first.m_object),(*I).second);
-#endif
-		if (!constants.empty())
-			FastMsg		("    ");
-	}
-	// print class properties
 	using namespace luabind::detail;
+	auto crep = static_cast<class_rep*>(lua_touserdata(ls, -1));
+	bool cppClass = crep->get_class_type() == class_rep::cpp_class;
+	PrintIndented(cppClass ? "[cpp]\n" : "[lua]\n");
+	PrintfIndented("class %s", crep->name());
+	const auto& bases = crep->bases();
+	size_t baseCount = bases.size();
+	if (baseCount) Print(" : ");
+	for (size_t i = 0; i < baseCount; i++)
 	{
-#ifndef USE_NATIVE_LUA_STRINGS
-		typedef std::map<const char*, luabind::detail::class_rep::callback, luabind::detail::ltstr> PROPERTIES;
-#else
-		typedef luabind::detail::class_rep::callback_map PROPERTIES;
-#endif
-		const PROPERTIES &properties		 = crep->properties();
-		const PROPERTIES &properties_rw		 = crep->properties_rw();
-		PROPERTIES::const_iterator	I = properties.begin();
-		PROPERTIES::const_iterator	E = properties.end();
-		for (; I != E; ++I)
-		{
-
-#ifndef USE_NATIVE_LUA_STRINGS
-			LPCSTR	 pname = (*I).first;
-			PROPERTIES::const_iterator	X = properties_rw.find(pname);
-
-			xr_string cname = "";
-			if (X != properties_rw.end())
-			{
-				luabind::detail::class_rep::callback  cb = properties_rw.at(pname);
-				if ((u32)cb.sig > 0x1000)
-					cb.sig(L, cname);
-
-				FastMsg(" property\t\t\t%-25s%s;", pname, extract_last_params(cname).c_str());
-			}
-			else		
-				FastMsg(" property\t\t\t%s;", pname);
-#else
-			FastMsg("    property %s;", getstr((*I).first.m_object));
-#endif
-		}
-		if (!properties.empty())
-			FastMsg		("    ");
+		if (i) Print(", ");
+		const char* baseName = bases[i].base->name();
+		if (!*baseName) baseName = "<unknown>";
+		Print(baseName);
 	}
-	// print class constructors
-	
+	Print("\n");
+	PrintIndented("{\n");
+	shiftLevel++;
+	// print static members (static functions + nested classes)
+	crep->get_default_table(ls);
+	object staticMembers(from_stack(ls, -1));
+	for (luabind::iterator it(staticMembers), end; it != end; it++)
 	{
-		const std::vector<luabind::detail::construct_rep::overload_t>	&constructors = crep->constructors().overloads;
-		for (luabind::iterator I(constructors), E; I != E; ++I)
-			xr_string S;
-			(*I).get_signature(L,S);
-			strreplaceall	(S,"custom [","");
-			strreplaceall	(S,"]","");
-			strreplaceall	(S,"float","number");
-			strreplaceall	(S,"lua_State*, ","");
-			strreplaceall	(S," ,lua_State*","");
-			FastMsg		("    %s %s;",crep->name(),S.c_str());
-		}
-		if (!constructors.empty())
-			FastMsg		("    ");
+		auto proxy = *it;
+		int prev = lua_gettop(ls);
+		proxy.push(ls);
+		if (is_class_rep(ls, -1))
+			PrintClass();
+		else if (is_luabind_function(ls, -1, false))
+			PrintStaticFunction();
+		lua_pop(ls, 1);
+		R_ASSERT(lua_gettop(ls) == prev);
 	}
-	
-	// print class methods
+	lua_pop(ls, 1);  // pop default table
+					 // print constants
+	auto& constants = crep->static_constants();
+	for (auto& c : constants)
+		PrintIntConstant(c.first, c.second);
+	// print functions and properties
+	crep->get_table(ls);
+	object members(from_stack(ls, -1));
+	for (luabind::iterator it(members), end; it != end; it++)
 	{
-		crep->get_table	(L);
-		luabind::object	table(L);
-		table.set		();
-		for (luabind::iterator i(table), e; i != e; ++i) {
-			luabind::object	object = *i;
-			xr_string	S;
-			S			= "    function ";		
-			S.append	(to_string(i.key()).c_str());
-
-			strreplaceall	(S,"function __add","operator +");
-			strreplaceall	(S,"function __sub","operator -");
-			strreplaceall	(S,"function __mul","operator *");
-			strreplaceall	(S,"function __div","operator /");
-			strreplaceall	(S,"function __pow","operator ^");
-			strreplaceall	(S,"function __lt","operator <");
-			strreplaceall	(S,"function __le","operator <=");
-			strreplaceall	(S,"function __gt","operator >");
-			strreplaceall	(S,"function __ge","operator >=");
-			strreplaceall	(S,"function __eq","operator ==");
-			FastMsg			("%s",member_to_string(object,S.c_str()).c_str());
-		}
+		auto proxy = *it;
+		int prev = lua_gettop(ls);
+		proxy.push(ls);
+		int ltype = luabind::type(proxy);
+		if (ltype == LUA_TFUNCTION)  // XXX: print class members in reverse order
+			PrintMemberFunction(crep->name());
+		lua_pop(ls, 1);
+		R_ASSERT(lua_gettop(ls) == prev);
 	}
-	FastMsg			("};\n");
+	lua_pop(ls, 1);  // pop table
+	shiftLevel--;
+	PrintIndented("}\n");
 }
 
-void print_free_functions				(lua_State *L, const luabind::object &object, LPCSTR header, const xr_string &indent)
+void BindingsDumper::PrintNamespace(luabind::object& namesp)
 {
-	u32							count = 0;
-	for (luabind::iterator I(object), E; I != E; ++I)
-		if (luabind::type((*I)) != LUA_TFUNCTION)
-			continue;
-		(*I).push(L);
-		luabind::detail::free_functions::function_rep* rep = 0;
-		if (lua_iscfunction(L, -1))
+	using namespace luabind;
+	using namespace luabind::detail;
+	int scopeFunctions = 0, scopeClasses = 0, scopeNamespaces = 0;
+	for (luabind::iterator it(namesp), end; it != end; it++)
+	{
+		auto proxy = *it;
+		int ltype = luabind::type(proxy);
+		switch (ltype)
 		{
-			if (lua_getupvalue(L, -1, 2) != 0)
-			{
-				// check the magic number that identifies luabind's functions
-				if (lua_touserdata(L, -1) == (void*)0x1337)
-				{
-					if (lua_getupvalue(L, -2, 1) != 0)
-					{
-						if (!count)
-							FastMsg("\n%snamespace %s {",indent.c_str(),header);
-						++count;
-						rep = static_cast<luabind::detail::free_functions::function_rep*>(lua_touserdata(L, -1));
-						for (luabind::iterator i(rep->overloads()), e; i != e; ++i)
-							xr_string S;
-							(*i).get_signature(L,S);
-							FastMsg("    %sfunction %s%s;",indent.c_str(),rep->name(), process_signature(S).c_str());
-						}
-						lua_pop(L, 1);
-					}
-				}
-				lua_pop(L, 1);
-			}
+		case LUA_TFUNCTION:  // free function
+			scopeFunctions++;
+			functions.push(it);
+			break;
+		case LUA_TUSERDATA:  // class
+			scopeClasses++;
+			classes.push(it);
+			break;
+		case LUA_TTABLE:  // namespace
+			scopeNamespaces++;
+			namespaces.push(it);
+			break;
+		default: PrintfIndented("[?] ltype = %s\n", lua_typename(ls, ltype)); break;
 		}
-		lua_pop(L, 1);
 	}
+	for (int i = 0; i < scopeFunctions; i++)
 	{
-		static xr_vector<xr_string> nesting_path;
-
-		xr_string				_indent = indent;
-		xr_string				last_key = "?";
-		_indent.append			("    ");
-		
-		object.push(L);
-		int n_table = lua_gettop(L);
-		// Msg("# n_table = %d ", n_table);
-		lua_pushnil		(L);		
-		int save_top = lua_gettop(L);
-
-// #pragma todo("alpet : при загруженной сохраненке здесь иногда происходит сбой invalid key to 'next', а потом креш в недрах Direct3D ")
-		while (lua_next(L, n_table) != 0) {  
-			last_key = "~"; 
-			int key_type = lua_type(L, -2);			
-			if (lua_type(L, -1) == LUA_TTABLE && key_type == LUA_TSTRING && lua_objlen(L, -2) > 0) {				
-				last_key = lua_tostring(L, -2);
-				LPCSTR	S = last_key.c_str();
-				MsgCB("~#CONTEXT: last_key = %s", S);
-				string_path script_name;
-				sprintf_s(script_name, sizeof(script_name) - 1, "%s.script", S);
-				if (nesting_path.size() == 0 && // скан глобального пространства имен
-					(last_key == "" || last_key == "config" || last_key == "package" || last_key == "jit" || last_key == "loaded" || last_key == "md_list" ||
-   					 FS.exist("$game_scripts$", script_name) )) // с дампом экспортируемых luabind вещей, возникают сбои!
-				{
-					Msg("! skipping namespace %s ", last_key.c_str());
-					lua_pop(L, 1);
-					continue;
-				}
-				
-				if (xr_strcmp("_G", S)) {					
-					luabind::object		object(L);
-					object.set();
-					// if (!xr_strcmp("security", S)) { S = S; } /// wtf?
-					xr_string path_dump = "";
-					for (u32 ns = 0; ns < nesting_path.size(); ns++)
-						path_dump = path_dump + nesting_path.at(ns) + ".";
-
-					path_dump = path_dump + S;
-					Msg("#dumping namespace %s ", path_dump.c_str());
-					nesting_path.push_back(S);
-
-					u32 nest_level = nesting_path.size();
-					// если слишком много вложений или начали повторяться строки
-					if (nest_level < 2 &&
-						!(nest_level > 1 && nesting_path.at(0) == S)
-						)
-					{
-						print_free_functions(L, object, S, _indent);
-					}
-					else
-					{
-						// problem detected
-						Msg("! WARN: to many nested levels for export = %d, or self-reference detected ", nest_level);
-						FlushLog();
-						dumper->flush();
-					}
-					nesting_path.pop_back();
-
-				}
-			}
-			// #pragma todo("Dima to Dima : Remove this hack if find out why")			
-			
-			// */			
-			// lua_pop	(L, 1);	// remove value from stack
-			lua_pop(L, 1);
-			if (lua_gettop(L) > save_top)
-			{
-				Msg("lua_gettop returned %d vs expected %d", lua_gettop(L), save_top);
-				lua_settop(L, save_top);
-			}
-		} 		
-		
+		auto proxy = *functions.top();
+		functions.pop();
+		proxy.push(ls);
+		PrintFunction();
+		lua_pop(ls, 1);
 	}
-	if (count)
-		FastMsg("%s};",indent.c_str());
+	for (int i = 0; i < scopeClasses; i++)
+	{
+		auto proxy = *classes.top();
+		classes.pop();
+		proxy.push(ls);
+		if (is_class_rep(ls, -1)) PrintClass();
+		lua_pop(ls, 1);
+	}
+	for (int i = 0; i < scopeNamespaces; i++)
+	{
+		auto proxy = *namespaces.top();
+		namespaces.pop();
+		proxy.push(ls);
+		object innerNamesp(from_stack(ls, -1));
+		auto namespaceName = lua_tostring(ls, -2);
+		PrintfIndented("namespace %s\n", namespaceName);
+		PrintIndented("{\n");
+		shiftLevel++;
+		PrintNamespace(innerNamesp);
+		shiftLevel--;
+		PrintIndented("}\n");
+		lua_pop(ls, 1);
+	}
 }
 
-void print_help							(lua_State *L)
+BindingsDumper::BindingsDumper()
 {
-
-	if (g_pGameLevel)
-	{
-		Msg("!WARN: Рекомендуется lua_help выполнять до загрузки уровня (из главного меню).");
-		// return;
-	}
-
-	OpenDumper();
-	BOOL paused = Device.Paused();
-	Device.Pause(TRUE, TRUE, FALSE, "lua_help");
-	// L = lua_newthread (L);
-	int top = lua_gettop(L);
-	SleepEx(10, FALSE);
-
-#if !defined(_CPPUNWIND)
-	__try
-	{
-#else	
-	{
-#endif
-		FastMsg					("\nList of the classes exported to LUA\n");
-		luabind::detail::class_registry::get_registry(L)->iterate_classes(L,&print_class);
-		FastMsg					("End of list of the classes exported to LUA\n");
-		FastMsg					("\nList of the namespaces exported to LUA\n");
-#if !defined(_CPPUNWIND)				
-		__try
-		{
-#endif
-			print_free_functions(L, luabind::globals(L), "", " ");
-			FastMsg("End of list of the namespaces exported to LUA\n");
-#if !defined(_CPPUNWIND)
-		}
-		__except (EXCEPTION_EXECUTE_HANDLER)
-		{	
-#endif
-			Msg("Fatal: Exception catched in print_free_functions  ");
-			FastMsg("WARNING: incomplete list of the namespaces exported to LUA\n");
-#if !defined(_CPPUNWIND)
-		}
-	}
-	__finally
-	{
-#endif
-		dumper->flush();		
-		CloseDumper();
-		Device.Pause(paused, TRUE, FALSE, "lua_help");
-		lua_settop(L, top);
-	}	
-	
+	std::pair<const char*, const char*> subst[] = { { "__add", "operator+" },{ "__sub", "operator-" },
+	{ "__mul", "operator*" },{ "__div", "operator/" },{ "__pow", "operator^" },{ "__lt", "operator<" },
+	{ "__le", "operator<=" },{ "__gt", "operator>" },{ "__ge", "operator>=" },{ "__eq", "operator==" },
+	{ "__tostring", "operator string" } };
+	const u32 substCount = sizeof(subst) / sizeof(*subst);
+	for (u32 i = 0; i < substCount; i++)
+		operatorSubst.insert(subst[i]);
 }
-#else
-void print_help							(lua_State *L)
+
+void BindingsDumper::Dump(lua_State* luaState, IWriter* outStream, const Options& opt)
 {
-	Msg					("! Release build doesn't support lua-help :(");
+	ls = luaState;
+	options = opt;
+	shiftLevel = 0;
+	writer = outStream;
+	luabind::set_custom_type_marking(false);
+	luabind::object globals = luabind::globals(ls);
+	PrintNamespace(globals);
+	luabind::set_custom_type_marking(true);
 }
-#endif
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////

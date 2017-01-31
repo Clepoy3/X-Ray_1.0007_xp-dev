@@ -38,6 +38,7 @@ public:
 
 private:
 	bool						m_reload_modules;
+	bool bindingsDumped = false;
 
 protected:
 	CScriptProcessStorage		m_script_processes;

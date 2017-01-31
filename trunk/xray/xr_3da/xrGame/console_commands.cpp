@@ -981,13 +981,11 @@ public:
 };
 
 // #ifdef DEBUG
-//extern void print_help(lua_State *L);
 
 struct CCC_LuaHelp : public IConsole_Command {
 	CCC_LuaHelp(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR args) {
-		Msg("! KRodin: LuaHelp not supported!");
-		//print_help(ai().script_engine().lua());
+		Msg("! 'lua_help' command is not supported!\nStart the game with parameter '-dump_bindings' !");
 	}
 };
 

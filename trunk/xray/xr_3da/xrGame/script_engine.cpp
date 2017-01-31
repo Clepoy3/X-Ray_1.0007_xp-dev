@@ -14,6 +14,7 @@
 #include "script_process.h"
 #include "../lua_tools.h"
 #include "../../build_config_defines.h"
+#include "script_engine_help.hpp"
 #ifdef USE_DEBUGGER
 #	include "script_debugger.h"
 #endif
@@ -180,31 +181,47 @@ void CScriptEngine::setup_auto_load() //fixed
 {
 	Msg("[CScriptEngine::init] Starting LuaJIT!");
 	lua_State* LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
-	luaL_openlibs(LSVM); //Инициализация функций LuaJIT
 	R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); //Надо проверить, случается ли такое.
+	reinit(LSVM);
 	luabind::open(LSVM); //Запуск луабинда
 	luabind::disable_super_deprecation(); // XXX: temporary workaround to preserve backwards compatibility with game scripts
+//--------------Установка калбеков------------------//
+#ifdef LUABIND_NO_EXCEPTIONS
+	luabind::set_error_callback(lua_error);
+	luabind::set_cast_failed_callback(lua_cast_failed);
+#endif
+	luabind::set_pcall_callback([](lua_State *L) //KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
+	{
+		lua_pushcfunction(L, lua_pcall_failed);
+	});
+	lua_atpanic(LSVM, lua_panic);
+//-----------------------------------------------------//
+	export_classes(LSVM); //Тут регистрируются все движковые функции, импортированные в скрипты
+	if (std::strstr(Core.Params, "-dump_bindings") && !bindingsDumped)
+	{
+		bindingsDumped = true;
+		static int dumpId = 1;
+		string_path filePath;
+		xr_sprintf(filePath, "ScriptBindings_%d.txt", dumpId++);
+		FS.update_path(filePath, "$app_data_root$", filePath);
+		IWriter *writer = FS.w_open(filePath);
+		BindingsDumper dumper;
+		BindingsDumper::Options options = {};
+		options.ShiftWidth = 4;
+		options.IgnoreDerived = true;
+		options.StripThis = true;
+		dumper.Dump(LSVM, writer, options);
+		FS.w_close(writer);
+	}
+	luaL_openlibs(LSVM); //Инициализация функций LuaJIT
 
 	//if (loadGlobalNamespace) //Сделано для того, чтобы не надо было городить кучу функций для запуска нескольких копий LuaJIT в будущем (для шейдеров и скриптов например.)
 	//{
-//--------------Установка калбеков------------------//
-#ifdef LUABIND_NO_EXCEPTIONS
-		luabind::set_error_callback(lua_error);
-		luabind::set_cast_failed_callback(lua_cast_failed);
-#endif
-		luabind::set_pcall_callback([](lua_State *L) //KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
-		{
-			lua_pushcfunction(L, lua_pcall_failed);
-		});
-		lua_atpanic(LSVM, lua_panic);
-//-----------------------------------------------------//
 #ifdef USE_DEBUGGER
 		if (debugger())
 			debugger()->PrepareLuaBind();
 #endif
 		g_game_lua = LSVM; //KRodin: не трогать, там намудрили так, что хрен разбрешься. Пусть так и будет.
-		CScriptStorage::reinit(LSVM);
-		export_classes(LSVM); //Тут регистрируются все движковые функции, импортированные в скрипты
 		setup_auto_load(); //Построение метатаблиц
 #ifdef DEBUG //Это надо убрать наверно?
 #ifdef USE_DEBUGGER
