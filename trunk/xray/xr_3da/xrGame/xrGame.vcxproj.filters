@@ -6529,7 +6529,11 @@
     <ClInclude Include="derived_client_classes.h">
       <Filter>AI\AScript\ScriptClasses\DerivedClientClasses</Filter>
     </ClInclude>
-    <!--ClInclude Include="script_vars_storage.h" /-->
+    <ClInclude Include="script_vars_storage.h" />
+	<ClInclude Include="Common\Noncopyable.hpp" />
+    <ClInclude Include="..\xrScriptEngine\Functor.hpp" />
+    <ClInclude Include="..\ai_script_space.h" />
+	<ClInclude Include="script_engine_help.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -7729,9 +7733,9 @@
     <ClCompile Include="script_engine_export.cpp">
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClCompile>
-    <!--ClCompile Include="script_engine_help.cpp">
+    <ClCompile Include="script_engine_help.cpp">
       <Filter>AI\AScript\ScriptEngine</Filter>
-    </ClCompile-->
+    </ClCompile>
     <ClCompile Include="script_engine_script.cpp">
       <Filter>AI\AScript\ScriptEngine</Filter>
     </ClCompile>
@@ -9683,7 +9687,7 @@
     <ClCompile Include="derived_client_classes.cpp">
       <Filter>AI\AScript\ScriptClasses\DerivedClientClasses</Filter>
     </ClCompile>
-    <!--ClCompile Include="script_vars_storage.cpp" /-->
+    <ClCompile Include="script_vars_storage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="graph_abstract.h">
