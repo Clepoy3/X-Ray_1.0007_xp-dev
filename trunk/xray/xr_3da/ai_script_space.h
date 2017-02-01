@@ -17,6 +17,7 @@
 #pragma warning(disable:4275) // class "...", не являющийся dll-интерфейсом, использован в качестве базового для "..."
 #pragma warning(disable:4389) // несоответствие типов со знаком и без знака
 #pragma warning(disable:4101) // "...": неиспользованная локальная переменная
+#pragma warning(disable:4702) // Недостижимый код
 
 extern "C" {
 # include <lualib.h>

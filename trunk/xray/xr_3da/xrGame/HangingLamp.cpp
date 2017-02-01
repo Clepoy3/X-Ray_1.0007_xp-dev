@@ -340,7 +340,7 @@ void	CHangingLamp::Hit					(SHit* pHDS)
 		HDS.bone()
 		);
 
-#ifdef HLAMP_AFFECT_IMMUNITIES //KRodin: выключено из за нерабочести. Надо просто дефайн снять
+#ifdef HLAMP_AFFECT_IMMUNITIES
 	HDS.power = CHitImmunity::AffectHit(HDS.power,HDS.hit_type);	
 	inherited::Hit(pHDS);
 #endif

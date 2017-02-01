@@ -9,9 +9,9 @@
 IC	bool compare_safe(const luabind::object &o1, const luabind::object &o2)
 {
 	if ((luabind::type(o1) == LUA_TNIL) && (luabind::type(o2) == LUA_TNIL))
-		return						(true);
+		return true;
 
-	return							(o1 == o2);
+	return (o1 == o2);
 }
 
 #ifndef LUABIND_NO_EXCEPTIONS //KRodin: изменил дефайн под новые реалии. TODO: Подумать, как вытянуть информацию об ошибке из аргумента. Если придумаю - убрать отключение варнинга
