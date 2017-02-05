@@ -124,7 +124,7 @@ void CLevel::net_Stop		()
 
 void CLevel::ClientSend()
 {
-	if (GameID() == GAME_SINGLE || OnClient())
+	if (GameID() != GAME_SINGLE && OnClient()) // https://www.gameru.net/forum/index.php?showtopic=67297&view=findpost&p=1609615
 	{
 		if ( !net_HasBandwidth() ) return;
 	};
