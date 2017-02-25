@@ -5,7 +5,7 @@
 #pragma once
 
 #include "uiwindow.h"
-
+/*
 class CUIButton;
 class CUIStatic;
 //class CUITrackButton;
@@ -45,3 +45,4 @@ protected:
 	CUIButton*			UIWaitBtn;	//кнопка - ожидать
 	//CUIButton*		UICloseBtn;
 };
+*/

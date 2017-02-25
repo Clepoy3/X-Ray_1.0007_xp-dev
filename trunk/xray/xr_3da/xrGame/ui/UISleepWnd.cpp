@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+/*
 #include "../pch_script.h"
 #include "UIWindow.h"
 #include "UISleepWnd.h"
@@ -179,3 +180,4 @@ void CUISleepWnd::SetRestTime(u8 hours, u8 minutes)
 	sprintf_s						(buf, "%02i:%02i", m_Hours, m_Minutes);
 	UIStaticRestAmount->SetText	(buf);
 }
+*/
