@@ -17,11 +17,11 @@
 
 using namespace luabind;
 
-extern class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject> &);
-extern class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject> &);
-extern class_<CScriptGameObject> &script_register_game_object3(class_<CScriptGameObject> &);
-extern class_<CScriptGameObject> &script_register_game_object_trader(class_<CScriptGameObject> &);
-
+extern class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>&&);
+extern class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>&&);
+extern class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>&&);
+extern class_<CScriptGameObject> script_register_game_object_trader(class_<CScriptGameObject>&&);
+extern void script_register_game_object3_global(lua_State*); //KRodin
 
 #pragma optimize("s",on)
 void CScriptGameObject::script_register(lua_State *L)
@@ -31,7 +31,7 @@ void CScriptGameObject::script_register(lua_State *L)
 	module(L)
 		[
 			class_<CSightParams>("CSightParams")
-			.enum_("bla-bla")
+			.enum_("bla-bla") //ÿ“Œ???
 			[
 				value("eSightTypeCurrentDirection", int(SightManager::eSightTypeCurrentDirection)),
 				value("eSightTypePathDirection", int(SightManager::eSightTypePathDirection)),
@@ -54,7 +54,7 @@ void CScriptGameObject::script_register(lua_State *L)
 				script_register_game_object3(
 				script_register_game_object2(
 				script_register_game_object1(
-				script_register_game_object_trader(instance)
+				script_register_game_object_trader(std::move(instance))
 				)
 				)
 				),
@@ -154,7 +154,7 @@ void CScriptGameObject::script_register(lua_State *L)
 				def("show_condition", &::show_condition)
 
 		];
-
+		script_register_game_object3_global(L); //KRodin
 		CHitImmunity::script_register(L);
 		CEntityCondition::script_register(L);
 }

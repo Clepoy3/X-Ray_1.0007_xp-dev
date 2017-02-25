@@ -19,7 +19,6 @@
 #include "Level_Bullet_Manager.h"
 #include "script_process.h"
 #include "script_engine.h"
-#include "script_engine_space.h"
 #include "team_base_zone.h"
 #include "infoportion.h"
 #include "patrol_path_storage.h"

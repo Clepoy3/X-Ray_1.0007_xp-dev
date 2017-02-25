@@ -534,8 +534,8 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\xrCore;..\Luabind;..\LuaJIT\src;..\..\3rd party\Xiph\libtheora\include;..\..\3rd party\Xiph\libogg\include;..\..\3rd party\boost;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\xrCore;..\Luabind;..\LuaJIT\src;..\..\3rd party\Xiph\libtheora\include;..\..\3rd party\Xiph\libogg\include;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;ENGINE_BUILD;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -559,7 +559,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4996;4458;4457;4456;4459;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -567,7 +567,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;msacm32.lib;vfw32.lib;luaJIT.lib;luabind.lib;xrNetServer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libogg_static.lib;libtheora_static.lib;msacm32.lib;vfw32.lib;xrNetServer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -1232,9 +1232,6 @@
     <ClInclude Include="EngineAPI.h" />
     <ClInclude Include="EventAPI.h" />
     <ClInclude Include="xrCPU_Pipe.h" />
-    <ClInclude Include="ai_script_lua_extension.h" />
-    <ClInclude Include="ai_script_lua_space.h" />
-    <ClInclude Include="ai_script_space.h" />
     <ClInclude Include="perlin.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1461,9 +1458,6 @@
     <ClCompile Include="EngineAPI.cpp" />
     <ClCompile Include="EventAPI.cpp" />
     <ClCompile Include="mailSlot.cpp" />
-    <ClCompile Include="_scripting.cpp" />
-    <ClCompile Include="ai_script_lua_debug.cpp" />
-    <ClCompile Include="ai_script_lua_extension.cpp" />
     <ClCompile Include="perlin.cpp" />
   </ItemGroup>
   <ItemGroup>

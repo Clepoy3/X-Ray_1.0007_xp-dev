@@ -79,10 +79,10 @@ void CObjectFactory::register_script	() const
 	const_iterator				I = clsids().begin(), B = I;
 	const_iterator				E = clsids().end();
 	for ( ; I != E; ++I)
-		instance.enum_			("_clsid")[luabind::value(*(*I)->script_clsid(),int(I - B))];
+		instance = std::move(instance).enum_("_clsid")[luabind::value(*(*I)->script_clsid(),int(I - B))];
 
 	lua_State *L				= ai().script_engine().lua();
-	luabind::module				(L)[instance]; // это представление нельзя обработать как таблицу
+	luabind::module				(L)[std::move(instance)]; // это представление нельзя обработать как таблицу
 
 	lua_newtable(L);
 	I = B;
@@ -91,7 +91,9 @@ void CObjectFactory::register_script	() const
 		lua_pushinteger ( L, int(I - B));
 		lua_setfield (L, -2, *(*I)->script_clsid());
 	}
-	lua_setglobal(L, "clsid_table");   // это представление можно обработать как таблицу :)	
+	lua_setglobal(L, "clsid_table");   // это представление можно обработать как таблицу :)
+	//Добавлено табличное представление класса сlsid, под именем clsid_table - чтобы была возможность обработки в циклах (object_factory_script.cpp).
+	// https://xp-dev.com/sc/change/204486/158 //KRodin: чтоб не забыть, зачем это нужно.
 }
 
 #pragma optimize("s",on)

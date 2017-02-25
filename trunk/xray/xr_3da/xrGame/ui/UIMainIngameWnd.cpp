@@ -1021,19 +1021,16 @@ void GetStaticRaw(CUIMainIngameWnd *wnd, lua_State *L)
 #pragma optimize("s",on)
 void CUIMainIngameWnd::script_register(lua_State *L)
 {
-
 	module(L)
 		[
-
 			class_<CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd")
-			.def("GetStatic",		 &GetStaticRaw, raw(_2)),
+			.def("GetStatic",		 &GetStaticRaw, raw<2>()),
 			// .def("turn_off_icon", &TurnOffWarningIcon),
 			def("get_main_window",   &GetMainIngameWindow) // get_mainingame_window better??
 #ifdef SCRIPT_ICONS_CONTROL
 			, def("setup_game_icon", &SetupGameIcon)
 #endif			
 		];
-
 }
 #pragma optimize("",on)
 

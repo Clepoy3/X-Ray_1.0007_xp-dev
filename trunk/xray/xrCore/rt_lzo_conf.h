@@ -139,17 +139,11 @@
 #  define lzo_memset(a,b,c)     memset(a,b,c)
 #endif
 
-
-#undef NDEBUG
 #if defined(LZO_CFG_FREESTANDING)
 #  undef LZO_DEBUG
-#  define NDEBUG 1
 #  undef assert
 #  define assert(e) ((void)0)
 #else
-#  if !defined(LZO_DEBUG)
-#    define NDEBUG 1
-#  endif
 #  include <assert.h>
 #endif
 

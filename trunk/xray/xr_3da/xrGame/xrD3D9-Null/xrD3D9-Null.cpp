@@ -43,7 +43,7 @@ CxrD3D9Null::CxrD3D9Null()
 	UINT cSDKVersion = D3D_SDK_VERSION;
 //	LogOut_File("In %x out %x", cSDKVersion, SDKVersion);
 //	LogOut("In %d out %d", cSDKVersion, SDKVersion);
-#ifdef NDEBUG
+#ifndef DEBUG
 	if (SDKVersion != cSDKVersion)
 	{
 //		LogOut_File("NULL");
@@ -54,4 +54,3 @@ CxrD3D9Null::CxrD3D9Null()
 //	LogOut_File("%x", I);
 	return I;
 }
-

@@ -8,21 +8,18 @@
 
 #pragma once
 
+#include "pch_script.h"
 #include "script_storage.h"
 #include "script_export_space.h"
-#include "script_space_forward.h"
 #include "associative_vector.h"
 
-extern "C" {
-	#include "../LuaJIT/src/lua.h" //#include <lua.h> //KRodin: исправил инклуды
-	#include "../LuaJIT/src/luajit.h" //#include <luajit.h>
+namespace ScriptEngine {
+	enum EScriptProcessors {
+		eScriptProcessorLevel = u32(0),
+		eScriptProcessorGame,
+		eScriptProcessorDummy = u32(-1),
+	};
 };
-//#define DBG_DISABLE_SCRIPTS
-
-//namespace ScriptEngine {
-//	enum EScriptProcessors;
-//};
-#include "script_engine_space.h"
 
 class CScriptProcess;
 class CScriptThread;
@@ -33,7 +30,7 @@ struct lua_Debug;
 	class CScriptDebugger;
 #endif
 
-class CScriptEngine : public CScriptStorage {
+class /*DLL_API*/ CScriptEngine : public CScriptStorage { //DLL_API - раскомментировать при выносе скриптового движка в отдельный dll
 public:
 	typedef CScriptStorage											inherited;
 	typedef ScriptEngine::EScriptProcessors							EScriptProcessors;
@@ -45,7 +42,6 @@ private:
 protected:
 	CScriptProcessStorage		m_script_processes;
 	int							m_stack_level;
-	shared_str					m_class_registrators;
 
 protected:
 #ifdef USE_DEBUGGER
@@ -62,28 +58,27 @@ private:
 public:
 								CScriptEngine				();
 	virtual						~CScriptEngine				();
-			void				init						();
+	/*lua_State**/ void init(/*bool loadGlobalNamespace*/);
 	virtual	void				unload						();
 	static	int					lua_panic					(lua_State *L);
 	static	void				lua_error					(lua_State *L);
 	static	int					lua_pcall_failed			(lua_State *L);
 	static	void				lua_hook_call				(lua_State *L, lua_Debug *dbg);
-			void				setup_callbacks				();
 			void				load_common_scripts			();
-			bool				load_file					(LPCSTR	caScriptName, LPCSTR namespace_name);
-	IC		CScriptProcess		*script_process				(const EScriptProcessors &process_id) const;
-	IC		void				add_script_process			(const EScriptProcessors &process_id, CScriptProcess *script_process);
+			bool				load_file(const char *scriptName, const char *namespaceName);
+			CScriptProcess		*script_process				(const EScriptProcessors &process_id) const;
+			void				add_script_process			(const EScriptProcessors &process_id, CScriptProcess *script_process);
 			void				remove_script_process		(const EScriptProcessors &process_id);
 			void				setup_auto_load				();
-			void				process_file_if_exists		(LPCSTR file_name, bool warn_if_not_exist);
-			void				process_file				(LPCSTR file_name);
-			void				process_file				(LPCSTR file_name, bool reload_modules);
+			bool				process_file_if_exists		(LPCSTR file_name, bool warn_if_not_exist);
+			bool				process_file				(LPCSTR file_name);
+			bool				process_file				(LPCSTR file_name, bool reload_modules);
 			bool				function_object				(LPCSTR function_to_call, luabind::object &object, int type = LUA_TFUNCTION);
 			void				register_script_classes		();
-	IC		void				parse_script_namespace		(LPCSTR function_to_call, LPSTR name_space, LPSTR functor);
+			void				parse_script_namespace(const char *name, char *ns, u32 nsSize, char *func, u32 funcSize);
 
-	template <typename _result_type>
-	IC		bool				functor						(LPCSTR function_to_call, luabind::functor<_result_type> &lua_function);
+	template <typename TResult>
+	IC		bool				functor						(LPCSTR function_to_call, luabind::functor<TResult> &lua_function);
 
 #ifdef USE_DEBUGGER
 			void				stopDebugger				();
@@ -99,8 +94,21 @@ add_to_type_list(CScriptEngine)
 #undef script_type_list
 #define script_type_list save_type_list(CScriptEngine)
 
-#include "script_engine_inline.h"
-
-extern DLL_API void log_script_error(LPCSTR format, ...);
+void log_script_error(LPCSTR format, ...);
 extern DLL_API lua_State* game_lua();
 extern DLL_API LPCSTR try_call_luafunc(LPCSTR func_name, LPCSTR param);
+
+template <typename TResult>
+IC bool CScriptEngine::functor(LPCSTR function_to_call, luabind::functor<TResult> &lua_function)
+{
+	luabind::object object;
+	if (!function_object(function_to_call, object))
+		return false;
+	try {
+		lua_function = luabind::object_cast<luabind::functor<TResult>>(object);
+	}
+	catch (...) {
+		return false;
+	}
+	return true;
+}

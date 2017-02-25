@@ -195,7 +195,7 @@ void CUIWindow::Update()
 		Frect				r;
 		GetAbsoluteRect		(r);
 		cursor_on_window	= !!r.in(temp);
-#ifndef NDEBUG
+#ifdef DEBUG
 		if(cursor_on_window&&g_show_wnd_rect){
 			Frect r;
 			GetAbsoluteRect(r);
@@ -668,7 +668,14 @@ void CUIWindow::SetWindowName(LPCSTR wn, BOOL ifnset)
    m_windowName = wn; 
 }
 
-void CUIWindow::SetParent(CUIWindow* pNewParent) 
+void CUIWindow::SetWindowNameScript(LPCSTR wn) //KRodin: отдельная функция специально для скриптов
+{
+	//if (0 != m_windowName.size())  // alpet: имя обновить, только если оно не установленно ранее //KRodin: надо подумать, нужно ли оно здесь
+	//	return;
+	m_windowName = wn;
+}
+
+void CUIWindow::SetParent(CUIWindow* pNewParent)
 {
 	R_ASSERT( !(m_pParentWnd && m_pParentWnd->IsChild(this)) );
 

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_space_forward.h"
+#include "pch_script.h"
 #include "script_bind_macroses.h"
 #include "script_export_space.h"
 #include "xr_time.h"
@@ -707,7 +707,7 @@ IC bool test_pushobject(lua_State *L, CGameObject* obj)
 	using namespace luabind::detail;
 	T *pObj = smart_cast<T*> (obj);
 	if (pObj && get_class_rep<T>(L))
-	{		
+	{
 		convert_to_lua<T*>(L, pObj);  // обязательно конвертировать указатель, а не значение. Иначе вызов деструктора при сборке мусора!
 		return true;		
 	}

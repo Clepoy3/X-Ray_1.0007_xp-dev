@@ -4,6 +4,8 @@
 #include "limb.h"
 #include "../../SkeletonAnimated.h"
 #include "../ik_anim_state.h"
+#include "../Common/Noncopyable.hpp"
+
 class	CKinematics	;
 class	CDB::TRI	;
 struct SCalculateData;
@@ -92,9 +94,8 @@ private:
 #endif
 };
 
-#include <boost/noncopyable.hpp>
 class	ik_anim_state;
-struct SCalculateData : private boost::noncopyable {
+struct SCalculateData : private Noncopyable {
 
 	float	const		*m_angles			;
 	CKinematicsAnimated	*m_K				;

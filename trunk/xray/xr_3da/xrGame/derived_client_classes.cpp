@@ -27,6 +27,7 @@
 
 
 using namespace luabind;
+
 #pragma optimize("s", on)
 
 extern LPCSTR get_lua_class_name(luabind::object O);
@@ -52,6 +53,7 @@ void CAnomalyZoneScript::script_register(lua_State *L)
 	module(L)
 		[	
 			class_<CSpaceRestrictor, CGameObject>("CSpaceRestrictor")
+			.def(constructor<>()) //KRodin: перенесено из space_restrictor_script.cpp. Какого чёрта этот класс два раза регистрировали???
 			.property("restrictor_center"				,				&get_restrictor_center)
 			.property("restrictor_type"					,				&CSpaceRestrictor::restrictor_type)
 			.property("radius"							,				&CSpaceRestrictor::Radius)						
@@ -230,9 +232,9 @@ void CInventoryScript::script_register(lua_State *L)
 			.property("inv_name_short"					,			&get_item_name_short, &set_item_name_short)
 			.property("cost"							,			&CInventoryItem::Cost,  &CInventoryItem::SetCost)
 			.property("slot"							,			&CInventoryItem::GetSlot, &CInventoryItem::SetSlot)
-#ifdef INV_NEW_SLOTS_SYSTEM
-			.property("slots"							,			&get_slots,    &fake_set_slots, raw(_2))	
-#endif
+/*#if defined(INV_NEW_SLOTS_SYSTEM) && defined(LUABIND_NO_ERROR_CHECKING) //KRodin: при отключенном LUABIND_NO_ERROR_CHECKING почему-то выдаёт ошибку error C2672: "luabind::detail::gen_set_matcher": не найдена соответствующая перегруженная функция
+			.property("slots"							,			&get_slots,    &fake_set_slots, raw<2>())
+#endif*/ //KRodin: да мне этот метод пока и не нужен. Будет нужен - тогда и буду думать, как это исправлять.
 			.property("description"						,			&get_item_description, &set_item_description)
 			,
 			class_<CInventoryItemObject, bases<CInventoryItem, CGameObject>>("CInventoryItemObject"),
@@ -246,9 +248,9 @@ void CInventoryScript::script_register(lua_State *L)
 			.property	  ("selected_item"				,			&inventory_selected_item)
 			.property	  ("target"						,			&get_inventory_target)
 			.property	  ("class_name"					,			&get_lua_class_name)
-			.def		  ("to_belt"					,			&item_to_slot,   raw(_2))
-			.def		  ("to_slot"					,			&item_to_slot,   raw(_2))
-			.def		  ("to_ruck"					,			&item_to_ruck,   raw(_2))
+			.def		  ("to_belt"					,			&item_to_slot, raw<2>())
+			.def		  ("to_slot"					,			&item_to_slot, raw<2>())
+			.def		  ("to_ruck"					,			&item_to_ruck, raw<2>())
 			,
 			class_<CInventoryOwner>("CInventoryOwner")
 			.def_readonly ("inventory"					,			&CInventoryOwner::m_inventory)

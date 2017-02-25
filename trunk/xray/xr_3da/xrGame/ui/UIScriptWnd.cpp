@@ -74,12 +74,11 @@ void CUIDialogWndEx::AddCallback(LPCSTR control_id, s16 event, const luabind::fu
 
 void CUIDialogWndEx::AddCallback (LPCSTR control_id, s16 event, const luabind::functor<void> &functor, const luabind::object &object)
 {
-	SCallbackInfo* c	= NewCallback ();
-	c->m_callback.set	(functor,object);
-	c->m_controlName	= control_id;
-	c->m_event			= event;
+	SCallbackInfo* c = NewCallback();
+	c->m_callback.set(functor, object);
+	c->m_controlName = control_id;
+	c->m_event = event;
 }
-
 
 
 bool CUIDialogWndEx::OnKeyboard(int dik, EUIMessages keyboard_action)

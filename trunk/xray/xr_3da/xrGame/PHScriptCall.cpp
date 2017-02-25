@@ -1,6 +1,6 @@
 #include "pch_script.h"
 #include "PHCommander.h"
-#include "script_space_forward.h"
+#include "pch_script.h"
 #include "script_callback_ex.h"
 #include "../xr_object.h"
 #include "PHScriptCall.h"
@@ -8,9 +8,9 @@
 /*
 IC bool compare_safe(const luabind::object &o1 , const luabind::object &o2)
 {
-	return (o1.type()==LUA_TNIL && o2.type()==LUA_TNIL) || o1==o2;
+	return (o1.type() == LUA_TNIL && o2.type() == LUA_TNIL) || o1==o2;
 }
-/**/
+*/
 
 CPHScriptCondition::CPHScriptCondition(const luabind::functor<bool> &func)
 {

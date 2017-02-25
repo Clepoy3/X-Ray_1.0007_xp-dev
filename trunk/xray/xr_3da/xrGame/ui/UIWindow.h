@@ -190,6 +190,7 @@ public:
 	// Name of the window
 	const shared_str		WindowName			() const;
 	void					SetWindowName		(LPCSTR wn, BOOL ifnset = FALSE);					
+	void					SetWindowNameScript (LPCSTR wn); //KRodin: отдельная функция специально для скриптов
 	LPCSTR					WindowName_script	()							{return *WindowName();}
 	CUIWindow*				FindChild			(const shared_str name,  u32 max_nested = 15);
 

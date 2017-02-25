@@ -72,7 +72,6 @@ CUIWindow *find_child_window(CUIWindow *wnd, LPCSTR name) // script wrapper LPCS
 	return wnd->FindChild(name);
 }
 
-
 using namespace luabind;
 
 #pragma optimize("s",on)
@@ -104,7 +103,7 @@ void CUIWindow::script_register(lua_State *L)
 
 		class_<CUIWindow>("CUIWindow")
 		.def(							constructor<>())
-		.def("AttachChild",				&CUIWindow::AttachChild, adopt(_2))
+		.def("AttachChild",				&CUIWindow::AttachChild, adopt<2>())
 		.def("DetachChild",				&CUIWindow::DetachChild)
 		.def("FindChild",				&find_child_window)	
 		.def("DetachFromParent",		&CUIWindow::DetachFromParent)
@@ -130,7 +129,7 @@ void CUIWindow::script_register(lua_State *L)
 		.def("GetFont",					&CUIWindow::GetFont)
 
 		.def("WindowName",				&CUIWindow::WindowName_script)
-		.def("SetWindowName",			&CUIWindow::SetWindowName)
+		.def("SetWindowName",			&CUIWindow::SetWindowNameScript) //KRodin: fixed
 		.def("SetPPMode",				&CUIWindow::SetPPMode)
 		.def("ResetPPMode",				&CUIWindow::ResetPPMode)
 

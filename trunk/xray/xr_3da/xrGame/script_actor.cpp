@@ -191,7 +191,7 @@ void CScriptActor::script_register(lua_State *L)
 			.def("is_zoom_aiming_mode",					&CActor::IsZoomAimingMode)
 			// Real Wolf. End. 14.10.2014.
 			,
-			class_<CActorObject, bases<CActor, CEntityAlive>>("CActor")	// хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override			
+			class_<CActorObject, bases<CActor, CEntityAlive>>("CActor")	// хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override
 			
 // #pragma todo(" alpet : понять почему затирается свойство class_name для объекта актора. CInventoryOwner?")
 			

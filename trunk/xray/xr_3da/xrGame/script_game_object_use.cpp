@@ -3,7 +3,6 @@
 #include "script_game_object_impl.h"
 #include "UsableScriptObject.h"
 #include "GameObject.h"
-#include "script_storage_space.h"
 #include "script_engine.h"
 #include "stalker_planner.h"
 #include "ai/stalker/ai_stalker.h"

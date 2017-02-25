@@ -174,7 +174,8 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 	DEFINE_LUA_WRAPPER_METHOD_V0(OnRoundEnd)
 
 	virtual game_PlayerState* createPlayerState()
-	{return call_member<game_PlayerState*>(this,"createPlayerState")[adopt(result)];}
+	{ return call_member<game_PlayerState*>(this, "createPlayerState")[adopt<result>()]; }
+
 	static game_PlayerState* createPlayerState_static(inherited* ptr)
 	{return ptr->self_type::inherited::createPlayerState();}
 
@@ -186,6 +187,7 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 #pragma optimize("s",on)
 void game_sv_mp::script_register(lua_State *L)
 {
+/* //KRodin: отключено из за нерабочести всвязи с отключенным ранее экспортом класса game_sv_GameState
 	module(L)
 	[
 		class_< game_sv_mp, game_sv_GameState >("game_sv_mp")
@@ -195,18 +197,19 @@ void game_sv_mp::script_register(lua_State *L)
 			.def("SendPlayerKilledMessage", &game_sv_mp::SendPlayerKilledMessage)
 			.def("signal_Syncronize",		&game_sv_GameState::signal_Syncronize)
 	];
+*/
 }
 
 void game_sv_mp_script::script_register(lua_State *L)
 {
+/* //KRodin: отключено из за нерабочести всвязи с отключенным ранее экспортом класса game_sv_GameState
 	typedef CWrapperBase<game_sv_mp_script> WrapType;
 	typedef game_sv_mp_script BaseType;
-
 
 	module(L)
 	[
 		class_< game_sv_mp_script, WrapType, game_sv_mp >("game_sv_mp_script")
-			.def(	constructor<>())
+			.def(constructor<>())
 			.def("GetTeamData",			&GetTeamData)
 			.def("SpawnPlayer",			&SpawnPlayer)
 			.def("switch_Phase",		&switch_Phase)
@@ -226,6 +229,7 @@ void game_sv_mp_script::script_register(lua_State *L)
 			.def("OnRoundEnd",			&BaseType::OnRoundEnd, &WrapType::OnRoundEnd_static)
 
 			.def("net_Export_State",	&BaseType::net_Export_State, &WrapType::net_Export_State_static)
-			.def("createPlayerState",	&BaseType::createPlayerState, &WrapType::createPlayerState_static, adopt(result) )
+			.def("createPlayerState",	&BaseType::createPlayerState, &WrapType::createPlayerState_static, adopt<result>() )
 	];
+*/
 }

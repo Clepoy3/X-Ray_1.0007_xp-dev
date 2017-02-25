@@ -1274,7 +1274,7 @@ void CActor::OnHUDDraw	(CCustomHUD* /**hud/**/)
 		inventory().ActiveItem()->renderable_Render();
 	}
 
-#if 0//ndef NDEBUG
+#if 0//def DEBUG
 	if (Level().CurrentControlEntity() == this && g_ShowAnimationInfo)
 	{
 		string128 buf;

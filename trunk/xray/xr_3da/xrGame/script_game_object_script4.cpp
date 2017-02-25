@@ -175,7 +175,7 @@ void lua_pushgameobject(lua_State *L, CGameObject *obj)
 		 test_pushobject<CEntity>					(L, obj)	 
 	   ) return;
 
-	convert_to_lua<CGameObject*> (L, obj); // for default 
+	convert_to_lua<CGameObject*> (L, obj); // for default
 }
 
 CGameObject *lua_togameobject(lua_State *L, int index)
@@ -293,7 +293,6 @@ void raw_get_interface(CScriptGameObject *script_obj, lua_State *L) // deprecate
 	VERIFY(type == LUA_TUSERDATA && top > 0);
 }
 
-#pragma message(" get_interface raw function")
 using namespace luabind;
 
 void get_interface(object O)
@@ -335,13 +334,11 @@ u32 obj_level_id(CScriptGameObject *O)
 LPCSTR obj_level_name(CScriptGameObject *O) { return get_level_name_by_id ( obj_level_id(O) ); }
 
 
-
 #pragma optimize("s",on)
 
-class_<CScriptGameObject> &script_register_game_object3(class_<CScriptGameObject> &instance)
+class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>&& instance)
 {
-	instance
-		#pragma message("+ game_object.extensions export begin")
+	return std::move(instance)
 		// alpet: export object cast		 
 		.def("get_game_object",				&CScriptGameObject::object)
 		.def("get_alife_object",			&CScriptGameObject::alife_object)
@@ -353,7 +350,7 @@ class_<CScriptGameObject> &script_register_game_object3(class_<CScriptGameObject
 		.def("get_grenade",					&script_game_object_cast<CGrenade>)
 		.def("get_inventory_item",			&script_game_object_cast<CInventoryItemObject>)
 		.def("get_inventory_owner",			&script_game_object_cast<CInventoryOwner>)
-		.def("get_interface",				&raw_get_interface, raw(_2))
+		.def("get_interface",				&raw_get_interface, raw<2>())
 		.def("get_missile",					&script_game_object_cast<CMissile>)
 		.def("get_outfit",					&script_game_object_cast<CCustomOutfit>)
 		.def("get_space_restrictor",		&script_game_object_cast<CSpaceRestrictor>)
@@ -364,20 +361,25 @@ class_<CScriptGameObject> &script_register_game_object3(class_<CScriptGameObject
 		.def("get_weapon_hud",				&CScriptGameObject::GetWeaponHUD)
 		.def("get_hud_visual",				&CScriptGameObject::GetWeaponHUD_Visual)
 		.def("load_hud_visual",				&CScriptGameObject::LoadWeaponHUD_Visual)
-		.property("interface",				&get_interface,  &fake_set_interface, raw(_2))	
+/*#ifdef LUABIND_NO_ERROR_CHECKING //KRodin: при отключенном LUABIND_NO_ERROR_CHECKING почему-то выдаёт ошибку error C2672: "luabind::detail::gen_set_matcher": не найдена соответствующая перегруженная функция
+		.property("interface",				&get_interface,  &fake_set_interface, raw<2>())
+#endif*/ //KRodin: да мне этот метод пока и не нужен. Будет нужен - тогда и буду думать, как это исправлять.
 		.property("inventory",				&get_obj_inventory)
 		.property("immunities",				&get_obj_immunities)
 		.property("is_alive",				&get_obj_alive)
 		.property("conditions",				&get_obj_conditions)		
 		.property("level_id",				&obj_level_id)
 		.property("level_name",				&obj_level_name)
-		,
+	;
+}
 
-		def("script_object_class_name",		&script_object_class_name, raw(_1)),
-		def("engine_object",				&dynamic_engine_object, raw(_1)),		
-		def("get_actor_obj",				&Actor),
-		def("get_level_id",					&get_level_id)
-
-		#pragma message("+ game_object.extensions export end")
-	; return instance;
+void script_register_game_object3_global(lua_State *L) //KRodin: вынес регистрацию глобальных функций сюда, т.к в script_register_game_object3() оно теперь не работает
+{
+	module(L)
+	[
+		def("script_object_class_name", &script_object_class_name, raw<1>()),
+		def("engine_object", &dynamic_engine_object, raw<1>()),
+		def("get_actor_obj", &Actor),
+		def("get_level_id", &get_level_id)
+	];
 }

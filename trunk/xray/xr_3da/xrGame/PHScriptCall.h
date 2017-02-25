@@ -40,7 +40,7 @@ public:
 	virtual void 			run								()										;
 	virtual bool 			obsolete						()								const	;
 	virtual bool			compare							(const	CPHReqComparerV* v)		const	{return v->compare(this);}
-	virtual bool			compare							(const	CPHScriptAction* v)		const	{return *m_lua_function==*(v->m_lua_function);}
+	virtual bool			compare(const	CPHScriptAction* v)		const { return *m_lua_function == *(v->m_lua_function); }
 };
 
 

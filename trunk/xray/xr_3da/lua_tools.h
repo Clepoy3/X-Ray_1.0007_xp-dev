@@ -7,11 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "stdafx.h"
-extern "C" {
-	#include "../LuaJIT/src/lua.h" //#include <lua.h> //KRodin: исправил инклуды
-	#include "../LuaJIT/src/luajit.h" //#include <luajit.h>
-};
-
+#include "ai_script_space.h"
 
 ENGINE_API LPCSTR get_lua_traceback(lua_State *L, int depth);
 ENGINE_API extern lua_State* g_game_lua;

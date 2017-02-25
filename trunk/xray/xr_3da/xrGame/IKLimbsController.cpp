@@ -7,6 +7,8 @@
 
 #include "ik_anim_state.h"
 #include "../ennumerateVertices.h"
+#include "Common/Noncopyable.hpp"
+
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
@@ -45,7 +47,7 @@ void CIKLimbsController::Create( CGameObject* O )
 }
 
 struct envc :
-private boost::noncopyable,
+private Noncopyable,
 public SEnumVerticesCallback
 {
 	Fvector &pos;

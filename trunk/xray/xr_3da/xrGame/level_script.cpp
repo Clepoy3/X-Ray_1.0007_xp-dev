@@ -706,7 +706,7 @@ void CLevel::script_register(lua_State *L)
 
 		// obsolete\deprecated
 #ifdef LUAICP_COMPAT
-		def("object_by_id",						raw_get_object_by_id, raw(_1)),
+		def("object_by_id",						raw_get_object_by_id, raw<1>()),
 #else
 		def("object_by_id",						get_object_by_id),
 #endif

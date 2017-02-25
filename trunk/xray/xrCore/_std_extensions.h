@@ -283,4 +283,52 @@ XRCORE_API	char*				timestamp				(string64& dest);
 
 extern XRCORE_API u32			crc32					(const void* P, u32 len);
 
+//KRodin: Всё что ниже - взято из ЗП.
+IC int xr_strcpy(LPSTR destination, size_t const destination_size, LPCSTR source)
+{
+	return strncpy_s(destination, destination_size, source, destination_size);
+}
+
+template <int count>
+IC int xr_strcpy(char(&destination)[count], LPCSTR source)
+{
+	return xr_strcpy(destination, count, source);
+}
+
+IC int xr_strcat(LPSTR destination, size_t const buffer_size, LPCSTR source)
+{
+	size_t const destination_length = xr_strlen(destination);
+	LPSTR i = destination + destination_length;
+	LPSTR const e = destination + buffer_size - 1;
+	if (i > e)
+		return 0;
+
+	for (LPCSTR j = source; *j && (i != e); ++i, ++j)
+		*i = *j;
+
+	*i = 0;
+	return 0;
+}
+
+template <int count>
+IC int xr_strcat(char(&destination)[count], LPCSTR source)
+{
+	return xr_strcat(destination, count, source);
+}
+
+IC int __cdecl xr_sprintf(LPSTR destination, size_t const buffer_size, LPCSTR format_string, ...)
+{
+	va_list args;
+	va_start(args, format_string);
+	return vsnprintf_s(destination, buffer_size, buffer_size - 1, format_string, args);
+}
+
+template <int count>
+IC int __cdecl xr_sprintf(char(&destination)[count], LPCSTR format_string, ...)
+{
+	va_list args;
+	va_start(args, format_string);
+	return vsnprintf_s(destination, count, count - 1, format_string, args);
+}
+
 #endif

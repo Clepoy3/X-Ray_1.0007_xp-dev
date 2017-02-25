@@ -10,7 +10,7 @@
 
 #include "space_restrictor.h"
 #include "../feel_touch.h"
-#include "script_space_forward.h"
+#include "pch_script.h"
 #include "script_export_space.h"
 
 class CScriptGameObject;

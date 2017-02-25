@@ -429,7 +429,7 @@ void CScriptVarsTable::get(lua_State *L, LPCSTR k, bool unpack)
 			break;			
 
 		case LUA_TNETPACKET:
-			convert_to_lua<NET_Packet*>(L, sv.P); 
+			convert_to_lua<NET_Packet*>(L, sv.P);
 			break;
 		};
 	}
@@ -546,7 +546,7 @@ void CScriptVarsTable::set(lua_State *L, LPCSTR k, int index, int key_type)
 		{
 			sv.smart_alloc(LUA_TNETPACKET); // избежание утечек памяти
 			NET_Packet *src = (NET_Packet *)rep->ptr();
-			sv.size = src->B.count;			
+			sv.size = src->B.count;
 			sv.P = xr_new<NET_Packet>();
 			sv.P->B.count = sv.size;
 			sv.P->r_seek(src->r_tell());			
@@ -683,7 +683,7 @@ int script_vars_import(lua_State *L) // загрузка таблицы переменных из нет-пакет
 	object_rep* rep = is_class_object(L, 2);
 	if (rep && strstr(rep->crep()->name(), "net_packet"))
 	{
-		NET_Packet *src = (NET_Packet *)rep->ptr();		
+		NET_Packet *src = (NET_Packet *)rep->ptr();
 		void *from = &src->B.data[src->r_pos];
 		IReader reader(from, src->r_elapsed());
 		svt->load(reader);
@@ -703,11 +703,10 @@ void CScriptVarsStorage::script_register(lua_State *L)
 	g_ScriptVars.set_name("g_ScriptVars");
 	module(L)
 		[
-			def("get_stored_vars"				,			&get_stored_vars	, raw(_1)),
-			def("vars_table_assign"				,			&script_vars_assign , raw(_1)),
-			def("vars_table_create"				,			&script_vars_create	, raw(_1)),
-			def("vars_table_export"				,			&script_vars_export	, raw(_1)),
-			def("vars_table_import"				,			&script_vars_import	, raw(_1))
-		];		
-
+			def("get_stored_vars"				,			&get_stored_vars	, raw<1>()),
+			def("vars_table_assign"				,			&script_vars_assign , raw<1>()),
+			def("vars_table_create"				,			&script_vars_create	, raw<1>()),
+			def("vars_table_export"				,			&script_vars_export	, raw<1>()),
+			def("vars_table_import"				,			&script_vars_import	, raw<1>())
+		];
 }
