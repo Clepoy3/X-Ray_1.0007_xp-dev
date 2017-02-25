@@ -11,7 +11,7 @@
 #include <direct.h>
 #pragma warning(pop)
 
-
+#include "..\..\build_config_defines.h"
 
 
 
@@ -106,12 +106,8 @@ extern bool force_flush_log;
 #include <new.h>							// for _set_new_mode
 #include <signal.h>							// for signals
 
-#if 1//def DEBUG
-#	define USE_OWN_MINI_DUMP
-#	define USE_OWN_ERROR_MESSAGE_WINDOW
-#else // DEBUG
-#	define USE_OWN_MINI_DUMP
-#endif // DEBUG
+//#define USE_OWN_MINI_DUMP
+#define USE_OWN_ERROR_MESSAGE_WINDOW
 
 XRCORE_API	xrDebug		Debug;
 
@@ -292,8 +288,9 @@ void gather_info		(const char *expression, const char *description, const char *
 	memory_monitor::flush_each_time	(true);
 	memory_monitor::flush_each_time	(false);
 #endif // USE_MEMORY_MONITOR	
-
-	MsgCB("$#DUMP_CONTEXT"); // alpet: вывод контекста, перед построением стека вызовов //KRodin: ѕоходу, это нужно только при использовании lua-перехватчика. ƒа и вообще, у мен€ оно ничего кроме пустых трок в лог не выводит.
+#ifdef LUAICP_COMPAT
+	MsgCB("$#DUMP_CONTEXT"); // alpet: вывод контекста, перед построением стека вызовов
+#endif
 	if (!strstr(GetCommandLine(),"-no_call_stack_assert")) {
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW

@@ -194,12 +194,12 @@ bool CWeaponMagazined::TryToGetAmmo(u32 id)
 	if (smart_cast<CActor*>(H_Parent()) != NULL)
 	{
 		m_pAmmo		= smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmoOnBelt(*m_ammoTypes[id]));
-		Msg("Try reload for actor");
+		//Msg("Try reload for actor");
 	}
 	else
 #endif
 	{
-		Msg("Try reload for npc");
+		//Msg("Try reload for npc");
 		m_pAmmo		= smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[id]));
 	}
 

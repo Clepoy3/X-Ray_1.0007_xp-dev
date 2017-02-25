@@ -57,7 +57,7 @@ void ISpatialScript::script_register	(lua_State *L)
 {
 	module(L)
 	[
-		class_<ISpatial, no_bases, default_holder, CISpatialWrapper>("ISpatial")
+		class_<ISpatial, CISpatialWrapper>("ISpatial")
 			.def(constructor<>())
 			.def("spatial_register",	&ISpatial::spatial_register,	&CISpatialWrapper::spatial_register_static)
 			.def("spatial_unregister",	&ISpatial::spatial_unregister,	&CISpatialWrapper::spatial_unregister_static)
