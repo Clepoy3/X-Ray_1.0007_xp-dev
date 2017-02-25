@@ -7,7 +7,7 @@
 # Also works with MinGW and Cygwin on Windows.
 # Please check msvcbuild.bat for building with MSVC on Windows.
 #
-# Copyright (C) 2005-2015 Mike Pall. See Copyright Notice in luajit.h
+# Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 ##############################################################################
 
 MAJVER=  2
@@ -168,10 +168,6 @@ else
   ifneq (,$(findstring CYGWIN,$(HOST_SYS)))
     HOST_SYS= Windows
     HOST_MSYS= cygwin
-  endif
-  # Use Clang for OSX host.
-  ifeq (Darwin,$(HOST_SYS))
-    DEFAULT_CC= clang
   endif
 endif
 
