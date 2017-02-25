@@ -2,6 +2,8 @@
 #include "xrSheduler.h"
 #include "xr_object.h"
 #include <mmsystem.h>
+#include "../../build_config_defines.h" //KRodin: добавил забытый инклуд
+#include "lua_tools.h"
 
 //#define DEBUG_SCHEDULER
 
@@ -296,21 +298,24 @@ void CSheduler::ProcessStep			()
 		u32		Elapsed				= dwTime-T.dwTimeOfLastExecute;
 		bool	condition;
 		
-/*#ifndef DEBUG //KRodin: закомментировал из за error C2712: Невозможно использовать __try в функциях, требующих уничтожения объектов
-		__try { //В ЗП без этого обходятся, к стати.
-#endif // DEBUG
-*/
-		condition				= (NULL==T.Object || !T.Object->shedule_Needed());
-/*#ifndef DEBUG
+#ifndef DEBUG
+		/*__*/try {
+#endif
+		condition = (NULL==T.Object || !T.Object->shedule_Needed());
+#ifndef DEBUG
 		}
-		__except(EXCEPTION_EXECUTE_HANDLER) {
-			Msg						("Scheduler tried to update object %s",*T.scheduled_name);
-			FlushLog				();
-			T.Object				= 0;
+		//__except(EXCEPTION_EXECUTE_HANDLER)
+		catch (...)
+		{
+			Msg("----------------------------------------------");
+			Msg("Scheduler tried to update object %s %s",*T.scheduled_name, get_lua_traceback(g_game_lua, 0)); //Попробуем выводить в лог стек lua
+			Msg("----------------------------------------------");
+			//R_ASSERT(0); //Вылетать здесь всё таки надо, т.к планировщик повис и это серьёзная проблема.
+			T.Object = 0;
 			continue;
 		}
-#endif // DEBUG
-*/
+#endif
+
 		if (condition) {
 			// Erase element
 #ifdef DEBUG_SCHEDULER
@@ -327,9 +332,9 @@ void CSheduler::ProcessStep			()
 		// Insert into priority Queue
 		Pop							();
 
-//#ifndef DEBUG //KRodin: тоже самое что и выше.
-//		__try {
-//#endif // DEBUG
+#ifndef DEBUG
+		/*__*/try {
+#endif
 			// Real update call
 			// Msg						("------- %d:",Device.dwFrame);
 #ifdef DEBUG
@@ -378,17 +383,19 @@ void CSheduler::ProcessStep			()
 				Msg	("* xrSheduler: too much time consumed by object [%s] (%dms)",	_obj_name, execTime	);
 			}
 #endif
-/*
 #ifndef DEBUG
 		}
-		__except(EXCEPTION_EXECUTE_HANDLER) {
-			Msg						("Scheduler tried to update object %s",*T.scheduled_name);
-			FlushLog				();
-			T.Object				= 0;
+		//__except(EXCEPTION_EXECUTE_HANDLER)
+		catch (...)
+		{
+			Msg("----------------------------------------------");
+			Msg("Scheduler tried to update object %s %s", *T.scheduled_name, get_lua_traceback(g_game_lua, 0)); //Попробуем выводить в лог стек lua
+			Msg("----------------------------------------------");
+			//R_ASSERT(0); //Вылетать здесь всё таки надо, т.к планировщик повис и это серьёзная проблема.
+			T.Object = 0;
 			continue;
 		}
-#endif // DEBUG
-*/
+#endif
 		// 
 		if ((i % 3) != (3 - 1))
 			continue;
@@ -474,7 +481,6 @@ void CSheduler::Update				()
 	{
 		Msg("# Sheduler Items.size = %5d, ItemsRT.size = %5d ", Items.size(), ItemsRT.size());
 	}
-
 #else
 	clamp							(psShedulerTarget,3.f,66.f);
 #endif
