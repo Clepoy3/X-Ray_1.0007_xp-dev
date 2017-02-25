@@ -272,8 +272,7 @@ void CHangingLamp::TurnOff	()
 	if (glow_render)	glow_render->set_active		(false);
 	if (light_ambient)	light_ambient->set_active	(false);
 	if (Visual())		smart_cast<CKinematics*>(Visual())->LL_SetBoneVisible(light_bone, FALSE, TRUE);
-	if(!PPhysicsShell())//if we have physiccs_shell it will call processing deactivate when disable
-		processing_deactivate	();
+	processing_deactivate();
 }
 
 
@@ -433,7 +432,7 @@ void CHangingLamp::script_register(lua_State *L)
 {
 	luabind::module(L)
 	[
-		luabind::class_<CHangingLamp,CGameObject,CHitImmunity>("hanging_lamp")
+		luabind::class_<CHangingLamp,CGameObject, CHitImmunity>("hanging_lamp")
 			.def(luabind::constructor<>())
 			.def("turn_on",		&CHangingLamp::TurnOn)
 			.def("turn_off",	&CHangingLamp::TurnOff)
