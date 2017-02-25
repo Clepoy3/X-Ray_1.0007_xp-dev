@@ -4,9 +4,11 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#pragma warning(push)
 #pragma warning(disable:4995)
 #include <d3dx9.h>
-#pragma warning(default:4995)
+#pragma warning(pop)
+
 #include "HW.h"
 #include "xr_IOconsole.h"
 
@@ -45,7 +47,7 @@ void CHW::Reset		(HWND hwnd)
 	// Windoze
 	DevPP.SwapEffect			= bWindowed?D3DSWAPEFFECT_COPY:D3DSWAPEFFECT_DISCARD;
 	DevPP.Windowed				= bWindowed;
-	DevPP.PresentationInterval	= D3DPRESENT_INTERVAL_IMMEDIATE;
+	DevPP.PresentationInterval	= selectPresentInterval();
 	if( !bWindowed )		DevPP.FullScreen_RefreshRateInHz	= selectRefresh	(DevPP.BackBufferWidth,DevPP.BackBufferHeight,Caps.fTarget);
 	else					DevPP.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
 #endif
@@ -299,15 +301,15 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 	P.Flags					= 0;	//. D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
 
 	// Refresh rate
-	P.PresentationInterval	= D3DPRESENT_INTERVAL_IMMEDIATE;
+	P.PresentationInterval	= selectPresentInterval();
     if( !bWindowed )		P.FullScreen_RefreshRateInHz	= selectRefresh	(P.BackBufferWidth, P.BackBufferHeight,fTarget);
     else					P.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
 
     // Create the device
 	u32 GPU		= selectGPU();	
-#ifdef GPU_EXTRA_CONFIG
-	GPU |= D3DCREATE_FPU_PRESERVE;	// вероятно решит некоторые проблемы с Lua
-#endif
+//#ifdef GPU_EXTRA_CONFIG
+//	GPU |= D3DCREATE_FPU_PRESERVE;	// вероятно решит некоторые проблемы с Lua //KRodin: А каким боком это отностися к lua?
+//#endif
 	 
 	HRESULT R	= HW.pD3D->CreateDevice(DevAdapter,
 										DevT,
