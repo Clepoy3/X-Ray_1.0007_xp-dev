@@ -11,7 +11,7 @@ local game_difficulty_by_num = {
 	[1] = "gd_stalker",
 	[2] = "gd_veteran",
 	[3] = "gd_master"
-	}
+}
 
 lasthealth  = 0
 lasttime	= 0
@@ -22,13 +22,10 @@ class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:__init (obj) super(obj)
 	self.bCheckStart = false
-	self.weather_manager = level_weathers.WeatherManager()
-	self.actor_detector = xr_detector.actor_detector()
+	--self.actor_detector = xr_detector.actor_detector()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)
-	printf("actor net spawn")		
-
 	level.show_indicators()
 
 	self.bCheckStart = true
@@ -44,9 +41,6 @@ function actor_binder:net_spawn(data)
 	if self.st.disable_input_time == nil then
 		level.enable_input()
 	end
-
-	self.weather_manager:reset()
---	game_stats.initialize ()
 
 	if(actor_stats.add_to_ranking~=nil)then
 		actor_stats.add_to_ranking(self.object:id())
@@ -73,8 +67,8 @@ function actor_binder:net_destroy()
 	self.object:set_callback(callback.on_item_drop, nil)
 	--self.object:set_callback(callback.actor_sleep, nil)
 	self.object:set_callback(callback.task_state, nil)
-	self.object:set_callback(callback.level_border_enter, nil)
-	self.object:set_callback(callback.level_border_exit, nil)
+	--self.object:set_callback(callback.level_border_enter, nil)
+	--self.object:set_callback(callback.level_border_exit, nil)
 	self.object:set_callback(callback.take_item_from_box, nil)
 
 	if sr_psy_antenna.psy_antenna then
@@ -107,8 +101,8 @@ function actor_binder:reinit()
 	--self.object:set_callback(callback.actor_sleep, self.sleep_callback, self)
 	self.object:set_callback(callback.task_state, self.task_callback, self)
 	--self.object:set_callback(callback.map_location_added, self.map_location_added_callback, self)
-	self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
-	self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
+	--self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
+	--self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
 	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -141,16 +135,15 @@ function actor_binder:take_item_from_box(box, item)
 ]]
 end
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:level_border_enter(npc, info_id)
-	self.actor_detector:actor_enter()
-end
+--function actor_binder:level_border_enter(npc, info_id)
+--	self.actor_detector:actor_enter()
+--end
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:level_border_exit(npc, info_id)
-	self.actor_detector:actor_exit()
-end
+--function actor_binder:level_border_exit(npc, info_id)
+--	self.actor_detector:actor_exit()
+--end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:info_callback(npc, info_id)
-	printf("*INFO*: npc='%s' id='%s'", npc:name(), info_id)
 	--' Сюжет
 	level_tasks.proceed(self.object)
 	-- Отметки на карте
@@ -158,11 +151,11 @@ function actor_binder:info_callback(npc, info_id)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_trade (item, sell_bye, money)
-    if sell_bye == true then
-       game_stats.money_trade_update (money)
-    else       
-       game_stats.money_trade_update (-money) 
-    end   
+    --if sell_bye == true then
+    --   game_stats.money_trade_update (money)
+    --else       
+    --   game_stats.money_trade_update (-money) 
+   -- end   
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:article_callback(npc, group, name)
@@ -219,13 +212,10 @@ function actor_binder:update(delta)
 
 	local time = time_global()
 	
-	game_stats.update (delta, self.object)
-
-	-- апдейт погоды
-	self.weather_manager:update()
+	--game_stats.update (delta, self.object)
 	
 	-- апдейт схемы детектора
-	self.actor_detector:update()
+	--self.actor_detector:update()
 
 	-- апдейт звуковой схемы актера
 	xr_sound.update_actor()
@@ -290,24 +280,6 @@ function actor_binder:update(delta)
 		sr_psy_antenna.psy_antenna:update(delta)
 	end
 
-	--' Вывод сообщения о большой радиации
-	if self.object.radiation >= 0.7 then
-		local hud = get_hud()
-		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
-		if custom_static == nil then
-			hud:AddCustomStatic("cs_radiation_danger", true)
-			hud:GetCustomStatic("cs_radiation_danger"):wnd():SetTextST("st_radiation_danger")
-		end
-	else
-		local hud = get_hud()
-		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
-		if custom_static ~= nil then
-			hud:RemoveCustomStatic("cs_radiation_danger")
-		end
-	end
-
-
-
  	if self.bCheckStart then
 		printf("SET DEFAULT INFOS")		
 
@@ -361,7 +333,6 @@ function actor_binder:save(packet)
 	end
 
 	xr_logic.pstor_save_all(self.object, packet)
-	self.weather_manager:save(packet)
 
 	sr_psy_antenna.save( packet )
 	
@@ -370,7 +341,7 @@ function actor_binder:save(packet)
 	end                                  
 
 	task_manager.save(packet)
-	self.actor_detector:save(packet)	
+	--self.actor_detector:save(packet)	
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:load(reader)
@@ -400,7 +371,6 @@ function actor_binder:load(reader)
 	end
 
 	xr_logic.pstor_load_all(self.object, reader)
-	self.weather_manager:load(reader)
 
 	sr_psy_antenna.load(reader)
 	
@@ -408,9 +378,8 @@ function actor_binder:load(reader)
 		treasure_manager.load(reader)      
 	end                                  
 
-	
 	task_manager.load(reader)
-	self.actor_detector:load(reader)	
+	--self.actor_detector:load(reader)	
 end
 ----------------------------------------------------------------------------------------------------------------------
 

@@ -1,3 +1,611 @@
+-- -*- mode: lua; coding: windows-1251-dos -*-
+log1("--LUA version: ["..(jit.version or _VERSION).."]")
+--===================[string.upper и string.lower с поддержкой русских букв]====================
+if not jit.version_num or jit.version_num < 20000 then --В ТЧ 1.0006 c lua-фиксом работает такой вариант:
+	os.setlocale("Russian_Russia.1251", "ctype")
+else --В новом LuaJIT работает только такой вариант:
+	--!!ВАЖНО!! Для правильной работы этих функций, кодировка скрипта должна быть только ANSI!!
+	local lower = string.lower
+	string.lower = function(s)
+		return lower(s:gsub("([А-Я])",function(c) return string.char(c:byte()+32) end):gsub("Ё", "ё"))
+	end
+
+	local upper = string.upper
+	string.upper = function(s)
+		return upper(s:gsub("([а-я])",function(c) return string.char(c:byte()-32) end):gsub("ё", "Ё"))
+	end
+end
+--=================================[Функции из xrLuaFix]========================================
+--Срезать пробелы слева
+if not string.trim_l then
+	string.trim_l = function(s) return s:gsub("^%s+",'') end
+end
+--Срезать пробелы справа
+if not string.trim_r then
+	string.trim_r = function(s) return s:gsub("%s*$",'') end
+end
+--Срезать все пробелы слева и справа
+if not string.trim then
+	string.trim = function(s) return s:gsub('^%s*(.-)%s*$', '%1') end
+end
+--==============================================================================================
+-- Взято из аддона Naxac'a
+local to_ptrn = {
+	[' '] = '%s',
+	['.'] = '%.',
+	['%'] = '%%',
+	['*'] = '%*',
+	['-'] = '%-'
+}
+if not string.explode then
+	string.explode = function ( div,    -- разделитель
+								str,    -- строка
+								clear ) -- обрезать ли пробелы по краям строк (false/true)
+		local ret = {}
+		div = to_ptrn[div] or div
+		for s in str:gmatch("([^"..div.."]+)") do
+			ret[#ret+1] = (clear and s:trim() or s)
+		end
+		return ret
+	end
+end
+--==============================================================================================
+--Поверхностное (простое) клонирование таблицы: 
+--создаётся копия таблицы и копии всех элементов без их клонирования,
+--т.е. для ссылочных типов обе таблицы будут содержать ссылки на одни и те же данные
+--метатаблицы не копируются
+if not table.clone_simple then
+	table.clone_simple = function(tbl)
+		local res = {}
+		for k,v in pairs(tbl) do
+			res[k] = v
+		end
+		return res
+	end
+end
+--==============================================================================================
+-- выравнивание значения n в пределы от min до max
+if not math.clamp then
+	math.clamp = function( n, min, max )
+		if min>max then min,max=max,min end
+		return (n>max and max) or (n<min and min) or n
+	end
+end
+-- округление к ближайшему
+if not math.round then
+	math.round = function(v) return math.floor(v + 0.5) end
+end
+if not math.lerp then
+	math.lerp = function(x1, x2, y1, y2, x) return (x - x1) * (y2 - y1) / (x2 - x1) end
+end
+if not math.similar then
+	math.similar = function(a1, a2, tol) return math.abs(a1 - a2) <= tol end
+end
+--==============================================================================================
+math.randomseed(os.time())
+--==============================================================================================
+--KRodin: TODO: может добавить прям в движок?
+--Некоторые недостающие DIK_keys:
+DIK_keys["DIK_MOUSE1"] = 337
+DIK_keys["DIK_MOUSE2"] = 338
+DIK_keys["DIK_MOUSE3"] = 339
+DIK_keys["DIK_MOUSE4"] = 340
+DIK_keys["DIK_MOUSE5"] = 341
+DIK_keys["DIK_MOUSE6"] = 342
+DIK_keys["DIK_MOUSE7"] = 343
+DIK_keys["DIK_MOUSE8"] = 344
+
+--Некоторые недостающие key_bindings:
+key_bindings["kSPRINT_TOGGLE"] = 8
+key_bindings["kENGINE"] = 15
+key_bindings["kARTEFACT"] = 30
+key_bindings["kWPN_FIREMODE_PREV"] = 38
+key_bindings["kWPN_FIREMODE_NEXT"] = 39
+key_bindings["kPAUSE"] = 40
+key_bindings["kCHAT_TEAM"] = 45
+key_bindings["kACTIVE_JOBS"] = 53
+key_bindings["kMAP"] = 54
+key_bindings["kCONTACTS"] = 55
+key_bindings["kVOTE_BEGIN"] = 57
+key_bindings["kVOTE"] = 58
+key_bindings["kVOTEYES"] = 59
+key_bindings["kVOTENO"] = 60
+key_bindings["kSPEECH_MENU_0"] = 63
+key_bindings["kSPEECH_MENU_1"] = 64
+key_bindings["kUSE_BANDAGE"] = 73
+key_bindings["kUSE_MEDKIT"] = 74
+key_bindings["kQUICK_SAVE"] = 75
+key_bindings["kQUICK_LOAD"] = 76
+--==================================[log3 & log4 by KRodin]=====================================
+local function isArray(tbl) --Является ли таблица массивом
+	local n=0
+	for _ in pairs(tbl) do n=n+1 end
+    return n <= #tbl
+end
+
+--Конвертирование чего угодно в строку. Использовать только для вывода в лог!
+local tostring_all_tbl = {
+	["table"] =		function(table, ind) --Распечатка таблиц
+						local res = "{" --Начало
+						local end_res = ind and "\n"..ind.."}" or "\n}" --Конец
+						local def_ind = "  " --Отступ от начала строки
+						ind = ind and ind..def_ind or def_ind --Для каждой "таблицы внутри таблицы" отступ увеличивается в 2 раза
+						if isArray(table) then --Если это массив, обрабатываем только значения:
+							for i=1, #table do --Это актуально только для отслеживания nil-аргументов в таблицах. В будущем, при переезде на новый jit, это надо бы убрать.
+								res = res.."\n"..ind..tostring_all(table[i], ind)..","
+							end
+						else --Если НЕ массив, обрабатываем и ключи, и значения:
+							for k, v in pairs(table) do
+								res = res.."\n"..ind.."["..tostring_all(k, ind).."] = "..tostring_all(v, ind)..","
+							end
+						end
+						return res..end_res
+					end,
+	["string"] =	function(v) return "'"..v.."'" end, --Строки берём в кавычки. Это нужно, чтобы можно было отличить строку "123" от числа 123, "nil" от nil и тд...
+	["number"] =	function(v) return tostring(v) end,
+	["boolean"] =	function(v) return tostring(v) end,
+	["nil"] =		function(v) return tostring(v) end,
+	["function"] =	function() return "[[FUNCTION]]" end, --Function, Userdata и Thread распечатать нельзя, просто заменим на строки
+	["userdata"] =	function() return "[[USERDATA]]" end,
+	["thread"] =	function() return "[[THREAD]]" end,
+}
+function tostring_all(obj, ind) --ind - служебный аргумент для распечатки "таблиц в таблицах". НЕ ТРОГАТЬ ЕГО!!!
+	return tostring_all_tbl[type(obj)](obj, ind)
+end
+
+--В связи с добавлением функции вывода произвольного текста в лог, стала доступна возможность выделять этот текст различными цветами.
+--После спец-символа цвета обязательно должен быть один пробел (или любой другой символ), иначе строка будет выведена обрезанной.
+local subs_tbl = { --Спец-символы цветов:
+	["-"] = true, --Зелёный
+	["~"] = true, --Жёлтый
+	["!"] = true, --Красный
+	["*"] = true, --Серый
+	["#"] = true, --Бирюзовый
+}
+--Функциональная обёртка для log1.
+--Делает дополнительную работу по конвертации параметров, которые не воспринимаются родной функцией string.format.
+--Параметры можно передавать ЛЮБОГО ТИПА! В строке формата они должны стоять как %s (потому, что будут сконвертированы в строки).
+function log3(fmt, ...)
+	local args = {...}
+	for i=1, #args do --Для корректной обработки nil-аргументов (циклы pairs и ipairs останавливаются на первом _значении_ nil)
+		args[i] = tostring_all(args[i])
+	end
+	local res, msg = pcall(string.format, fmt, unpack(args))
+	if not res then --Если произошла ошибка
+		msg = "!!log3 failed: "..msg.."\n"..debug.traceback()
+	end
+	local subs = msg:sub(1, 1)
+	local color = subs_tbl[subs] and subs.." " or false
+	local not_first_line = false
+	for s in msg:gmatch("([^\n]+)") do --Разбиваем текст на разделённые строки. Нужно для того, чтобы избежать ограничения в 1024 символа, после которых log1 просто обрезает текст.
+		log1((not_first_line and color) and color..s or s) --Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы цветными были все строки текста, а не только первая.
+		not_first_line = true
+	end
+end
+
+-------------------------------
+log3("%s", debug.traceback()) --Помогает определить, из за чего в некоторых случаях перезагружается _G
+-------------------------------
+
+local logs_cach = {}
+--Функция создаёт новый лог-файл и выводит текст в него.
+--fname - название лог-файла, например "Anomaly_Evader". Он будет создан в папке logs, к названию добавится дата и время создания.
+--fmt, ... - строка формата с параметрами как и в функции log3
+function log4(fname, fmt, ...)
+	local f = logs_cach[fname]
+	if not f then
+		local dt = os.date("*t")
+		local fpath = getFS():update_path("$logs$", ("%s_%02d.%02d.%02d_%02d.%02d.%02d.log"):format(fname,dt.day,dt.month,dt.year,dt.hour,dt.min,dt.sec))
+		f = io.open(fpath, "w")
+		logs_cach[fname] = f
+	end
+	local args = {...}
+	for i=1, #args do
+		args[i] = tostring_all(args[i])
+	end
+	local res, msg = pcall(string.format, fmt, unpack(args))
+	if not res then
+		msg = "!!log4 failed: "..msg.."\n"..debug.traceback()
+	end
+	f:write(msg..'\n')
+	f:flush()
+end
+--======================================[Функции из OGSE]=======================================
+-- Крешнуть игру (после вывода сообщения об ошибке в лог)
+function abort(...)
+	log1("!!************************************[ABORT]************************************")
+	log3(debug.traceback())
+	log3(...)
+	log1("!!*******************************************************************************")
+	--
+	local hud = get_hud()
+	local critical = hud:GetCustomStatic("cs_radiation_danger")
+	if not critical then
+		hud:AddCustomStatic("cs_radiation_danger", true)
+		critical = hud:GetCustomStatic("cs_radiation_danger"):wnd()
+		critical:SetText("%c[red]!!!FATAL ERROR!!!")
+	end
+	--
+	get_console():execute("quit")
+end
+function ASSERT(val, ...)
+	if not val then abort(...) end
+end
+
+local orig_sys_ini = system_ini()
+class "dbg_sys_ini"
+function dbg_sys_ini:__init()
+	log1("dbg_sys_ini:__init")
+end
+function dbg_sys_ini:line_count(sec)
+	log3("dbg_sys_ini:line_count: %s", sec)
+	log3(debug.traceback())
+	return orig_sys_ini:line_count(sec)
+end
+function dbg_sys_ini:section_exist(sec)
+	log3("dbg_sys_ini:section_exist: %s", sec)
+	log3(debug.traceback())
+	return orig_sys_ini:section_exist(sec)
+end
+function dbg_sys_ini:line_exist(sec, param)
+	log3("dbg_sys_ini:line_exist: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:line_exist(sec, param)
+end
+function dbg_sys_ini:r_bool(sec, param)
+	log3("dbg_sys_ini:r_bool: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:r_bool(sec, param)
+end
+function dbg_sys_ini:r_float(sec, param)
+	log3("dbg_sys_ini:r_float: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:r_float(sec, param)
+end
+function dbg_sys_ini:r_clsid(sec, param)
+	log3("dbg_sys_ini:r_clsid: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:r_clsid(sec, param)
+end
+function dbg_sys_ini:r_s32(sec, param)
+	log3("dbg_sys_ini:r_s32: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:r_s32(sec, param)
+end
+function dbg_sys_ini:r_u32(sec, param)
+	log3("dbg_sys_ini:r_u32: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:r_u32(sec, param)
+end
+function dbg_sys_ini:r_vector(sec, param)
+	log3("dbg_sys_ini:r_vector: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:r_vector(sec, param)
+end
+function dbg_sys_ini:r_string_wq(sec, param)
+	log3("dbg_sys_ini:r_string_wq: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:r_string_wq(sec, param)
+end
+function dbg_sys_ini:r_string(sec, param)
+	log3("dbg_sys_ini:r_string: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:r_string(sec, param)
+end
+function dbg_sys_ini:r_token(sec, param)
+	log3("dbg_sys_ini:r_token: %s - %s", sec, param)
+	log3(debug.traceback())
+	return orig_sys_ini:r_token(sec, param)
+end
+function dbg_sys_ini:r_line(sec, line_num)
+	log3("dbg_sys_ini:r_line: %s - %s", sec, line_num)
+	log3(debug.traceback())
+	return orig_sys_ini:r_line(sec, line_num)
+end
+--system_ini = function() return dbg_sys_ini() end
+
+--Служебные функции для чтения параметров из секций объектов
+sys_ini = system_ini()
+function get_string(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_string: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_string(section, param)
+	else
+		return def_val
+	end
+end
+function get_string_wq(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_string: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_string_wq(section, param)
+	else
+		return def_val
+	end
+end
+function get_u32(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_u32: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_u32(section, param)
+	else
+		return def_val
+	end
+end
+function get_bool(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_bool: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_bool(section, param)
+	else
+		return not (not def_val)
+	end
+end
+function get_float(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_float: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_float(section, param)
+	else
+		return def_val
+	end
+end
+-- получить класс из секции, полезно в том случае, если нет объекта (и недоступен метод clsid), а есть только имя секции
+function get_class(section)
+	ASSERT(sys_ini:section_exist(section), "get_class: section '"..section.."' doesn't exist")
+	ASSERT(sys_ini:line_exist(section, "class"), "get_class: there is no 'class' parameter in the section '"..section.."'")
+	return sys_ini:r_clsid(section, "class")
+end
+-- читает строку вида "s1,s2,s3" и парсит на строковые значения, разделённые запятой, в таблицу вида {s1, s2, s3}
+function get_names(section, param, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_names: section '"..section.."' doesn't exist")
+	local s = ini:r_string(section, param)
+	return split_comma_separated_list(s)
+end
+-- читает строку вида "s1,s2,s3" и парсит на численные значения, разделённые запятой, в таблицу вида {n1, n2, n3}
+function get_numbers(section, param, ini_file)
+	local t = {}
+	for i,sv in ipairs(get_names(section, param, ini_file)) do
+		local v = tonumber(sv)
+		ASSERT(v, "get_numbers: can not convert to number item ["..i.."]: "..sv)
+		table.insert(t, v)
+	end
+	return t
+end
+function get_section_keys(section, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_section_keys: section '"..section.."' doesn't exist")
+	local t = {}
+	for i=0,ini:line_count(section)-1 do
+		local _, key, v = ini:r_line(section, i)
+		t[i+1] = key
+	end
+	return t
+end
+function get_section_keys_and_values( section, ini_file )
+  local ini = ini_file or sys_ini
+  ASSERT( ini:section_exist( section ), "get_section_keys: section '" .. section .. "' doesn't exist" )
+  local t = {}
+  for i = 0, ini:line_count( section ) - 1 do
+  local _, key, v = ini:r_line( section, i, "", "" )
+    t[ key ] = v
+  end
+  return t
+end
+function get_vector(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_vector: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		local pos = get_names(section, param, ini)
+		return vector():set(tonumber(pos[1]), tonumber(pos[2]), tonumber(pos[3]))
+	else 
+		if def_val then
+			return def_val
+		else
+			return vector():set(0,0,0)
+		end
+	end
+end
+-- значение по умолчанию должно задаваться таблицей {num1, num2}
+function get_vector2(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_vector2: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		local pos = get_names(section, param, ini)
+		return tonumber(pos[1]), tonumber(pos[2])
+	else
+		return def_val and unpack(def_val)
+	end
+end
+
+-- делит строку в виде "aaa,bbb,ccc" на строки "aaa", "bbb", "ccc" и возвращает их в виде массива
+function split_comma_separated_list(s)
+	return string.explode(",", s)
+end
+--Отличается от split_comma_separated_list тем, что срезает пробелы по краям строк (если они есть)
+function parse_names( s )
+	return string.explode(",", s, true)
+end
+--Парсит строку вида "n1, n2, n3..." в таблицу { n1, n2, n3, ... } где n1, n2, n3... - числа
+function parse_nums( s )
+    local t = {}
+    for i,entry in ipairs(parse_names( s )) do
+		local v = tonumber( entry )
+		ASSERT(v, "parse_nums: [%s], stopped at [%s]: [%s]", s, i, entry)
+		table.insert(t,  v)
+    end
+    return t
+end
+--Конвертирует строку вида "actor, 0, actor_dolg, 1, actor_freedom, 2, ..."
+--В таблицу вида { ["actor"] = "0", ["actor_dolg"] = "1", ["actor_freedom"] = "2", ... }
+function parse_key_value( s )
+	if s == nil then return nil end --бывает и такое
+
+    local t = {}
+	local t0 = parse_names( s )
+    for i=1, #t0, 2 do
+		local key, nam = t0[i], t0[i+1]
+		ASSERT(nam, "parse_key_value: stopped at %s: [%s] - [%s]", i, key or "nil", nam or "nil")
+		t[key] = nam
+    end
+    return t
+end
+
+-- упаковать время в виде объекта CTime в строку значений, разделённых запятой
+function pack_time_to_string(t)
+	ASSERT(t, "pack_time_to_string: t is a nil reference")
+	return table.concat({t:get()}, ',')
+end
+-- читает время, сохранённое в виде строки со значениями, разделёнными запятой, и конвертирует в значение класса CTime
+function unpack_time_from_string(str_time)
+	local time_values = {}
+	for i,s in ipairs(split_comma_separated_list(str_time)) do
+		local value = tonumber(s)
+		ASSERT(value, "unpack_time_from_string: problem with unpacking saved time '%s', value #%d (%s)", str_time, i, s)
+		table.insert(time_values, value)
+	end
+	ASSERT(#time_values == 7, "unpack_time_from_string: packed time '%s' has wrong number of components. Must be equal to seven.")
+	local res = game.CTime()
+	res:set(unpack(time_values))
+	return res
+end
+
+function time2string(time, fmt, order)
+	ASSERT(time, "[_g.time2string] 'time' is a nil reference")
+	local a,b = time:get_value()
+	if not fmt then
+		return time:timeToString(game.CTime.TimeToMilisecs).." "..time:dateToString(game.CTime.DateToDay)..string.format(" [%04x %04x]", a,b)
+	else
+		local y,m,d,h,min,s,ms = time:get()
+		local args = {y=y,m=m,d=d,h=h,min=min,s=s,ms=ms,a=a,b=b}
+		if order then
+			args = {args[order[1]], args[order[2]], args[order[3]], args[order[4]], args[order[5]], args[order[6]], args[order[7]], args[order[8]], args[order[9]]}
+		end
+		return fmt:format(unpack(args))
+	end
+end
+function print_time(title, time)
+	log1(title..": "..time2string(time))
+end
+
+function seconds2ctime(time_sec)
+	local s,ms = math.modf(time_sec)
+	local t = game.CTime()
+	t:setHMSms(0,0,s,ms*1000)
+	return t
+end
+
+function get_day_time_sec(t)
+	local y,m,d,h,min,s,ms = t:get()
+	return h * 3600.0 + min * 60.0 + s + ms * 1e-3
+end
+-- получить текушее игровое время от начала суток, измеренное в часах (значение в пределах [0, 24) )
+function get_game_day_time_h()
+	local gt = game.get_game_time()
+	local y,m,d,h,min,sec,ms = gt:get()
+	return math.fmod(h + min/60.0 + (sec + 0.001*ms)/3600.0, 24.0)
+end
+
+function is_16_9_mode()
+	local dev = device()
+	return dev.width / dev.height > 1.34
+end
+
+function get_clsid( obj )
+	if obj then return obj:clsid() end
+	return nil
+end
+local monster_classes, anomaly_classes, stalker_classes, weapon_classes, outfit_classes = {}, {}, {}, {}, {}
+function IsMonster(object, class_id)
+	local id = class_id or get_clsid(object)
+	return id and monster_classes[id]
+end
+function IsActor(object, class_id)
+	local id = class_id or get_clsid(object)
+	return id == clsid.actor
+end
+function IsStalker(object, class_id)
+	local id = class_id or get_clsid(object)
+	return id and stalker_classes[id]
+end
+function IsAnomaly(object, class_id)
+	local id = class_id or get_clsid(object)
+	return id and anomaly_classes[id]
+end
+function isWeapon(object, class_id)
+	local id = class_id or get_clsid(object)
+	return id and weapon_classes[id]
+end
+function isOutfit(object, class_id)
+	local id = class_id or get_clsid(object)
+	return id and outfit_classes[id]
+end
+function isLc(object, class_id)
+	local id = class_id or get_clsid(object)
+	return id == clsid.level_changer
+end
+function isKnife(object, class_id)
+	local id = class_id or get_clsid(object)
+	return id == clsid.wpn_knife or id == clsid.wpn_knife_s
+end
+
+-- Вычисляет yaw в радианах
+function yaw(v1, v2)
+	if v1 and v2 then
+		return math.abs(v2:getH()-v1:getH())
+	else return 1 end
+end
+function yaw_degree(v1, v2)
+	return yaw(v1, v2) * 57.295779513
+end
+function yaw_degree3d(v1, v2)
+	if v1 and v2 then
+		return math.acos(v1:dotproduct(v2))*57.295779513
+	else return 1 end
+end
+function vector_cross(v1, v2)
+	if v1 and v2 then
+		return vector():crossproduct(v1, v2)
+	else return vector():set(0, 0, 0) end
+end
+--==============================================================================================
+--Взято из sol17work от DC.
+--KRodin: TODO: сделать в движке нормальную функцию перемотки времени. Функция ниже - в таком виде всё равно не годится.
+local set_current_time_t, set_current_time_f
+local function set_current_time_wait()
+	if game.get_game_time() < set_current_time_t then return false end
+	level.set_time_factor( set_current_time_f )
+	set_current_time_f = false
+	return true
+end
+function set_current_time( hour, min, sec )	-- починено, работает.
+	local game_time_time = game.get_game_time()	-- полное игровое время
+
+	local new_time = game.CTime()	-- нужно выставить
+	new_time:setHMS( hour, min, sec )
+
+	local hh, mm, ss
+	_, _, _, hh, mm, ss = game_time_time:get()	-- текущее время
+	local c_time = game.CTime()
+	c_time:setHMS( hh, mm, ss )
+
+	if new_time == c_time then return	-- ничего не делаем
+	elseif new_time < c_time then		-- следующие сутки
+		new_time:setHMS( hour + 24, min, sec )
+	end
+
+	new_time:setHMS( 0, 0, new_time:diffSec( c_time ) )
+	set_current_time_t = game_time_time + new_time
+
+	if not set_current_time_f then set_current_time_f = level.get_time_factor() end
+
+	level.set_time_factor( 10000 )
+	level.add_call( set_current_time_wait, function() return false end )
+end
+--==============================================================================================
+
 
 schemes = {} -- соответствие схем модулям
 stypes = {} -- типы схем
@@ -12,12 +620,10 @@ function load_scheme(filename, scheme, stype)
 end
 
 ----------------------------------------------------------------------
-
 function printf(fmt,...)
-	log(string.format(fmt,...))
 end
-
 ----------------------------------------------------------------------
+
 if nil == time_global then
 	time_global = function () return device():time_global() end
 end
@@ -93,9 +699,6 @@ function debug_get_level_object(obj_name)
     local res = level.debug_object(obj_name)
     while res == nil do
 
--- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
--- !!!!! НЕ ЗАКОММЕНТАРИВАЙТЕ, ИНАЧЕ НЕ БУДЕТ ВИДНО ОШИБОК ПРИ РАССТАНОВКЕ ОБЪЕКТОВ !!!!!
--- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         printf("get_level_object() is waiting for object \"%s\"", obj_name)
 
         res         = level.object(obj_name)
@@ -306,9 +909,6 @@ debug_script_name = ""
 -- Tvводит в лог строчку, если script_name == debug_script_name
 -- Lспользуется для отрадки сценариев
 function debug_log(script_name, fmt, ...)
-	if debug_script_name == script_name then
-		log(string.format(fmt, ...))
-	end
 end
 
 -- +сли в даннvй момент вvполняется какое-то действие, прерvвает его и отклічает скриптовvй режим
@@ -333,7 +933,7 @@ function new_action(...)
     return act;
 end
 
-obj_last_actions = {};
+obj_last_actions = {}
 
 function perform_action(obj, action_name, action)
   if (obj ~= nil) then
@@ -368,28 +968,6 @@ function update_action (npc, script, ...)
     npc:command (act, false)
 
 end
-
-
-function set_current_time (hour, min, sec)
-    local current_time_factor = level.get_time_factor ()
-
-    printf ("Need time : %d:%d:%d", hour, min, sec)
-
-    local current_time = game.time ()
-    local c_day = math.floor (current_time / 86400000)
-    local c_time = current_time - c_day * 86400000
-    local n_time = (sec + min * 60 + hour * 3600) * 1000
-
-    if c_time > n_time then c_day = c_day + 1 end
-    n_time = n_time + c_day * 86400000
-
-    level.set_time_factor (10000)
-    while game.time () < n_time do wait () end
-
-    level.set_time_factor (current_time_factor)
-end
-
-
 
 if (editor() == false) then
 class "pp_effector" (effector)
@@ -634,7 +1212,6 @@ function str_split (str)
 end
 
 function random_number (min_value, max_value)
-    math.randomseed (device ():time_global ())
     if min_value == nil and max_value == nil then
       return math.random ()
     else
@@ -654,59 +1231,6 @@ function local_hours()
     return math.floor( math.mod( game.time()/1000, 86400 )/ 3600 )
 end
 
--- Ї абЁв бва®Єг ўЁ¤  "   , ЎЎЎ, ўўў..." ў в Ў«Ёжг { "   ", "ЎЎЎ", "ўўў", ... }
--- —гЈ ©
-function parse_names( s )
-    local t = {}
-    for name in string.gfind( s, "([%w_\\]+)%p*" ) do
-    --for name in string.gfind( s, "%s*([^%,]+)%s*" ) do
-        table.insert( t, name )
-    end
-
-    return t
-end
-
-
-function parse_key_value( s )
-    local t = {}
-	if s == nil then
-		return nil
-	end
-    local key, nam = nil, nil
-    for name in string.gfind( s, "([%w_\\]+)%p*" ) do
-		if key == nil then
-			key = name
-		else
-			t[key] = name
-			key = nil
-		end
-    end
-    return t
-end
-
-
--- Ї абЁв бва®Єг ўЁ¤  "n1, n2, n3..." ў в Ў«Ёжг { n1, n2, n3, ... } Ј¤Ґ n1, n2, n3... - жҐ«лҐ зЁб« 
--- —гЈ ©
---[[function parse_nums( s )
-    local t = {}
-
-    for entry in string.gfind( s, "([%w_\\]+)%p*" ) do
-        table.insert( t, tonumber( entry ) )
-    end
-
-    return t
-end]]
-
--- Ї абЁв бва®Єг ўЁ¤  "n1, n2, n3..." ў в Ў«Ёжг { n1, n2, n3, ... } Ј¤Ґ n1, n2, n3... - ¤а®Ў­лҐ зЁб« 
-function parse_nums( s )
-	local t = {}
-
-	for entry in string.gfind( s, "([%d%.]+)%,*" ) do
-		table.insert( t, tonumber( entry ) )
-	end
-
-	return t
-end
 
 -- Їа®ўҐапҐв, Ґбвм «Ё ®ЎкҐЄв ў ®­« ©­Ґ
 function is_object_online(obj_id)
@@ -723,50 +1247,6 @@ function get_clsid(npc)
 --    else
 --        return nil
 --    end
-end
-
--- Їа®ўҐапҐв ®аг¦ЁҐ «Ё нв® (ЇҐаҐ¤ ў вм game_object)
-function isWeapon(object)
-    local id = get_clsid(object)
-    if id == nil then return false end
-
-    if id == clsid.wpn_vintorez_s then return true
-    elseif id == clsid.wpn_ak74_s then return true
-    elseif id == clsid.wpn_lr300_s then return true
-    elseif id == clsid.wpn_hpsa_s then return true
-    elseif id == clsid.wpn_pm_s then return true
-    elseif id == clsid.wpn_shotgun_s then return true
-    elseif id == clsid.wpn_bm16_s then return true
-    elseif id == clsid.wpn_svd_s then return true
-    elseif id == clsid.wpn_svu_s then return true
-    elseif id == clsid.wpn_rpg7_s then return true
-    elseif id == clsid.wpn_val_s then return true
-    elseif id == clsid.wpn_walther_s then return true
-    elseif id == clsid.wpn_usp45_s then return true
-    elseif id == clsid.wpn_groza_s then return true
-    elseif id == clsid.wpn_knife_s then return true
-    elseif id == clsid.wpn_grenade_launcher then return true
-    elseif id == clsid.wpn_grenade_f1 then return true
-    elseif id == clsid.wpn_grenade_rpg7 then return true
-    elseif id == clsid.wpn_grenade_rgd5 then return true
-    elseif id == clsid.wpn_grenade_fake then return true
-    else return false end
-end
-
---Tvчисляет yaw в радианах
-function yaw( v1, v2 )
-    return  math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) )
-end
-
-function yaw_degree( v1, v2 )
-    return  (math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) ) * 57.2957)
-end
-function yaw_degree3d( v1, v2 )
-    return  (math.acos((v1.x*v2.x + v1.y*v2.y + v1.z*v2.z)/(math.sqrt(v1.x*v1.x + v1.y*v1.y + v1.z*v1.z )*math.sqrt(v2.x*v2.x + v2.y*v2.y + v2.z*v2.z)))*57.2957)
-end
-
-function vector_cross (v1, v2)
-    return vector ():set (v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
 end
 
 --Вращает вектор вокруг оси y против часовой стрелки
@@ -808,7 +1288,7 @@ function stop_play_sound(obj)
 	end
 end
 
-function object_type(obj)
+function object_type(obj) --Удалить нафиг!!!
     local otype = get_clsid(obj)
     local type
 
@@ -895,7 +1375,7 @@ end
 
 
 -- Является ли оbj монстром
-function is_object_monster(obj)
+function is_object_monster(obj) --Удалить нафиг!!!
 	local otype = get_clsid(obj)
 	if(otype == clsid.crow			or
 		otype == clsid.zombie		or
@@ -990,36 +1470,7 @@ function near_point_with_bit(point, patrol_path, bit)
     return index
 end
 
--- ђҐЄгабЁў­ п а бЇҐз вЄ  в Ў«Ёжл
 function print_table(table, subs)
-  local sub
-  if subs ~= nil then
-    sub = subs
-  else
-    sub = ""
-  end
-  for k,v in pairs(table) do
-    if type(v) == "table" then
-      printf(sub.."%s:", tostring(k))
-      print_table(v, sub.."    ")
-    elseif type(v) == "function" then
-      printf(sub.."%s:function", tostring(k))
-    elseif type(v) == "userdata" then
-      printf(sub.."%s:userdata", tostring(k))
-    elseif type(v) == "boolean" then
-	if v == true then
-		printf(sub.."%s:true", tostring(k))
-	else
-		printf(sub.."%s:false", tostring(k))
-	end
-    else
-      if v ~= nil then
-        printf(sub.."%s:%s", tostring(k),v)
-      else
-        printf(sub.."%s:nil", tostring(k),v)
-      end
-    end
-  end
 end
 
 -------------------------------------------------------------------------------------------
@@ -1046,38 +1497,6 @@ function get_actor_id()
 	return level.actor():id()
 end
 -------------------------------------------------------------------------------------------
-function IsMonster (object, class_id)
-    local id = class_id or get_clsid (object)
-    if id == clsid.boar_s or
-       id == clsid.bloodsucker_s or
-       id == clsid.dog_s or
-       id == clsid.flesh_s or
-       id == clsid.pseudodog_s or
-       id == clsid.psy_dog_s or
-       id == clsid.burer_s or
-       id == clsid.cat_s or
-       id == clsid.chimera_s or
-       id == clsid.controller_s or
-       id == clsid.fracture_s or
-       id == clsid.poltergeist_s or
-       id == clsid.gigant_s or
-       id == clsid.zombie_s or
-       id == clsid.tushkano_s or
-       id == clsid.snork_s
-    then
-	    return true
-	end
-    return false
-end
--------------------------------------------------------------------------------------------
-function IsStalker (object, class_id)
-    local id = class_id or get_clsid (object)
-    if id == clsid.actor or id == clsid.script_stalker then
-       return true
-    end
-    return false
-end
--------------------------------------------------------------------------------------------
 function level_object_by_sid( sid )
 	local sim = alife()
 
@@ -1102,14 +1521,6 @@ function id_by_sid( sid )
 	end
 
 	return nil
-end
-
--- Крешнуть игру (после вывода сообщения об ошибке в лог)
-function abort(fmt, ...)
-	local reason = string.format(fmt, ...)
-	assert("ERROR: " .. reason)
-	printf("ERROR: " .. reason)
-	printf("%s")
 end
 
 function set_postprocess(name_ini_file)
@@ -1224,7 +1635,113 @@ function get_texture_info(id_name, id_default)
 end
 
 function start_game_callback()
-	printf	("start_game_callback called")
+	monster_classes = {
+		[clsid.bloodsucker] 			= true,
+		[clsid.boar] 					= true,
+		[clsid.dog_red] 				= true,
+		[clsid.dog_black] 				= true,
+		[clsid.flesh] 					= true,
+		[clsid.burer] 					= true,
+		[clsid.cat] 					= true,
+		[clsid.chimera] 				= true,
+		[clsid.controller] 				= true,
+		[clsid.fracture] 				= true,
+		[clsid.poltergeist] 			= true,
+		[clsid.zombie] 					= true,
+		[clsid.snork] 					= true,
+		[clsid.tushkano] 				= true,
+		[clsid.psy_dog] 				= true,
+		[clsid.psy_dog_phantom] 		= true,	
+		[clsid.pseudo_gigant] 			= true,	
+		[clsid.bloodsucker_s] 			= true,
+		[clsid.boar_s] 					= true,
+		[clsid.dog_s] 					= true,
+		[clsid.flesh_s] 				= true,
+		[clsid.pseudodog_s] 			= true,
+		[clsid.burer_s] 				= true,
+		[clsid.cat_s] 					= true,
+		[clsid.chimera_s] 				= true,
+		[clsid.controller_s] 			= true,
+		[clsid.fracture_s] 				= true,
+		[clsid.poltergeist_s] 			= true,
+		[clsid.gigant_s] 				= true,
+		[clsid.zombie_s] 				= true,
+		[clsid.snork_s] 				= true,
+		[clsid.tushkano_s] 				= true,
+		[clsid.psy_dog_s] 				= true,
+		[clsid.psy_dog_phantom_s] 		= true
+	}
+	anomaly_classes = {
+		[clsid.zone_acid_fog] = true,
+		[clsid.zone_bfuzz] = true,
+		[clsid.zone_bfuzz_s] = true,
+		[clsid.zone_dead] = true,
+		[clsid.zone_galant_s] = true,
+		[clsid.zone_galantine] = true,
+		[clsid.zone_mbald_s] = true,
+		[clsid.zone_mincer] = true,
+		[clsid.zone_mincer_s] = true,
+		[clsid.zone_mosquito_bald] = true,
+		[clsid.ameba_zone] = true,
+		[clsid.zone_rusty_hair] = true,
+		[clsid.torrid_zone] = true,
+		[clsid.zone_radioactive] = true
+	}
+	stalker_classes = {
+		[clsid.actor] 					= true,
+		[clsid.script_stalker] 			= true
+	}	
+	weapon_classes = {
+		[clsid.wpn_ak74] 				= true,
+		[clsid.wpn_ak74_s] 				= true,
+		[clsid.wpn_binocular] 			= true,
+		[clsid.wpn_binocular_s] 		= true,
+		[clsid.wpn_bm16] 				= true,
+		[clsid.wpn_bm16_s] 				= true,
+		[clsid.wpn_fn2000] 				= true,
+		[clsid.wpn_fort]				= true,
+		[clsid.wpn_grenade_f1] 			= true,
+		[clsid.wpn_grenade_fake] 		= true,
+		[clsid.wpn_grenade_launcher] 	= true,
+		[clsid.wpn_grenade_rgd5] 		= true,
+		[clsid.wpn_grenade_rpg7]		= true,
+		[clsid.wpn_groza] 				= true,
+		[clsid.wpn_groza_s] 			= true,
+		[clsid.wpn_hpsa] 				= true,
+		[clsid.wpn_hpsa_s] 				= true,
+		[clsid.wpn_knife] 				= true,
+		[clsid.wpn_knife_s] 			= true,
+		[clsid.wpn_lr300] 				= true,
+		[clsid.wpn_lr300_s] 			= true,
+		[clsid.wpn_mounted] 			= true,
+		[clsid.wpn_pm] 					= true,
+		[clsid.wpn_pm_s] 				= true,
+		[clsid.wpn_rg6] 				= true,
+		[clsid.wpn_rg6_s] 				= true,
+		[clsid.wpn_rpg7] 				= true,
+		[clsid.wpn_rpg7_s] 				= true,
+		[clsid.wpn_shotgun] 			= true,
+		[clsid.wpn_shotgun_s] 			= true,
+		[clsid.wpn_stat_mgun] 			= true,
+		[clsid.wpn_svd] 				= true,
+		[clsid.wpn_svd_s] 				= true,
+		[clsid.wpn_svu] 				= true,
+		[clsid.wpn_svu_s] 				= true,
+		[clsid.wpn_usp45] 				= true,
+		[clsid.wpn_usp45_s] 			= true,
+		[clsid.wpn_val] 				= true,
+		[clsid.wpn_val_s] 				= true,
+		[clsid.wpn_vintorez] 			= true,
+		[clsid.wpn_vintorez_s] 			= true
+	}
+	outfit_classes = {
+		[clsid.equ_exo] 				= true,
+		[clsid.equ_military]			= true,
+		[clsid.equ_scientific] 			= true,
+		[clsid.equ_stalker] 			= true,
+		[clsid.equ_stalker_s] 			= true	
+	}
+
 	task_manager.clear_task_manager()
 	treasure_manager.clear_treasure_manager()
 	xr_sound.clear_all_sound_object()
