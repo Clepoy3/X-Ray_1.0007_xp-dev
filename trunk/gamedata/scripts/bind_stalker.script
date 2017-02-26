@@ -21,8 +21,15 @@ local weapon_hide = false
 class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:__init (obj) super(obj)
+	self.sm = ogse_signals.get_mgr()
+	self.sm:call("on_load_before_all")
+	self.sm:call("on_init", obj)
+	--
 	self.bCheckStart = false
 	--self.actor_detector = xr_detector.actor_detector()
+end
+function actor_binder:__finalize()
+	self.sm:call("on_finalize", obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)
@@ -31,10 +38,6 @@ function actor_binder:net_spawn(data)
 	self.bCheckStart = true
 	self.weapon_hide = false -- спрятано или нет оружие при разговоре.
 	weapon_hide = false -- устанавливаем глобальный дефолтовый флаг.
-
-	if object_binder.net_spawn(self,data) == false then
-		return false
-	end
 
 	db.add_actor(self.object)
 	
@@ -48,6 +51,8 @@ function actor_binder:net_spawn(data)
 
 	--' Загружаем настройки дропа
 	death_manager.init_drop_settings()
+
+	self.sm:call("on_spawn", data)
 
 	return true
 end
@@ -78,12 +83,10 @@ function actor_binder:net_destroy()
 
 	xr_sound.stop_all_sound_object()
 
-	object_binder.net_destroy(self)
+	self.sm:call("on_destroy")
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:reinit()
-	object_binder.reinit(self)
-	
 	local npc_id = self.object:id()
 
 	db.storage[npc_id] = { }
@@ -104,35 +107,18 @@ function actor_binder:reinit()
 	--self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
 	--self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
 	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
+
+	self.sm:call("on_reinit")
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
-	local story_id = box:story_id()
-	if story_id == nil then
-		return
-	end
+	if not box or not item then return end
+	local sobj = alife():object(item:id())
+	if not sobj then return end
 
 	treasure_manager.take_item_from_box(box, story_id)
---[[	
-	local respawner = se_respawn.get_respawner_by_parent(story_id)
-	if respawner == nil then
-		return
-	end
-	
-	--' Необходимо уменьшить счетчик в респавнере
-	respawner:remove_spawned(item:id())
 
-	local smart_terrain = db.strn_by_respawn[respawner:name()]
-	if smart_terrain == nil then
-		return
-	end
-
-	local npc = smart_terrain.gulag:get_nearest_online_obj(db.actor:position())
-    if npc ~= nil then
-	    xr_sound.set_sound_play(npc, "reac_box")
-	    xr_gulag.setGulagEnemy(smart_terrain:name() , db.actor)		
-    end
-]]
+	self.sm:call("on_take_from_box", box, item, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 --function actor_binder:level_border_enter(npc, info_id)
@@ -143,22 +129,55 @@ end
 --	self.actor_detector:actor_exit()
 --end
 ----------------------------------------------------------------------------------------------------------------------
+local info2call = {
+	ui_pda                   = "on_pda_open",
+	ui_pda_hide              = "on_pda_hide",
+	ui_pda_contacts          = "on_pda_contacts_open",
+	ui_pda_contacts_hide     = "on_pda_contacts_hide",
+	ui_pda_map_local         = "on_pda_map_local",
+	ui_pda_map_global        = "on_pda_map_global",
+	ui_pda_news              = "on_pda_news_open",
+	ui_pda_news_hide         = "on_pda_news_hide",
+	ui_pda_jobs_failed       = "on_pda_jobs_failed",
+	ui_pda_jobs_accomplished = "on_pda_jobs_accomplished",
+	ui_pda_jobs_current      = "on_pda_jobs_current",
+	ui_pda_jobs              = "on_pda_jobs_open",
+	ui_pda_jobs_hide         = "on_pda_jobs_hide",
+	ui_pda_diary             = "on_pda_diary_open",
+	ui_pda_diary_hide        = "on_pda_diary_hide",
+	ui_pda_encyclopedia      = "on_pda_encyclopedia_open",
+	ui_pda_encyclopedia_hide = "on_pda_encyclopedia_hide",
+	ui_pda_actor_info        = "on_pda_actor_info",
+	ui_pda_ranking           = "on_pda_ranking",
+	ui_pda_events            = "on_pda_events",
+	ui_inventory             = "on_inventory_open",
+	ui_inventory_hide        = "on_inventory_hide",
+	ui_talk                  = "on_talk_open",
+	ui_talk_hide             = "on_talk_hide",
+	ui_trade                 = "on_trade_open",
+	ui_trade_hide            = "on_trade_hide",
+	ui_car_body              = "on_body_open",
+	ui_car_body_hide         = "on_body_hide",
+}
 function actor_binder:info_callback(npc, info_id)
 	--' Сюжет
 	level_tasks.proceed(self.object)
 	-- Отметки на карте
 	level_tasks.process_info_portion(info_id)
+
+	self.sm:call("on_info", npc, info_id)
+
+	local sc = info2call[info_id]
+	if sc then
+		self.sm:call(sc, npc)
+	end
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_trade (item, sell_bye, money)
-    --if sell_bye == true then
-    --   game_stats.money_trade_update (money)
-    --else       
-    --   game_stats.money_trade_update (-money) 
-   -- end   
+	self.sm:call("on_trade", item, sell_bye, money)
 end
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:article_callback(npc, group, name)
+function actor_binder:article_callback(npc, group, name, article_type)
 	--printf("article_callback [%s][%s]", group, name)
 	if device().precache_frame >1 then return end
 	
@@ -167,16 +186,33 @@ function actor_binder:article_callback(npc, group, name)
 	else
 		news_manager.send_encyclopedy("encyclopedy", group)
 	end
+
+	self.sm:call("on_article", npc, group, name, article_type)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_take (obj)
-    level_tasks.proceed(self.object)
-    --game_stats.update_take_item (obj, self.object)
+ 	if not obj then return end
+	local sobj = alife():object(obj:id())
+	if not sobj then
+		if obj:section() ~= "bolt" then
+			self.object:drop_item(obj)
+		end
+		return
+	end
+
+	level_tasks.proceed(self.object)
+
+	self.sm:call("on_take", obj, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_drop (obj)
+	if not obj then return end
+	local sobj = alife():object(obj:id())
+	if not sobj then return end
+
     level_tasks.proceed(self.object)
-    --game_stats.update_drop_item (obj, self.object)
+
+	self.sm:call("on_drop", obj, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -196,16 +232,26 @@ function actor_binder:task_callback(_task, _objective, _state)
 			news_manager.send_task(db.actor, "update", _task, _objective)
 		end
 	end
+
+	self.sm:call("on_task", _task, _objective, _state)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:map_location_added_callback(spot_type_str, object_id)
-	if (false==app_ready()) or (device().precache_frame>1) then return end
+	--if (false==app_ready()) or (device().precache_frame>1) then return end
 	--'news_manager.send_task(db.actor, "new")
 end
 ----------------------------------------------------------------------------------------------------------------------
+local update_was_never_called = true
 function actor_binder:update(delta)
-	object_binder.update(self, delta)
+	--
+	self.sm:call("on_update", delta)	
+
+	if update_was_never_called then
+		self.sm:call("on_first_update")
+		update_was_never_called = false
+	end
+	--
 
 	-- DEBUG slowdown
 --	slowdown.update()
@@ -310,11 +356,7 @@ function actor_binder:update(delta)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
-	
 	local save_treasure_manager = true
-	
-	printf("actor_binder:save(): self.object:name()='%s'", self.object:name())
-	object_binder.save(self, packet)
 
 	--' Сохраняем уровень сложности
 	if save_treasure_manager == true then
@@ -341,14 +383,13 @@ function actor_binder:save(packet)
 	end                                  
 
 	task_manager.save(packet)
-	--self.actor_detector:save(packet)	
+	--self.actor_detector:save(packet)
+
+	self.sm:call("on_save", packet)
+	self.sm:call("on_save_after_all")
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:load(reader)
-	printf("actor_binder:load(): self.object:name()='%s'", self.object:name())
-	object_binder.load(self, reader)
-	printf("actor_binder:object_binder.load(): self.object:name()='%s'", self.object:name())
-
 	--' Загружаем уровень сложности
 	local game_difficulty = reader:r_u8()
 	
@@ -379,7 +420,9 @@ function actor_binder:load(reader)
 	end                                  
 
 	task_manager.load(reader)
-	--self.actor_detector:load(reader)	
+	--self.actor_detector:load(reader)
+
+	self.sm:call("on_load", reader)
 end
 ----------------------------------------------------------------------------------------------------------------------
 
