@@ -1742,6 +1742,8 @@ function start_game_callback()
 		[clsid.equ_stalker_s] 			= true	
 	}
 
+	m_netpk.attach()
+
 	task_manager.clear_task_manager()
 	treasure_manager.clear_treasure_manager()
 	xr_sound.clear_all_sound_object()
