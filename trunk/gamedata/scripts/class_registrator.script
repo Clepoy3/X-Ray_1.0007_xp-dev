@@ -1,4 +1,3 @@
-prefetch("_G")
 
 function cs_register(factory,client_object_class,server_object_class,clsid,script_clsid)
 	factory:register	(client_object_class,server_object_class,clsid,script_clsid)
@@ -78,4 +77,6 @@ function register(object_factory)
 	cs_register	(object_factory, "CMosquitoBald",	"se_zones.se_zone_anom",	"ZS_MBALD",	"zone_mbald_s")
 	cs_register	(object_factory, "CMincer",			"se_zones.se_zone_anom",	"ZS_GALAN",	"zone_galant_s")
 	cs_register	(object_factory, "CMincer",			"se_zones.se_zone_anom",	"ZS_MINCE",	"zone_mincer_s")
+
+	cs_register (object_factory, "CGameObject", "ogse_base_storage.se_custom_storage", "CUST_ST", "custom_storage")
 end
