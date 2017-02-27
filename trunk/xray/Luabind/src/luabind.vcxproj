@@ -71,12 +71,21 @@
 			call "msvcbuild_all.bat"
 		)
 		if not exist "$(OutDir)LuaJIT.dll" (
+			if not exist "$(OutDir)*.*" (
+				md "$(OutDir)"
+			)
 			copy /Y "..\..\luajit\bin\$(PlatformShortName)\LuaJIT.dll" "$(OutDir)LuaJIT.dll"
 		)
 		if not exist "$(OutDir)../libraries/LuaJIT.lib" (
+			if not exist "$(OutDir)../libraries/*.*" (
+				md "$(OutDir)../libraries/"
+			)
 			copy /Y "..\..\luajit\bin\$(PlatformShortName)\LuaJIT.lib" "$(OutDir)../libraries/LuaJIT.lib"
 		)
 		if not exist "$(OutDir)../libraries/LuaJIT.exp" (
+			if not exist "$(OutDir)../libraries/*.*" (
+				md "$(OutDir)../libraries/"
+			)
 			copy /Y "..\..\luajit\bin\$(PlatformShortName)\LuaJIT.exp" "$(OutDir)../libraries/LuaJIT.exp"
 		)
 	  </Command>
