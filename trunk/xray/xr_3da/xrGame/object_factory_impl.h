@@ -5,10 +5,6 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Object factory implementation
 ////////////////////////////////////////////////////////////////////////////
-
-#ifndef object_factory_implH
-#define object_factory_implH
-
 #pragma once
 
 #include "object_factory.h"
@@ -63,5 +59,3 @@ IC	void CObjectFactory::add	(const CLASS_ID &clsid, LPCSTR script_clsid)
 }
 
 #endif // NO_XR_GAME
-
-#endif // object_factory_implH

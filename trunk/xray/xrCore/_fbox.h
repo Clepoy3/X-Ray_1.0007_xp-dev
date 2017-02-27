@@ -1,5 +1,4 @@
-#ifndef __FBOX
-#define __FBOX
+#pragma once
 
 template <class T>
 class _box3
@@ -34,7 +33,7 @@ public:
 
 	IC	SelfRef	null		()								{ min.set(0,0,0);	max.set(0,0,0);					return *this;	};
 	IC	SelfRef	identity	()								{ min.set(-0.5,-0.5,-0.5);	max.set(0.5,0.5,0.5);						return *this;	};
-	IC	SelfRef	invalidate	()								{ min.set(type_max(T),type_max(T),type_max(T)); max.set(type_min(T),type_min(T),type_min(T));	return *this;	}
+	IC	SelfRef	invalidate	()								{ min.set(type_max<T>,type_max<T>,type_max<T>); max.set(type_min<T>,type_min<T>,type_min<T>);	return *this;	}
 	
 	IC	SelfRef	shrink		(T s)							{ min.add(s); max.sub(s);	return *this;	};
 	IC	SelfRef	shrink		(const Tvector& s)				{ min.add(s); max.sub(s);	return *this;	};
@@ -328,5 +327,3 @@ typedef _box3<double>	Dbox3;
 
 template <class T>
 BOOL	_valid			(const _box3<T>& c)	{ return _valid(min) && _valid(max); }
-
-#endif

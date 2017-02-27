@@ -1,5 +1,4 @@
-#ifndef __M__
-#define __M__
+#pragma once
 /*
 *	DirectX-compliant, ie row-column order, ie m[Row][Col].
 *	Same as:
@@ -572,7 +571,7 @@ public:
 	IC	void	getHPB	(T& h, T& p, T& b) const
 	{
         T cy = _sqrt(j.y*j.y + i.y*i.y);
-        if (cy > 16.0f*type_epsilon(T)) {
+        if (cy > 16.0f*type_epsilon<T>) {
             h = (T) -atan2(k.x, k.z);
             p = (T) -atan2(-k.y, cy);
             b = (T) -atan2(i.y, j.y);
@@ -606,4 +605,3 @@ BOOL	_valid			(const _matrix<T>& m)
 extern XRCORE_API Fmatrix	Fidentity;
 extern XRCORE_API Dmatrix	Didentity;
 
-#endif

@@ -2,7 +2,7 @@
 #define logH
 
 //+RvP
-#include <Windows.h>
+//#include <Windows.h>
 #include <fstream>
 #include <ctime>
 //-RvP
