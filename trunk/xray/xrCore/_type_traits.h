@@ -1,5 +1,3 @@
-#ifndef _STL_EXT_type_traits
-#define _STL_EXT_type_traits
 #pragma once
 
 namespace xrcore
@@ -53,4 +51,3 @@ struct	is_polymorphic			{
 	};
 };
 }
-#endif

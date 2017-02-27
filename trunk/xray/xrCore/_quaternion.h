@@ -1,5 +1,4 @@
-#ifndef __Q__
-#define __Q__
+#pragma once
 
 /***************************************************************************
 	The quatern module contains basic support for a quaternion object.
@@ -140,7 +139,7 @@
 #define QEPSILON				0.00001f
 
 template <class T>
-struct /*XRCORE_API*/ _quaternion { //KRodin: fixed
+struct _quaternion {
 public:
 	typedef T				TYPE;
 	typedef _quaternion<T>	Self;
@@ -449,5 +448,3 @@ BOOL	_valid			(const _quaternion<T>& s)	{ return _valid(s.x) && _valid(s.y) && _
 #undef TRACE_QZERO_TOLERANCE
 #undef AA_QZERO_TOLERANCE
 #undef QEPSILON
-
-#endif

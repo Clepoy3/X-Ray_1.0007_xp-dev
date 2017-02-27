@@ -1116,7 +1116,7 @@ void CPHShell::SetCallbacksRecursive(u16 id,u16 element)
 	if(mask.is(1ui64<<(u64)id))
 	{
 		if((no_physics_shape(bone_data.shape)||joint_data.type==jtRigid)	&& element!=u16(-1)){
-			B.set_callback(bctPhysics,0,cast_PhysicsElement(elements[element]));
+			B.set_callback(bctPhysics,NULL,cast_PhysicsElement(elements[element]));
 		}else{
 			element_position_in_set_calbacks++;
 			element=element_position_in_set_calbacks;

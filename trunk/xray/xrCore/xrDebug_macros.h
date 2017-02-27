@@ -1,5 +1,3 @@
-#ifndef xrDebug_macrosH
-#define xrDebug_macrosH
 #pragma once
 
 //. #define _ANONYMOUS_BUILD
@@ -79,13 +77,3 @@
 	" -------------------------------------------------\n" )
 #define todo( x )  message( __FILE__LINE__" TODO :   " #x "\n" ) 
 #define fixme( x )  message( __FILE__LINE__" FIXME:   " #x "\n" ) 
-
-//--------- static assertion
-template<bool>	struct CompileTimeError;
-template<>		struct CompileTimeError<true>	{};
-#define STATIC_CHECK(expr, msg) \
-{ \
-	CompileTimeError<((expr) != 0)> ERROR_##msg; \
-	(void)ERROR_##msg; \
-}
-#endif // xrDebug_macrosH

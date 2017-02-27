@@ -1,5 +1,3 @@
-#ifndef _FIXEDMAP_H
-#define _FIXEDMAP_H
 #pragma once
 
 template<class K, class T, class allocator = xr_allocator>
@@ -234,16 +232,18 @@ public:
 		TNode*	_end		= end();
 		for (TNode* cur = begin(); cur!=_end; cur++,_it++) *_it = cur;
 	}
-	IC void		getANY_P	(xr_vector<void*,typename allocator::template helper<void*>::result>&	D)
-	{
-		D.resize			(size());
-		void** _it			= &*D.begin();
-		TNode*	_end		= end();
-		for (TNode* cur = begin(); cur!=_end; cur++,_it++) *_it = cur;
-	}
+	IC void		getANY_P(xr_vector<void*, typename allocator::template helper<void*>::result>&	D);
 	IC void		setup(callback CB) {
 		for (int i=0; i<limit; i++)
 			CB(nodes+i);
 	}
 };
-#endif
+
+template<class K, class T, class allocator>
+void FixedMAP<K, T, allocator>::getANY_P(xr_vector<void*, typename allocator::template helper<void*>::result>& D)
+{
+	D.resize(size());
+	void** _it = &*D.begin();
+	TNode* _end = end();
+	for (TNode* cur = begin(); cur != _end; cur++, _it++) *_it = cur;
+}

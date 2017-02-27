@@ -1,5 +1,4 @@
-#ifndef _STL_EXT_internal
-#define _STL_EXT_internal
+#pragma once
 
 using std::swap;
 
@@ -269,6 +268,4 @@ DEFINE_VECTOR(int*,LPIntVec,LPIntIt);
 #ifdef __BORLANDC__
 DEFINE_VECTOR(AnsiString,AStringVec,AStringIt);
 DEFINE_VECTOR(AnsiString*,LPAStringVec,LPAStringIt);
-#endif
-
 #endif

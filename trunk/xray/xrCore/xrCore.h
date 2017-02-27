@@ -1,5 +1,3 @@
-#ifndef xrCoreH
-#define xrCoreH
 #pragma once
 
 #pragma warning(disable:4996)
@@ -248,4 +246,3 @@ public:
 };
 extern XRCORE_API xrCore Core;
 
-#endif
