@@ -137,32 +137,30 @@ void		INetLog::LogData(u32 Time, void* data, u32 size, bool IsIn)
 	m_cs.Leave();
 }
 
-//#define LOG_PACKET_ERRORS //KRodin: пусть пока будет выключено.
-/*#define PRINT_SCRIPT_TRACEBACK
+//#define PRINT_SCRIPT_TRACEBACK
 
 #ifdef PRINT_SCRIPT_TRACEBACK
 	#include "../xr_3da/lua_tools.h"
-#endif*/
+#endif
 
 DLL_API void LogPacketError(LPCSTR format, ...)
 {
-#ifdef LOG_PACKET_ERRORS
 	va_list mark;
 	string1024	buf;
 	va_start	(mark, format );
 	int sz		= _vsnprintf(buf, sizeof(buf)-1, format, mark ); buf[sizeof(buf)-1]=0;
     va_end		(mark);
 	if (sz)		Log(buf);
-/* //KRodin: оно заработает только если вынести lua_tools в какую-нибудь другую dll.
+	Msg("----------------------------------------------");
+//KRodin: желательно вынести lua_tools куда-нибудь в xr_core, чтобы это работало без танцев с бубнами.
 #ifdef PRINT_SCRIPT_TRACEBACK
 #	pragma comment( lib, "xr_3da.lib" )
 	if (!g_game_lua) return;	
 	LPCSTR trace = get_lua_traceback(g_game_lua, 2);
 	Msg("[LogPacketError]: %s", trace);
 #endif
-*/
-	LogStackTrace("problem here:");
+	LogStackTrace("[LogPacketError]: problem here:");
+	Msg("----------------------------------------------");
 	if (IsDebuggerPresent())
 		DebugBreak ();
-#endif
 }
