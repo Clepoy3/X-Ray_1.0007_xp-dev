@@ -128,7 +128,7 @@ void CUIListWnd::RemoveItem(int index)
 
 	//выбрать нужный элемент
 	it = m_ItemList.begin();
-	for(int i=0; i<index;++i, ++it);
+	for(int i = 0; i<index;++i, ++it);
 
 	R_ASSERT(m_ItemList.end() != it);
 	
@@ -149,7 +149,7 @@ void CUIListWnd::RemoveItem(int index)
 	m_ScrollBar->Refresh();
 
 	//перенумеровать индексы заново
-	i=0;
+	int i = 0;
 	for(LIST_ITEM_LIST_it it=m_ItemList.begin();  m_ItemList.end() != it; ++it,i++)
 	{
 		(*it)->SetIndex(i);
@@ -224,16 +224,14 @@ void CUIListWnd::UpdateList()
 	
 	//спрятать все элементы до участка 
 	//отображающейся в данный момент
-	for(int i=0; i<_min(m_ItemList.size(),m_iFirstShownIndex); ++i, ++it)
+	for(int i = 0; i<_min(m_ItemList.size(),m_iFirstShownIndex); ++i, ++it)
 	{
 		(*it)->Show(false);
 	}
-	   
+
 
 	//показать текущий список
-	for(i=m_iFirstShownIndex; 
-			i<_min(m_ItemList.size(),m_iFirstShownIndex + m_iRowNum+1);
-			++i, ++it)
+	for(int i=m_iFirstShownIndex; i<_min(m_ItemList.size(),m_iFirstShownIndex + m_iRowNum+1); ++i, ++it)
 	{
 		(*it)->SetWndRect((*it)->GetWndRect().left, m_bVertFlip?GetHeight()-(i-m_iFirstShownIndex)* m_iItemHeight-m_iItemHeight:(i-m_iFirstShownIndex)* m_iItemHeight, 
 							m_iItemWidth, m_iItemHeight);

@@ -173,7 +173,7 @@ void CInput::KeyUpdate	( )
 		if (!KBState[key])	
 			cbStack.back()->IR_OnKeyboardRelease	( key );
 	}
-	for ( i = 0; i < COUNT_KB_BUTTONS; i++ )
+	for (std::size_t i = 0; i < COUNT_KB_BUTTONS; i++ )
 		if (KBState[i]) 
 			cbStack.back()->IR_OnKeyboardHold( i );
 

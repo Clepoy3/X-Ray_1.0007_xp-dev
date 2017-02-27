@@ -28,8 +28,9 @@ public:
 	{
 		A.clear			();
 		string256		S;
-		for (int j=0; caBaseNames[j]; ++j);
-		A.resize		(j);
+		int j = 0;
+		for (; caBaseNames[j]; ++j);
+			A.resize		(j);
 		for (int i=0; i<j; ++i) 
 		{
 			strconcat	(sizeof(S),S,caBaseName,caBaseNames[i]);
@@ -50,8 +51,9 @@ public:
 	{
 		A.clear		();
 		string256	S;
-		for (int j=0; caBaseNames[j]; ++j);
-		A.resize	(j);
+		int j = 0;
+		for (; caBaseNames[j]; ++j);
+			A.resize	(j);
 		for (int i=0; i<j; ++i)
 			A[i].Load	(tpKinematics,strconcat(sizeof(S),S,caBaseName,caBaseNames[i]));
 	}

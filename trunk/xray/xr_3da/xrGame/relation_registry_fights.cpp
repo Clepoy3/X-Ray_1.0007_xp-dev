@@ -55,7 +55,8 @@ void RELATION_REGISTRY::FightRegister (u16 attacker, u16 defender, ALife::ERelat
 RELATION_REGISTRY::FIGHT_DATA* RELATION_REGISTRY::FindFight(u16 object_id, bool by_attacker)
 {
 	FIGHT_VECTOR& fights = fight_registry();
-	for(FIGHT_VECTOR_IT it = fights.begin(); it != fights.end(); it++)
+	auto it = fights.begin();
+	for (; it != fights.end(); it++)
 	{
 		FIGHT_DATA& fight_data = *it;
 		u16 id_to_find = by_attacker?fight_data.attacker:fight_data.defender;

@@ -122,10 +122,8 @@ CSINI_IdToIndex::~CIni_IdToIndex()
 TEMPLATE_SPECIALIZATION
 const typename ITEM_DATA* CSINI_IdToIndex::GetById (const T_ID& str_id, bool no_assert)
 {
-	T_VECTOR::iterator it;
-
-	for(it = m_pItemDataVector->begin();
-		m_pItemDataVector->end() != it; it++)
+	auto it = m_pItemDataVector->begin();
+	for (; m_pItemDataVector->end() != it; it++)
 	{
 		if(!xr_strcmp((*it).id, str_id))
 			break;
