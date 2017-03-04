@@ -248,7 +248,7 @@ void CObjectList::net_Register		(CObject* O)
 {
 	// chk_already_deleted(O, "net_Register");		
 	R_ASSERT		(O);
-	map_NETID.insert(mk_pair(O->ID(),O));
+	map_NETID.insert(std::make_pair(O->ID(),O));
 	//Msg			("-------------------------------- Register: %s",O->cName());
 }
 
