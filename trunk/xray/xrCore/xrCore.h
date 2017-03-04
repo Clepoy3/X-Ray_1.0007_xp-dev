@@ -2,12 +2,24 @@
 
 #pragma warning(disable:4996)
 
+#if (defined(_DEBUG) || defined(MIXED) || defined(DEBUG)) && !defined(FORCE_NO_EXCEPTIONS)
+#if !defined(_CPPUNWIND)
+#	error Please enable exceptions...
+#endif
+
+#	define XR_NOEXCEPT noexcept
+#	define XR_NOEXCEPT_OP(x) noexcept(x)
+#else
+#	define XR_NOEXCEPT throw()
+#	define XR_NOEXCEPT_OP(x)
+#endif
+
 #if !defined(_MT)
 	// multithreading disabled
 	#error Please enable multi-threaded library...
 #endif
 
-#	include "xrCore_platform.h"
+#include "xrCore_platform.h"
 
 // *** try to minimize code bloat of STLport
 #ifdef __BORLANDC__
@@ -245,4 +257,3 @@ public:
 	void		_destroy	();
 };
 extern XRCORE_API xrCore Core;
-

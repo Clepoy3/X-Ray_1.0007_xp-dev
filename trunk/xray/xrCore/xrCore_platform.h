@@ -1,5 +1,3 @@
-#ifndef XRCORE_PLATFORM_H
-#define XRCORE_PLATFORM_H
 #pragma once
 
 #define VC_EXTRALEAN				// Exclude rarely-used stuff from Windows headers
@@ -9,7 +7,9 @@
 #endif // STRICT
 #define IDIRECTPLAY2_OR_GREATER		// ?
 #define DIRECTINPUT_VERSION	0x0800	//
-#define _CRT_SECURE_NO_DEPRECATE	// vc8.0 stuff, don't deprecate several ANSI functions
+#ifndef _CRT_SECURE_NO_DEPRECATE
+#   define _CRT_SECURE_NO_DEPRECATE	// vc8.0 stuff, don't deprecate several ANSI functions
+#endif
 
 // windows.h
 #ifndef _WIN32_WINNT
@@ -47,4 +47,3 @@
 #endif
 #pragma warning(pop)
 
-#endif

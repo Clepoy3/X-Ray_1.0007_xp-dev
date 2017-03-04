@@ -60,5 +60,15 @@ using string512 = char[512];
 using string1024 = char[1024];
 using string2048 = char[2048];
 using string4096 = char[4096];
-
 using string_path = char[2 * MAX_PATH];
+
+using wstring16 = wchar_t[16];
+using wstring32 = wchar_t[32];
+using wstring64 = wchar_t[64];
+using wstring128 = wchar_t[128];
+using wstring256 = wchar_t[256];
+using wstring512 = wchar_t[512];
+using wstring1024 = wchar_t[1024];
+using wstring2048 = wchar_t[2048];
+using wstring4096 = wchar_t[4096];
+using wstring_path = wchar_t[2 * MAX_PATH];
