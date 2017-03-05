@@ -2,8 +2,6 @@
 
 using std::swap;
 
-#include "_type_traits.h"
-
 #ifdef	__BORLANDC__
 #define M_NOSTDCONTAINERS_EXT
 #endif

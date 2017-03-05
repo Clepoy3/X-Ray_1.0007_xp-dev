@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include <_type_traits.h>
 #include "object_type_traits.h"
 
 #ifdef DEBUG
@@ -440,9 +439,9 @@ namespace SmartDynamicCast {
 		template <typename T1>
 		IC	static T1* smart_cast(T2* p)
 		{
-			static_assert(!object_type_traits::is_const<T2>::value || object_type_traits::is_const<T1>::value, "Cannot_use_smart_cast_to_convert_const_to_non_const");
-			typedef object_type_traits::remove_const<T1>::type _T1;
-			typedef object_type_traits::remove_const<T2>::type _T2;
+			static_assert(!std::is_const_v<T2> || std::is_const_v<T1>, "Cannot_use_smart_cast_to_convert_const_to_non_const");
+			typedef std::remove_const_t<T1> _T1;
+			typedef std::remove_const_t<T2> _T2;
 #ifdef DEBUG
 			T1					*temp = SmartDynamicCast::smart_cast<_T1>(const_cast<_T2*>(p));
 			T1					*test = dynamic_cast<T1*>(p);
@@ -463,7 +462,7 @@ namespace SmartDynamicCast {
 		}
 
 		template <>
-		IC	static void* smart_cast<void>(T2* p)
+		static void* smart_cast<void>(T2* p)
 		{
 #ifdef SHOW_SMART_CAST_UNOPTIMIZED_CASES
 #pragma todo("Dima to all : this smart_cast is not optimized!")
@@ -472,38 +471,37 @@ namespace SmartDynamicCast {
 			add_smart_cast_stats(typeid(T2*).name(),typeid(void*).name());
 #endif
 			if (!p)
-				return			((void*)0);
+				return			nullptr;
 			return				(dynamic_cast<void*>(p));
 		}
 	};
 };
-using namespace xrcore;
 template <typename T1, typename T2>
-IC	T1	smart_cast(T2* p)
+T1	smart_cast(T2* p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
-	static_assert(object_type_traits::is_pointer<T1>::value, "Invalid_target_type_for_Dynamic_Cast");
-	static_assert(object_type_traits::is_void<object_type_traits::remove_pointer<T1>::type>::value || is_polymorphic<object_type_traits::remove_pointer<T1>::type>::result, "Invalid_target_type_for_Dynamic_Cast");
-	static_assert(is_polymorphic<T2>::result, "Invalid_source_type_for_Dynamic_Cast");
+	static_assert(std::is_pointer_v<T1>, "Invalid_target_type_for_Dynamic_Cast");
+	static_assert(std::is_void_v<std::remove_pointer_t<T1>> || std::is_polymorphic_v<std::remove_pointer_t<T1>>, "Invalid_target_type_for_Dynamic_Cast");
+	static_assert(std::is_polymorphic_v<T2>, "Invalid_source_type_for_Dynamic_Cast");
 #endif
 #ifdef SMART_CAST_STATS_ALL
 	add_smart_cast_stats_all	(typeid(T2*).name(),typeid(T1).name());
 #endif
 	if (!p)
 		return					(reinterpret_cast<T1>(p));
-	return						(SmartDynamicCast::CHelper2<T2>::smart_cast<object_type_traits::remove_pointer<T1>::type>(p));
+	return						(SmartDynamicCast::CHelper2<T2>::smart_cast<std::remove_pointer_t<T1>>(p));
 }
 
 template <typename T1, typename T2>
-IC	T1	smart_cast(T2& p)
+T1	smart_cast(T2& p)
 {
 #ifdef PURE_DYNAMIC_CAST_COMPATIBILITY_CHECK
-	static_assert(object_type_traits::is_reference<T1>::value, "Invalid_target_type_for_Dynamic_Cast");
-	static_assert(is_polymorphic<object_type_traits::remove_reference<T1>::type>::result, "Invalid_target_type_for_Dynamic_Cast");
-	static_assert(is_polymorphic<T2>::result, "Invalid_source_type_for_Dynamic_Cast");
+	static_assert(std::is_reference_v<T1>, "Invalid_target_type_for_Dynamic_Cast");
+	static_assert(std::is_polymorphic_v<std::remove_reference_t<T1>>, "Invalid_target_type_for_Dynamic_Cast");
+	static_assert(std::is_polymorphic_v<T2>, "Invalid_source_type_for_Dynamic_Cast");
 #endif
 #ifdef SMART_CAST_STATS_ALL
-	add_smart_cast_stats_all	(typeid(T2*).name(),typeid(object_type_traits::remove_reference<T1>::type*).name());
+	add_smart_cast_stats_all	(typeid(T2*).name(),typeid(std::remove_reference_t<T1>*).name());
 #endif
 	return						(*SmartDynamicCast::CHelper2<T2>::smart_cast<object_type_traits::remove_reference<T1>::type>(&p));
 }
