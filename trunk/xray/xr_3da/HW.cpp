@@ -275,7 +275,7 @@ void		CHW::CreateDevice		(HWND m_hWnd)
 
     // Set up the presentation parameters
 	D3DPRESENT_PARAMETERS&	P	= DevPP;
-    ZeroMemory				( &P, sizeof(P) );
+    std::memset				( &P, 0, sizeof(P) );
 
 #ifndef _EDITOR
 	selectResolution	(P.BackBufferWidth, P.BackBufferHeight, bWindowed);

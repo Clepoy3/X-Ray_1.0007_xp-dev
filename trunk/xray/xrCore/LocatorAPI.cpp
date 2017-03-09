@@ -368,8 +368,8 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 		u32 crc			= *(u32*)buffer;
 		buffer			+= sizeof(crc);
 
-		u32				name_length = buffer_size - 4*sizeof(u32);
-		Memory.mem_copy	(name,buffer,name_length);
+		std::size_t		name_length = buffer_size - 4*sizeof(u32);
+		std::memcpy(name,buffer,name_length);
 		name[name_length] = 0;
 		buffer			+= buffer_size - 4*sizeof(u32);
 

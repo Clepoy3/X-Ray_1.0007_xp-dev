@@ -68,7 +68,7 @@ xr_string	EFS_Utils::ChangeFileExt(const xr_string& src, LPCSTR ext)
 //----------------------------------------------------
 LPCSTR MakeFilter(string1024& dest, LPCSTR info, LPCSTR ext)
 {
-	ZeroMemory(dest,sizeof(dest));
+	std::memset(dest, 0,sizeof(dest));
     if (ext){
         int icnt=_GetItemCount(ext,';');
 		LPSTR dst=dest;
@@ -103,7 +103,7 @@ bool EFS_Utils::GetOpenName( LPCSTR initial,  string_path& buffer, int sz_buf, b
 	MakeFilter(flt,P.m_FilterCaption?P.m_FilterCaption:"",P.m_DefExt);
 
 	OPENFILENAME ofn;
-	Memory.mem_fill		( &ofn, 0, sizeof(ofn) );
+	std::memset( &ofn, 0, sizeof(ofn) );
     if (xr_strlen(buffer)){ 
         string_path		dr;
         if (!(buffer[0]=='\\' && buffer[1]=='\\')){ // if !network
@@ -166,7 +166,7 @@ bool EFS_Utils::GetSaveName( LPCSTR initial, string_path& buffer, LPCSTR offset,
 	string1024 flt;
 	MakeFilter(flt,P.m_FilterCaption?P.m_FilterCaption:"",P.m_DefExt);
 	OPENFILENAME ofn;
-	Memory.mem_fill		( &ofn, 0, sizeof(ofn) );
+	std::memset( &ofn, 0, sizeof(ofn) );
     if (xr_strlen(buffer)){ 
         string_path		dr;
         if (!(buffer[0]=='\\' && buffer[1]=='\\')){ // if !network

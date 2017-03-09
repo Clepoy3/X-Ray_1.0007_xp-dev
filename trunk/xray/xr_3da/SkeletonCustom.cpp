@@ -19,7 +19,7 @@ xrCriticalSection	UCalc_Mutex
 // BoneInstance methods
 void		CBoneInstance::construct	()
 {
-	ZeroMemory					(this,sizeof(*this));
+	std::memset					(this, 0,sizeof(*this));
 	mTransform.identity			();
 
 	mRenderTransform.identity	();

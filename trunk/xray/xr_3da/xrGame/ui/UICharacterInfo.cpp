@@ -37,7 +37,7 @@ CSE_ALifeTraderAbstract* ch_info_get_from_id (u16 id)
 CUICharacterInfo::CUICharacterInfo()
 :m_ownerID(u16(-1)),pUIBio(NULL)
 {
-	ZeroMemory			(m_icons,sizeof(m_icons));
+	std::memset			(m_icons, 0,sizeof(m_icons));
 	m_bForceUpdate		= false;
 }
 

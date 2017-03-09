@@ -243,7 +243,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 	if (!bHold)	fAccel			= 1.0f;
 
 	char append[MAX_LEN];
-	ZeroMemory (&append, MAX_LEN);
+	std::memset (&append, 0, MAX_LEN);
 	
 
 	switch (dik) {

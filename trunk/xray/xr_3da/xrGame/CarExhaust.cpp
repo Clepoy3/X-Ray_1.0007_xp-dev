@@ -47,7 +47,7 @@ void CCar::SExhaust::Update()
 	dVector3 res;
 	Fvector	 res_vel;
 	dBodyGetPointVel(pelement->get_body(),global_transform.c.x,global_transform.c.y,global_transform.c.z,res);
-	CopyMemory (&res_vel,res,sizeof(Fvector));
+	std::memcpy (&res_vel,res,sizeof(Fvector));
 	//velocity.mul(0.95f);
 	//res_vel.mul(0.05f);
 	//velocity.add(res_vel);

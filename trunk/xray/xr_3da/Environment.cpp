@@ -62,10 +62,10 @@ CEnvironment::CEnvironment	()
 	// fill clouds hemi verts & faces 
 	const Fvector* verts;
 	CloudsVerts.resize		(xrHemisphereVertices(2,verts));
-	CopyMemory			(&CloudsVerts.front(),verts,CloudsVerts.size()*sizeof(Fvector));
+	std::memcpy			(&CloudsVerts.front(),verts,CloudsVerts.size()*sizeof(Fvector));
 	const u16* indices;
 	CloudsIndices.resize	(xrHemisphereIndices(2,indices));
-	CopyMemory			(&CloudsIndices.front(),indices,CloudsIndices.size()*sizeof(u16));
+	std::memcpy			(&CloudsIndices.front(),indices,CloudsIndices.size()*sizeof(u16));
 
 	// perlin noise
 	PerlinNoise1D			= xr_new<CPerlinNoise1D>(Random.randI(0,0xFFFF));

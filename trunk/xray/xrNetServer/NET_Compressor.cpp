@@ -349,7 +349,7 @@ u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const 
 
 #if !NET_USE_COMPRESSION
 
-	CopyMemory(dest,src,count);
+	std::memcpy(dest,src,count);
 	return (u16(count));
 	
 #else // !NET_USE_COMPRESSION
@@ -411,7 +411,7 @@ u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const 
 		*dest = NET_TAG_NONCOMPRESSED;
 		
 		compressed_size	= count + 1;
-		CopyMemory( dest+1, src, count );
+		std::memcpy( dest+1, src, count );
 
         #if NET_LOG_COMPRESSION
         Msg( "#compress/as-is %u->%u  %02X", count, compressed_size, *dest );
@@ -470,7 +470,7 @@ u16 NET_Compressor::Decompress	(BYTE* dest, const u32 &dest_size, BYTE* src, con
 
 #if !NET_USE_COMPRESSION
 
-	CopyMemory(dest,src,count);
+	std::memcpy(dest,src,count);
 	
 	return (u16(count));
 
@@ -479,7 +479,7 @@ u16 NET_Compressor::Decompress	(BYTE* dest, const u32 &dest_size, BYTE* src, con
 	if( *src != NET_TAG_COMPRESSED ) 
 	{
 		if (count) {
-			CopyMemory	( dest, src+1, count-1 );
+			std::memcpy	( dest, src+1, count-1 );
 			return		( u16(count-1) );
 		}
 

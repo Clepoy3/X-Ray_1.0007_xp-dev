@@ -98,7 +98,7 @@ NET_Packet*		INetQueue::Create	(const NET_Packet& _other)
 		unused.pop_back		();
 		P					= ready.back	();
 	}	
-	CopyMemory	(P,&_other,sizeof(NET_Packet));	
+	std::memcpy	(P,&_other,sizeof(NET_Packet));	
 	cs.Leave		();
 	return			P;
 }
@@ -412,7 +412,7 @@ BOOL IPureClient::Connect	(LPCSTR options)
 
 		// Now set up the Application Description
 		DPN_APPLICATION_DESC        dpAppDesc;
-		ZeroMemory					(&dpAppDesc, sizeof(DPN_APPLICATION_DESC));
+		std::memset					(&dpAppDesc, 0, sizeof(DPN_APPLICATION_DESC));
 		dpAppDesc.dwSize			= sizeof(DPN_APPLICATION_DESC);
 		dpAppDesc.guidApplication	= NET_GUID;
 
@@ -427,7 +427,7 @@ BOOL IPureClient::Connect	(LPCSTR options)
 
 		{
 			DPN_PLAYER_INFO				Pinfo;
-			ZeroMemory					(&Pinfo,sizeof(Pinfo));
+			std::memset					(&Pinfo, 0,sizeof(Pinfo));
 			Pinfo.dwSize				= sizeof(Pinfo);
 			Pinfo.dwInfoFlags			= DPNINFO_NAME|DPNINFO_DATA;
 			Pinfo.pwszName				= ClientNameUNICODE;
@@ -493,14 +493,14 @@ BOOL IPureClient::Connect	(LPCSTR options)
 
 			// Create ONE node
 			HOST_NODE	NODE;
-			ZeroMemory	(&NODE, sizeof(HOST_NODE));
+			std::memset	(&NODE, 0, sizeof(HOST_NODE));
 
 			// Copy the Host Address
 			R_CHK		(net_Address_server->Duplicate(&NODE.pHostAddress ) );
 
 			// Retreive session name
 			char					desc[4096];
-			ZeroMemory				(desc,sizeof(desc));
+			std::memset				(desc, 0,sizeof(desc));
 			DPN_APPLICATION_DESC*	dpServerDesc=(DPN_APPLICATION_DESC*)desc;
 			DWORD					dpServerDescSize=sizeof(desc);
 			dpServerDesc->dwSize	= sizeof(DPN_APPLICATION_DESC);
@@ -639,7 +639,7 @@ BOOL IPureClient::Connect	(LPCSTR options)
 		DPN_SP_CAPS		sp_caps;
 
 		net_Address_device->GetSP(&sp_guid);
-		ZeroMemory		(&sp_caps,sizeof(sp_caps));
+		std::memset		(&sp_caps,0,sizeof(sp_caps));
 		sp_caps.dwSize	= sizeof(sp_caps);
 		R_CHK			(NET->GetSPCaps(&sp_guid,&sp_caps,0));
 		sp_caps.dwSystemBufferSize	= 0;
@@ -711,11 +711,11 @@ HRESULT	IPureClient::net_Handler(u32 dwMessageType, PVOID pMessage)
 			{
 				// This host session is not in the list then so insert it.
 				HOST_NODE	NODE;
-				ZeroMemory	(&NODE, sizeof(HOST_NODE));
+				std::memset	(&NODE, 0, sizeof(HOST_NODE));
 
 				// Copy the Host Address
 				R_CHK		(pEnumHostsResponseMsg->pAddressSender->Duplicate(&NODE.pHostAddress ) );
-				CopyMemory(&NODE.dpAppDesc,pDesc,sizeof(DPN_APPLICATION_DESC));
+				std::memcpy(&NODE.dpAppDesc,pDesc,sizeof(DPN_APPLICATION_DESC));
 
 				// Null out all the pointers we aren't copying
 				NODE.dpAppDesc.pwszSessionName					= NULL;
@@ -939,7 +939,7 @@ void	IPureClient::UpdateStatistic()
 {
 	// Query network statistic for this client
 	DPN_CONNECTION_INFO	CI;
-	ZeroMemory			(&CI,sizeof(CI));
+	std::memset			(&CI, 0,sizeof(CI));
 	CI.dwSize			= sizeof(CI);
 	HRESULT hr					= NET->GetConnectionInfo(&CI,0);
 	if (FAILED(hr)) return;

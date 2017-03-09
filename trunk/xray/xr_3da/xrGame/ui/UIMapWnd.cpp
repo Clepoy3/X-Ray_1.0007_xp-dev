@@ -97,7 +97,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	strconcat(sizeof(pth),pth,start_from,":main_wnd:map_header_frame_line");
 	xml_init.InitFrameLine			(uiXml, pth, 0, UIMainMapHeader);
 
-	ZeroMemory						(m_ToolBar,sizeof(m_ToolBar));
+	std::memset						(m_ToolBar, 0,sizeof(m_ToolBar));
 	xr_string  sToolbar;
 	sToolbar	= xr_string(start_from) + ":main_wnd:map_header_frame_line:tool_bar";
 

@@ -51,14 +51,14 @@ public:
 	{
 		VERIFY		(p && count);
 		VERIFY		(B.count + count < NET_PacketSizeLimit);
-		CopyMemory(&B.data[B.count],p,count);
+		std::memcpy(&B.data[B.count],p,count);
 		B.count		+= count;
 		VERIFY		(B.count<NET_PacketSizeLimit);
 	}
 	IC void w_seek	(u32 pos, const void* p, u32 count)	// random write (only inside allocated region)
 	{
 		VERIFY		(p && count && (pos+count<=B.count));
-		CopyMemory(&B.data[pos],p,count);
+		std::memcpy(&B.data[pos],p,count);
 	}
 	IC u32	w_tell	()	{ return B.count; }
 
@@ -182,7 +182,7 @@ public:
 	IC void		r				( void* p, u32 count)
 	{
 		VERIFY		(p && count);
-		CopyMemory(p,&B.data[r_pos],count);
+		std::memcpy(p,&B.data[r_pos],count);
 		r_pos		+= count;
 		if (r_pos > B.count)
 			LogPacketError("!#ERROR: NET_PACKET::r() buffer overrun, r_pos = %d , size = %d", r_pos, B.count);			

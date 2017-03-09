@@ -24,7 +24,7 @@ CSoundStream::CSoundStream	( )
 	dwStatus			= 0;
 
 	hAcmStream			= 0;
-	ZeroMemory			(&stream,sizeof(stream));
+	std::memset			(&stream, 0,sizeof(stream));
 	pwfx				= 0;
 	psrc				= 0;
 	dwDecPos			= 0;
@@ -225,8 +225,8 @@ void CSoundStream::AppWriteDataToBuffer(
     // if the block wraps around.
     if (DS_OK==pBuffer->Lock(dwOffset, dwSoundBytes, &lpvPtr1, &dwBytes1, &lpvPtr2, &dwBytes2, 0)){
 		// Write to pointers.
-		CopyMemory	(lpvPtr1, lpbSoundData, dwBytes1);
-		if(NULL != lpvPtr2) CopyMemory (lpvPtr2, lpbSoundData+dwBytes1, dwBytes2);
+		std::memcpy	(lpvPtr1, lpbSoundData, dwBytes1);
+		if(NULL != lpvPtr2) std::memcpy (lpvPtr2, lpbSoundData+dwBytes1, dwBytes2);
 		// Release the data back to DSound.
 		CHK_DX(pBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2));
 	}
@@ -240,7 +240,7 @@ BOOL ADPCMCreateSoundBuffer(IDirectSound8* lpDS, IDirectSoundBuffer* *pDSB, WAVE
     DSBUFFERDESC    dsBD;
 
     // Set up DSBUFFERDESC structure.
-    ZeroMemory		(&dsBD, sizeof(DSBUFFERDESC)); // Zero it out.
+    std::memset		(&dsBD, 0, sizeof(DSBUFFERDESC)); // Zero it out.
     dsBD.dwSize		= sizeof(DSBUFFERDESC);
     dsBD.dwFlags	= DSBCAPS_CTRLVOLUME | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_LOCSOFTWARE;
 
@@ -271,22 +271,22 @@ void CSoundStream::LoadADPCM( )
 
     hf				= FS.r_open("$game_sounds$",fn);
 	R_ASSERT		(hf>=0);
-	ZeroMemory		(&riff, sizeof(riff));
+	std::memset		(&riff, 0, sizeof(riff));
     XRead			(riff);
-    CopyMemory	(buf,riff.id,4); buf[4]=0;
-    CopyMemory	(buf,riff.wave_id,4); buf[4]=0;
+    std::memcpy	(buf,riff.id,4); buf[4]=0;
+    std::memcpy	(buf,riff.wave_id,4); buf[4]=0;
 
     while (!hf->eof()) 
 	{
 		XRead			(hdr);
-        CopyMemory	(buf,hdr.id,4); buf[4]=0;
+        std::memcpy	(buf,hdr.id,4); buf[4]=0;
         pos				= hf->tell();
         if (stricmp(buf, "fmt ")==0) {
 			dwFMT_Size		= hdr.len;
 			psrc			= (LPWAVEFORMATEX)xr_malloc(dwFMT_Size);
 			pwfx			= (LPWAVEFORMATEX)xr_malloc(dwFMT_Size);
 			hf->r			(psrc,		dwFMT_Size);
-			CopyMemory	(pwfx,psrc,	dwFMT_Size);
+			std::memcpy	(pwfx,psrc,	dwFMT_Size);
 			pwfx->wFormatTag = WAVE_FORMAT_PCM;
         } else {
             if (stricmp(buf,"data")==0) {

@@ -2,57 +2,6 @@
 
 using std::swap;
 
-#ifdef	__BORLANDC__
-#define M_NOSTDCONTAINERS_EXT
-#endif
-#ifdef	_M_AMD64
-#define M_DONTDEFERCLEAR_EXT
-#endif
-
-#define	M_DONTDEFERCLEAR_EXT		//. for mem-debug only
-
-//--------	
-#ifdef	M_NOSTDCONTAINERS_EXT
-
-#define xr_list std::list
-#define xr_deque std::deque
-#define xr_stack std::stack
-#define xr_set std::set
-#define xr_multiset std::multiset
-#define xr_map std::map
-#define xr_multimap std::multimap
-#define xr_string std::string
-
-template <class T>
-class xr_vector	: public std::vector<T> {
-public: 
-	typedef	size_t		size_type;
-	typedef T&			reference;
-	typedef const T&	const_reference;
-public: 
-			xr_vector			()								: std::vector<T>	()				{}
-			xr_vector			(size_t _count, const T& _value): std::vector<T>	(_count,_value)	{}
-	explicit xr_vector			(size_t _count)					: std::vector<T> 	(_count)		{}
-	void	clear				()								{ erase(begin(),end());				} 
-	void	clear_and_free		()								{ std::vector<T>::clear();			}
-	void	clear_not_free		()								{ erase(begin(),end());	}
-	ICF		const_reference	operator[]	(size_type _Pos) const	{ {VERIFY(_Pos<size());} return (*(begin() + _Pos)); }
-	ICF		reference		operator[]	(size_type _Pos)		{ {VERIFY(_Pos<size());} return (*(begin() + _Pos)); }
-};
-
-template	<>												
-class	xr_vector<bool>	: public std::vector<bool>{ 
-	typedef	bool		T;
-public: 
-			xr_vector<T>		()								: std::vector<T>	()				{}
-			xr_vector<T>		(size_t _count, const T& _value): std::vector<T>	(_count,_value)	{}
-	explicit xr_vector<T>		(size_t _count)					: std::vector<T>	(_count)		{}
-	u32		size() const										{ return (u32)std::vector<T>::size();	} 
-	void	clear()												{ erase(begin(),end());				} 
-};
-
-#else
-
 template <class T>
 class	xalloc	{
 public:
@@ -64,17 +13,19 @@ public:
 	typedef const T&	const_reference;
 	typedef T			value_type;
 
-public:
-	template<class _Other>	
-	struct rebind			{	typedef xalloc<_Other> other;	};
-public:
+	template<class Other>	
+	struct rebind
+	{
+		using other = xalloc<Other>;
+	};
+
 							pointer					address			(reference _Val) const					{	return (&_Val);	}
 							const_pointer			address			(const_reference _Val) const			{	return (&_Val);	}
 													xalloc			()										{	}
 													xalloc			(const xalloc<T>&)						{	}
-	template<class _Other>							xalloc			(const xalloc<_Other>&)					{	}
-	template<class _Other>	xalloc<T>&				operator=		(const xalloc<_Other>&)					{	return (*this);	}
-							pointer					allocate		(size_type n, const void* p=0) const	{	return xr_alloc<T>((u32)n);	}
+	template<class Other>							xalloc			(const xalloc<Other>&)					{	}
+	template<class Other>	xalloc<T>&				operator=		(const xalloc<Other>&)					{	return (*this);	}
+							pointer					allocate		(size_type n, const void* p = nullptr ) const	{	return xr_alloc<T>((u32)n);	}
 							char*					_charalloc		(size_type n)							{	return (char*)allocate(n); }
 							void					deallocate		(pointer p, size_type n) const			{	xr_free	(p);				}
 							void					deallocate		(void* p, size_type n) const			{	xr_free	(p);				}
@@ -94,8 +45,8 @@ struct xr_allocator {
 	static	void	dealloc		(T *&p)			{	xr_free(p);					}
 };
 
-template<class _Ty,	class _Other>	inline	bool operator==(const xalloc<_Ty>&, const xalloc<_Other>&)		{	return (true);							}
-template<class _Ty, class _Other>	inline	bool operator!=(const xalloc<_Ty>&, const xalloc<_Other>&)		{	return (false);							}
+template<class _Ty,	class Other>	inline	bool operator==(const xalloc<_Ty>&, const xalloc<Other>&)		{	return (true);							}
+template<class _Ty, class Other>	inline	bool operator!=(const xalloc<_Ty>&, const xalloc<Other>&)		{	return (false);							}
 
 namespace std
 {
@@ -125,11 +76,7 @@ public:
 	void	clear_not_free		()									{ erase(begin(),end());			}
 	void	clear_and_reserve	()									{ if ( capacity() <= (size()+size()/4) ) clear_not_free(); else { u32 old=size(); clear_and_free(); reserve(old); } }
 
-#ifdef M_DONTDEFERCLEAR_EXT
 	void	clear				()									{ clear_and_free	();			}
-#else
-	void	clear				()									{ clear_not_free	();			}
-#endif
 
 	const_reference operator[]	(size_type _Pos) const				{ {VERIFY(_Pos<size());} return (*(begin() + _Pos)); }
 	reference operator[]		(size_type _Pos)					{ {VERIFY(_Pos<size());} return (*(begin() + _Pos)); }
@@ -199,7 +146,6 @@ template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				
 template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<K,V> > >	class	xr_map 			: public std::map<K,V,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
 template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<K,V> > >	class	xr_multimap		: public std::multimap<K,V,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
 
-#endif
 
 struct pred_str		: public std::binary_function<char*, char*, bool>	{	
 	IC bool operator()(const char* x, const char* y) const				{	return xr_strcmp(x,y)<0;	}

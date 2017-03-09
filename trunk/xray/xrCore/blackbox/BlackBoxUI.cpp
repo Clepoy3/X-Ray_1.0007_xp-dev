@@ -11,7 +11,7 @@ int g_stackTraceCount = 0;
 
 void BuildStackTrace(struct _EXCEPTION_POINTERS *g_BlackBoxUIExPtrs)
 {
-	FillMemory(g_stackTrace[0], MAX_STACK_TRACE * LINE_STACK_TRACE, 0);
+	std::memset(g_stackTrace[0], 0, MAX_STACK_TRACE * LINE_STACK_TRACE);
 
 	const TCHAR* traceDump = 
 		GetFirstStackTraceString( GSTSO_MODULE | GSTSO_SYMBOL | GSTSO_SRCLINE | GSTSO_PARAMS,

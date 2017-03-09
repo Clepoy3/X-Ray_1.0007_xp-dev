@@ -389,7 +389,7 @@ if(!psNET_direct_connect)
     DPN_PLAYER_INFO				dpPlayerInfo;
     WCHAR						wszName		[] = L"XRay Server";
 	
-    ZeroMemory					(&dpPlayerInfo, sizeof(DPN_PLAYER_INFO));
+    std::memset					(&dpPlayerInfo, 0, sizeof(DPN_PLAYER_INFO));
     dpPlayerInfo.dwSize			= sizeof(DPN_PLAYER_INFO);
     dpPlayerInfo.dwInfoFlags	= DPNINFO_NAME;
     dpPlayerInfo.pwszName		= wszName;
@@ -405,7 +405,7 @@ if(!psNET_direct_connect)
     // Set server/session description
 	
     // Now set up the Application Description
-    ZeroMemory					(&dpAppDesc, sizeof(DPN_APPLICATION_DESC));
+    std::memset					(&dpAppDesc, 0, sizeof(DPN_APPLICATION_DESC));
     dpAppDesc.dwSize			= sizeof(DPN_APPLICATION_DESC);
     dpAppDesc.dwFlags			= DPNSESSION_CLIENT_SERVER | DPNSESSION_NODPNSVR;
     dpAppDesc.guidApplication	= NET_GUID;
@@ -512,7 +512,7 @@ HRESULT	IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 			const	u32				max_size = 1024;
 			char	bufferData		[max_size];
             DWORD	bufferSize		= max_size;
-			ZeroMemory				(bufferData,bufferSize);
+			std::memset				(bufferData, 0,bufferSize);
 			string512				res;
 
 			// retreive info
@@ -779,7 +779,7 @@ void	IPureServer::UpdateClientStatistic		(IClient* C)
 {
 	// Query network statistic for this client
 	DPN_CONNECTION_INFO			CI;
-	ZeroMemory					(&CI,sizeof(CI));
+	std::memset					(&CI, 0,sizeof(CI));
 	CI.dwSize					= sizeof(CI);
 	if(!psNET_direct_connect)
 	{

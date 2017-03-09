@@ -31,7 +31,7 @@ IC bool is_number(LPCSTR s)
 void SCRIPT_VAR::release()
 {
 	SCRIPT_VAR sv = *this;
-	ZeroMemory(this, sizeof(SCRIPT_VAR));
+	std::memset(this, 0, sizeof(SCRIPT_VAR));
 
 	if (LUA_TTABLE == sv.eff_type())
 	{		
@@ -482,7 +482,7 @@ void CScriptVarsTable::set(lua_State *L, LPCSTR k, int index, int key_type)
 		exists = true;
 	}
 	else
-		ZeroMemory(&sv, sizeof(sv));
+		std::memset(&sv, 0, sizeof(sv));
 	
 	int new_type = lua_type(L, index);
 	if (LUA_TBOOLEAN == key_type) 

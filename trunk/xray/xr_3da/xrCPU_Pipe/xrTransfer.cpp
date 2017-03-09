@@ -24,7 +24,7 @@ void	__stdcall	xrTransfer_x86	(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStrid
 				Fvector*	dN	= (Fvector*)(dit+3*4);
 				xform->transform_tiny	(*dP,*sP);
 				xform->transform_dir	(*dN,*sN);
-				CopyMemory	(dit+GeomBytes,sit+GeomBytes,8);
+				std::memcpy	(dit+GeomBytes,sit+GeomBytes,8);
 			}
 			break;
 		case 16:	// 40 byte vertex	(pos(12)+norm(12)+uv1(8)+uv2(8))
@@ -36,7 +36,7 @@ void	__stdcall	xrTransfer_x86	(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStrid
 				Fvector*	dN	= (Fvector*)(dit+3*4);
 				xform->transform_tiny	(*dP,*sP);
 				xform->transform_dir	(*dN,*sN);
-				CopyMemory	(dit+GeomBytes,sit+GeomBytes,16);
+				std::memcpy	(dit+GeomBytes,sit+GeomBytes,16);
 			}
 			break;
 		default:	// any size
@@ -48,12 +48,12 @@ void	__stdcall	xrTransfer_x86	(LPVOID vDest, LPVOID vSrc, u32 vCount, u32 vStrid
 				Fvector*	dN	= (Fvector*)(dit+3*4);
 				xform->transform_tiny	(*dP,*sP);
 				xform->transform_dir	(*dN,*sN);
-				CopyMemory	(dit+GeomBytes,sit+GeomBytes,remain);
+				std::memcpy	(dit+GeomBytes,sit+GeomBytes,remain);
 			}
 			break;
 		}
 	} else {
-		CopyMemory	(vDest,vSrc,vCount*vStride);
+		std::memcpy	(vDest,vSrc,vCount*vStride);
 	}
 
 	// Transfer indices (in 32bit lines)

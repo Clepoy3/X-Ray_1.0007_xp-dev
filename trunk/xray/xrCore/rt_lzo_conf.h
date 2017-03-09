@@ -120,10 +120,10 @@
 #elif !defined(__LZO_MMODEL_HUGE)
 #  define lzo_memcmp(a,b,c)     memcmp(a,b,c)
 #endif
-#if !defined(HAVE_MEMCPY)
+/*#if !defined(HAVE_MEMCPY)
 #  undef memcpy
 #  define memcpy(a,b,c)         lzo_memcpy(a,b,c)
-#elif !defined(__LZO_MMODEL_HUGE)
+#el*/#if !defined(__LZO_MMODEL_HUGE)
 #  define lzo_memcpy(a,b,c)     memcpy(a,b,c)
 #endif
 #if !defined(HAVE_MEMMOVE)
@@ -132,10 +132,10 @@
 #elif !defined(__LZO_MMODEL_HUGE)
 #  define lzo_memmove(a,b,c)    memmove(a,b,c)
 #endif
-#if !defined(HAVE_MEMSET)
+/*#if !defined(HAVE_MEMSET)
 #  undef memset
 #  define memset(a,b,c)         lzo_memset(a,b,c)
-#elif !defined(__LZO_MMODEL_HUGE)
+#el*/#if !defined(__LZO_MMODEL_HUGE)
 #  define lzo_memset(a,b,c)     memset(a,b,c)
 #endif
 

@@ -42,7 +42,7 @@ void	xrMemory::dbg_register		(void* _p, size_t _size, const char* _name)
 #endif
 
 	VERIFY					(debug_mode);
-	debug_cs.Enter			();
+	debug_cs.lock();
 	debug_mode				= FALSE;
 
 	// register + mark
@@ -55,12 +55,12 @@ void	xrMemory::dbg_register		(void* _p, size_t _size, const char* _name)
 	dbg_header				(dbg,true);
 
 	debug_mode				= TRUE;
-	debug_cs.Leave			();
+	debug_cs.unlock();
 }
 void	xrMemory::dbg_unregister	(void* _p)
 {
 	VERIFY					(debug_mode);
-	debug_cs.Enter			();
+	debug_cs.lock();
 	debug_mode				= FALSE;
 
 	// search entry
@@ -107,7 +107,7 @@ void	xrMemory::dbg_unregister	(void* _p)
 	}
 
 	debug_mode				= TRUE;
-	debug_cs.Leave			();
+	debug_cs.unlock();
 }
 
 void	xrMemory::dbg_check		()
@@ -118,7 +118,7 @@ void	xrMemory::dbg_check		()
 	if (g_pStringContainer) g_pStringContainer->verify	();
 
 	// Check overrun
-	debug_cs.Enter			();
+	debug_cs.lock();
 	debug_mode				= FALSE;
 	for (int it=0; it<int(debug_info.size()); it++)
 	{
@@ -140,14 +140,14 @@ void	xrMemory::dbg_check		()
 
 	// leave
 	debug_mode				= TRUE;
-	debug_cs.Leave			();
+	debug_cs.unlock();
 }
 
 XRCORE_API void	dbg_dump_leaks_prepare	()
 {
 	Memory.mem_compact		()	;
 
-	Memory.debug_cs.Enter	()	;
+	Memory.debug_cs.lock()	;
 	Memory.debug_mode		= FALSE;
 
 	for (u32 it=0; it<Memory.debug_info.size(); it++)
@@ -159,7 +159,7 @@ XRCORE_API void	dbg_dump_leaks_prepare	()
 
 	// leave
 	Memory.debug_mode		= TRUE;
-	Memory.debug_cs.Leave	();
+	Memory.debug_cs.unlock();
 }
 
 XRCORE_API void	dbg_dump_leaks			()

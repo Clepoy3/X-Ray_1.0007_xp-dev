@@ -7,15 +7,8 @@
 #include	<malloc.h>
 
 xrMemory	Memory;
-BOOL		mem_initialized	= FALSE;
+bool		mem_initialized	= false;
 bool		shared_str_initialized	= false;
-
-// Processor specific implementations
-extern		pso_MemCopy		xrMemCopy_MMX;
-extern		pso_MemCopy		xrMemCopy_x86;
-extern		pso_MemFill		xrMemFill_x86;
-extern		pso_MemFill32	xrMemFill32_MMX;
-extern		pso_MemFill32	xrMemFill32_x86;
 
 #ifdef DEBUG_MEMORY_MANAGER
 XRCORE_API void dump_phase		()
@@ -32,27 +25,17 @@ XRCORE_API void dump_phase		()
 #endif // DEBUG_MEMORY_MANAGER
 
 xrMemory::xrMemory()
-#ifdef DEBUG_MEMORY_MANAGER
-#	ifdef PROFILE_CRITICAL_SECTIONS
-		:debug_cs(MUTEX_PROFILE_ID(xrMemory))
-#	endif // PROFILE_CRITICAL_SECTIONS
-#endif // DEBUG_MEMORY_MANAGER
 {
 #ifdef DEBUG_MEMORY_MANAGER
-
-	debug_mode	= FALSE;
-
-#endif // DEBUG_MEMORY_MANAGER
-	mem_copy	= xrMemCopy_x86;
-	mem_fill	= xrMemFill_x86;
-	mem_fill32	= xrMemFill32_x86;
+	debug_mode	= false;
+#endif
 }
 
 #ifdef DEBUG_MEMORY_MANAGER
 	BOOL	g_bMEMO		= FALSE;
 #endif // DEBUG_MEMORY_MANAGER
 
-void	xrMemory::_initialize	(BOOL bDebug)
+void	xrMemory::_initialize	(bool bDebug)
 {
 #ifdef DEBUG_MEMORY_MANAGER
 	debug_mode				= bDebug;
@@ -61,18 +44,6 @@ void	xrMemory::_initialize	(BOOL bDebug)
 
 	stat_calls				= 0;
 	stat_counter			= 0;
-
-	u32	features		= CPU::ID.feature & CPU::ID.os_support;
-	if (features & _CPU_FEATURE_MMX)
-	{
-		mem_copy	= xrMemCopy_MMX;
-		mem_fill	= xrMemFill_x86;
-		mem_fill32	= xrMemFill32_MMX;
-	} else {
-		mem_copy	= xrMemCopy_x86;
-		mem_fill	= xrMemFill_x86;
-		mem_fill32	= xrMemFill32_x86;
-	}
 
 #ifndef M_BORLAND
 	if (!strstr(Core.Params,"-pure_alloc")) {
@@ -88,10 +59,10 @@ void	xrMemory::_initialize	(BOOL bDebug)
 #endif // M_BORLAND
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (0==strstr(Core.Params,"-memo"))	mem_initialized				= TRUE;
+	if (0==strstr(Core.Params,"-memo"))	mem_initialized				= true;
 	else								g_bMEMO						= TRUE;
 #else // DEBUG_MEMORY_MANAGER
-	mem_initialized				= TRUE;
+	mem_initialized				= true;
 #endif // DEBUG_MEMORY_MANAGER
 
 //	DUMP_PHASE;
@@ -131,9 +102,9 @@ void	xrMemory::_destroy()
 #	endif // DEBUG_MEMORY_MANAGER
 #endif // M_BORLAND
 
-	mem_initialized				= FALSE;
+	mem_initialized				= false;
 #ifdef DEBUG_MEMORY_MANAGER
-	debug_mode					= FALSE;
+	debug_mode					= false;
 #endif // DEBUG_MEMORY_MANAGER
 }
 
@@ -157,8 +128,8 @@ void	xrMemory::mem_statistic	(LPCSTR fn)
 	if (!debug_mode)	return	;
 	mem_compact				()	;
 
-	debug_cs.Enter			()	;
-	debug_mode				= FALSE;
+	debug_cs.lock()	;
+	debug_mode				= false;
 
 	FILE*		Fa			= fopen		(fn,"w");
 	fprintf					(Fa,"$BEGIN CHUNK #0\n");
@@ -211,8 +182,8 @@ void	xrMemory::mem_statistic	(LPCSTR fn)
 	fclose		(Fa)		;
 
 	// leave
-	debug_mode				= TRUE;
-	debug_cs.Leave			();
+	debug_mode				= true;
+	debug_cs.unlock();
 
 	/*
 	mem_compact				();
@@ -269,15 +240,15 @@ char*			xr_strdup		(const char* string)
 		, "strdup"
 #endif // DEBUG_MEMORY_NAME
 	);
-	CopyMemory		(memory,string,len);
+	std::memcpy		(memory,string,len);
 	return	memory;
 }
 
-XRCORE_API		BOOL			is_stack_ptr		( void* _ptr)
+/*XRCORE_API		bool			is_stack_ptr		( void* _ptr) //KRodin: По-моему, оно нигде не используется.
 {
 	int			local_value		= 0;
 	void*		ptr_refsound	= _ptr;
 	void*		ptr_local		= &local_value;
 	ptrdiff_t	difference		= (ptrdiff_t)_abs(s64(ptrdiff_t(ptr_local) - ptrdiff_t(ptr_refsound)));
 	return		(difference < (512*1024));
-}
+}*/

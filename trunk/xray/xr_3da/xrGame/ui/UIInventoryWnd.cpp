@@ -165,7 +165,7 @@ void CUIInventoryWnd::Init()
 #endif
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_outfit", 0, m_pUIOutfitList);
 	BindDragDropListEnents				(m_pUIOutfitList);
-	ZeroMemory(&m_slots_array, sizeof(m_slots_array));
+	std::memset(&m_slots_array, 0, sizeof(m_slots_array));
 
 #ifdef INV_NEW_SLOTS_SYSTEM	
 	m_pUIPistolList = xr_new<CUIDragDropListEx>(); AttachChild(m_pUIPistolList); m_pUIPistolList->SetAutoDelete(true);

@@ -13,7 +13,7 @@ void CStreamReader::construct				(
 	m_start_offset				= start_offset;
 	m_file_size					= file_size;
 	m_archive_size				= archive_size;
-	m_window_size				= _max(window_size,FS.dwAllocGranularity);
+	m_window_size				= std::max(window_size,FS.dwAllocGranularity);
 
 	map							(0);
 }
@@ -85,7 +85,7 @@ void CStreamReader::r						(void *_buffer, u32 buffer_size)
 
 	int							offset_inside_window = int(m_current_pointer - m_start_pointer);
 	if (offset_inside_window + buffer_size < m_current_window_size) {
-		Memory.mem_copy			(_buffer,m_current_pointer,buffer_size);
+		std::memcpy(_buffer,m_current_pointer,buffer_size);
 		m_current_pointer		+= buffer_size;
 		return;
 	}
@@ -94,7 +94,7 @@ void CStreamReader::r						(void *_buffer, u32 buffer_size)
 	u32							elapsed_in_window = m_current_window_size - (m_current_pointer - m_start_pointer);
 
 	do {
-		Memory.mem_copy			(buffer,m_current_pointer,elapsed_in_window);
+		std::memcpy(buffer,m_current_pointer,elapsed_in_window);
 		buffer					+= elapsed_in_window;
 		buffer_size				-= elapsed_in_window;
 		advance					(elapsed_in_window);
@@ -103,7 +103,7 @@ void CStreamReader::r						(void *_buffer, u32 buffer_size)
 	}
 	while (m_current_window_size < buffer_size);
 
-	Memory.mem_copy				(buffer,m_current_pointer,buffer_size);
+	std::memcpy(buffer,m_current_pointer,buffer_size);
 	advance						(buffer_size);
 }
 
@@ -112,7 +112,7 @@ CStreamReader *CStreamReader::open_chunk	(const u32 &chunk_id)
 	BOOL						compressed;
 	u32							size = find_chunk(chunk_id,&compressed);
 	if (!size)
-		return					(0);
+		return					nullptr;
 
 	R_ASSERT2					(!compressed,"cannot use CStreamReader on compressed chunks");
 	CStreamReader				*result = xr_new<CStreamReader>();

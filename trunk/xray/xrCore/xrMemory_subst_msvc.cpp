@@ -67,7 +67,7 @@ void*	xrMemory::mem_alloc		(size_t size
 #endif // PURE_ALLOC
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)		debug_cs.Enter		();
+	if (mem_initialized)		debug_cs.lock();
 #endif // DEBUG_MEMORY_MANAGER
 
 	u32		_footer				=	debug_mode?4:0;
@@ -110,7 +110,7 @@ void*	xrMemory::mem_alloc		(size_t size
 
 #ifdef DEBUG_MEMORY_MANAGER
 	if		(debug_mode)		dbg_register		(_ptr,size,_name);
-	if (mem_initialized)		debug_cs.Leave		();
+	if (mem_initialized)		debug_cs.unlock();
 	//if(g_globalCheckAddr==_ptr){
 	//	__asm int 3;
 	//}
@@ -145,7 +145,7 @@ void	xrMemory::mem_free		(void* P)
 #endif // DEBUG_MEMORY_MANAGER
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)		debug_cs.Enter		();
+	if (mem_initialized)		debug_cs.lock();
 #endif // DEBUG_MEMORY_MANAGER
 	if		(debug_mode)		dbg_unregister	(P);
 	u32	pool					= get_header	(P);
@@ -160,7 +160,7 @@ void	xrMemory::mem_free		(void* P)
 		mem_pools[pool].destroy	(_real);
 	}
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)		debug_cs.Leave	();
+	if (mem_initialized)		debug_cs.unlock();
 #endif // DEBUG_MEMORY_MANAGER
 }
 
@@ -197,7 +197,7 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 #endif // DEBUG_MEMORY_MANAGER
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)		debug_cs.Enter		();
+	if (mem_initialized)		debug_cs.lock();
 #endif // DEBUG_MEMORY_MANAGER
 	u32		p_current			= get_header(P);
 	//	Igor: Reserve 1 byte for xrMemory header
@@ -248,7 +248,7 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 		);
 		//	Igor: Reserve 1 byte for xrMemory header
 		//	Don't bother in this case?
-		mem_copy				(p_new,p_old,_min(s_current-1,s_dest));
+		std::memcpy(p_new,p_old, std::min(s_current-1,s_dest));
 		//mem_copy				(p_new,p_old,_min(s_current,s_dest));
 		mem_free				(p_old);
 		_ptr					= p_new;
@@ -260,13 +260,13 @@ void*	xrMemory::mem_realloc	(void* P, size_t size
 			,_name
 #	endif // DEBUG_MEMORY_NAME
 		);
-		mem_copy				(p_new,p_old,(u32)size);
+		std::memcpy(p_new, p_old, size);
 		mem_free				(p_old);
 		_ptr					= p_new;
 	}
 
 #ifdef DEBUG_MEMORY_MANAGER
-	if (mem_initialized)		debug_cs.Leave	();
+	if (mem_initialized)		debug_cs.unlock();
 
 	if(g_globalCheckAddr==_ptr)
 		__asm int 3;

@@ -53,7 +53,7 @@ namespace PAPI{
 				return max_particles;
 			}
 
-			CopyMemory			(new_particles, particles, p_count * sizeof(Particle));
+			std::memcpy			(new_particles, particles, p_count * sizeof(Particle));
 			xr_free					(particles);
 			particles				= new_particles;
 

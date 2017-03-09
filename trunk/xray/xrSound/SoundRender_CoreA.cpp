@@ -110,7 +110,7 @@ void CSoundRender_CoreA::_initialize(u64 window)
 		bEAX = EAXTestSupport(FALSE);
 	}
 
-	ZeroMemory(&wfm, sizeof(WAVEFORMATEX));
+	std::memset(&wfm, 0, sizeof(WAVEFORMATEX));
 	switch (psSoundFreq){
 	default:
 	case sf_22K:	wfm.nSamplesPerSec = 22050; break;

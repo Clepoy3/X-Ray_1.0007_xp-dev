@@ -43,7 +43,7 @@ void CCDA::SetTrack( int track )
 	lTotalTime		= 0;
 	char			ch[64];
 	sprintf			( ch, "status cdaudio length track %d", track );
-	ZeroMemory		( retStr, sizeof(retStr) );
+	std::memset		( retStr, 0, sizeof(retStr) );
 	err	= mciSendString( ch, retStr, retLen, NULL );
 	if ( err )		return;
 

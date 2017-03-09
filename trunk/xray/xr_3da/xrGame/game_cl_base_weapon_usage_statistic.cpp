@@ -53,12 +53,12 @@ Weapon_Statistic::Weapon_Statistic(LPCSTR Name)
 
 	m_Hits.clear();
 	m_dwNumCompleted = 0;
-	ZeroMemory(m_Basket, sizeof(m_Basket));
+	std::memset(m_Basket, 0, sizeof(m_Basket));
 };
 Weapon_Statistic::~Weapon_Statistic()
 {
 	m_Hits.clear_and_free();
-	ZeroMemory(m_Basket, sizeof(m_Basket));
+	std::memset(m_Basket, 0, sizeof(m_Basket));
 };
 
 void Weapon_Statistic::net_save(NET_Packet* P)
@@ -109,11 +109,11 @@ Player_Statistic::Player_Statistic(LPCSTR Name)
 	m_dwTotalShots_d		= 0;
 	m_dwCurrentTeam			= 0;
 
-	ZeroMemory				(m_dwTotalAliveTime, sizeof(m_dwTotalAliveTime));
-	ZeroMemory				(m_dwTotalMoneyRound, sizeof(m_dwTotalMoneyRound));
-	ZeroMemory				(m_dwNumRespawned, sizeof(m_dwNumRespawned));
-	ZeroMemory				(m_dwArtefacts, sizeof(m_dwArtefacts));
-	ZeroMemory				(m_dwSpecialKills, sizeof(m_dwSpecialKills));
+	std::memset				(m_dwTotalAliveTime, 0, sizeof(m_dwTotalAliveTime));
+	std::memset				(m_dwTotalMoneyRound, 0, sizeof(m_dwTotalMoneyRound));
+	std::memset				(m_dwNumRespawned, 0, sizeof(m_dwNumRespawned));
+	std::memset				(m_dwArtefacts, 0, sizeof(m_dwArtefacts));
+	std::memset				(m_dwSpecialKills, 0, sizeof(m_dwSpecialKills));
 };
 
 Player_Statistic::~Player_Statistic()
@@ -160,9 +160,9 @@ void WeaponUsageStatistic::Clear()
 	m_Requests.clear			();
 	m_dwLastRequestSenderID		= 0;
 	
-	ZeroMemory					(m_dwTotalPlayersAliveTime, sizeof(m_dwTotalPlayersAliveTime));
-	ZeroMemory					(m_dwTotalPlayersMoneyRound, sizeof(m_dwTotalPlayersMoneyRound));
-	ZeroMemory					(m_dwTotalNumRespawns, sizeof(m_dwTotalNumRespawns));
+	std::memset					(m_dwTotalPlayersAliveTime, 0, sizeof(m_dwTotalPlayersAliveTime));
+	std::memset					(m_dwTotalPlayersMoneyRound, 0, sizeof(m_dwTotalPlayersMoneyRound));
+	std::memset					(m_dwTotalNumRespawns, 0, sizeof(m_dwTotalNumRespawns));
 
 	m_dwLastUpdateTime			= Level().timeServer();
 	mFileName[0]				= 0;

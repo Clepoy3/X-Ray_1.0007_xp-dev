@@ -44,7 +44,7 @@ BOOL  __stdcall
     // Figure out which OS we are on.
     OSVERSIONINFO stOSVI ;
 
-    FillMemory ( &stOSVI ,sizeof ( OSVERSIONINFO ), NULL  ) ;
+	std::memset( &stOSVI, NULL ,sizeof ( OSVERSIONINFO )  ) ;
     stOSVI.dwOSVersionInfoSize = sizeof ( OSVERSIONINFO ) ;
 
     BOOL bRet = GetVersionEx ( &stOSVI ) ;

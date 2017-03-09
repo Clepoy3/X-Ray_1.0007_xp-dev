@@ -2,7 +2,7 @@
 
 void	__stdcall xrMemCopy_x86					(LPVOID dest, const void* src, u32 n)
 {
-	CopyMemory(dest,src,n);
+	std::memcpy(dest,src,n);
 }
 
 //-------------------------------------------------------------------------------------------------

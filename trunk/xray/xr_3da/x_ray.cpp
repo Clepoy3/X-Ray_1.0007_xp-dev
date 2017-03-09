@@ -351,7 +351,7 @@ void	test_rtc	()
 		tMc.End		();
 
 		tM.Begin	();
-		CopyMemory(p_in_tst,p_in,in_size);
+		std::memcpy(p_in_tst,p_in,in_size);
 		tM.End		();
 
 		tC.Begin	();
@@ -428,9 +428,9 @@ struct damn_keys_filter {
 		dwToggleKeysFlags = 0;
 
 
-		ZeroMemory( &StickyKeysStruct , dwStickyKeysStructSize );
-		ZeroMemory( &FilterKeysStruct , dwFilterKeysStructSize );
-		ZeroMemory( &ToggleKeysStruct , dwToggleKeysStructSize );
+		std::memset( &StickyKeysStruct, 0, dwStickyKeysStructSize );
+		std::memset( &FilterKeysStruct, 0, dwFilterKeysStructSize );
+		std::memset( &ToggleKeysStruct, 0, dwToggleKeysStructSize );
 
 		StickyKeysStruct.cbSize = dwStickyKeysStructSize;
 		FilterKeysStruct.cbSize = dwFilterKeysStructSize;
@@ -512,7 +512,7 @@ BOOL IsOutOfVirtualMemory()
 	char	pszError[ VIRT_ERROR_SIZE ];
 	char	pszMessage[ VIRT_MESSAGE_SIZE ];
 
-	ZeroMemory( &statex , sizeof( MEMORYSTATUSEX ) );
+	std::memset( &statex, 0, sizeof( MEMORYSTATUSEX ) );
 	statex.dwLength = sizeof( MEMORYSTATUSEX );
 	
 	if ( ! GlobalMemoryStatusEx( &statex ) )
@@ -666,7 +666,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 	LPCSTR						verb_filters_name = "-verb_filters ";
 	string4096					verb_filters;
 	if (LPCSTR arg = strstr(lpCmdLine, verb_filters_name)) {
-		ZeroMemory				(&verb_filters, 4096);
+		std::memset				(&verb_filters, 0, 4096);
 		arg						+= xr_strlen(verb_filters_name);
 		sscanf_s				(arg,"%[^ ] ", verb_filters, 4096);
 		InitVerbosity			(verb_filters);
@@ -1241,7 +1241,7 @@ void doBenchmark(LPCSTR name)
 		
 		InitInput					();
 		if(i){
-			ZeroMemory(&HW,sizeof(CHW));
+			std::memset(&HW, 0,sizeof(CHW));
 			InitEngine();
 		}
 

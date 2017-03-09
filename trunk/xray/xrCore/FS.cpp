@@ -80,7 +80,7 @@ void VerifyPath(LPCSTR path)
 	for(int i=0;path[i];i++){
 		if( path[i]!='\\' || i==0 )
 			continue;
-		CopyMemory( tmp, path, i );
+		std::memcpy( tmp, path, i );
 		tmp[i] = 0;
         _mkdir(tmp);
 	}
@@ -182,7 +182,7 @@ void CMemoryWriter::w	(const void* ptr, u32 count)
 #endif // DEBUG_MEMORY_NAME
 			);
 	}
-	CopyMemory	(data+position,ptr,count);
+	std::memcpy	(data+position,ptr,count);
 	position		+=count;
 	if (position>file_size) file_size=position;
 }
@@ -323,7 +323,7 @@ IReader*	IReader::open_chunk_iterator	(u32& ID, IReader* _prev)
 void	IReader::r	(void *p,int cnt)
 {
 	R_ASSERT		(Pos+cnt<=Size);
-	CopyMemory		(p,pointer(),cnt);
+	std::memcpy		(p,pointer(),cnt);
 	advance				(cnt);
 #ifdef DEBUG
 	BOOL	bShow		= FALSE		;

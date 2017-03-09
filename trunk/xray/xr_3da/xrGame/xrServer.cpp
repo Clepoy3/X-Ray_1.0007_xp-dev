@@ -932,7 +932,7 @@ void xrServer::AddDelayedPacket	(NET_Packet& Packet, ClientID Sender)
 	m_aDelayedPackets.push_back(DelayedPacket());
 	DelayedPacket* NewPacket = &(m_aDelayedPackets.back());
 	NewPacket->SenderID = Sender;
-	CopyMemory	(&(NewPacket->Packet),&Packet,sizeof(NET_Packet));	
+	std::memcpy	(&(NewPacket->Packet),&Packet,sizeof(NET_Packet));	
 
 	DelayedPackestCS.Leave();
 }

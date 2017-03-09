@@ -111,7 +111,7 @@ void	CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 {
 	if (0==names) 		names 	= "$null";
 
-	ZeroMemory			(&dest, sizeof(dest));
+	std::memset			(&dest, 0, sizeof(dest));
 	char*	P			= (char*) names;
 	svector<char,128>	N;
 

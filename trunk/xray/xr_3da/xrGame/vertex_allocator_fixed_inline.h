@@ -22,7 +22,7 @@ IC	CFixedVertexAllocator::CDataStorage					()
 
 	byte_count				= (reserved_vertex_count)*sizeof(CGraphVertex);
 //	m_vertices				= xr_alloc<CGraphVertex>(reserved_vertex_count);
-//	ZeroMemory				(m_vertices,byte_count);
+//	std::memset				(m_vertices,0,byte_count);
 	m_vertices.resize		(reserved_vertex_count);
 	memory_usage			+= byte_count;
 }

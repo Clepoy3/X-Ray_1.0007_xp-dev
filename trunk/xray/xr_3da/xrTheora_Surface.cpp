@@ -309,11 +309,11 @@ void CTheoraSurface::write_sdl_video()
 	// and crop input properly, respecting the encoded frame rect 
 	crop_offset=t_info.offset_x+t_yuv_buffer.y_stride*t_info.offset_y;
 	for(i=0;i<sdl_yuv_overlay->h;i++)
-		mem_copy(sdl_yuv_overlay->pixels[0]+sdl_yuv_overlay->pitches[0]*i, t_yuv_buffer.y+crop_offset+t_yuv_buffer.y_stride*i, sdl_yuv_overlay->w);
+		std::memcpy(sdl_yuv_overlay->pixels[0]+sdl_yuv_overlay->pitches[0]*i, t_yuv_buffer.y+crop_offset+t_yuv_buffer.y_stride*i, sdl_yuv_overlay->w);
 	crop_offset=(t_info.offset_x/2)+(t_yuv_buffer.uv_stride)*(t_info.offset_y/2);
 	for(i=0;i<sdl_yuv_overlay->h/2;i++){
-		mem_copy(sdl_yuv_overlay->pixels[1]+sdl_yuv_overlay->pitches[1]*i, t_yuv_buffer.v+crop_offset+t_yuv_buffer.uv_stride*i, sdl_yuv_overlay->w/2);
-		mem_copy(sdl_yuv_overlay->pixels[2]+sdl_yuv_overlay->pitches[2]*i, t_yuv_buffer.u+crop_offset+t_yuv_buffer.uv_stride*i, sdl_yuv_overlay->w/2);
+		std::memcpy(sdl_yuv_overlay->pixels[1]+sdl_yuv_overlay->pitches[1]*i, t_yuv_buffer.v+crop_offset+t_yuv_buffer.uv_stride*i, sdl_yuv_overlay->w/2);
+		std::memcpy(sdl_yuv_overlay->pixels[2]+sdl_yuv_overlay->pitches[2]*i, t_yuv_buffer.u+crop_offset+t_yuv_buffer.uv_stride*i, sdl_yuv_overlay->w/2);
 	}
 	// Unlock SDL_yuv_overlay 
 	if ( SDL_MUSTLOCK(sdl_screen) ) SDL_UnlockSurface(sdl_screen);

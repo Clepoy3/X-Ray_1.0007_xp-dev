@@ -132,7 +132,7 @@ bool CResourceManager::load_buffer(lua_State *L, LPCSTR caBuffer, size_t tSize, 
 			scriptBuffer = (char *)xr_realloc(scriptBuffer, scriptBufferSize);
 		}
 		xr_strcpy(scriptBuffer, total_size, insert);
-		CopyMemory(scriptBuffer + str_len, caBuffer, u32(tSize));
+		std::memcpy(scriptBuffer + str_len, caBuffer, u32(tSize));
 		//Msg("[CScriptStorage::load_buffer(1)] Loading buffer: %s", scriptBuffer);
 		l_iErrorCode = luaL_loadbuffer(L, scriptBuffer, tSize + str_len, caScriptName);
 	}

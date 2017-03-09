@@ -25,7 +25,7 @@ void CBackend::OnFrameBegin	()
 {
 #ifndef DEDICATED_SERVER
 	PGO					(Msg("PGO:*****frame[%d]*****",Device.dwFrame));
-	Memory.mem_fill		(&stat,0,sizeof(stat));
+	std::memset(&stat,0,sizeof(stat));
 	Vertex.Flush		();
 	Index.Flush			();
 	set_Stencil			(FALSE);
@@ -34,25 +34,25 @@ void CBackend::OnFrameBegin	()
 
 void CBackend::Invalidate	()
 {
-	pRT[0]						= NULL;
-	pRT[1]						= NULL;
-	pRT[2]						= NULL;
-	pRT[3]						= NULL;
-	pZB							= NULL;
+	pRT[0]						= nullptr;
+	pRT[1]						= nullptr;
+	pRT[2]						= nullptr;
+	pRT[3]						= nullptr;
+	pZB							= nullptr;
 
-	decl						= NULL;
-	vb							= NULL;
-	ib							= NULL;
+	decl						= nullptr;
+	vb							= nullptr;
+	ib							= nullptr;
 	vb_stride					= 0;
 
-	state						= NULL;
-	ps							= NULL;
-	vs							= NULL;
-	ctable						= NULL;
+	state						= nullptr;
+	ps							= nullptr;
+	vs							= nullptr;
+	ctable						= nullptr;
 
-	T							= NULL;
-	M							= NULL;
-	C							= NULL;
+	T							= nullptr;
+	M							= nullptr;
+	C							= nullptr;
 
 	colorwrite_mask				= u32(-1);
 

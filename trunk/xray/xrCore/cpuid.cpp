@@ -20,7 +20,7 @@ int _cpuid (_processor_info *pinfo)
 	return P.feature;
 	*/
 
-	ZeroMemory(&P, sizeof(_processor_info));
+	std::memset(&P, 0, sizeof(_processor_info));
 
 	int cpinfo[4];
 	// detect cpu vendor

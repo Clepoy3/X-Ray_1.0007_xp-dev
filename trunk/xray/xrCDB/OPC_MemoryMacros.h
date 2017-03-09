@@ -16,9 +16,8 @@
 	//!	\param		addr	[in] buffer address
 	//!	\param		nb		[in] number of dwords to write
 	//!	\param		value	[in] the dword value
-	//!	\see		FillMemory
-	//!	\see		ZeroMemory
-	//!	\see		CopyMemory
+	//!	\see		std::memset
+	//!	\see		std::memcpy
 	//!	\see		MoveMemory
 	//!	\warning	writes nb*4 bytes !
 /*	inline_ void StoreDwords(udword* dest, udword nb, udword value)

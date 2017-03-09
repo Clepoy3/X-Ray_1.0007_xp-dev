@@ -137,7 +137,7 @@ void CSoundRender_Source::i_decompress_hr(OggVorbis_File* ovf, char* _dest, u32 
 			case OV_ENOSEEK:	Msg("The given stream is not seekable"); break;
 			}
 #endif
-            Memory.mem_fill		(_dest,0,left);
+            std::memset		(_dest,0,left);
             left		= 0;
 		}
 	}

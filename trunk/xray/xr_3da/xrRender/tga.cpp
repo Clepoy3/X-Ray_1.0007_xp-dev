@@ -26,7 +26,7 @@ void TGAdesc::maketga( IWriter& fs ){
 	R_ASSERT(height);
 
 	tgaHeader hdr;
-	ZeroMemory( &hdr, sizeof(hdr) );
+	std::memset( &hdr, 0, sizeof(hdr) );
 	hdr.tgaImgType			= 2;
 	hdr.tgaImgSpec.tgaXSize = u16(width);
 	hdr.tgaImgSpec.tgaYSize = u16(height);
@@ -80,7 +80,7 @@ void TGAdesc::maketga( int hf ){
 	R_ASSERT(height);
 
 	tgaHeader hdr;
-	ZeroMemory( &hdr, sizeof(hdr) );
+	std::memset( &hdr,0, sizeof(hdr) );
 	hdr.tgaImgType			= 2;
 	hdr.tgaImgSpec.tgaXSize = u16(width);
 	hdr.tgaImgSpec.tgaYSize = u16(height);

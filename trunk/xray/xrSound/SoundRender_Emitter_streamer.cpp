@@ -10,11 +10,11 @@ void	CSoundRender_Emitter::fill_data		(u8* _dest, u32 offset, u32 size)
 {
 /*
 	Msg				("stream: %10s - %d",*source->fname,size);
-	CopyMemory	(_dest,&source->m_buffer.front()+offset,size);
+	std::memcpy	(_dest,&source->m_buffer.front()+offset,size);
 	return;
 //*/
 /*
-	Memory.mem_fill	(_dest,0,size);	// debug only
+	std::memset	(_dest,0,size);	// debug only
 	//	Msg			("stream: %10s - %d",*source->fname,size);
 	int				dummy;
 	ov_pcm_seek		(source->ovf,(psSoundFreq==sf_22K)?offset:offset/2);
@@ -56,9 +56,9 @@ void	CSoundRender_Emitter::fill_data		(u8* _dest, u32 offset, u32 size)
 		}
                                                 
 		// fill block
-		u32		blk_size	= _min(size,line_amount);
+		u32		blk_size	= std::min(size,line_amount);
 		u8*		ptr			= (u8*)SoundRender->cache.get_dataptr(source->CAT,line);
-		CopyMemory		(_dest,ptr+line_offs,blk_size);
+		std::memcpy		(_dest,ptr+line_offs,blk_size);
 		
 		// advance
 		line		++	;
@@ -70,7 +70,7 @@ void	CSoundRender_Emitter::fill_data		(u8* _dest, u32 offset, u32 size)
 	}
 //*/
 	//  --- previously it was something like this
-	//	CopyMemory		(ptr,wave+offset,size);
+	//	std::memcpy		(ptr,wave+offset,size);
 }
 
 void	CSoundRender_Emitter::fill_block	(void* ptr, u32 size)
@@ -88,7 +88,7 @@ void	CSoundRender_Emitter::fill_block	(void* ptr, u32 size)
 				if (position >= source->dwBytesTotal)
 				{
 					// ??? We requested the block after remainder - just zero
-					Memory.mem_fill	(dest,0,size);
+					std::memset(dest,0,size);
 //					Msg				("        playing: zero");
 				} else {
 					// Calculate remainder
@@ -96,7 +96,7 @@ void	CSoundRender_Emitter::fill_block	(void* ptr, u32 size)
 					u32 sz_zero		= (position+size) - source->dwBytesTotal;
 					VERIFY			(size == (sz_data+sz_zero));
 					fill_data		(dest,position,sz_data);
-					Memory.mem_fill	(dest+sz_data,0,sz_zero);
+					std::memset(dest+sz_data,0,sz_zero);
 //					Msg				("        playing: [%d]-normal,[%d]-zero",sz_data,sz_zero);
 				}
 				position			+= size;
@@ -107,7 +107,7 @@ void	CSoundRender_Emitter::fill_block	(void* ptr, u32 size)
             	u32 hw_position		= 0;
 				do{
 					u32	sz_data		= source->dwBytesTotal - position;
-                    u32 sz_write	= _min(size-hw_position,sz_data);
+                    u32 sz_write	= std::min(size-hw_position,sz_data);
 					fill_data		(dest+hw_position,	position,	sz_write);
                     hw_position		+= sz_write;
                     position		+= sz_write;

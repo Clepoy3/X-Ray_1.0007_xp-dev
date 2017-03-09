@@ -45,20 +45,20 @@ void						CLevel::Demo_StoreData			(void* data, u32 size, DEMO_CHUNK DataType)
 	};
 
 	DEMO_CHUNK	Chunk = DataType;
-	CopyMemory(m_pStoredDemoData + m_dwStoredDemoDataSize, &Chunk, 4);				m_dwStoredDemoDataSize += 4;					
-	CopyMemory(m_pStoredDemoData + m_dwStoredDemoDataSize, &m_dwCurDemoFrame, 4);	m_dwStoredDemoDataSize += 4;		
-	CopyMemory(m_pStoredDemoData + m_dwStoredDemoDataSize, &CurTime, 4);			m_dwStoredDemoDataSize += 4;				
+	std::memcpy(m_pStoredDemoData + m_dwStoredDemoDataSize, &Chunk, 4);				m_dwStoredDemoDataSize += 4;					
+	std::memcpy(m_pStoredDemoData + m_dwStoredDemoDataSize, &m_dwCurDemoFrame, 4);	m_dwStoredDemoDataSize += 4;		
+	std::memcpy(m_pStoredDemoData + m_dwStoredDemoDataSize, &CurTime, 4);			m_dwStoredDemoDataSize += 4;				
 	switch (DataType)
 	{
 	case DATA_FRAME:
 		{
-			CopyMemory(m_pStoredDemoData + m_dwStoredDemoDataSize, data, size);		m_dwStoredDemoDataSize += size;		
+			std::memcpy(m_pStoredDemoData + m_dwStoredDemoDataSize, data, size);		m_dwStoredDemoDataSize += size;		
 		}break;
 	case DATA_SERVER_PACKET:
 	case DATA_CLIENT_PACKET:
 		{
-			CopyMemory(m_pStoredDemoData + m_dwStoredDemoDataSize, &size, 4);		m_dwStoredDemoDataSize += 4;
-			CopyMemory(m_pStoredDemoData + m_dwStoredDemoDataSize, data, size);		m_dwStoredDemoDataSize += size;		
+			std::memcpy(m_pStoredDemoData + m_dwStoredDemoDataSize, &size, 4);		m_dwStoredDemoDataSize += 4;
+			std::memcpy(m_pStoredDemoData + m_dwStoredDemoDataSize, data, size);		m_dwStoredDemoDataSize += size;		
 		}break;
 	}
 	
@@ -127,7 +127,7 @@ void						CLevel::Demo_PrepareToStore			()
 	m_pStoredDemoData = xr_alloc<u8>(DEMO_DATA_SIZE/sizeof(u8));
 	//---------------------------------------------------------------
 	m_dwCurDemoFrame = 0;
-//	ZeroMemory(&m_sDemoHeader, sizeof(m_sDemoHeader));
+//	std::memset(&m_sDemoHeader,0, sizeof(m_sDemoHeader));
 	m_sDemoHeader.Head[0] = 0;
 	m_sDemoHeader.ServerOptions = "";
 };
@@ -186,9 +186,9 @@ void						CLevel::Demo_Load				(LPCSTR DemoName)
 //		while (!feof(fTDemo))
 		while (u32(pTDemoData - pDemoData) < FileSize)
 		{
-			CopyMemory(&(NewData.m_dwDataType), pTDemoData, sizeof(NewData.m_dwDataType));				pTDemoData += sizeof(NewData.m_dwDataType);
-			CopyMemory(&(NewData.m_dwFrame), pTDemoData, sizeof(NewData.m_dwFrame));					pTDemoData += sizeof(NewData.m_dwFrame);
-			CopyMemory(&(NewData.m_dwTimeReceive), pTDemoData, sizeof(NewData.m_dwTimeReceive));		pTDemoData += sizeof(NewData.m_dwTimeReceive);
+			std::memcpy(&(NewData.m_dwDataType), pTDemoData, sizeof(NewData.m_dwDataType));				pTDemoData += sizeof(NewData.m_dwDataType);
+			std::memcpy(&(NewData.m_dwFrame), pTDemoData, sizeof(NewData.m_dwFrame));					pTDemoData += sizeof(NewData.m_dwFrame);
+			std::memcpy(&(NewData.m_dwTimeReceive), pTDemoData, sizeof(NewData.m_dwTimeReceive));		pTDemoData += sizeof(NewData.m_dwTimeReceive);
 
 //			fread(&(NewData.m_dwDataType), sizeof(NewData.m_dwDataType), 1, fTDemo);
 //			fread(&(NewData.m_dwFrame), sizeof(NewData.m_dwFrame), 1, fTDemo);
@@ -197,15 +197,15 @@ void						CLevel::Demo_Load				(LPCSTR DemoName)
 			{
 			case DATA_FRAME:
 				{
-					CopyMemory(&(NewData.FrameTime), pTDemoData, sizeof(NewData.FrameTime));			pTDemoData += sizeof(NewData.FrameTime);
+					std::memcpy(&(NewData.FrameTime), pTDemoData, sizeof(NewData.FrameTime));			pTDemoData += sizeof(NewData.FrameTime);
 //					fread(&(NewData.FrameTime), sizeof(NewData.FrameTime), 1, fTDemo);
 					m_dwLastDemoFrame = NewData.m_dwFrame;
 				}break;
 			case DATA_CLIENT_PACKET:
 			case DATA_SERVER_PACKET:
 				{
-					CopyMemory(&(NewData.Packet.B.count), pTDemoData, sizeof(NewData.Packet.B.count));	pTDemoData += sizeof(NewData.Packet.B.count);
-					CopyMemory((NewData.Packet.B.data), pTDemoData, NewData.Packet.B.count);			pTDemoData += NewData.Packet.B.count;
+					std::memcpy(&(NewData.Packet.B.count), pTDemoData, sizeof(NewData.Packet.B.count));	pTDemoData += sizeof(NewData.Packet.B.count);
+					std::memcpy((NewData.Packet.B.data), pTDemoData, NewData.Packet.B.count);			pTDemoData += NewData.Packet.B.count;
 
 //					fread(&(NewData.Packet.B.count), sizeof(NewData.Packet.B.count), 1, fTDemo);
 //					fread((NewData.Packet.B.data), 1, NewData.Packet.B.count, fTDemo);
