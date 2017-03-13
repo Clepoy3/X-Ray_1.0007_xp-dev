@@ -21,8 +21,8 @@ int ov_seek_func(void *datasource, s64 offset, int whence)
 size_t ov_read_func(void *ptr, size_t size, size_t nmemb, void *datasource)
 { 
 	IReader* F			= (IReader*)datasource; 
-	size_t exist_block	= _max(0ul,iFloor(F->elapsed()/(float)size));
-	size_t read_block	= _min(exist_block,nmemb);
+	size_t exist_block	= std::max(static_cast<size_t>(0), static_cast<size_t>(iFloor(F->elapsed() / (float)size)));
+	size_t read_block	= std::min(exist_block,nmemb);
 	F->r				(ptr,(int)(read_block*size));	
 	return read_block;
 }
@@ -43,7 +43,7 @@ void CSoundRender_Source::decompress		(u32 line, OggVorbis_File* ovf)
 	char*	dest			= (char*)	SoundRender->cache.get_dataptr	(CAT,line);
 	u32		buf_offs		= (psSoundFreq==sf_22K)?(line*line_size):(line*line_size)/2;
 	u32		left_file		= dwBytesTotal - buf_offs;
-	u32		left			= (u32)_min	(left_file,line_size);
+	u32		left			= std::min(left_file,line_size);
 	// seek
 	u32	cur_pos				= u32	(ov_pcm_tell(ovf));
 	if (cur_pos!=buf_offs){

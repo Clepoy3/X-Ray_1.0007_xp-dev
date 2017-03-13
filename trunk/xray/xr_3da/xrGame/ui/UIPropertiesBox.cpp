@@ -138,10 +138,10 @@ void CUIPropertiesBox::AutoUpdateSize()
 {
 	SetHeight(m_UIListWnd.GetItemHeight()*m_UIListWnd.GetSize()+ m_UIListWnd.GetVertIndent());
 	m_UIListWnd.SetHeight(GetHeight());
-	float f = float(m_UIListWnd.GetLongestLength()+m_UIListWnd.GetHorizIndent()) + 2; 
-	SetWidth(_max(20.0f,f));
+	float f = m_UIListWnd.GetLongestLength()+m_UIListWnd.GetHorizIndent() + 2;
+	SetWidth(std::max(20.0f,f));
 //		f = float(m_UIListWnd.GetLongestLength());
-	m_UIListWnd.SetWidth(_max(20.0f,f));
+	m_UIListWnd.SetWidth(std::max(20.0f,f));
 	m_UIListWnd.UpdateChildrenLenght();
 }
 

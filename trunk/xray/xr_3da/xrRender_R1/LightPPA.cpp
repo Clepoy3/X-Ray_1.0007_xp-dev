@@ -91,7 +91,7 @@ void CLightR_Manager::render_point	()
 
 			// Lock
 			RCache.set_Geometry		(hGeom);
-			u32 triLock				= _min(256u,triCount);
+			u32 triLock				= std::min(256u,triCount);
 			u32	vOffset;
 			CLightR_Vertex* VB		= (CLightR_Vertex*)RCache.Vertex.Lock(triLock*3,hGeom->vb_stride,vOffset);
 
@@ -123,7 +123,7 @@ void CLightR_Manager::render_point	()
 					RCache.Vertex.Unlock		(actual*3,hGeom->vb_stride);
 					if (actual) RCache.Render	(D3DPT_TRIANGLELIST,vOffset,actual);
 					actual						= 0;
-					triLock						= _min(256u,triCount-t);
+					triLock						= std::min(256u,triCount-t);
 					VB							= (CLightR_Vertex*)RCache.Vertex.Lock(triLock*3,hGeom->vb_stride,vOffset);
 				}
 			}

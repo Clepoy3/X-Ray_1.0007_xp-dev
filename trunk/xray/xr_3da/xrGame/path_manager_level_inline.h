@@ -94,7 +94,7 @@ IC	_dist_type CLevelPathManager::estimate	(const _index_type &node_index) const
 	return					(2*m_distance_xz*_dist_type(_abs(x3 - x1) + _abs(z3 - z1)));// + _abs(y3 - y1)*size_y);
 //		int						x = _abs(x3 - x1);
 //		int						z = _abs(z3 - z1);
-//		return					(m_distance_xz*_dist_type(_min(x,z)*3 + 2*_abs(x - z)));
+//		return					(m_distance_xz*_dist_type(std::min(x,z)*3 + 2*_abs(x - z)));
 }
 
 TEMPLATE_SPECIALIZATION

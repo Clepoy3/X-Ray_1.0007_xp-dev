@@ -369,7 +369,7 @@ void CStats::Show()
 		for (u32 it=0; it<errors.size(); it++)
 			F.OutNext("%s",errors[it].c_str());
 #else
-		for (u32 it=(u32)_max(int(0),(int)errors.size() - g_ErrorLineCount); it<errors.size(); it++)
+		for (u32 it=(u32)std::max(int(0),(int)errors.size() - g_ErrorLineCount); it<errors.size(); it++) //KRodin: надо упростить преобразования чисел. Мне кажется, тут они лишние.
 			F.OutNext("%s",errors[it].c_str());
 #endif
 		F.OnRender	();

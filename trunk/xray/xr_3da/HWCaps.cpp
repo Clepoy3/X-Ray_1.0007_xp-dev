@@ -19,7 +19,7 @@ void CHWCaps::Update()
 	clamp<DWORD>(cnt,0,256);
 	geometry.dwRegisters		= cnt;
 	geometry.dwInstructions		= 256;
-	geometry.dwClipPlanes		= _min(caps.MaxUserClipPlanes,15);
+	geometry.dwClipPlanes		= std::min(caps.MaxUserClipPlanes,(DWORD)15);
 	geometry.bVTF				= (geometry_major>=3) && HW.support(D3DFMT_R32F,D3DRTYPE_TEXTURE,D3DUSAGE_QUERY_VERTEXTEXTURE);
 
 	// ***************** PIXEL processing

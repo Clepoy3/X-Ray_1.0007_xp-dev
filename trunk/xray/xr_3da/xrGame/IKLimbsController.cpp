@@ -85,7 +85,7 @@ void get_toe(CKinematics *skeleton, Fvector & toe, const u16 bones[4])
 	ibind.invert( binds[ bones[2] ] );
 	ax.set(1, 0, 0);
 	skeleton->EnumBoneVertices( pred, bones[2] );
-	toe.x = _max( pos.x, toe.x );
+	toe.x = std::max( pos.x, toe.x );
 
 }
 

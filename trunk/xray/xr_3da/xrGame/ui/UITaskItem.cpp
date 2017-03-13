@@ -116,8 +116,8 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	m_captionTime->SetText		(txt.c_str());
 	m_captionTime->SetWndPos(m_captionTime->GetWndPos().x,m_captionStatic->GetWndPos().y+m_captionStatic->GetHeight()+3.0f);
 
-	float h = _max	(m_taskImage->GetWndPos().y+m_taskImage->GetHeight(),m_captionTime->GetWndPos().y+m_captionTime->GetHeight());
-	h	= _max(h,m_switchDescriptionBtn->GetWndPos().y+m_switchDescriptionBtn->GetHeight());
+	float h = std::max(m_taskImage->GetWndPos().y+m_taskImage->GetHeight(),m_captionTime->GetWndPos().y+m_captionTime->GetHeight());
+	h	= std::max(h,m_switchDescriptionBtn->GetWndPos().y+m_switchDescriptionBtn->GetHeight());
 	SetHeight						(h);
 	
 	
@@ -144,7 +144,7 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 
 		m_remTimeStatic->SetWndPos(_pos);
 
-		_height			= _max(_height, _pos.y+m_remTimeStatic->GetWndSize().y);
+		_height			= std::max(_height, _pos.y+m_remTimeStatic->GetWndSize().y);
 		SetHeight		(_height);
 	}
 }
@@ -238,7 +238,7 @@ void CUITaskSubItem::SetGameTask	(CGameTask* gt, u16 obj_idx)
 
 	m_descriptionStatic->SetText				(*stbl.translate(obj->description));
 	m_descriptionStatic->AdjustHeightToText		();
-	float h = _max(	m_ActiveObjectiveStatic->GetWndPos().y+m_ActiveObjectiveStatic->GetHeight(),
+	float h = std::max(	m_ActiveObjectiveStatic->GetWndPos().y+m_ActiveObjectiveStatic->GetHeight(),
 					m_descriptionStatic->GetWndPos().y+ m_descriptionStatic->GetHeight());
 	SetHeight									(h);
 	switch (obj->TaskState())

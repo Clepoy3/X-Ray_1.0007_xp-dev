@@ -214,10 +214,10 @@ float CExplosive::ExplosionEffect(collide::rq_results& storage, CExplosive*exp_o
 
 	const Fbox &l_b1 = blasted_obj->BoundingBox();
 	if(l_b1.contains(local_exp_center)) 
-										return 1.f;
+		return 1.f;
 	Fvector l_c, l_d;l_b1.get_CD(l_c,l_d);
 	float effective_volume=l_d.x*l_d.y*l_d.z;
-	float max_s=effective_volume/(_min(_min(l_d.x,l_d.y),l_d.z));
+	float max_s=effective_volume/(std::min(std::min(l_d.x,l_d.y),l_d.z));
 	if(blasted_obj->PPhysicsShell()&&blasted_obj->PPhysicsShell()->isActive())
 	{
 		float ph_volume=blasted_obj->PPhysicsShell()->getVolume();
