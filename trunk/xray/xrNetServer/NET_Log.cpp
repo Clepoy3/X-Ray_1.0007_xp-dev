@@ -137,14 +137,17 @@ void		INetLog::LogData(u32 Time, void* data, u32 size, bool IsIn)
 	m_cs.Leave();
 }
 
+/*
 //#define PRINT_SCRIPT_TRACEBACK
 
 #ifdef PRINT_SCRIPT_TRACEBACK
 	#include "../xr_3da/lua_tools.h"
 #endif
+*/
 
 DLL_API void LogPacketError(LPCSTR format, ...)
 {
+/*
 	va_list mark;
 	string1024	buf;
 	va_start	(mark, format );
@@ -163,4 +166,5 @@ DLL_API void LogPacketError(LPCSTR format, ...)
 	Msg("----------------------------------------------");
 	if (IsDebuggerPresent())
 		DebugBreak ();
+*/
 }
