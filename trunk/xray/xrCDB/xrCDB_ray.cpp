@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
-#pragma warning(push)
-#pragma warning(disable:4995)
+
 #include <xmmintrin.h>
-#pragma warning(pop)
 
 #include "xrCDB.h"
 

@@ -23,10 +23,7 @@
 #include "script_engine.h"
 #include "../lua_tools.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
-#pragma warning(pop)
 
 using namespace ALife;
 

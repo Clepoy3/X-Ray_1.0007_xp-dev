@@ -8,10 +8,7 @@
 #include "../IGame_Persistent.h"
 #include "../../xrCore/stream_reader.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
-#pragma warning(pop)
 
 void CRender::level_Load(IReader* fs)
 {

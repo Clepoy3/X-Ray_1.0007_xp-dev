@@ -6,10 +6,7 @@
 // #define TRIVIAL_ENCRYPTOR_ENCODER
 // #define TRIVIAL_ENCRYPTOR_DECODER
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
-#pragma warning(pop)
 
 //#define trivial_encryptor	temp_stuff
 

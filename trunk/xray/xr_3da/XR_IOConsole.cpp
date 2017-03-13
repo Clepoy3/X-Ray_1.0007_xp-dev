@@ -15,10 +15,7 @@
 #include "CustomHUD.h"
 #include "../../build_config_defines.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 //#include <locale>
-#pragma warning(pop)
 
 #define  LDIST .05f
 

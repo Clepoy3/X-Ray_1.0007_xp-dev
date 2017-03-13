@@ -9,10 +9,7 @@
 #include "game_cl_single.h"
 #include "MainMenu.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
-#pragma warning(pop)
 
 xrServer::EConnect xrServer::Connect(shared_str &session_name)
 {

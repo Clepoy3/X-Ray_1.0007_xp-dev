@@ -5,10 +5,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <d3dx9.h>
-#pragma warning(pop)
 
 #include "../fmesh.h"
 #include "../xrCPU_Pipe.h"

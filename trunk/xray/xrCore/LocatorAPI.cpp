@@ -5,11 +5,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#pragma warning(disable:4995)
 #include <direct.h>
 #include <fcntl.h>
 #include <sys\stat.h>
-#pragma warning(default:4995)
 
 #include "FS_internal.h"
 #include "stream_reader.h"
@@ -23,10 +21,7 @@ typedef void DUMMY_STUFF (const void*,const u32&,void*);
 XRCORE_API DUMMY_STUFF	*g_temporary_stuff = 0;
 
 #ifdef PROTECTED_BUILD
-#	pragma warning(push)
-#	pragma warning(disable:4995)
 #	include <malloc.h>
-#	pragma warning(pop)
 //#	define TRIVIAL_ENCRYPTOR_DECODER
 //#	include "trivial_encryptor.h"
 //#	undef TRIVIAL_ENCRYPTOR_DECODER

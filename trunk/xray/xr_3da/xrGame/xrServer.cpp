@@ -15,10 +15,7 @@
 //#include "script_engine.h"
 #include "ui/UIInventoryUtilities.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
-#pragma warning(pop)
 
 xrClientData::xrClientData	():IClient(Device.GetTimerGlobal())
 {

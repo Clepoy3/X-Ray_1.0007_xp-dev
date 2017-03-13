@@ -51,10 +51,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <memory.h> // to allow <,> comparisons
-#pragma warning(pop)
 
 //////////////////////////////////////////////////
 //#define xr_stdcall 

@@ -16,10 +16,7 @@
 #include "game_level_cross_table.h"
 #include "level_graph.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
-#pragma warning(pop)
 
 CSE_ALifeItemWeapon *CSE_ALifeOnlineOfflineGroup::tpfGetBestWeapon		(ALife::EHitType &tHitType, float &fHitPower)
 {

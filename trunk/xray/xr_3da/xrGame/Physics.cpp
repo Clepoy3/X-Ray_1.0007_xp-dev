@@ -11,16 +11,14 @@
 #include "PHDebug.h"
 #endif
 ///////////////////////////////////////////////////////////////
-#pragma warning(disable:4995)
 #pragma warning(disable:4267)
 #include "../../xrODE/ode/src/collision_kernel.h"
 #include "../../xrODE/ode/src/joint.h"
 #include "../../xrODE/ode/src/objects.h"
 #pragma warning(default:4267)
-#pragma warning(default:4995)
 
 extern CPHWorld *ph_world;
-///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 
 #include "ExtendedGeom.h"
 //union dInfBytes dInfinityValue = {{0,0,0x80,0x7f}};

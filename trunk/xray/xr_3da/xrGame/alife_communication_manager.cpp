@@ -18,10 +18,7 @@
 #include "alife_human_brain.h"
 #include "alife_human_object_handler.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
-#pragma warning(pop)
 
 using namespace ALife;
 using namespace ALifeCommunication;

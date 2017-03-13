@@ -6,10 +6,7 @@
 #include "NET_Log.h"
 #include "../xr_3da/xrGame/battleye.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
-//#pragma warning(pop)
 
 static	INetLog* pClNetLog = NULL; 
 

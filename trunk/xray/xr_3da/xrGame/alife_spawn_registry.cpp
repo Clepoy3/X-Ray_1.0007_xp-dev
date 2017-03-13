@@ -14,10 +14,7 @@
 #include "game_graph.h"
 #include "../../build_config_defines.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
-#pragma warning(pop)
 
 CALifeSpawnRegistry::CALifeSpawnRegistry	(LPCSTR section)
 {

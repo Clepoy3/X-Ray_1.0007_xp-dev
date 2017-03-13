@@ -5,15 +5,8 @@
 
 #include "dxerr.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <malloc.h>
 #include <direct.h>
-#pragma warning(pop)
-
-#include "..\..\build_config_defines.h"
-
-
 
 // alpet: user-friendly crashes )
 #define ERROR_MESSAGES_RU
@@ -287,10 +280,10 @@ void gather_info		(const char *expression, const char *description, const char *
 #ifdef USE_MEMORY_MONITOR
 	memory_monitor::flush_each_time	(true);
 	memory_monitor::flush_each_time	(false);
-#endif // USE_MEMORY_MONITOR	
-#ifdef LUAICP_COMPAT
+#endif // USE_MEMORY_MONITOR
+
 	MsgCB("$#DUMP_CONTEXT"); // alpet: вывод контекста, перед построением стека вызовов
-#endif
+
 	if (!strstr(GetCommandLine(),"-no_call_stack_assert")) {
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW

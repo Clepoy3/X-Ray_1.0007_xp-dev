@@ -3,13 +3,10 @@
 
 #include "fs_internal.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <io.h>
 #include <direct.h>
 #include <fcntl.h>
 #include <sys\stat.h>
-#pragma warning(pop)
 
 typedef void DUMMY_STUFF (const void*,const u32&,void*);
 XRCORE_API DUMMY_STUFF	*g_dummy_stuff = 0;
