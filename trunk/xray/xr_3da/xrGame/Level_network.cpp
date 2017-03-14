@@ -158,9 +158,9 @@ void CLevel::ClientSend()
 					{
 						if (net_IsSyncronised() && IsDemoSave()) 
 						{
-							DemoCS.Enter();
+							DemoCS.lock();
 							Demo_StoreData(P.B.data, P.B.count, DATA_CLIENT_PACKET);
-							DemoCS.Leave();
+							DemoCS.unlock();
 						}						
 					}
 					else

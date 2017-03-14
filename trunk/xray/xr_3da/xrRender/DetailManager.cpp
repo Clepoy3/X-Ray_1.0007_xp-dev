@@ -375,7 +375,7 @@ void __stdcall	CDetailManager::MT_CALC		()
 #endif
 #endif    
 
-	MT.Enter					();
+	std::lock_guard<decltype(MT)> lock(MT);
 	if (m_frame_calc!=Device.dwFrame)	
 		if ((m_frame_rendered+1)==Device.dwFrame) //already rendered
 		{
@@ -390,5 +390,4 @@ void __stdcall	CDetailManager::MT_CALC		()
 			UpdateVisibleM				();
 			m_frame_calc				= Device.dwFrame;
 		}
-	MT.Leave					        ();
 }

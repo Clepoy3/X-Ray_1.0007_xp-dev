@@ -77,7 +77,7 @@ private:
 		}
 	};
 
-	xrCriticalSection			DelayedPackestCS;
+	std::recursive_mutex		DelayedPackestCS;
 	xr_deque<DelayedPacket>		m_aDelayedPackets;
 	void						ProceedDelayedPackets	();
 	void						AddDelayedPacket		(NET_Packet& Packet, ClientID Sender);
@@ -181,8 +181,8 @@ public:
 	u32						GetEntitiesNum		()			{ return entities.size(); };
 	CSE_Abstract*			GetEntity			(u32 Num);
 
-	IC void					clients_Lock		()			{	csPlayers.Enter();	}
-	IC void					clients_Unlock		()			{   csPlayers.Leave();	}
+	IC void					clients_Lock		()			{	csPlayers.lock();	}
+	IC void					clients_Unlock		()			{   csPlayers.unlock();	}
 
 	xrClientData*			ID_to_client		(ClientID ID, bool ScanAll = false ) { return (xrClientData*)(IPureServer::ID_to_client( ID, ScanAll)); }
 	CSE_Abstract*			ID_to_entity		(u16 ID);

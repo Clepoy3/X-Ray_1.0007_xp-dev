@@ -20,12 +20,11 @@
 	static BOOL			bException	= FALSE;
 #endif
 
-#ifdef _M_AMD64
-#define DEBUG_INVOKE	DebugBreak	()
-#else
-#define DEBUG_INVOKE	__asm		{ int 3 }
+#define DEBUG_INVOKE DebugBreak()
+
+#ifndef _M_AMD64
 #ifndef __BORLANDC__
-	#pragma comment			(lib,"dxerr.lib")
+	#pragma comment(lib,"dxerr.lib")
 #endif
 #endif
 
@@ -74,9 +73,9 @@ static INT_PTR CALLBACK DialogProc	( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 
 void xrDebug::backend(const char* reason, const char* expression, const char *argument0, const char *argument1, const char* file, int line, const char *function, bool &ignore_always)
 {
-	static	xrCriticalSection	CS;
+	static std::recursive_mutex CS;
 
-	CS.Enter			();
+	std::lock_guard<decltype(CS)> lock(CS);
 
 	// Log
 	string1024			tmp;
@@ -113,8 +112,6 @@ void xrDebug::backend(const char* reason, const char* expression, const char *ar
  		DEBUG_INVOKE;
 		break;
 	}
-
-	CS.Leave			();
 }
 
 LPCSTR xrDebug::error2string	(long code)

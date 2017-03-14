@@ -117,10 +117,10 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 				CLX->m_dwPort				= dwPort;
 				CLX->flags.bReconnect		= TRUE;
 				
-				csPlayers.Enter();
+				csPlayers.lock();
 				net_Players.push_back( CLX );
 				net_Players.back()->server = this;
-				csPlayers.Leave();
+				csPlayers.unlock();
 
 				Msg							( "# Player found" );
 				return						CLX;
@@ -136,10 +136,10 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 		newCL->m_dwPort		= dwPort;
 	}
 	
-	csPlayers.Enter();
+	csPlayers.lock();
 	net_Players.push_back( newCL );
 	net_Players.back()->server = this;
-	csPlayers.Leave();
+	csPlayers.unlock();
 
 	Msg		("# Player not found. New player created.");
 	return newCL;
@@ -149,7 +149,7 @@ INT	g_sv_Client_Reconnect_Time = 0;
 
 void		xrServer::client_Destroy	(IClient* C)
 {
-	csPlayers.Enter	();
+	std::lock_guard<decltype(csPlayers)> lock(csPlayers);
 	
 	// Delete assosiated entity
 	// xrClientData*	D = (xrClientData*)C;
@@ -211,8 +211,6 @@ void		xrServer::client_Destroy	(IClient* C)
 			break;
 		};
 	}
-
-	csPlayers.Leave();
 }
 
 //--------------------------------------------------------------------
@@ -225,7 +223,7 @@ INT g_sv_SendUpdate = 0;
 void xrServer::Update	()
 {
 	NET_Packet		Packet;
-	csPlayers.Enter	();
+	csPlayers.lock();
 
 	VERIFY						(verify_entities());
 
@@ -276,7 +274,7 @@ void xrServer::Update	()
 	PerformCheckClientsForMaxPing	();
 
 	Flush_Clients_Buffers			();
-	csPlayers.Leave					();
+	csPlayers.unlock				();
 	
 	if( 0==(Device.dwFrame%100) )//once per 100 frames
 	{
@@ -432,7 +430,7 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 	u16						type;
 	P.r_begin				(type);
 
-	csPlayers.Enter			();
+	std::lock_guard<decltype(csPlayers)> lock(csPlayers);
 
 	VERIFY							(verify_entities());
 	xrClientData* CL				= ID_to_client(sender);
@@ -473,7 +471,6 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 	}
 	VERIFY							(verify_entities());
 
-	csPlayers.Leave					();
 	return 0;
 }
 
@@ -484,7 +481,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 	u16			type;
 	P.r_begin	(type);
 
-	csPlayers.Enter			();
+	std::lock_guard<decltype(csPlayers)> lock(csPlayers);
 
 	VERIFY							(verify_entities());
 	xrClientData* CL				= ID_to_client(sender);
@@ -688,8 +685,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 	}
 
 	VERIFY							(verify_entities());
-
-	csPlayers.Leave					();
 
 	return							IPureServer::OnMessage(P, sender);
 }
@@ -911,7 +906,7 @@ void xrServer::create_direct_client()
 
 void xrServer::ProceedDelayedPackets()
 {
-	DelayedPackestCS.Enter();
+	std::lock_guard<decltype(DelayedPackestCS)> lock(DelayedPackestCS);
 	while (!m_aDelayedPackets.empty())
 	{
 		DelayedPacket& DPacket	= *m_aDelayedPackets.begin();
@@ -919,19 +914,16 @@ void xrServer::ProceedDelayedPackets()
 //		OnMessage(DPacket.Packet, DPacket.SenderID);
 		m_aDelayedPackets.pop_front();
 	}
-	DelayedPackestCS.Leave();
 };
 
 void xrServer::AddDelayedPacket	(NET_Packet& Packet, ClientID Sender)
 {
-	DelayedPackestCS.Enter();
+	std::lock_guard<decltype(DelayedPackestCS)> lock(DelayedPackestCS);
 
 	m_aDelayedPackets.push_back(DelayedPacket());
 	DelayedPacket* NewPacket = &(m_aDelayedPackets.back());
 	NewPacket->SenderID = Sender;
 	std::memcpy	(&(NewPacket->Packet),&Packet,sizeof(NET_Packet));	
-
-	DelayedPackestCS.Leave();
 }
 
 u32 g_sv_dwMaxClientPing		= 2000;

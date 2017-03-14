@@ -8,7 +8,7 @@
 // consts
 const	u32					MAX_BONE_PARAMS		=	4;
 const	u32					UCalc_Interval		=	100;	// 10 fps
-extern	xrCriticalSection	UCalc_Mutex			;
+extern	std::recursive_mutex	UCalc_Mutex			;
 
 // refs
 class	ENGINE_API CKinematics;
@@ -23,12 +23,6 @@ typedef vecBones::iterator			vecBonesIt;
 // callback
 typedef void (* BoneCallback)		(CBoneInstance* P);
 typedef void (* UpdateCallback)		(CKinematics*	P);
-
-// MT-locker
-struct	UCalc_mtlock	{
-	UCalc_mtlock()		{ UCalc_Mutex.Enter(); }
-	~UCalc_mtlock()		{ UCalc_Mutex.Leave(); }
-};
 
 //*** Bone Instance *******************************************************************************
 #pragma pack(push,8)

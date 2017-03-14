@@ -8,29 +8,10 @@
 
 #include "stdafx.h"
 #include "profiler.h"
+
+#ifdef USE_PROFILER
+
 #include "../gamefont.h"
-
-#ifdef PROFILE_CRITICAL_SECTIONS
-static volatile LONG					critical_section_counter = 0;
-
-void add_profile_portion				(LPCSTR id, const u64 &time)
-{
-	if (!*id)
-		return;
-
-	if (!psAI_Flags.test(aiStats))
-		return;
-	
-	if (!psDeviceFlags.test(rsStatistic))
-		return;
-
-	CProfileResultPortion			temp;
-	temp.m_timer_id					= id;
-	temp.m_time						= time;
-	
-	profiler().add_profile_portion	(temp);
-}
-#endif // PROFILE_CRITICAL_SECTIONS
 
 CProfiler	*g_profiler			= 0;
 LPCSTR		indent				= "  ";
@@ -44,18 +25,12 @@ struct CProfilePortionPredicate {
 };
 
 CProfiler::CProfiler				()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:m_section("")
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	m_actual							= true;
 }
 
 CProfiler::~CProfiler				()
 {
-#ifdef PROFILE_CRITICAL_SECTIONS
-	set_add_profile_portion		(0);
-#endif // PROFILE_CRITICAL_SECTIONS
 }
 
 IC	u32 compute_string_length		(LPCSTR str)
@@ -93,13 +68,13 @@ void CProfiler::setup_timer			(LPCSTR timer_id, const u64 &timer_time, const u32
 {
 	string256					m_temp;
 	float						_time = float(timer_time)*1000.f/CPU::qpc_freq;
-	TIMERS::iterator			i = m_timers.find(timer_id);
+	auto						i = m_timers.find(timer_id);
 	if (i == m_timers.end()) {
 		strcpy					(m_temp,timer_id);
 		LPSTR					j,k = m_temp;
 		while ((j = strchr(k,'/')) != 0) {
 			*j					= 0;
-			TIMERS::iterator	m = m_timers.find(m_temp);
+			auto				m = m_timers.find(m_temp);
 			if (m == m_timers.end())
 				m_timers.insert	(std::make_pair(shared_str(m_temp),CProfileStats()));
 			*j					= '/';
@@ -134,45 +109,23 @@ void CProfiler::setup_timer			(LPCSTR timer_id, const u64 &timer_time, const u32
 
 void CProfiler::clear				()
 {
-#ifdef PROFILE_CRITICAL_SECTIONS
-	while (InterlockedExchange(&critical_section_counter,1))
-		Sleep					(0);
-#endif // PROFILE_CRITICAL_SECTIONS
-
-	m_section.Enter				();
+	m_section.lock();
 	m_portions.clear			();
 	m_timers.clear				();
-	m_section.Leave				();
+	m_section.unlock();
 
 	m_call_count				= 0;
-
-#ifdef PROFILE_CRITICAL_SECTIONS
-	InterlockedExchange			(&critical_section_counter,0);
-#endif // PROFILE_CRITICAL_SECTIONS
 }
 
 void CProfiler::show_stats			(CGameFont *game_font, bool show)
 {
 	if (!show) {
-#ifdef PROFILE_CRITICAL_SECTIONS
-		set_add_profile_portion	(0);
-#endif // PROFILE_CRITICAL_SECTIONS
 		clear					();
 		return;
 	}
-
-#ifdef PROFILE_CRITICAL_SECTIONS
-	set_add_profile_portion		(&::add_profile_portion);
-#endif // PROFILE_CRITICAL_SECTIONS
-
 	++m_call_count;
-		
-#ifdef PROFILE_CRITICAL_SECTIONS
-	while (InterlockedExchange(&critical_section_counter,1))
-		Sleep					(0);
-#endif // PROFILE_CRITICAL_SECTIONS
 
-	m_section.Enter				();
+	m_section.lock();
 
 	if (!m_portions.empty()) {
 		std::sort				(m_portions.begin(),m_portions.end(),CProfilePortionPredicate());
@@ -196,7 +149,7 @@ void CProfiler::show_stats			(CGameFont *game_font, bool show)
 
 		m_portions.clear		();
 
-		m_section.Leave			();
+		m_section.unlock();
 
 		if (!m_actual) {
 			u32					max_string_size = 0;
@@ -213,11 +166,7 @@ void CProfiler::show_stats			(CGameFont *game_font, bool show)
 		}
 	}
 	else
-		m_section.Leave			();
-
-#ifdef PROFILE_CRITICAL_SECTIONS
-	InterlockedExchange			(&critical_section_counter,0);
-#endif // PROFILE_CRITICAL_SECTIONS
+		m_section.unlock();
 
 	TIMERS::iterator			I = m_timers.begin();
 	TIMERS::iterator			E = m_timers.end();
@@ -252,21 +201,7 @@ void CProfiler::show_stats			(CGameFont *game_font, bool show)
 
 void CProfiler::add_profile_portion	(const CProfileResultPortion &profile_portion)
 {
-#ifdef PROFILE_CRITICAL_SECTIONS
-	if (InterlockedExchange(&critical_section_counter,1))
-		return;
-
-	do {
-		Sleep					(0);
-	}
-	while (!InterlockedExchange(&critical_section_counter,1));
-#endif // PROFILE_CRITICAL_SECTIONS
-
-	m_section.Enter				();
+	std::lock_guard<decltype(m_section)> locker(m_section);
 	m_portions.push_back		(profile_portion);
-	m_section.Leave				();
-
-#ifdef PROFILE_CRITICAL_SECTIONS
-	InterlockedExchange			(&critical_section_counter,0);
-#endif // PROFILE_CRITICAL_SECTIONS
 }
+#endif

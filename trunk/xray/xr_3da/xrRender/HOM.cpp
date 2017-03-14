@@ -11,7 +11,7 @@ float	psOSSR		= .001f;
 
 void __stdcall	CHOM::MT_RENDER()
 {
-	MT.Enter					();
+	std::lock_guard<decltype(MT)> lock(MT);
 	bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() );
 	if (MT_frame_rendered!=Device.dwFrame && !b_main_menu_is_active)
 	{
@@ -20,7 +20,6 @@ void __stdcall	CHOM::MT_RENDER()
 		Enable						();
 		Render						(ViewBase);
 	}
-	MT.Leave					();
 }
 
 //////////////////////////////////////////////////////////////////////

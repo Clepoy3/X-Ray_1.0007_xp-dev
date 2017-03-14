@@ -65,13 +65,9 @@ extern bool force_flush_log;
         static BOOL			bException	= TRUE;
 //    #   define USE_BUG_TRAP
 #else
-//    #   define USE_BUG_TRAP
-#ifdef _WIN64
-    #	define DEBUG_INVOKE	DebugBreak()
-#else
-    #	define DEBUG_INVOKE	__asm int 3
-#endif
-        static BOOL			bException	= FALSE;
+//#	define USE_BUG_TRAP
+#	define DEBUG_INVOKE DebugBreak()
+	static BOOL bException = FALSE;
 #endif
 
 #ifndef _M_AMD64
@@ -333,13 +329,9 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 {
 	force_flush_log = true;
 
-	static xrCriticalSection CS
-#ifdef PROFILE_CRITICAL_SECTIONS
-	(MUTEX_PROFILE_ID(xrDebug::backend))
-#endif // PROFILE_CRITICAL_SECTIONS
-	;
+	static std::recursive_mutex CS;
 
-	CS.Enter			();
+	std::lock_guard<decltype(CS)> lock(CS);
 
 	string4096			assertion_info;
 	gather_info			(expression, description, argument0, argument1, file, line, function, assertion_info);
@@ -400,8 +392,6 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 	if (get_on_dialog())
 		get_on_dialog()	(false);
-
-	CS.Leave			();
 }
 
 LPCSTR xrDebug::error2string	(long code)

@@ -152,6 +152,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <mutex>
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
 
@@ -170,7 +171,6 @@
 #include "vector.h"
 
 #include "clsid.h"
-#include "xrSyncronize.h"
 #include "xrMemory.h"
 #include "xrDebug.h"
 

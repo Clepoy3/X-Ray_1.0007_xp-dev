@@ -25,9 +25,6 @@ void	dump_URL	(LPCSTR p, IDirectPlay8Address* A)
 
 // 
 INetQueue::INetQueue()		
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:cs(MUTEX_PROFILE_ID(INetQueue))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	unused.reserve	(128);
 	for (int i=0; i<16; i++)
@@ -36,26 +33,24 @@ INetQueue::INetQueue()
 
 INetQueue::~INetQueue()
 {
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 	u32				it;
 	for				(it=0; it<unused.size(); it++)	xr_delete(unused[it]);
 	for				(it=0; it<ready.size(); it++)	xr_delete(ready[it]);
-	cs.Leave		();
 }
 
 static u32 LastTimeCreate = 0;
 
 void INetQueue::CreateCommit(NET_Packet* P)
 {
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 	ready.push_back	(P);
-	cs.Leave		();
 }
 
 NET_Packet*		INetQueue::CreateGet()
 {
 	NET_Packet*	P			= 0;
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 
 	if (unused.empty())	
 	{
@@ -72,14 +67,13 @@ NET_Packet*		INetQueue::CreateGet()
 		unused.pop_back		();
 //.		P					= ready.back	();
 	}
-	cs.Leave		();
 	return	P;
 }
 /*
 NET_Packet*		INetQueue::Create	(const NET_Packet& _other)
 {
 	NET_Packet*	P			= 0;
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 //#ifdef _DEBUG
 //		Msg ("- INetQueue::Create - ready %d, unused %d", ready.size(), unused.size());
 //#endif
@@ -96,14 +90,13 @@ NET_Packet*		INetQueue::Create	(const NET_Packet& _other)
 		P					= ready.back	();
 	}	
 	std::memcpy	(P,&_other,sizeof(NET_Packet));	
-	cs.Leave		();
 	return			P;
 }
 */
 NET_Packet*		INetQueue::Retreive	()
 {
 	NET_Packet*	P			= 0;
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 //#ifdef _DEBUG
 //			Msg ("INetQueue::Retreive - ready %d, unused %d", ready.size(), unused.size());
 //#endif
@@ -120,12 +113,11 @@ NET_Packet*		INetQueue::Retreive	()
 		}		
 	}
 	//---------------------------------------------	
-	cs.Leave		();
 	return	P;
 }
 void			INetQueue::Release	()
 {
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 //#ifdef _DEBUG
 //		Msg ("INetQueue::Release - ready %d, unused %d", ready.size(), unused.size());
 //#endif
@@ -141,7 +133,6 @@ void			INetQueue::Release	()
 		unused.push_back(ready.front());
 	//---------------------------------------------	
 	ready.pop_front	();
-	cs.Leave		();
 }
 
 //
@@ -260,9 +251,6 @@ void  IPureClient::_Recieve( const void* data, u32 data_size, u32 /*param*/ )
 //==============================================================================
 
 IPureClient::IPureClient	(CTimer* timer): net_Statistic(timer)
-#ifdef PROFILE_CRITICAL_SECTIONS
-,net_csEnumeration(MUTEX_PROFILE_ID(IPureClient::net_csEnumeration))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	NET						= NULL;
 	net_Address_server		= NULL;
@@ -587,7 +575,7 @@ BOOL IPureClient::Connect	(LPCSTR options)
 				dpAppDesc.pwszPassword = SessionPasswordUNICODE;
 			};
 
-			net_csEnumeration.Enter		();
+			net_csEnumeration.lock();
 			// real connect
 			for (u32 I=0; I<net_Hosts.size(); I++) 
 				Msg("* HOST #%d: %s\n",I+1,*net_Hosts[I].dpSessionName);
@@ -605,7 +593,7 @@ BOOL IPureClient::Connect	(LPCSTR options)
 				NULL,					// pvAsyncHandle
 				DPNCONNECT_SYNC);		// dwFlags
 			//		R_CHK(res);		
-			net_csEnumeration.Leave		();
+			net_csEnumeration.unlock();
 			_RELEASE					(pHostAddress);
 #ifdef DEBUG	
 			//		const char* x = DXGetErrorString9(res);
@@ -654,13 +642,13 @@ void IPureClient::Disconnect()
 	if( NET )	NET->Close(0);
 
     // Clean up Host _list_
-	net_csEnumeration.Enter			();
+	net_csEnumeration.lock();
 	for (u32 i=0; i<net_Hosts.size(); i++) {
 		HOST_NODE&	N = net_Hosts[i];
 		_RELEASE	(N.pHostAddress);
 	}
 	net_Hosts.clear					();
-	net_csEnumeration.Leave			();
+	net_csEnumeration.unlock();
 
 	// Release interfaces
 	_SHOW_REF	("cl_netADR_Server",net_Address_server);
@@ -691,7 +679,7 @@ HRESULT	IPureClient::net_Handler(u32 dwMessageType, PVOID pMessage)
 			pDesc							= pEnumHostsResponseMsg->pApplicationDescription;
 
 			// Insert each host response if it isn't already present
-			net_csEnumeration.Enter			();
+			net_csEnumeration.lock();
 			BOOL	bHostRegistered			= FALSE;
 			for (u32 I=0; I<net_Hosts.size(); I++)
 			{
@@ -730,7 +718,7 @@ HRESULT	IPureClient::net_Handler(u32 dwMessageType, PVOID pMessage)
 
 				net_Hosts.push_back			(NODE);
 			}
-			net_csEnumeration.Leave			();
+			net_csEnumeration.unlock();
 		}
 		break;
 

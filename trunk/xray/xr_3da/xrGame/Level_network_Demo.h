@@ -58,7 +58,7 @@ private:
 	//------------- Demo Store -----------------------------------------
 	BOOL						m_bDemoSaveMode;
 
-	xrCriticalSection			DemoCS;
+	std::recursive_mutex		DemoCS;
 	u32							m_dwStoredDemoDataSize;
 	u8*							m_pStoredDemoData;
 		

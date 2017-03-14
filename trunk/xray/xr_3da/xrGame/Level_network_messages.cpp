@@ -337,16 +337,13 @@ void CLevel::ClientReceive()
 
 void				CLevel::OnMessage				(void* data, u32 size)
 {	
-	DemoCS.Enter();
+	std::lock_guard<decltype(DemoCS)> lock(DemoCS);
 
 	if (IsDemoPlay() ) 
 	{
 		if (m_bDemoStarted) 
-		{
-			DemoCS.Leave();
 			return;
-		}
-		
+
 		if (!m_aDemoData.empty() && net_IsSyncronised())
 		{
 //			NET_Packet *P = &(m_aDemoData.front());
@@ -356,32 +353,24 @@ void				CLevel::OnMessage				(void* data, u32 size)
 			m_bDemoStarted = TRUE;
 			Msg("! ------------- Demo Started ------------");
 			m_dwCurDemoFrame = P->m_dwFrame;
-			DemoCS.Leave();
 			return;
 		}
 	};	
 
 	if (IsDemoSave() && net_IsSyncronised()) 
-	{
 		Demo_StoreData(data, size, DATA_CLIENT_PACKET);
-	}	
 
 	IPureClient::OnMessage(data, size);	
-
-	DemoCS.Leave();
 };
 
 NET_Packet*				CLevel::net_msg_Retreive		()
 {
 	NET_Packet* P = NULL;
 
-	DemoCS.Enter();
+	std::lock_guard<decltype(DemoCS)> lock(DemoCS);
 
 	P = IPureClient::net_msg_Retreive();
 	if (!P) Demo_EndFrame();
 
-	DemoCS.Leave();
-
 	return P;
 }
-

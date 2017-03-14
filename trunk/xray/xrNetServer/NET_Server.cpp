@@ -197,13 +197,12 @@ IClient::_SendTo_LL( const void* data, u32 size, u32 flags, u32 timeout )
 IClient*	IPureServer::ID_to_client		(ClientID ID, bool ScanAll)
 {
 	if ( 0 == ID.value() )			return NULL;
-	csPlayers.Enter	();
+	std::lock_guard<decltype(csPlayers)> lock(csPlayers);
 
 	for ( u32 client = 0; client < net_Players.size(); ++client )
 	{
 		if ( net_Players[client]->ID == ID )
 		{
-			csPlayers.Leave();
 			return net_Players[client];
 		}
 	}
@@ -213,12 +212,10 @@ IClient*	IPureServer::ID_to_client		(ClientID ID, bool ScanAll)
 		{
 			if ( net_Players_disconnected[client]->ID == ID )
 			{
-				csPlayers.Leave();
 				return net_Players_disconnected[client];
 			}
 		}
 	};
-	csPlayers.Leave();
 	return NULL;
 }
 
@@ -235,7 +232,7 @@ IPureServer::_Recieve( const void* data, u32 data_size, u32 param )
 
     id.set( param );
     packet.construct( data, data_size );
-	csMessage.Enter();
+	csMessage.lock();
 	//---------------------------------------
 	if( psNET_Flags.test(NETFLAG_LOG_SV_PACKETS) ) 
 	{
@@ -248,7 +245,7 @@ IPureServer::_Recieve( const void* data, u32 data_size, u32 param )
 	//---------------------------------------
 	u32	result = OnMessage( packet, id );
 
-	csMessage.Leave();
+	csMessage.unlock();
 	
 	if( result )		
 	    SendBroadcast( id, packet, result );
@@ -259,10 +256,6 @@ IPureServer::_Recieve( const void* data, u32 data_size, u32 param )
 
 IPureServer::IPureServer	(CTimer* timer, BOOL	Dedicated)
 	:	m_bDedicated(Dedicated)
-#ifdef PROFILE_CRITICAL_SECTIONS
-	,csPlayers(MUTEX_PROFILE_ID(IPureServer::csPlayers))
-	,csMessage(MUTEX_PROFILE_ID(IPureServer::csMessage))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	device_timer			= timer;
 	stats.clear				();
@@ -543,7 +536,7 @@ HRESULT	IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 		{
 			PDPNMSG_DESTROY_PLAYER	msg = PDPNMSG_DESTROY_PLAYER(pMessage);
 
-			csPlayers.Enter			();
+			csPlayers.lock();
 			for (u32 I=0; I<net_Players.size(); I++)
 				if (net_Players[I]->ID.compare(msg->dpnidPlayer) )
 				{
@@ -556,7 +549,7 @@ HRESULT	IPureServer::net_Handler(u32 dwMessageType, PVOID pMessage)
 					client_Destroy		(net_Players[I]);
 					break;
 				}
-			csPlayers.Leave			();
+			csPlayers.unlock();
 		}
 		break;
 	case DPN_MSGID_RECEIVE:
@@ -612,12 +605,10 @@ void	IPureServer::Flush_Clients_Buffers	()
     Msg( "#flush server send-buf" );
     #endif
 
-	csPlayers.Enter();	
+	std::lock_guard<decltype(csPlayers)> lock(csPlayers);
 
 	for( xr_vector<IClient*>::iterator it = net_Players.begin(); it != net_Players.end(); ++it )
         (*it)->MultipacketSender::FlushSendBuffer( 0 );
-
-	csPlayers.Leave();
 }
 
 void	IPureServer::SendTo_Buf(ClientID id, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
@@ -684,7 +675,7 @@ void	IPureServer::SendTo		(ClientID ID/*DPNID ID*/, NET_Packet& P, u32 dwFlags, 
 
 void	IPureServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags)
 {
-	csPlayers.Enter();
+	std::lock_guard<decltype(csPlayers)> lock(csPlayers);
 	
 	for( u32 i=0; i<net_Players.size(); i++ )
 	{
@@ -695,8 +686,6 @@ void	IPureServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 d
 		
 		SendTo_LL( player->ID, data, size, dwFlags );
 	}
-	
-	csPlayers.Leave	();
 }
 
 void	IPureServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)

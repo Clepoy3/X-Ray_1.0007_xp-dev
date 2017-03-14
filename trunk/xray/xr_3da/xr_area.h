@@ -15,8 +15,7 @@ class ENGINE_API	CObject;
 class	ENGINE_API						CObjectSpace
 {
 private:
-	// Debug
-	xrCriticalSection					Lock;
+	std::recursive_mutex				Lock;
 	CDB::MODEL							Static;
 	Fbox								m_BoundingVolume;
 	xrXRC								xrc;				// MT: dangerous

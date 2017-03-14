@@ -81,9 +81,6 @@ u16	GetSpawnInfo(NET_Packet &P, u16 &parent_id)
 //////////////////////////////////////////////////////////////////////
 
 CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
-#ifdef PROFILE_CRITICAL_SECTIONS
-	,DemoCS(MUTEX_PROFILE_ID(DemoCS))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	g_bDebugEvents				= strstr(Core.Params,"-debug_ge")?TRUE:FALSE;
 

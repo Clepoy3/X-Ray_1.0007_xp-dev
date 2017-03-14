@@ -111,7 +111,7 @@ protected:
 	RStringVec				m_ExplodeParticles	;
 
 	//список пуль наход€щихс€ в данный момент на уровне
-	xrCriticalSection		m_Lock				;
+	std::recursive_mutex	m_Lock				;
 	BulletVec				m_Bullets			;	// working set, locked
 	BulletVec				m_BulletsRendered	;	// copy for rendering
 	xr_vector<_event>		m_Events			;	

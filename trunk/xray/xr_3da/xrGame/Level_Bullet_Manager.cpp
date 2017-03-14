@@ -82,9 +82,6 @@ void SBullet::Init(const Fvector& position,
 //
 
 CBulletManager::CBulletManager()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:m_Lock(MUTEX_PROFILE_ID(CBulletManager))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	m_Bullets.clear			();
 	m_Bullets.reserve		(100);
@@ -169,7 +166,7 @@ void CBulletManager::AddBullet(const Fvector& position,
 							   bool SendHit,
 							   bool AimBullet)
 {
-	m_Lock.Enter	();
+	std::lock_guard<decltype(m_Lock)> lock(m_Lock);
 	VERIFY		(u16(-1)!=cartridge.bullet_material_idx);
 //	u32 CurID = Level().CurrentControlEntity()->ID();
 //	u32 OwnerID = sender_id;
@@ -180,12 +177,11 @@ void CBulletManager::AddBullet(const Fvector& position,
 	bullet.flags.aim_bullet	=	AimBullet;
 	if (SendHit && GameID() != GAME_SINGLE)
 		Game().m_WeaponUsageStatistic->OnBullet_Fire(&bullet, cartridge);
-	m_Lock.Leave	();
 }
 
 void CBulletManager::UpdateWorkload()
 {
-	m_Lock.Enter		()	;
+	std::lock_guard<decltype(m_Lock)> lock(m_Lock);
 	u32 delta_time		=	Device.dwTimeDelta + m_dwTimeRemainder;
 	u32 step_num		=	delta_time/m_dwStepTime;
 	m_dwTimeRemainder	=	delta_time%m_dwStepTime;
@@ -219,7 +215,6 @@ void CBulletManager::UpdateWorkload()
 			}
 		}
 	}
-	m_Lock.Leave		();
 }
 
 bool CBulletManager::CalcBullet (collide::rq_results & rq_storage, xr_vector<ISpatial*>& rq_spatial, SBullet* bullet, u32 delta_time)

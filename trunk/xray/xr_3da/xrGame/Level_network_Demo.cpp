@@ -140,10 +140,10 @@ void						CLevel::CallOldCrashHandler			()
 
 void						CLevel::WriteStoredDemo			()
 {	
-	if (!DemoCS.TryEnter()) return;
+	if (!DemoCS.try_lock()) return;
 	
 	Demo_DumpData();
-	DemoCS.Leave();
+	DemoCS.unlock();
 };
 
 BOOL	g_bLeaveTDemo = FALSE;
@@ -433,7 +433,7 @@ void						CLevel::Demo_StartFrame			()
 {
 	if (!IsDemoSave() || !net_IsSyncronised()) return;
 
-	DemoCS.Enter();
+	std::lock_guard<decltype(DemoCS)> lock(DemoCS);
 
 	DemoFrameTime CurFrameTime;
 	CurFrameTime.dwTimeDelta = Device.dwTimeDelta;
@@ -444,8 +444,6 @@ void						CLevel::Demo_StartFrame			()
 	CurFrameTime.fTimeGlobal= Device.fTimeGlobal;
 
 	Demo_StoreData(&CurFrameTime, sizeof(CurFrameTime), DATA_FRAME);
-
-	DemoCS.Leave();
 };
 
 void						CLevel::Demo_EndFrame			()

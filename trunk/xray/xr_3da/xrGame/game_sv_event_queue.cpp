@@ -1,12 +1,7 @@
 #include "stdafx.h"
 #include "game_sv_event_queue.h"
 
-
-// 
 GameEventQueue::GameEventQueue()		
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:cs(MUTEX_PROFILE_ID(GameEventQueue))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	unused.reserve	(128);
 	for (int i=0; i<16; i++)
@@ -14,18 +9,17 @@ GameEventQueue::GameEventQueue()
 }
 GameEventQueue::~GameEventQueue()
 {
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 	u32				it;
 	for				(it=0; it<unused.size(); it++)	xr_delete(unused[it]);
 	for				(it=0; it<ready.size(); it++)	xr_delete(ready[it]);
-	cs.Leave		();
 }
 
 static u32 LastTimeCreate = 0;
 GameEvent*		GameEventQueue::Create	()
 {
 	GameEvent*	ge			= 0;
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 	if (unused.empty())	
 	{
 		ready.push_back		(xr_new<GameEvent> ());
@@ -41,21 +35,20 @@ GameEvent*		GameEventQueue::Create	()
 		unused.pop_back		();
 		ge					= ready.back	();
 	}
-	cs.Leave		();
 	return	ge;
 }
 GameEvent*		GameEventQueue::Create	(NET_Packet& P, u16 type, u32 time, ClientID clientID)
 {
 	GameEvent*	ge			= 0;
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 	if (unused.empty())	
 	{
 		ready.push_back		(xr_new<GameEvent> ());
 		ge					= ready.back	();
 		//---------------------------------------------
-#ifdef _DEBUG
+//#ifdef _DEBUG
 //		Msg ("* GameEventQueue::Create - ready %d, unused %d", ready.size(), unused.size());
-#endif
+//#endif
 		LastTimeCreate = GetTickCount();
 		//---------------------------------------------
 	} else {
@@ -68,13 +61,12 @@ GameEvent*		GameEventQueue::Create	(NET_Packet& P, u16 type, u32 time, ClientID 
 	ge->time	= time;
 	ge->type	= type;
 
-	cs.Leave		();
 	return			ge;
 }
 GameEvent*		GameEventQueue::Retreive	()
 {
 	GameEvent*	ge			= 0;
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 	if (!ready.empty())		ge = ready.front();
 	//---------------------------------------------	
 	else
@@ -91,13 +83,12 @@ GameEvent*		GameEventQueue::Retreive	()
 		}		
 	}
 	//---------------------------------------------	
-	cs.Leave		();
 	return	ge;
 }
 
 void			GameEventQueue::Release	()
 {
-	cs.Enter		();
+	std::lock_guard<decltype(cs)> lock(cs);
 	R_ASSERT		(!ready.empty());
 	//---------------------------------------------
 	u32 tmp_time = GetTickCount()-60000;
@@ -113,5 +104,4 @@ void			GameEventQueue::Release	()
 		unused.push_back(ready.front());
 	//---------------------------------------------		
 	ready.pop_front	();
-	cs.Leave		();
 }

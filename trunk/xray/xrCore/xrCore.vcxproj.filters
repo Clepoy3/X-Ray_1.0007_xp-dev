@@ -240,7 +240,6 @@
     <ClCompile Include="rt_lzo_init.cpp">
       <Filter>Compression\lzo</Filter>
     </ClCompile>
-    <ClCompile Include="xrSyncronize.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -501,7 +500,6 @@
     <ClInclude Include="rt_miniacc.h">
       <Filter>Compression\lzo</Filter>
     </ClInclude>
-    <ClInclude Include="xrSyncronize.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xrCore.rc">

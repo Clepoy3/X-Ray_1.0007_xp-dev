@@ -8,7 +8,7 @@
 
 void xrServer::OnCL_Disconnected	(IClient* CL)
 {
-	csPlayers.Enter			();
+	csPlayers.lock();
 
 	// Game config (all, info includes deleted player now, excludes at the next cl-update)
 	NET_Packet P;
@@ -44,7 +44,7 @@ void xrServer::OnCL_Disconnected	(IClient* CL)
 			entity_Destroy	(entity);
 		}
 	}	
-	csPlayers.Leave			();
+	csPlayers.unlock();
 
 	Server_Client_Check(CL);
 

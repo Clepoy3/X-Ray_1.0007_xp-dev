@@ -1,5 +1,3 @@
-#ifndef xrstringH
-#define xrstringH
 #pragma once
 
 #pragma pack(push,4)
@@ -25,7 +23,7 @@ class		XRCORE_API	str_container
 {
 private:
 	typedef xr_multiset<str_value*,str_value_cmp>	cdb;
-	xrCriticalSection								cs;
+	std::recursive_mutex							cs;
 	cdb												container;
 public:
 	str_value*			dock			(str_c value);
@@ -33,9 +31,6 @@ public:
 	void				dump			();
 	void				verify			();
 	u32					stat_economy	();
-#ifdef PROFILE_CRITICAL_SECTIONS
-						str_container	():cs(MUTEX_PROFILE_ID(str_container)){}
-#endif // PROFILE_CRITICAL_SECTIONS
 						~str_container	();
 };
 XRCORE_API	extern		str_container*	g_pStringContainer;
@@ -109,4 +104,3 @@ IC void	xr_strlwr		(shared_str& src)									{ if (*src){LPSTR lp=xr_strdup(*src
 
 #pragma pack(pop)
 
-#endif

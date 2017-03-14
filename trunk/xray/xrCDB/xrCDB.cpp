@@ -27,9 +27,6 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 
 // Model building
 MODEL::MODEL	()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:cs(MUTEX_PROFILE_ID(MODEL))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	tree		= 0;
 	tris		= 0;
@@ -63,10 +60,9 @@ void	MODEL::build_thread		(void *params)
 	_initialize_cpu_thread		();
 	FPU::m64r					();
 	BTHREAD_params	P			= *( (BTHREAD_params*)params );
-	P.M->cs.Enter				();
+	std::lock_guard<std::recursive_mutex> lock(P.M->cs);
 	P.M->build_internal			(P.V,P.Vcnt,P.T,P.Tcnt,P.BC,P.BCP);
 	P.M->status					= S_READY;
-	P.M->cs.Leave				();
 	//Msg						("* xrCDB: cform build completed, memory usage: %d K",P.M->memory()/1024);
 }
 

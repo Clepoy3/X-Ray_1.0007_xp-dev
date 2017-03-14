@@ -12,7 +12,7 @@ struct GameEvent
 
 class  GameEventQueue
 {
-	xrCriticalSection		cs;
+	std::recursive_mutex cs;
 	xr_deque<GameEvent*>	ready;
 	xr_vector<GameEvent*>	unused;
 public:

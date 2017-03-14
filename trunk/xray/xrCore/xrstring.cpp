@@ -11,7 +11,7 @@ str_value*	str_container::dock		(str_c value)
 {
 	if (0==value)				return 0;
 
-	cs.Enter					();
+	std::lock_guard<decltype(cs)> lock(cs);
 #ifdef DEBUG_MEMORY_MANAGER
 	Memory.stat_strdock			++	;
 #endif // DEBUG_MEMORY_MANAGER
@@ -63,14 +63,13 @@ str_value*	str_container::dock		(str_c value)
 		std::memcpy				(result->value,value,s_len_with_zero);
 		container.insert		(result);
 	}
-	cs.Leave					();
 
 	return	result;
 }
 
 void str_container::clean()
 {
-	cs.Enter();
+	std::lock_guard<decltype(cs)> lock(cs);
 	for (auto it = container.begin(); it != container.end(); )	
 	{
 		auto	sv		= *it;
@@ -103,12 +102,11 @@ void str_container::clean()
 	{
 		container.clear();
 	}
-	cs.Leave();
 }
 
 void		str_container::verify	()
 {
-	cs.Enter	();
+	std::lock_guard<decltype(cs)> lock(cs);
 	cdb::iterator	it	= container.begin	();
 	cdb::iterator	end	= container.end		();
 	for (; it!=end; ++it)	{
@@ -118,24 +116,22 @@ void		str_container::verify	()
 		R_ASSERT3	(crc==sv->dwCRC, "CorePanic: read-only memory corruption (shared_strings)", itoa(sv->dwCRC,crc_str,16));
 		R_ASSERT3	(sv->dwLength == xr_strlen(sv->value), "CorePanic: read-only memory corruption (shared_strings, internal structures)", sv->value);
 	}
-	cs.Leave	();
 }
 
 void		str_container::dump	()
 {
-	cs.Enter	();
+	std::lock_guard<decltype(cs)> lock(cs);
 	cdb::iterator	it	= container.begin	();
 	cdb::iterator	end	= container.end		();
 	FILE* F		= fopen("x:\\$str_dump$.txt","w");
 	for (; it!=end; it++)
 		fprintf		(F,"ref[%4d]-len[%3d]-crc[%8X] : %s\n",(*it)->dwReference,(*it)->dwLength,(*it)->dwCRC,(*it)->value);
 	fclose		(F);
-	cs.Leave	();
 }
 
 u32			str_container::stat_economy		()
 {
-	cs.Enter	();
+	std::lock_guard<decltype(cs)> lock(cs);
 	cdb::iterator	it		= container.begin	();
 	cdb::iterator	end		= container.end		();
 	int				counter	= 0;
@@ -147,7 +143,6 @@ u32			str_container::stat_economy		()
 		counter		-= node_size;
 		counter		+= int((int((*it)->dwReference) - 1)*int((*it)->dwLength + 1));
 	}
-	cs.Leave		();
 
 	return			u32(counter);
 }

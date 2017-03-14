@@ -37,14 +37,14 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 
 	// Options
 	if (0==game)			return ErrConnect;
-	csPlayers.Enter			();
+	csPlayers.lock();
 //	game->type				= type_id;
 #ifdef DEBUG
 	Msg("* Created server_game %s",game->type_name());
 #endif
 
 	game->Create			(session_name);
-	csPlayers.Leave			();
+	csPlayers.unlock();
 	
 #ifdef BATTLEYE
 	if ( game->get_option_i( *session_name, "battleye", 1) != 0 ) // default => battleye enable (always)

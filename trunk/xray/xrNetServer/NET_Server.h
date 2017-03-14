@@ -148,7 +148,7 @@ protected:
 	
 	NET_Compressor			net_Compressor;
 
-	xrCriticalSection		csPlayers;
+	std::recursive_mutex	csPlayers;
 	xr_vector<IClient*>		net_Players;
 	xr_vector<IClient*>		net_Players_disconnected;
 	IClient*				SV_Client;
@@ -159,7 +159,7 @@ protected:
 	xr_vector<IBannedClient*>		BannedAddresses;
 
 	// 
-	xrCriticalSection		csMessage;
+	std::recursive_mutex	csMessage;
 
 	void					client_link_aborted	(ClientID ID);
 	void					client_link_aborted	(IClient* C);
