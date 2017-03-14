@@ -819,7 +819,7 @@ GHIEncryptionResult ghttpEncryptorSslDecryptFunc(struct GHIConnection * connecti
 		case GS_SSL_CONTENT_CHANGECIPHERSPEC:
 			readPos += sizeof(gsSSLRecordHeaderMsg);
 			//if(readPos > *theEncryptedLength)
-			//	_asm int 3;
+			//	DebugBreak();
 			gsDebugFormat(GSIDebugCat_HTTP, GSIDebugType_Misc, GSIDebugLevel_Debug,
 				"SSL change cipher spec message received\r\n");
 
@@ -831,7 +831,7 @@ GHIEncryptionResult ghttpEncryptorSslDecryptFunc(struct GHIConnection * connecti
 		case GS_SSL_CONTENT_ALERT:
 			readPos += sizeof(gsSSLRecordHeaderMsg);
 			//if(readPos > *theEncryptedLength)
-			//	_asm int 3;
+			//	DebugBreak();
 
 			gsDebugFormat(GSIDebugCat_HTTP, GSIDebugType_Network, GSIDebugLevel_WarmError,
 				"SSL received unhandled ALERT\r\n");

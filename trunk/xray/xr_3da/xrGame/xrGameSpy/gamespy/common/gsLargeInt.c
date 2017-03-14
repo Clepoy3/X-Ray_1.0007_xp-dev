@@ -533,7 +533,7 @@ static gsi_bool gsiLargeIntDiv(const gsi_u32 *src, gsi_u32 len, const gsLargeInt
 	readLength = (int)divisorLen;
 
 	//if (readIndex < 0)
-	//	_asm {int 3}; // overflow readIndex
+	//	DebugBreak(); // overflow readIndex
 	
 	do
 	{
@@ -570,7 +570,7 @@ static gsi_bool gsiLargeIntDiv(const gsi_u32 *src, gsi_u32 len, const gsLargeInt
 			// subtract directly onto our temp copy, so we don't have to worry about carry values
 			gsi_u32 quotientTemp = 0;
 			//if (readLength > 0xffff)
-			//	_asm {int 3}
+			//	DebugBreak()
 			if (gsi_is_false(gsiLargeIntSubDivide(&scopy[readIndex], (gsi_u32)readLength, divisorData, divisorLen, (gsi_u32)divisorHighBit, &quotientTemp)))
 			{
 				// overflow
@@ -626,7 +626,7 @@ static gsi_bool gsiLargeIntSubDivide(gsi_u32 *src, gsi_u32 length, const gsi_u32
 	// assert(src > divisor)
 	// assert(src < (MAX_DIGIT_VALUE * divisor))
 	//if(dlen==1 && *divisor==0)
-	//	_asm {int 3} // division by zero
+	//	DebugBreak() // division by zero
 
 	// Q: how many times to subtract?
 	// A: we estimate by taking the bits in src above the highest bit in divisor
@@ -661,7 +661,7 @@ static gsi_bool gsiLargeIntSubDivide(gsi_u32 *src, gsi_u32 length, const gsi_u32
 		// divide by two
 		quotientCopy.mData[0] = quotientCopy.mData[0]>>1;
 		//if (quotientCopy.mData[0] == 0)
-		//	_asm {int 3}
+		//	DebugBreak()
 		if (gsi_is_false(gsiLargeIntMult(divisor, dlen, quotientCopy.mData, quotientCopy.mLength, temp.mData, &temp.mLength, GS_LARGEINT_INT_SIZE)))
 		{
 			GSLINT_EXITTIMER(GSLintTimerSubDivide);
@@ -669,14 +669,14 @@ static gsi_bool gsiLargeIntSubDivide(gsi_u32 *src, gsi_u32 length, const gsi_u32
 		}
 	}
 	//if (gsiLargeIntCompare(temp.mData, temp.mLength, src, length)==1)
-	//	_asm {int 3} // temp > src, subtraction will cause underflow!
+	//	DebugBreak() // temp > src, subtraction will cause underflow!
 			
 	// subtract it
 	gsiLargeIntSub(temp.mData, temp.mLength, src, length, src, &length);
 
 	*quotient = quotientCopy.mData[0];
 	//if (quotientCopy.mData[1] != 0)
-	//	_asm {int 3}
+	//	DebugBreak()
 	GSLINT_EXITTIMER(GSLintTimerSubDivide);
 
 	GSI_UNUSED(highbit);
@@ -824,7 +824,7 @@ static gsi_bool gsiLargeIntKMult(const gsi_u32 *data1, const gsi_u32 *data2, gsi
 		}
 		temp3.mLength += halfLen; // fix length for temp3
 		//if (temp3.mLength > GS_LARGEINT_INT_SIZE)
-		//	_asm {int 3} // this should be at most temp1.mLength+temp2.mLength
+		//	DebugBreak() // this should be at most temp1.mLength+temp2.mLength
 		memset(temp3.mData, 0, halfLen*sizeof(gsi_u32));
 		//printf("Calculated B3 (%d) = ", temp3.mLength);
 		//gsiLargeIntPrint(&temp3.mData[halfLen], temp3.mLength-halfLen);
@@ -993,7 +993,7 @@ gsi_bool gsLargeIntPowerMod(const gsLargeInt_t *b, const gsLargeInt_t *p, const 
 		// (rsa modulus is prime1*prime2, which must be odd)
 		dest->mLength = 0;
 		dest->mData[0] = 0;
-		//_asm {int 3}
+		//DebugBreak()
 		GSLINT_EXITTIMER(GSLintTimerPowerMod);
 		return gsi_false;
 	}
