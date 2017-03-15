@@ -1,5 +1,4 @@
-#ifndef EnvironmentH
-#define EnvironmentH
+#pragma once
 
 // refs
 class ENGINE_API	IRender_Visual;
@@ -175,10 +174,10 @@ private:
 	float					NormalizeTime	(float tm);
 	float					TimeDiff		(float prev, float cur);
 	float					TimeWeight		(float val, float min_t, float max_t);
-	void					SelectEnvs		(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*& e1, float tm);
 	void					SelectEnv		(EnvVec* envs, CEnvDescriptor*& e, float tm);
 	void					StopWFX			();
 public:
+	void					SelectEnvs		(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*& e1, float tm); //KRodin: было private, вынес сюда
 	static bool sort_env_pred	(const CEnvDescriptor* x, const CEnvDescriptor* y)
 	{	return x->exec_time < y->exec_time;	}
 	static bool sort_env_etl_pred	(const CEnvDescriptor* x, const CEnvDescriptor* y)
@@ -187,8 +186,9 @@ protected:
 	CBlender_skybox			m_b_skybox;
 	CPerlinNoise1D*			PerlinNoise1D;
 
-	float					fGameTime;
 public:
+	float					fGameTime; //KRodin: было protected, вынес сюда.
+	void ChangeGameTime(float game_time) { fGameTime = NormalizeTime(fGameTime + game_time); } //Для функции перемотки времени
 	float					wind_strength_factor;	
 	float					wind_gust_factor;
 	// Environments
@@ -267,5 +267,3 @@ public:
 
 ENGINE_API extern Flags32	psEnvFlags;
 ENGINE_API extern float		psVisDistance;
-
-#endif //EnvironmentH

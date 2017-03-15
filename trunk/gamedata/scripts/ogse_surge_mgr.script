@@ -1,0 +1,628 @@
+-- -*- mode: lua; coding: windows-1251-dos -*-
+----------------------------------
+--- ogse_surge_mgr.script
+--- Модуль выброса для OGSE
+--- (c) OGS Evolution Team, 2014
+----------------------------------
+
+--KRodin: убрал использование инфопорций. Проверить, не поломал ли чего.
+--TODO: Тут ещё половину скрипта переделывать надо, при адаптации куда-либо.
+
+function attach(sm) --Теперь вызывается из погодного менеджера!
+	sm:subscribe({signal = "on_save", fun = this.on_save})
+	sm:subscribe({signal = "on_first_update", fun = this.on_first_update})
+	sm:subscribe({signal = "on_new_surge_stage", fun = this.on_new_surge_stage})
+end
+
+actor_in_hideout = false --Находится ли актор в укрытии
+is_surge_started = false --Начался ли выброс
+is_surge_raskolbas = false --Находится ли выброс в смертельной стадии
+local CURRENT_SURGE_STAGE = 0 --Текущая стадия выброса. Если выброса нет - 0.
+
+local lname
+local is_indoor = false
+local actor_was_hit = false
+
+--[[ конфигурация стадий выброса
+local surge_db = {
+<номер стадии> = {
+	on_info = { -- действия, выполняемые один раз в момент начала соответствующей стадии
+		стандартный набор действий включает в себя:
+		Flag2 = 1/0,
+		Dead2 = 1/0,
+		call# = <имя файла>.<имя функции>, -- # - целое число от 1 и выше
+		pp_eff# = {"<имя файла постпроцесса>.ppe", <id>, true/false},
+		cam_eff# = {"<имя файла анимации камеры>.anm", <id>, true/false},
+		snd# = <путь до файла звука без расширения>, -- звук будет проигран по схеме
+		cam_eff_rem# = <id>, -- выключить анимацию камеры
+		pp_eff_rem# = <id>, -- выключить эффект постпроцесса
+		if_surface = { -- выполнить при условии нахождения на поверхности
+			-- стандартный набор действий
+		},
+		if_underground = { -- если под землёй
+			-- стандартный набор действий
+		},
+		if_not_safe = { -- если на поверхности и не в укрытии
+			-- стандартный набор действий
+		},
+	},
+	on_info_deferred = { -- действия, выполняемые в момент начала соответствующей стадии, но не сразу
+		-- а при первом апдейте после выдачи соответствуюшей инфопорции
+		-- сюда помещаем всякие звуки, постэффекты и т.п. Идея в том, что при пропуске серии стадий
+		-- из-за сохранения/загрузки надо выполнить все действия, вошедшие в пропущенные стадии, но 
+		-- при этом часть действия типа звуков и постэффектов для пропущенных стадий не выполнять,
+		-- поскольку их одновременный проигрыш будет выглядеть нелепо.
+		-- Поскольку до первого апдейта секция on_info_deferred не будет парсится, то в первый апдейт 
+		-- после загрузки будет проверена только последняя стадия, и действия выполнятся только для неё
+		
+	-- включает стандартный набор действий, включая ветвление if_surface/if_underground
+	},
+	on_reinit = { -- действия, выполняемые при загрузке игры если идёт стадия выброса (для восстановления чего-там надо восстанавливать)
+	-- стандартный набор действий, включая ветвление if_surface/if_underground
+	},
+},]]
+
+local surge_db = {}
+function surge_db_init()
+	surge_db[1] = {
+		on_info = {
+			call1 = news_main_new.vubros_msg,  -- новость о выбросе
+		},
+		on_info_deferred = {
+			if_surface = {
+				call1 = soundtrack.preblow, -- глухой звук ветра
+			},
+		},
+	}
+	surge_db[2] = {
+		on_info = {
+			if_surface = {
+				Flag2 = 1,
+			}
+		},
+		on_info_deferred = {
+			if_surface = {
+				call1 = soundtrack.attention_everyone, -- сирена
+			}
+		},
+		on_reinit = {
+			if_surface = {Flag2 = 1},
+		},
+	}
+	surge_db[3] = {
+		on_info = {
+			if_surface = {
+				Flag2 = 1,
+			},
+		},
+		on_info_deferred = {
+			if_surface = {
+				call1 = soundtrack.surge_begin, -- глухой звук ветра (ещё раз?)
+			},
+		},
+		on_reinit = {
+			if_surface = {Flag2 = 1},
+		},
+	}
+	surge_db[4] = {-- первые визуальные признаки выброса
+		on_info = {
+			call1 = ogse_anomaly.blow_flags, -- нужно делать без вариантов независимо от подземки
+			if_surface = {Flag2 = 1,},
+			if_underground = {Flag2 = 0,},
+		},
+		on_info_deferred = {
+			if_surface = {
+				call1 = soundtrack.surge_sound, -- радиопереговоры с последующими раскатами грома
+				pp_eff1 = {"vibros_p.ppe", 1974, false}, -- разовое двоение картинки
+				cam_eff1 = {"camera_effects\\earthquake.anm", 1974, true}, -- постоянное раскачивание, как будто качается земля
+			},
+			if_underground = {
+				call1 = soundtrack.play_ambient, -- опять шум ветра
+			},
+		},
+		on_reinit = {
+			call1 = ogse_anomaly.blow_flags, -- Поднимаем флаги выброса для локаций
+			if_surface = {Flag2 = 1},
+			if_underground = {Flag2 = 0},
+		},
+	}
+	surge_db[5] = { --3. Проигрываем промежуточные эффекты
+		on_info = {
+			call1 = news_main_data.on_disconnect_vbs, -- выдаем сообщение о дисконнекте
+			if_surface = {Flag2 = 1,},
+			if_underground = {Flag2 = 0,},
+		},
+		on_info_deferred = {
+			if_surface = {
+				call1 = soundtrack.surge_wave_1, -- хитрое гудение
+			},
+			if_underground = {
+				call1 = soundtrack.play_ambient, -- опять шум ветра
+			},
+		},
+		on_reinit = {
+			if_surface = {Flag2 = 1},
+			if_underground = {Flag2 = 0},
+		},
+	}
+	surge_db[6] = {-- 4. Спустя период затишья начинаем выброс
+		on_info = {
+			if_surface = {Flag2 = 1,},
+			if_underground = {Flag2 = 0,},
+		},
+		on_info_deferred = {
+			if_surface = {
+				call1 = soundtrack.surge_wave_2, -- хитрое гудение
+				snd1 = [[anomaly\blowout]], -- раскаты грома с сиренами
+			},
+			call1 = soundtrack.strange_sounds, -- рандомные звуки: гудение, шум воздуха и пр.
+			call2 = soundtrack.earthquake_sound, -- низкий глухой шум воздуха с раскатами грома в фоне
+			pp_eff1 = {"vibros.ppe", 1974, false},  -- разовое двоение картинки с покраснением, выбелением, выцветанием картинки в конце
+			cam_eff1 = {"camera_effects\\earthquake.anm", 1974, true}, -- землетрясение
+		},
+		on_reinit = {
+			if_surface = {Flag2 = 1},
+			if_underground = {Flag2 = 0},
+		},
+	}
+	surge_db[7] = {-- 5. Начинаем расколбас
+		on_info = {
+			call1 = this.deadly_blowout, -- addon by KamikaZze
+			if_surface = {
+				call2 = ogse.kill_crow,
+				Flag2 = 1, 
+				Dead2 = 1,
+			},
+			if_underground = {
+				Flag2 = 0, 
+				Dead2 = 0
+			},
+		},
+		on_info_deferred = {
+			cam_eff_rem1 = 1974,
+			if_not_safe = {
+				snd1 = [[actor\pain_3]], -- ой
+				cam_eff1 = {"camera_effects\\head_shot.anm", 1975, false}, -- как по голове дали
+				pp_eff1 = {"blink.ppe", 2020, false}, -- на пару секунд всё белеет
+			},
+			if_surface = {
+				call1 = soundtrack.surge_wave_3, -- долгое, низкое гудение
+				pp_eff1 = {"yantar_underground_psi.ppe", 2010, false}, -- кратковременное раздвоение в глазах
+			},
+			if_underground = {
+				pp_eff1 = {"escape.ppe", 1974, false}, -- короткое покраснение картинки
+				call1 = soundtrack.play_ambient, -- шум ветра
+			},
+		},
+		on_reinit = {
+			if_surface = {Flag2 = 1, Dead2 = 1},
+			if_underground = {Flag2 = 0, Dead2 = 0},
+		},
+	}
+	surge_db[8] = {
+		on_info = {
+			if_surface = {
+				Flag2 = 1, 
+				Dead2 = 1,				
+			},
+			if_underground = {
+				Flag2 = 0, 
+				Dead2 = 0				
+			},
+		},
+		on_info_deferred = {
+			cam_eff_rem1 = 1974,
+			if_surface = {
+				call1 = soundtrack.surge_wave_4, -- опять гудение
+			},
+			if_underground = {
+				rnd = {
+					{
+						call1 = soundtrack.rock_sound, -- камешки сыпятся
+						pp_eff1 = {"yantar_underground_psi.ppe", 1974, false},
+					},
+					{
+						call1 = soundtrack.earthquake_sound, -- отдалённый грохот камней или обвал
+						pp_eff1 = {"total_recall.ppe", 1974, false}, -- сильное кратковременное двоение
+					},
+					{
+						call1 = soundtrack.earthquake_sound, -- отдалённый грохот камней или обвал
+						pp_eff1 = {"agr_u_fade.ppe", 1974, false}, -- полное плавное почернение, потом плавный возврат
+						pp_eff2 = {"total_recall.ppe", 1986, false},
+					},
+					{
+						-- тут тишина
+					},
+				},
+			},
+		},
+		on_reinit = {
+			if_surface = {Flag2 = 1, Dead2 = 1},
+			if_underground = {Flag2 = 0, Dead2 = 0},
+		},
+	}
+	surge_db[9] = {
+		on_info = {
+			if_surface = {
+				Flag2 = 1, 
+				Dead2 = 1,				
+			},
+			if_underground = {
+				Flag2 = 0, 
+				Dead2 = 0				
+			},
+		},
+		on_info_deferred = {
+			cam_eff_rem1 = 1974,
+			if_surface = {
+				call1 = soundtrack.surge_rumble, -- шум ветра с отдалёнными раскатами грома
+			},
+			if_underground = {
+				rnd = {
+					{
+						call1 = soundtrack.rock_sound, -- камешки сыпятся
+						pp_eff1 = {"yantar_underground_psi.ppe", 1974, false}, -- лёгкое короткое двоение с расплыванием
+					},
+					{
+						call1 = soundtrack.earthquake_sound,
+						pp_eff1 = {"total_recall.ppe", 1974, false},
+					},
+					{
+						call1 = soundtrack.earthquake_sound,
+						pp_eff1 = {"agr_u_fade.ppe", 1974, false},
+						pp_eff2 = {"total_recall.ppe", 1986, false},
+					},
+					{
+						-- тут тишина
+					},
+				},
+			},
+		},
+		on_reinit = {
+			if_surface = {Flag2 = 1, Dead2 = 1},
+			if_underground = {Flag2 = 0, Dead2 = 0},
+		},
+	}
+	surge_db[10] = surge_db[9]
+	surge_db[11] = surge_db[9]
+	surge_db[12] = surge_db[9]
+	surge_db[13] = {-- 6. Выброс близится к концу
+		on_info = {
+			if_surface = {
+				Flag2 = 1, 
+				Dead2 = 1,				
+			},
+			if_underground = {
+				Flag2 = 0, 
+				Dead2 = 0,				
+			},
+		},
+		on_info_deferred = {
+			if_surface = {
+				call1 = soundtrack.surge_outro, -- опять шум воздуха/ветра
+			},
+			if_underground = {
+				call1 = soundtrack.play_ambient,
+			},
+		},
+		on_reinit = {
+			if_surface = {Flag2 = 1, Dead2 = 1},
+			if_underground = {Flag2 = 0, Dead2 = 0},
+		},
+	}
+	surge_db[14] = {-- 7. Завершаем выброс, устанавливаем время следующего
+		on_info = {
+			if_surface = {
+				Flag2 = 0, 
+				Dead2 = 0,					
+			},
+			if_underground = {
+				Flag2 = 0, 
+				Dead2 = 0,					
+			},
+			call1 = function()
+				actor_was_hit = false
+				ogse_signals.get_mgr():call( "on_after_blowout" )
+			end,
+			Dead2 = 0, 
+			Flag2 = 0,
+		},
+		on_info_deferred = {
+			if_surface = {
+				pp_eff1 = {"teleport.ppe", 2009, false}, -- всё полностью белеет, потом обратно
+			},
+			if_underground = {
+				pp_eff1 = {"escape.ppe", 2009, false},
+			},
+			if_not_safe = {
+				cam_eff1 = {"camera_effects\\shell_shock.anm", 1974, false}, -- короткая, затухающая встряска
+				call1 = soundtrack.actor_breath_sound, -- дыхота
+			},
+			pp_eff1 = {"yantar_underground_psi.ppe", 2010, false},
+			snd1 = [[ambient\earthquake]],
+		},
+	}
+	surge_db[15] = {-- 6. Выброс близится к концу
+		on_info = {
+			if_surface = {
+				call1 = ogse.spawn_crow,
+			},
+			call1 = this.surge_final,
+		},
+		on_info_deferred = {
+		},
+	}	
+end
+
+function surge_final()
+	CURRENT_SURGE_STAGE = 0
+end
+
+--------------------------------- Парсер единичного действия ---------------------------------------
+function parse_and_process_action_item(key, item)
+	ASSERT(type(key) == "string", "[ogse_surge_mgr.parse_and_process_action_item] action key is not a string, '%s'", type(key))
+	if     key:sub(1, 4) == "call" then
+		ASSERT(type(item) == "function", "[ogse_surge_mgr.parse_and_process_action_item] cannot execute function for the key '%s'", key)
+		item()
+	elseif key:sub(1, 11) == "cam_eff_rem" then
+		-- TODO: проверить, что эффект работает
+		level.remove_cam_effector(item)
+	elseif key:sub(1, 10) == "pp_eff_rem" then
+		-- TODO: проверить, что эффект работает		
+		level.remove_pp_effector(item)
+	elseif key:sub(1, 6) == "pp_eff" then
+		-- TODO: проверить, что эффект работает
+		--{"<effect path>", 1974, false},
+		level.add_pp_effector(item[1],item[2],item[3])
+	elseif key:sub(1, 7) == "cam_eff" then
+		-- TODO: проверить, что эффект работает
+		--{"<effect path>", 1975, false},
+		level.add_cam_effector(item[1],item[2],item[3],"")
+	elseif key:sub(1, 3) == "snd" then
+		local snd_obj = xr_sound.get_safe_sound_object(item)
+		snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
+	elseif key == "Dead2" then
+		is_surge_raskolbas = item > 0
+	elseif key == "Flag2" then
+		is_surge_started = item > 0
+	else
+		abort("[ogse_surge_mgr.parse_and_process_action_item] unknown action '%s'", key)
+	end
+end
+--------------------------- Парсер описателя стадии выброса с действиями ---------------------------
+local function parse_and_process_surge_stage(stage_info)
+	for key, item in pairs(stage_info) do
+		if key == "if_underground" then
+			if is_indoor then
+				parse_and_process_surge_stage(item)
+			end
+		elseif key == "if_surface" then
+			if not is_indoor then
+				parse_and_process_surge_stage(item)
+			end
+		elseif key == "if_not_safe" then
+			if not ogse_hideouts.npc_inside_safe_zone(db.actor) then
+				parse_and_process_surge_stage(item)
+			end
+		elseif key == "rnd" then
+			local stage = item
+			stage = item[math.random(#item)]
+			parse_and_process_surge_stage(stage)
+		else
+			parse_and_process_action_item(key, item)
+		end
+	end
+end
+
+--==================================================================================================
+--============================= обработчики системных событий ======================================
+--==================================================================================================
+--[=[
+|Продожительность?|	|№ стадии выброса|	|Секция|
+|5 |				|1 |				|ogse_surge_1 |	--новость о выбросе, смена погоды
+|55|				|2 |				|ogse_surge_2 |	--сирена выброса
+|15|				|3 |				|ogse_surge_3 |	--реально начало, звуки выброса
+|70|				|4 |				|ogse_surge_4 |	--первые визуальные признаки выброса, флаги смены аномалий, трясучка
+|23|				|5 |				|ogse_surge_6 |	--выдаем сообщение о дисконнекте, звук волны 1
+|11|				|6 |				|ogse_surge_7 |	--волна 2, трясучка, звуки угрожающие
+|6 |				|7 |				|ogse_surge_8 |	--удар по актору, волна 3, падение ворон, волна радиации
+|14|				|8 |				|ogse_surge_11|	--волна 4
+|20|				|9 |				|ogse_surge_12|	--грохот
+|20|				|10|				|ogse_surge_13|	--аналогично 9
+|20|				|11|				|ogse_surge_15|	--аналогично 9
+|15|				|12|				|ogse_surge_17|	--аналогично 9
+|30|				|13|				|ogse_surge_19|	--звуки завершения
+|30|				|14|				|ogse_surge_20|	--завершение выброса
+|10|				|15|				|ogse_surge_21|	--финализация, вороны
+--]=]
+
+local deferred_actions -- запрос на выполнение отложенных действий
+-- делаем что-то для обновления текущего состояния
+local blowout_t
+function run_blowout_timer()
+  if not blowout_t then
+    blowout_t = check_blowout_timer():start()
+  end
+end
+
+class "check_blowout_timer" ( ogse_qt.quick_timer )
+function check_blowout_timer:__init() super()
+end
+
+function check_blowout_timer:condition()
+  return not ( deferred_actions or CURRENT_SURGE_STAGE >= 3 )
+end
+
+function check_blowout_timer:action()
+  blowout_t = nil
+end
+
+function check_blowout_timer:update()
+	ogse_signals.get_mgr():reschedule( 1000 )
+
+	if deferred_actions then
+		local info_action = deferred_actions.on_info_deferred
+		if info_action then
+			parse_and_process_surge_stage(info_action)
+		end
+		deferred_actions = nil
+	end
+	if is_surge_raskolbas then
+		actor_in_hideout = ogse_hideouts.npc_inside_safe_zone(db.actor)
+		if not actor_in_hideout then
+			run_vibros_effects()
+			hit_actor()
+		else
+			stop_vibros_effects()
+		end
+	else
+		if not actor_in_hideout then
+			actor_in_hideout = true
+			is_surge_raskolbas = false
+			stop_vibros_effects()
+		end
+	end
+end
+
+function on_save()
+	ogse.save_var( script_name()..".CURRENT_SURGE_STAGE", CURRENT_SURGE_STAGE, "u8" )
+end
+
+-- выполняем реинициализацию фазы выброса при перезагрузке
+function on_first_update() -- выполняем восстановление временных эффектов, флагов и т.п.
+	surge_db_init()
+	lname = level.name()
+	is_indoor = isIndoor(lname) 
+	--
+	-- ищем текущую стадию выброса
+	if CURRENT_SURGE_STAGE == 0 then
+		CURRENT_SURGE_STAGE = ogse.load_var( script_name()..".CURRENT_SURGE_STAGE", 0, "u8" )
+	end
+	if CURRENT_SURGE_STAGE == 0 then return end
+	--
+	local stage_actions = surge_db[CURRENT_SURGE_STAGE]
+	ASSERT(stage_actions, "Can't find stage_actions for stage [%s]", CURRENT_SURGE_STAGE)
+	--
+	local info_action = stage_actions.on_reinit
+	if info_action then
+		parse_and_process_surge_stage(info_action)
+	end
+	deferred_actions = stage_actions
+	run_blowout_timer()
+end
+
+-- выполняем действия, которые должны выполниться строго один раз в момент наступления фазы выброса
+function on_new_surge_stage(id)
+	log3("[%s] surge stage: %s", script_name(), id or "nil")
+	CURRENT_SURGE_STAGE = id
+	local action_item = surge_db[id]
+	ASSERT(action_item, "Can't find stage_actions for stage [%s]", CURRENT_SURGE_STAGE)
+	if action_item then
+		deferred_actions = action_item -- запрашиваем выполнение отложенных действий
+		run_blowout_timer()
+		local info_action = action_item.on_info
+		if info_action then
+			--log1("!!SURGE_DEBUG: info["..tostring(id).."]")
+			parse_and_process_surge_stage(info_action)
+		end
+	end
+end
+
+-- Deadly Blowout by KamikaZze - Нанесение актору удара волной в смертельной стадии выброса, если он не спрятался
+function deadly_blowout()
+	if not actor_was_hit and not is_indoor and not ogse_hideouts.npc_inside_safe_zone(db.actor) then
+		-- Hit by explosion
+		local blow = hit()
+		blow.direction = vector():set(0,0,0)
+		blow.impulse = 0
+		blow.draftsman = db.actor
+		blow.power = ogse.level_blow_damage(lname)*ogse.armor_class(db.actor)
+		blow.type = hit.explosion
+		db.actor:hit(blow)
+		
+		level.add_cam_effector("camera_effects\\fusker.anm",959,false,"")
+		
+		local active_item = db.actor:active_item()
+		if active_item and active_item:section()~= "bolt" and not active_item:is_knife() then
+			db.actor:drop_item(active_item)
+		end		
+		
+		local protection = db.actor:item_in_slot(6)
+		if protection then
+			local current_cond = protection:condition()
+			local damage = 0.2*ogse.armor_class(db.actor)
+			local new_cond = current_cond - damage
+			if new_cond > 0 then
+				protection:set_condition(new_cond)
+			else protection:set_condition(0.1) end
+		end		
+		-- Zombied chance
+		local zmb_probability = ogse.level_blow_damage(lname)*10
+		local rnd = math.random()
+		
+		if zmb_probability > rnd then
+			dialogs.actor_set_zombied(actor, npc)		 
+			level.add_pp_effector("deadcity_wake.ppe", 2008, false)
+		end
+		actor_was_hit = true
+	end
+end
+
+local surge_hit_db = {
+	l01_escape     = { power = 0.001,  type = hit.radiation},
+	l02_garbage    = { power = 0.0013, type = hit.radiation},
+	l03_agroprom   = { power = 0.0018, type = hit.radiation},
+	l04_darkvalley = { power = 0.0018, type = hit.radiation},
+	l05_bar        = { power = 0.0023, type = hit.radiation},
+	l06_rostok     = { power = 0.0023, type = hit.radiation},
+	l08_yantar     = {{power = 0.003,  type = hit.radiation}, {power = 0.0001, type = hit.shock}, },
+	l07_military   = {{power = 0.005,  type = hit.radiation}, {power = 0.0005, type = hit.shock}, },
+	l10_radar      = {{power = 0.008,  type = hit.radiation}, {power = 0.0007, type = hit.shock}, },
+	l11_pripyat    = {{power = 0.01,   type = hit.radiation}, {power = 0.001,  type = hit.shock}, },
+}
+-- Нанесение хита актору в смертельной стадии выброса
+function hit_actor()
+	local hit_data = surge_hit_db[lname]
+	if hit_data then
+		local psy_hit = hit()
+		psy_hit.direction = vector():set(0,0,0)
+		psy_hit.impulse = 0
+		psy_hit.draftsman = db.actor
+		--
+		if hit_data.power and hit_data.type then
+			psy_hit.power = hit_data.power
+			psy_hit.type = hit_data.type
+			db.actor:hit(psy_hit)
+		else
+			for _,hd in ipairs(hit_data) do
+				psy_hit.power = hd.power
+				psy_hit.type = hd.type
+				db.actor:hit(psy_hit)
+			end
+		end
+	end
+end
+
+local effects_playing
+function run_vibros_effects()
+	if not effects_playing then
+		xr_sound.set_actor_sound("level_border_detector")
+		xr_sound.set_actor_sound_factor(0.01)
+		level.add_cam_effector("camera_effects\\fatigue.anm", 2004, true, "")
+		level.add_pp_effector("yantar_underground_psi.ppe", 299, true)
+		level.set_pp_effector_factor(299, 1.0)
+		soundtrack.strange_sounds()
+		level.add_pp_effector("dead_zone.ppe", 1003, true)
+		level.set_pp_effector_factor(1003, 0.5)
+		effects_playing = true
+	end
+end
+function stop_vibros_effects()
+	if effects_playing then
+		level.remove_pp_effector(1003)
+		level.remove_cam_effector(2004)
+		level.remove_pp_effector(299)
+		xr_sound.set_actor_sound("")
+		effects_playing = nil
+	end
+end

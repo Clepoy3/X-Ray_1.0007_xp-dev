@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <header>
+    <ogse_weather x="0" y="0" width="1024" height="768" complex_mode="1">
+	</ogse_weather>	
 
 	<hud_timer  x="852" y="15" width="157" height="67">
 		<text x="-15" y="23it" font="graffiti32" r="238" g="155" b="23" a="255" align="r"/>

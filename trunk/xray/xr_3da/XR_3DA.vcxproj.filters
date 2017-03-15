@@ -496,6 +496,7 @@
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\build_config_defines.h" />
+    <ClInclude Include="OGSE_Weather_Mgr.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -864,6 +865,7 @@
     <ClCompile Include="lua_tools.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="OGSE_Weather_Mgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="OutOfVirtError.RES">

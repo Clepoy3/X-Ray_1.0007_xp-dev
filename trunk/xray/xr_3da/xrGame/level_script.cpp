@@ -32,7 +32,12 @@
 #include "ui/UIScriptWnd.h"
 #include "../xr_collide_defs.h"
 #include "NET_Queue.h"
-
+#include "..\OGSE_Weather_Mgr.hpp" //KRodin: для SetEnvDescData()
+//Для change_game_time()
+#include "alife_time_manager.h"
+#include "game_sv_single.h"
+#include "alife_simulator.h"
+//
 using namespace luabind;
 
 LPCSTR command_line	()
@@ -173,6 +178,18 @@ u32 get_time_minutes()
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
 	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
 	return			mins;
+}
+
+void change_game_time(u32 days, u32 hours, u32 mins)
+{
+	game_sv_Single* tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
+	if (tpGame && ai().get_alife()) {
+		u32 value = days * 86400 + hours * 3600 + mins * 60;
+		float fValue = static_cast<float>(value);
+		value *= 1000;  // msec
+		g_pGamePersistent->Environment().ChangeGameTime(fValue);
+		tpGame->alife().time_manager().change_game_time(value);
+	}
 }
 
 float cover_in_direction(u32 level_vertex_id, const Fvector &direction)
@@ -391,6 +408,8 @@ CPHWorld* physics_world()
 {
 	return	ph_world;
 }
+
+/* //KRodin: выключено за ненадобностью
 CEnvironment *environment()
 {
 	return		(g_pGamePersistent->pEnvironment);
@@ -400,6 +419,8 @@ CEnvDescriptor *current_environment(CEnvironment *self)
 {
 	return		(&self->CurrentEnv);
 }
+*/
+
 extern bool g_bDisableAllInput;
 void disable_input()
 {
@@ -685,16 +706,9 @@ void reinit_shown_ui()
 }
 
 
-
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
-	class_<CEnvDescriptor>("CEnvDescriptor")
-	.def_readonly("fog_density", &CEnvDescriptor::fog_density)
-	.def_readonly("far_plane", &CEnvDescriptor::far_plane),
-
-	class_<CEnvironment>("CEnvironment")
-	.def("current", current_environment);
 	module(L,"level")
 	[
 		class_<CLevelGraph>("CLevelGraph")
@@ -722,9 +736,8 @@ void CLevel::script_register(lua_State *L)
 		def("set_weather",						set_weather),
 		def("set_weather_fx",					set_weather_fx),
 		def("is_wfx_playing",					is_wfx_playing),
+		//def("environment",						environment), //KRodin: выключено за ненадобностью
 
-		def("environment",						environment),
-		
 		def("set_time_factor",					set_time_factor),
 		def("get_time_factor",					get_time_factor),
 
@@ -734,6 +747,8 @@ void CLevel::script_register(lua_State *L)
 		def("get_time_days",					get_time_days),
 		def("get_time_hours",					get_time_hours),
 		def("get_time_minutes",					get_time_minutes),
+
+		def("change_game_time",					&change_game_time), //Функция перемотки времени из ЗП
 
 		def("cover_in_direction",				cover_in_direction),
 		def("vertex_in_direction",				vertex_in_direction),
@@ -822,9 +837,18 @@ void CLevel::script_register(lua_State *L)
 
 	module(L)
 	[
+		def("SetEnvDescData", &SetEnvDescData), //KRodin: добавил функцию для скриптового управления погодой
+/* //KRodin: вот это точно не нужно.
+		class_<CEnvDescriptor>("CEnvDescriptor")
+			.def_readonly("fog_density", &CEnvDescriptor::fog_density)
+			.def_readonly("far_plane", &CEnvDescriptor::far_plane)
+		,
+		class_<CEnvironment>("CEnvironment")
+			.def("current", current_environment)
+		,
+*/
 		def("command_line",						&command_line),
 		def("IsGameTypeSingle",					&IsGameTypeSingle),
-
 		class_<CRayPick>("ray_pick")
 			.def(								constructor<>())
 			.def(								constructor<Fvector&, Fvector&, float, collide::rq_target, CScriptGameObject*>())

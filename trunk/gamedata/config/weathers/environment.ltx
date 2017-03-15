@@ -1,0 +1,23 @@
+#include "env_ambient.ltx"
+#include "flares.ltx"
+#include "thunderbolt.ltx"
+
+#include "weather_dynamic.ltx"
+#include "weather_script.ltx"
+
+#include "fx_surge_day.ltx"
+#include "fx_surge_night.ltx"
+
+;================================
+#include "weather_indoor.ltx"
+;================================
+
+[weathers]
+default = ogse_script_weather ;Прописывать в game_maps_single.ltx для всех надземных локаций
+indoor = sect_indoor ;Прописывать в game_maps_single.ltx для всех подземных локаций
+
+ogse_script_weather = ogse_script_weather ;Специальная секция для управления погодой из скриптового погодного менеджера. Её никуда не надо прописывать.
+
+[weather_effects] ;Эффекты выброса. Управляются погодным менеджером.
+surge_day_ogse = sect_ogse_surge_day
+surge_night_ogse = sect_ogse_surge_night

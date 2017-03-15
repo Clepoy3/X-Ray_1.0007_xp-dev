@@ -75,7 +75,9 @@ function actor_binder:net_destroy()
 	--self.object:set_callback(callback.level_border_enter, nil)
 	--self.object:set_callback(callback.level_border_exit, nil)
 	self.object:set_callback(callback.take_item_from_box, nil)
-
+	--
+	self.object:set_callback(callback.on_key_press, nil)
+	--
 	if sr_psy_antenna.psy_antenna then
 		sr_psy_antenna.psy_antenna:destroy()
 		sr_psy_antenna.psy_antenna = false
@@ -107,7 +109,9 @@ function actor_binder:reinit()
 	--self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
 	--self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
 	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
-
+	--
+	self.object:set_callback(callback.on_key_press, self.on_key, self) -- нажатие клавиши
+	--
 	self.sm:call("on_reinit")
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -353,6 +357,10 @@ function actor_binder:update(delta)
 
 		self.bCheckStart = false		
 	end		
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_key(key)
+	self.sm:call("on_key_down", key, dik_to_bind(key))
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)

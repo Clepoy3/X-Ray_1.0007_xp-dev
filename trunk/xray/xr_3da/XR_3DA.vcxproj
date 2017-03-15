@@ -1115,6 +1115,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\build_config_defines.h" />
     <ClInclude Include="lua_tools.h" />
+    <ClInclude Include="OGSE_Weather_Mgr.hpp" />
     <ClInclude Include="_d3d_extensions.h" />
     <ClInclude Include="CopyProtection.h" />
     <ClInclude Include="defines.h" />
@@ -1237,6 +1238,7 @@
   <ItemGroup>
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="lua_tools.cpp" />
+    <ClCompile Include="OGSE_Weather_Mgr.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_Dedicated|x64'">Create</PrecompiledHeader>

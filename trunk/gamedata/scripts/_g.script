@@ -42,9 +42,8 @@ if not string.explode then
 								str,    -- строка
 								clear ) -- обрезать ли пробелы по краям строк (false/true)
 		local ret = {}
-		div = to_ptrn[div] or div
-		for s in str:gmatch("([^"..div.."]+)") do
-			ret[#ret+1] = (clear and s:trim() or s)
+		for s in str:gmatch("([^"..(to_ptrn[div] or div).."]+)") do
+			ret[#ret+1] = clear and s:trim() or s
 		end
 		return ret
 	end
@@ -116,6 +115,12 @@ key_bindings["kUSE_BANDAGE"] = 73
 key_bindings["kUSE_MEDKIT"] = 74
 key_bindings["kQUICK_SAVE"] = 75
 key_bindings["kQUICK_LOAD"] = 76
+--==============================[Функция перемотки времени из CoP]==============================
+local _change_game_time = level.change_game_time
+level.change_game_time = function(...) --Для правильного обновления погоды и таймеров после перевода часов.
+	_change_game_time(...)
+	ogse_signals.get_mgr():call("after_time_change")
+end
 --==================================[log3 & log4 by KRodin]=====================================
 local function isArray(tbl) --Является ли таблица массивом
 	local n=0
@@ -474,14 +479,13 @@ end
 
 function time2string(time, fmt, order)
 	ASSERT(time, "[_g.time2string] 'time' is a nil reference")
-	local a,b = time:get_value()
 	if not fmt then
-		return time:timeToString(game.CTime.TimeToMilisecs).." "..time:dateToString(game.CTime.DateToDay)..string.format(" [%04x %04x]", a,b)
+		return time:timeToString(game.CTime.TimeToMilisecs).." "..time:dateToString(game.CTime.DateToDay)
 	else
 		local y,m,d,h,min,s,ms = time:get()
-		local args = {y=y,m=m,d=d,h=h,min=min,s=s,ms=ms,a=a,b=b}
+		local args = {y=y,m=m,d=d,h=h,min=min,s=s,ms=ms}
 		if order then
-			args = {args[order[1]], args[order[2]], args[order[3]], args[order[4]], args[order[5]], args[order[6]], args[order[7]], args[order[8]], args[order[9]]}
+			args = {args[order[1]], args[order[2]], args[order[3]], args[order[4]], args[order[5]], args[order[6]], args[order[7]]}
 		end
 		return fmt:format(unpack(args))
 	end
@@ -570,45 +574,22 @@ function vector_cross(v1, v2)
 		return vector():crossproduct(v1, v2)
 	else return vector():set(0, 0, 0) end
 end
---==============================================================================================
---Взято из sol17work от DC.
---KRodin: TODO: сделать в движке нормальную функцию перемотки времени. Функция ниже - в таком виде всё равно не годится.
-local set_current_time_t, set_current_time_f
-local function set_current_time_wait()
-	if game.get_game_time() < set_current_time_t then return false end
-	level.set_time_factor( set_current_time_f )
-	set_current_time_f = false
-	return true
+
+function isIndoor(level_name) --KRodin: всем подземным уровням прописывается НЕ default погода. По этому признаку и будем проверять.
+	return get_string(level_name, "weathers", nil, game_ini()) ~= "default"
 end
-function set_current_time( hour, min, sec )	-- починено, работает.
-	local game_time_time = game.get_game_time()	-- полное игровое время
-
-	local new_time = game.CTime()	-- нужно выставить
-	new_time:setHMS( hour, min, sec )
-
-	local hh, mm, ss
-	_, _, _, hh, mm, ss = game_time_time:get()	-- текущее время
-	local c_time = game.CTime()
-	c_time:setHMS( hh, mm, ss )
-
-	if new_time == c_time then return	-- ничего не делаем
-	elseif new_time < c_time then		-- следующие сутки
-		new_time:setHMS( hour + 24, min, sec )
-	end
-
-	new_time:setHMS( 0, 0, new_time:diffSec( c_time ) )
-	set_current_time_t = game_time_time + new_time
-
-	if not set_current_time_f then set_current_time_f = level.get_time_factor() end
-
-	level.set_time_factor( 10000 )
-	level.add_call( set_current_time_wait, function() return false end )
+--==============================================================================================
+--KRodin: TODO: снести эту функцию вообще. Вызывать level.change_game_time напрямую.
+--И сон, например, надо делать не просто переводом часов, а сделать как в OGSE. Чтобы учитывать выброс и тд.
+function set_current_time( hour, min, sec )
+	log3("~~Called set_current_time from: %s", debug.traceback())
+	if hour == 0 and min == 0 then min = 1 end --Маловероятно, но на всякий случай.
+	level.change_game_time(0, hour, min) --дни, часы, минуты
 end
 --==============================================================================================
 
 
-schemes = {} -- соответствие схем модулям
-stypes = {} -- типы схем
+schemes, stypes = {}, {} -- соответствие схем модулям, типы схем
 
 -- Загружает схему из файла на диске и активирует в мотиваторе.
 -- Здесь:
@@ -623,10 +604,6 @@ end
 function printf(fmt,...)
 end
 ----------------------------------------------------------------------
-
-if nil == time_global then
-	time_global = function () return device():time_global() end
-end
 
 function wait_game(time_to_wait)
     verify_if_thread_is_running()
