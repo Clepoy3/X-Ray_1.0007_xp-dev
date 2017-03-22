@@ -397,11 +397,11 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp	*lamp)
 	m_pPhysicsShell->SetAirResistance();//0.0014f,1.5f
 
 /////////////////////////////////////////////////////////////////////////////
-	BONE_P_PAIR_IT i=bone_map.begin(),e=bone_map.end();
-	for(;i!=e;i++){
+	for(auto i=bone_map.begin(); i != bone_map.end(); i++){
 		CPhysicsElement* fixed_element=i->second.element;
 		///R_ASSERT2(fixed_element,"fixed bone has no physics");
-		if(fixed_element)fixed_element->Fix();
+		if(fixed_element)
+			fixed_element->Fix();
 	}
 
 	m_pPhysicsShell->mXFORM.set(XFORM());

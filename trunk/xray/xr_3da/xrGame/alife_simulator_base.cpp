@@ -224,9 +224,9 @@ void CALifeSimulatorBase::create(CSE_ALifeDynamicObject *&i, CSE_ALifeDynamicObj
 	CSE_ALifeGroupAbstract		*group = smart_cast<CSE_ALifeGroupAbstract*>(i);
 	if (group) {
 		group->m_tpMembers.resize(group->m_wCount);
-		OBJECT_IT				I = group->m_tpMembers.begin();
-		OBJECT_IT				E = group->m_tpMembers.end();
-		for ( ; I != E; ++I) {
+		
+		for (auto I = group->m_tpMembers.begin(); I != group->m_tpMembers.end(); ++I)
+		{
 			CSE_Abstract		*object = create	(group,j);
 			*I					= object->ID;
 		}
@@ -308,9 +308,8 @@ void CALifeSimulatorBase::release	(CSE_Abstract *abstract, bool alife_query)
 
 void CALifeSimulatorBase::append_item_vector(OBJECT_VECTOR &tObjectVector, ITEM_P_VECTOR &tItemList)
 {
-	OBJECT_IT	I = tObjectVector.begin();
-	OBJECT_IT	E = tObjectVector.end();
-	for ( ; I != E; ++I) {
+	for (auto I = tObjectVector.begin(); I != tObjectVector.end(); ++I)
+	{
 		CSE_ALifeInventoryItem *l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(objects().object(*I));
 		if (l_tpALifeInventoryItem)
 			tItemList.push_back		(l_tpALifeInventoryItem);

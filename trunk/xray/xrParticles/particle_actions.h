@@ -1,7 +1,4 @@
-//---------------------------------------------------------------------------
-#ifndef particle_actionsH
-#define particle_actionsH
-
+#pragma once
 
 namespace PAPI{
 // refs
@@ -21,7 +18,7 @@ namespace PAPI{
 		virtual void 	Load		(IReader& F)=0;
 		virtual void 	Save		(IWriter& F)=0;
 	};
-    DEFINE_VECTOR(ParticleAction*,PAVec,PAVecIt);
+	using PAVec = xr_vector<ParticleAction*>;
 	class ParticleActions{
 		PAVec			actions;
 	public:
@@ -29,18 +26,16 @@ namespace PAPI{
 						~ParticleActions()						{clear();				}
 		IC void			clear			()
         {
-			for (PAVecIt it=actions.begin(); it!=actions.end(); it++) 
+			for (auto it=actions.begin(); it!=actions.end(); it++) 
 				xr_delete(*it);
 			actions.clear();
 		}
 		IC void			append			(ParticleAction* pa)	{actions.push_back(pa);	}
 		IC bool			empty			()						{return	actions.empty();}
-		IC PAVecIt		begin			()						{return	actions.begin();}
-		IC PAVecIt		end				()						{return actions.end();	}
+		IC auto		begin			()						{return	actions.begin();}
+		IC auto		end				()						{return actions.end();	}
         IC int			size			()						{return actions.size();	}
         IC void			resize			(int cnt)        		{actions.resize(cnt);	}
         void			copy			(ParticleActions* src);
 	};
 };
-//---------------------------------------------------------------------------
-#endif

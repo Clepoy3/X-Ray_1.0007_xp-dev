@@ -108,7 +108,7 @@ public:
 
 	// Initialize and store predefined colors
 //	typedef std::pair<shared_str, u32> ColorMap;
-	DEF_MAP			(ColorDefs, shared_str, u32);
+	using ColorDefs = xr_map<shared_str, u32>;
 
 	static const ColorDefs		*GetColorDefs()		{ R_ASSERT(m_pColorDefs); return m_pColorDefs; }
 

@@ -1,5 +1,5 @@
-#ifndef PH_COMMANDER_H
-#define PH_COMMANDER_H
+#pragma once
+
 class CPHReqBase;
 class CPHReqComparerV;
 
@@ -59,7 +59,9 @@ public:
 	bool			is_any							(CPHReqComparerV* v)										;
 };
 
-DEFINE_VECTOR(CPHCall*,PHCALL_STORAGE,PHCALL_I);
+using PHCALL_STORAGE = xr_vector<CPHCall*>;
+using PHCALL_I = PHCALL_STORAGE::iterator;
+
 class CPHCommander
 {
 	
@@ -73,7 +75,7 @@ public:
 	void				add_call					(CPHCondition* condition,CPHAction* action)						;
 
 	void				remove_call					(PHCALL_I i)													;
-	PHCALL_I			find_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;				
+	auto			find_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;
 	void				remove_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;
 	void				remove_calls				(CPHReqComparerV* cmp_object)									;
 
@@ -83,7 +85,7 @@ public:
 	void				add_call_as					(CPHCondition* condition,CPHAction* action)						;
 
 	void				remove_call_as				(PHCALL_I i)													;
-	PHCALL_I			find_call_as				(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;				
+	auto			find_call_as				(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;
 	void				remove_call_as				(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;
 	void				remove_calls_as				(CPHReqComparerV* cmp_object)									;
 
@@ -96,9 +98,8 @@ IC	void				add_call_unique				(CPHCondition* condition,CPHReqComparerV* cmp_cond
 IC	void				add_call					(CPHCondition* condition,CPHAction* action,PHCALL_STORAGE& cs)						;
 
 IC	void				remove_call					(PHCALL_I i,PHCALL_STORAGE& cs)													;
-IC	PHCALL_I			find_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs)	;				
+IC	auto			find_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs)	;
 IC	void				remove_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs)	;
 IC	void				remove_calls				(CPHReqComparerV* cmp_object,PHCALL_STORAGE& cs)								;
 	
 };
-#endif

@@ -149,7 +149,7 @@ void CSE_ALifeDynamicObject::detach(CSE_ALifeInventoryItem *tpALifeInventoryItem
 	if (!bRemoveChildren)
 		return;
 
-	ALife::OBJECT_IT			i = std::find(children.begin(),children.end(),tpALifeInventoryItem->base()->ID);
+	auto i = std::find(children.begin(),children.end(),tpALifeInventoryItem->base()->ID);
 	R_ASSERT2					(children.end() != i,"Can't detach an item which is not on my own");
 	children.erase				(i);
 }
@@ -160,9 +160,7 @@ void add_online_impl						(CSE_ALifeDynamicObject *object, const bool &update_re
 	ClientID					clientID;
 	clientID.set				(object->alife().server().GetServerClient() ? object->alife().server().GetServerClient()->ID.value() : 0);
 
-	ALife::OBJECT_IT			I = object->children.begin();
-	ALife::OBJECT_IT			E = object->children.end();
-	for ( ; I != E; ++I) {
+	for (auto I = object->children.begin(); I != object->children.end(); ++I) {
 //	this was for the car only
 //		if (*I == ai().alife().graph().actor()->ID)
 //			continue;

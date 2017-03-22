@@ -8,14 +8,14 @@ void CMonsterSquad::ProcessAttack()
 	m_temp_entities.clear	();
 
 	// Выделить элементы с общими врагами и состянием атаки 
-	for (MEMBER_GOAL_MAP_IT it_goal = m_goals.begin(); it_goal != m_goals.end(); it_goal++) {
+	for (auto it_goal = m_goals.begin(); it_goal != m_goals.end(); it_goal++) {
 //		CEntity *member = it_goal->first;
 		SMemberGoal goal = it_goal->second;
 
 		if (goal.type == MG_AttackEnemy) {
 			VERIFY(goal.entity && !goal.entity->getDestroy());
 
-			ENEMY_MAP_IT it = m_enemy_map.find(goal.entity);
+			auto it = m_enemy_map.find(goal.entity);
 			if (it != m_enemy_map.end()) {
 				it->second.push_back(it_goal->first);
 			} else {
@@ -26,7 +26,7 @@ void CMonsterSquad::ProcessAttack()
 	}
 
 	// Пройти по всем группам и назначить углы всем елементам в группе
-	for (ENEMY_MAP_IT it_enemy = m_enemy_map.begin(); it_enemy != m_enemy_map.end(); it_enemy++) {
+	for (auto it_enemy = m_enemy_map.begin(); it_enemy != m_enemy_map.end(); it_enemy++) {
 		Attack_AssignTargetDir(it_enemy->second,it_enemy->first);
 	}
 }

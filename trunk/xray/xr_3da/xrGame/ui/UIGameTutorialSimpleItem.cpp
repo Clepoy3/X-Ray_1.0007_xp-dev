@@ -21,9 +21,9 @@ extern ENGINE_API BOOL bShowPauseString;
 //-----------------------------------------------------------------------------
 CUISequenceSimpleItem::~CUISequenceSimpleItem()
 {
-	SubItemVecIt _I			= m_subitems.begin	();
-	SubItemVecIt _E			= m_subitems.end	();
-	for(;_I!=_E;++_I)		_I->Stop			();
+	for(auto _I = m_subitems.begin(); _I != m_subitems.end(); ++_I)
+		_I->Stop();
+
 	m_subitems.clear		();
 	m_sound.stop			();
 	delete_data				(m_UIWindow);
@@ -130,9 +130,7 @@ void CUISequenceSimpleItem::SSubItem::Stop	()
 void CUISequenceSimpleItem::Update			()
 {
 	float gt						= float(Device.dwTimeContinual)/1000.0f;
-	SubItemVecIt _I					= m_subitems.begin();
-	SubItemVecIt _E					= m_subitems.end();
-	for(;_I!=_E;++_I){
+	for(auto _I = m_subitems.begin(); _I != m_subitems.end(); ++_I){
 		SSubItem& s					= *_I;
 		bool bPlaying				= (gt>(m_time_start+s.m_start))&&(gt<(m_time_start+s.m_start+s.m_length));
 		if (true==bPlaying&&(false==s.m_visible))			s.Start	();

@@ -308,13 +308,9 @@ void   CPhraseDialog::InitXmlIdToIndex()
 
 bool CPhraseDialog::allIsDummy	()
 {
-	PHRASE_VECTOR_IT it = m_PhraseVector.begin();
-	bool bAllIsDummy = true;
-	for(;it!=m_PhraseVector.end();++it)
-	{
+	for(auto it = m_PhraseVector.begin();it!=m_PhraseVector.end();++it)
 		if( !(*it)->IsDummy() )
-			bAllIsDummy=false;
-	}
+			return false;
 
-	return bAllIsDummy;
+	return true;
 }

@@ -44,7 +44,7 @@ void CMonsterCorpseMemory::add_corpse(const CEntityAlive *corpse)
 	corpse_info.vertex		= corpse->ai_location().level_vertex_id();
 	corpse_info.time		= Device.dwTimeGlobal;
 
-	CORPSE_MAP_IT it = m_objects.find(corpse);
+	auto it = m_objects.find(corpse);
 	if (it != m_objects.end()) {
 		// обновить данные о враге
 		it->second = corpse_info;
@@ -59,7 +59,7 @@ void CMonsterCorpseMemory::remove_non_actual()
 	TTime cur_time = Device.dwTimeGlobal;
 
 	// удалить 'старых' врагов и тех, расстояние до которых > 30м и др.
-	for (CORPSE_MAP_IT it = m_objects.begin(), nit; it != m_objects.end(); it = nit)
+	for (auto it = m_objects.begin(), nit = it; it != m_objects.end(); it = nit)
 	{
 		nit = it; ++nit;
 		// проверить условия удаления
@@ -75,7 +75,7 @@ void CMonsterCorpseMemory::remove_non_actual()
 
 const CEntityAlive *CMonsterCorpseMemory::get_corpse()
 {
-	CORPSE_MAP_IT	it = find_best_corpse();
+	auto it = find_best_corpse();
 	if (it != m_objects.end()) return it->first;
 	return (0);
 }
@@ -85,7 +85,7 @@ SMonsterCorpse CMonsterCorpseMemory::get_corpse_info()
 	SMonsterCorpse ret_val;
 	ret_val.time = 0;
 
-	CORPSE_MAP_IT	it = find_best_corpse();
+	auto it = find_best_corpse();
 	if (it != m_objects.end()) ret_val = it->second;
 
 	return ret_val;
@@ -93,10 +93,10 @@ SMonsterCorpse CMonsterCorpseMemory::get_corpse_info()
 
 CORPSE_MAP_IT CMonsterCorpseMemory::find_best_corpse()
 {
-	CORPSE_MAP_IT	it = m_objects.end();
+	auto it = m_objects.end();
 	float			min_dist = flt_max;
 
-	for (CORPSE_MAP_IT I = m_objects.begin(); I != m_objects.end(); I++) {
+	for (auto I = m_objects.begin(); I != m_objects.end(); I++) {
 		if (I->second.position.distance_to(monster->Position()) < min_dist) {
 			min_dist = I->second.position.distance_to(monster->Position());
 			it = I;
@@ -108,10 +108,9 @@ CORPSE_MAP_IT CMonsterCorpseMemory::find_best_corpse()
 
 void CMonsterCorpseMemory::remove_links(CObject *O)
 {
-	for (CORPSE_MAP_IT	I = m_objects.begin();I!=m_objects.end();++I) {
+	for (auto I = m_objects.begin();I!=m_objects.end();++I)
 		if ((*I).first == O) {
 			m_objects.erase(I);
 			break;
 		}
-	}
 }

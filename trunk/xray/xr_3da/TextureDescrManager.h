@@ -27,7 +27,7 @@ class CTextureDescrMngr
 #endif
                 texture_desc            ():m_assoc(NULL),m_spec(NULL){}
 	};
-	DEFINE_MAP(shared_str, texture_desc,	map_TD,	map_TDIt);
+	using map_TD = xr_map<shared_str, texture_desc>;
 
 	map_TD									m_texture_details;
 

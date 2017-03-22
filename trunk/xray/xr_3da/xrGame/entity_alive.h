@@ -2,11 +2,8 @@
 
 #include "entity.h"
 
-
-DEFINE_VECTOR(ref_shader, SHADER_VECTOR, SHADER_VECTOR_IT);
-DEFINE_VECTOR(shared_str, STR_VECTOR, STR_VECTOR_IT);
-
-
+using SHADER_VECTOR = xr_vector<ref_shader>;
+using STR_VECTOR = xr_vector<shared_str>;
 
 class MONSTER_COMMUNITY;
 class CEntityCondition;
@@ -87,9 +84,8 @@ public:
 	virtual SCollisionHitCallback			*get_collision_hit_callback	()						;
 	virtual bool							set_collision_hit_callback	(SCollisionHitCallback *cc);
 protected:
-	DEFINE_VECTOR				(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
+	using WOUND_VECTOR = xr_vector<CWound*>;
 	WOUND_VECTOR				m_ParticleWounds;
-
 
 	virtual void				StartFireParticles(CWound* pWound);
 	virtual void				UpdateFireParticles();
@@ -125,7 +121,7 @@ protected:
 	static SHADER_VECTOR*		m_pBloodDropsVector;
 	//список ран с которых капает кровь
 	
-	DEFINE_VECTOR				(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
+	using WOUND_VECTOR = xr_vector<CWound*>;
 	WOUND_VECTOR				m_BloodWounds;
 	//размер раны, чтоб начала капать кровь
 	static float				m_fStartBloodWoundSize;

@@ -30,5 +30,4 @@ private:
 	void				remove_non_actual		();
 
 	CORPSE_MAP_IT		find_best_corpse		();
-
 };

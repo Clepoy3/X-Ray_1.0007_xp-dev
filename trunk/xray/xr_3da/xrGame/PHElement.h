@@ -1,7 +1,6 @@
-/////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-///////////////////////////Implemetation//for//CPhysicsElement//////////////////
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////Implemetation//for//CPhysicsElement//////////////////
+#pragma once
+
 #include "Geometry.h"
 #include "phdefs.h"
 #include "PhysicsCommon.h"
@@ -9,13 +8,13 @@
 #include "PHDisabling.h"
 #include "PHGeometryOwner.h"
 #include "PHInterpolation.h"
-#ifndef PH_ELEMENT
-#define PH_ELEMENT
+
 class CPHElement;
 class CPHShell;
 class CPHFracture;
 struct SPHImpact;
 class CPHFracturesHolder;
+
 class CPHElement	:  
 	public	CPhysicsElement ,
 	public	CPHSynchronize,
@@ -256,4 +255,3 @@ IC			void						MulB43InverceLocalForm			(Fmatrix&)	;
 IC CPHElement* cast_PHElement(CPhysicsElement* e){return static_cast<CPHElement*>(static_cast<CPhysicsElement*>(e));}
 IC CPHElement* cast_PHElement(void* e){return static_cast<CPHElement*>(static_cast<CPhysicsElement*>(e));}
 IC CPhysicsElement* cast_PhysicsElement(CPHElement* e){return static_cast<CPhysicsElement*>(static_cast<CPHElement*>(e));}
-#endif

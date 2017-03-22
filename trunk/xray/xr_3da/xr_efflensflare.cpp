@@ -107,7 +107,7 @@ void CLensFlareDescriptor::OnDeviceCreate()
 	// shaders
 	m_Gradient.hShader	= CreateShader	(*m_Gradient.texture,*m_Gradient.shader);
 	m_Source.hShader	= CreateShader	(*m_Source.texture,*m_Source.shader);
-    for (FlareIt it=m_Flares.begin(); it!=m_Flares.end(); it++) it->hShader = CreateShader(*it->texture,*it->shader);
+    for (auto it=m_Flares.begin(); it!=m_Flares.end(); it++) it->hShader = CreateShader(*it->texture,*it->shader);
 }
 
 void CLensFlareDescriptor::OnDeviceDestroy()
@@ -115,7 +115,7 @@ void CLensFlareDescriptor::OnDeviceDestroy()
 	// shaders
     m_Gradient.hShader.destroy	();
     m_Source.hShader.destroy	();
-    for (FlareIt it=m_Flares.begin(); it!=m_Flares.end(); it++) it->hShader.destroy();
+    for (auto it=m_Flares.begin(); it!=m_Flares.end(); it++) it->hShader.destroy();
 }
 
 //------------------------------------------------------------------------------
@@ -367,7 +367,7 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 			vecDx.normalize		(vecAxis);
 			vecDy.crossproduct	(vecDx, vecDir);
 	    	if (m_Current->m_Flags.is(CLensFlareDescriptor::flFlare)){
-                for (CLensFlareDescriptor::FlareIt it=m_Current->m_Flares.begin(); it!=m_Current->m_Flares.end(); it++){
+                for (auto it=m_Current->m_Flares.begin(); it!=m_Current->m_Flares.end(); it++){
                     CLensFlareDescriptor::SFlare&	F = *it;
                     vec.mul				(vecAxis, F.fPosition);
                     vec.add				(vecCenter);
@@ -421,7 +421,7 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 int	CLensFlare::AppendDef(CInifile* pIni, LPCSTR sect)
 {
 	if (!sect||(0==sect[0])) return -1;
-    for (LensFlareDescIt it=m_Palette.begin(); it!=m_Palette.end(); it++)
+    for (auto it=m_Palette.begin(); it!=m_Palette.end(); it++)
     	if (0==xr_strcmp(*it->section,sect)) return int(it-m_Palette.begin());
     m_Palette.push_back			(CLensFlareDescriptor());
     CLensFlareDescriptor& lf 	= m_Palette.back();
@@ -435,14 +435,14 @@ void CLensFlare::OnDeviceCreate()
 	hGeom.create		(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
 
 	// palette
-    for (LensFlareDescIt it=m_Palette.begin(); it!=m_Palette.end(); it++)
+    for (auto it=m_Palette.begin(); it!=m_Palette.end(); it++)
         it->OnDeviceCreate();
 }
 
 void CLensFlare::OnDeviceDestroy()
 {
 	// palette
-    for (LensFlareDescIt it=m_Palette.begin(); it!=m_Palette.end(); it++)
+    for (auto it=m_Palette.begin(); it!=m_Palette.end(); it++)
         it->OnDeviceDestroy();
 
 	// VS

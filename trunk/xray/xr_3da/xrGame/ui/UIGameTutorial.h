@@ -92,7 +92,7 @@ class CUISequenceSimpleItem: public CUISequenceItem
 		virtual void		Start				();
 		virtual void		Stop				();
 	};
-	DEFINE_VECTOR			(SSubItem,SubItemVec,SubItemVecIt);
+	using SubItemVec = xr_vector<SSubItem>;
 	SubItemVec				m_subitems;
 public:
 	CUIWindow*				m_UIWindow;

@@ -272,8 +272,8 @@ protected:
 	void					UpdateBlowoutLight			();
 
 	//список партиклов для объетов внутри зоны
-//	DEFINE_MAP (CObject*, SZoneObjectInfo, OBJECT_INFO_MAP, OBJECT_INFO_MAP_IT);
-	DEFINE_VECTOR(SZoneObjectInfo,OBJECT_INFO_VEC,OBJECT_INFO_VEC_IT);
+// using OBJECT_INFO_MAP = xr_map<CObject*, SZoneObjectInfo>;
+	using OBJECT_INFO_VEC = xr_vector<SZoneObjectInfo>;
 	OBJECT_INFO_VEC			m_ObjectInfoMap;
 
 	void					CreateHit					(	u16 id_to, 
@@ -331,7 +331,7 @@ protected:
 	virtual BOOL		AlwaysTheCrow		();
 
 protected:
-	DEFINE_VECTOR(CArtefact*, ARTEFACT_VECTOR, ARTEFACT_VECTOR_IT);
+	using ARTEFACT_VECTOR = xr_vector<CArtefact*>;
 	ARTEFACT_VECTOR			m_SpawnedArtefacts;
 
 	//есть ли вообще функция выбрасывания артефактов во время срабатывания
@@ -355,7 +355,7 @@ protected:
 		float		probability;
 	};
 
-	DEFINE_VECTOR(ARTEFACT_SPAWN, ARTEFACT_SPAWN_VECTOR, ARTEFACT_SPAWN_IT);
+	using ARTEFACT_SPAWN_VECTOR = xr_vector<ARTEFACT_SPAWN>;
 	ARTEFACT_SPAWN_VECTOR	m_ArtefactSpawn;
 
 	//расстояние от зоны до текущего актера

@@ -162,7 +162,7 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
 
 MotionVec* motions_value::bone_motions(shared_str bone_name)
 {
-	BoneMotionMapIt it			= m_motions.find(bone_name); VERIFY(it!=m_motions.end());
+	auto it			= m_motions.find(bone_name); VERIFY(it!=m_motions.end());
 	return &it->second;
 }
 //-----------------------------------
@@ -187,7 +187,7 @@ bool motions_container::has(shared_str key)
 motions_value* motions_container::dock(shared_str key, IReader *data, vecBones* bones)
 {
 	motions_value*	result		= 0	;
-	SharedMotionsMapIt	I		= container.find	(key);
+	auto	I		= container.find	(key);
 	if (I!=container.end())		result = I->second;
 	if (0==result)				{
 		// loading motions
@@ -202,8 +202,8 @@ motions_value* motions_container::dock(shared_str key, IReader *data, vecBones* 
 }
 void motions_container::clean(bool force_destroy)
 {
-	SharedMotionsMapIt it	= container.begin();
-	SharedMotionsMapIt _E	= container.end();
+	auto it	= container.begin();
+	auto _E	= container.end();
 	if (force_destroy){
 		for (; it!=_E; it++){
 			motions_value*	sv = it->second;
@@ -215,8 +215,8 @@ void motions_container::clean(bool force_destroy)
 			motions_value*	sv = it->second;
 			if (0==sv->m_dwReference)	
 			{
-				SharedMotionsMapIt	i_current	= it;
-				SharedMotionsMapIt	i_next		= ++it;
+				auto	i_current	= it;
+				auto	i_next		= ++it;
 				xr_delete			(sv);
 				container.erase		(i_current);
 				it					= i_next;
@@ -228,8 +228,8 @@ void motions_container::clean(bool force_destroy)
 }
 void motions_container::dump()
 {
-	SharedMotionsMapIt it	= container.begin();
-	SharedMotionsMapIt _E	= container.end();
+	auto it	= container.begin();
+	auto _E	= container.end();
 	Log	("--- motion container --- begin:");
 	u32 sz					= sizeof(*this);
 	for (u32 k=0; it!=_E; k++,it++){

@@ -8,7 +8,7 @@
 #include "UIButton.h"
 #include "UIMultiTextStatic.h"
 
-DEF_VECTOR (FIELDS_VECTOR, CUIButton*)
+using FIELDS_VECTOR = xr_vector<CUIButton*>;
 
 // Класс для определения нового члена списка
 class CUIStatsListItem: public CUIListItem

@@ -64,8 +64,8 @@ void CALifeCombatManager::vfFillCombatGroup(CSE_ALifeSchedulable *tpALifeSchedul
 	CSE_ALifeGroupAbstract	*l_tpALifeGroupAbstract = smart_cast<CSE_ALifeGroupAbstract*>(tpALifeSchedulable);
 	tpGroupVector.clear		();
 	if (l_tpALifeGroupAbstract) {
-		OBJECT_IT			I = l_tpALifeGroupAbstract->m_tpMembers.begin();
-		OBJECT_IT			E = l_tpALifeGroupAbstract->m_tpMembers.end();
+		auto			I = l_tpALifeGroupAbstract->m_tpMembers.begin();
+		auto			E = l_tpALifeGroupAbstract->m_tpMembers.end();
 		for ( ; I != E; ++I) {
 			CSE_ALifeSchedulable	*l_tpALifeSchedulable = smart_cast<CSE_ALifeSchedulable*>(objects().object(*I));
 			R_ASSERT2				(l_tpALifeSchedulable,"Invalid combat object");

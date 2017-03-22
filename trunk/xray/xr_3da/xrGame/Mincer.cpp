@@ -23,19 +23,15 @@ CMincer::~CMincer(void)
 void CMincer::OnStateSwitch(EZoneState new_state)
 {
 	if(m_eZoneState!=eZoneStateBlowout && new_state==eZoneStateBlowout)
-	{
-		OBJECT_INFO_VEC_IT it;
-		for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
+		for(auto it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 		{
 			CPhysicsShellHolder * GO = smart_cast<CPhysicsShellHolder *>((*it).object);
 			if (GO)					Telekinesis().activate(GO,m_fThrowInImpulse, m_fTeleHeight, 100000);
 		}
-	}
 
 	if(m_eZoneState==eZoneStateBlowout && new_state!=eZoneStateBlowout)
-	{
 		Telekinesis().clear_deactivate();
-	}
+
 	inherited::OnStateSwitch(new_state);
 }
 

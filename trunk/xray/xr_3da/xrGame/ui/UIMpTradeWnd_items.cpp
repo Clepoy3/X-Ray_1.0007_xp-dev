@@ -255,7 +255,7 @@ void CUIMpTradeWnd::UpdateCorrespondingItemsForList(CUIDragDropListEx* _list)
 
 void CUIMpTradeWnd::DestroyItem(SBuyItemInfo* item)
 {
-	ITEMS_vec_it it		= std::find(m_all_items.begin(), m_all_items.end(), item);
+	auto it = std::find(m_all_items.begin(), m_all_items.end(), item);
 	R_ASSERT			(it!= m_all_items.end() );
 
 	R_ASSERT			(!IsAddonAttached(item,at_scope));

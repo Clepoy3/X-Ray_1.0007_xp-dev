@@ -1871,8 +1871,7 @@ template <class T> IC void CCar::fill_wheel_vector(LPCSTR S,xr_vector<T>& type_w
 		type_wheels.push_back		(T());
 		T& twheel				= type_wheels.back();
 
-
-		BONE_P_PAIR_IT J		= bone_map.find(bone_id);
+		auto J = bone_map.find(bone_id);
 		if (J == bone_map.end()) 
 		{
 			bone_map.insert(std::make_pair(bone_id,physicsBone()));
@@ -1907,7 +1906,7 @@ IC void CCar::fill_exhaust_vector(LPCSTR S,xr_vector<SExhaust>& exhausts)
 		SExhaust& exhaust				= exhausts.back();
 		exhaust.bone_id						= bone_id;
 
-		BONE_P_PAIR_IT J		= bone_map.find(bone_id);
+		auto J = bone_map.find(bone_id);
 		if (J == bone_map.end()) 
 		{
 			bone_map.insert(std::make_pair(bone_id,physicsBone()));
@@ -1929,7 +1928,7 @@ IC void CCar::fill_doors_map(LPCSTR S,xr_map<u16,SDoor>& doors)
 		SDoor						door(this);
 		door.bone_id=				bone_id;
 		doors.insert				(std::make_pair(bone_id,door));
-		BONE_P_PAIR_IT J		= bone_map.find(bone_id);
+		auto J = bone_map.find(bone_id);
 		if (J == bone_map.end()) 
 		{
 			bone_map.insert(std::make_pair(bone_id,physicsBone()));

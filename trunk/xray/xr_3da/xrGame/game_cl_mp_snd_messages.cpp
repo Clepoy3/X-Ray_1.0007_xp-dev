@@ -21,7 +21,7 @@ void	game_cl_mp::LoadSndMessage			(LPCSTR caSection, LPCSTR caLine, u32 ID)
 
 void	game_cl_mp::PlaySndMessage			(u32 ID)
 {
-	SNDMESSAGES_it it = std::find(m_pSndMessages.begin(), m_pSndMessages.end(), ID);
+	auto it = std::find(m_pSndMessages.begin(), m_pSndMessages.end(), ID);
 	if (it == m_pSndMessages.end() || !(*it == ID)) 
 	{
 		R_ASSERT2(0, "No such sound!!!");

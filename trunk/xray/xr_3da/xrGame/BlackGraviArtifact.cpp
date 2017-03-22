@@ -82,7 +82,7 @@ void CBlackGraviArtefact::net_Relcase(CObject* O)
 {
 	inherited::net_Relcase(O);
 	//for vector
-	GAME_OBJECT_LIST_it I=std::remove_if(m_GameObjectList.begin(),m_GameObjectList.end(),SRP(smart_cast<CPhysicsShellHolder*>(O)));
+	auto I=std::remove_if(m_GameObjectList.begin(),m_GameObjectList.end(),SRP(smart_cast<CPhysicsShellHolder*>(O)));
 	m_GameObjectList.erase(I,m_GameObjectList.end());
 	//for list
 	//m_GameObjectList.remove_if(SRP(smart_cast<CPhysicsShellHolder*>(O)));
@@ -179,9 +179,7 @@ void CBlackGraviArtefact::GraviStrike()
 
 	rq_storage.r_clear	();
 
-	for(GAME_OBJECT_LIST_it it = m_GameObjectList.begin(); 
-						    m_GameObjectList.end() != it;
-							++it)
+	for(auto it = m_GameObjectList.begin(); m_GameObjectList.end() != it; ++it)
 	{
 		CPhysicsShellHolder* pGameObject = *it;
 

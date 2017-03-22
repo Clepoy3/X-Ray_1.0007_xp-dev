@@ -101,8 +101,9 @@ void CPHObject::Collide()
 
 #endif
 				qResultVec& result=ph_world->r_spatial;
-				qResultIt i=result.begin(),e=result.end();
-				for(;i!=e;++i)	{
+				
+				for(auto i=result.begin(); i != result.end(); ++i)
+				{
 					CPHObject* obj2=static_cast<CPHObject*>(*i);
 					if(obj2==this || !obj2->m_flags.test(st_dirty))		continue;
 					dGeomID	motion_ray=ph_world->GetMotionRayGeom();
@@ -121,8 +122,9 @@ void	CPHObject::		CollideDynamics					()
 {
 	g_SpatialSpacePhysic->q_box				(ph_world->r_spatial,0,STYPE_PHYSIC,spatial.sphere.P,AABB);
 	qResultVec& result=ph_world->r_spatial	;
-	qResultIt i=result.begin(),e=result.end();
-	for(;i!=e;++i)	{
+	
+	for(auto i=result.begin(); i != result.end(); ++i)
+	{
 		CPHObject* obj2=static_cast<CPHObject*>(*i);
 		if(obj2==this || !obj2->m_flags.test(st_dirty))		continue;
 		if(CPHCollideValidator::DoCollide(*this,*obj2)) NearCallback(this,obj2,dSpacedGeom(),obj2->dSpacedGeom());
@@ -132,8 +134,8 @@ void	CPHObject::reinit_single()
 {
 	IslandReinit					();
 	qResultVec& result=ph_world->r_spatial	;
-	qResultIt i=result.begin(),e=result.end();
-	for(;i!=e;++i)	
+	
+	for(auto i=result.begin(); i != result.end(); ++i)	
 	{
 		CPHObject* obj=static_cast<CPHObject*>(*i);
 		obj->IslandReinit();

@@ -68,16 +68,16 @@ static	void RestrictorCallBack	(bool& do_colide,bool bo1,dContact& c,SGameMtl* m
 			}
 		}
 	};
-DEFINE_VECTOR(SPHCharacterRestrictor*,RESRICTORS_V,RESTRICTOR_I);
+using RESRICTORS_V = xr_vector<SPHCharacterRestrictor*>;
 //typedef SPHCharacterRestrictor*		RESRICTORS_V[2];
 //typedef SPHCharacterRestrictor**	RESTRICTOR_I;
-IC RESTRICTOR_I begin(RESRICTORS_V& v)
+IC auto begin(RESRICTORS_V& v)
 {
 	//return v;
 	return v.begin();
 }
 
-IC RESTRICTOR_I end(RESRICTORS_V& v)
+IC auto end(RESRICTORS_V& v)
 {
 	//return v+sizeof(RESRICTORS_V)/sizeof(SPHCharacterRestrictor*);
 	return v.end();
@@ -111,5 +111,5 @@ virtual		void		ChooseRestrictionType				(ERestrictionType my_type,float my_depth
 	virtual				~CPHActorCharacter					(void);
 private:
 		void			ClearRestrictors					();
-		RESTRICTOR_I	Restrictor							(CPHCharacter::ERestrictionType rtype);
+		auto	Restrictor							(CPHCharacter::ERestrictionType rtype);
 };

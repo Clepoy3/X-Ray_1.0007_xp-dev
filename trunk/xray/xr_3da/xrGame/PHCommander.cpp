@@ -137,11 +137,11 @@ struct SFRemovePred2
 	}
 };
 
-PHCALL_I CPHCommander::find_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs)
+auto CPHCommander::find_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action,PHCALL_STORAGE& cs)
 {
 	return std::find_if( cs.begin(),cs.end(),SFEqualPred(cmp_condition,cmp_action));
 }
-PHCALL_I CPHCommander::find_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
+auto CPHCommander::find_call(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
 {
 	return find_call(cmp_condition,cmp_action,m_calls);
 }
@@ -220,7 +220,7 @@ void		CPHCommander::		add_call_as					(CPHCondition* condition,CPHAction* action
 }
 
 
-PHCALL_I	CPHCommander::		find_call_as				(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
+auto	CPHCommander::		find_call_as				(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)
 {
 	return find_call(cmp_condition,cmp_action,m_calls);
 }

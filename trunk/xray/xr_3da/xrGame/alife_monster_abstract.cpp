@@ -185,9 +185,8 @@ void CSE_ALifeMonsterAbstract::vfCheckForPopulationChanges	()
 			u32					l_dwBornCount = iFloor(float(l_tpALifeGroupAbstract->m_wCount)*randF(.5f,1.5f)*ai().ef_storage().m_pfBirthPercentage->ffGetValue()/100.f + .5f);
 			if (l_dwBornCount) {
 				l_tpALifeGroupAbstract->m_tpMembers.resize(l_tpALifeGroupAbstract->m_wCount + l_dwBornCount);
-				ALife::OBJECT_IT	I = l_tpALifeGroupAbstract->m_tpMembers.begin() + l_tpALifeGroupAbstract->m_wCount;
-				ALife::OBJECT_IT	E = l_tpALifeGroupAbstract->m_tpMembers.end();
-				for ( ; I != E; ++I) {
+
+				for (auto I = l_tpALifeGroupAbstract->m_tpMembers.begin() + l_tpALifeGroupAbstract->m_wCount; I != l_tpALifeGroupAbstract->m_tpMembers.end(); ++I) {
 					CSE_Abstract		*l_tpAbstract = alife().create	(l_tpALifeGroupAbstract,this);
 					*I					= l_tpAbstract->ID;
 				}

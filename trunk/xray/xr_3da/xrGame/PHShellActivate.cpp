@@ -42,12 +42,12 @@ void CPHShell::Activate(const Fmatrix &m0,float dt01,const Fmatrix &m2,bool disa
 	//}
 	
 	{		
-		ELEMENT_I i=elements.begin(),e=elements.end();
+		auto i=elements.begin(),e=elements.end();
 		for(;i!=e;++i)(*i)->Activate(mXFORM,disable);
 	}
 
 	{
-		JOINT_I i=joints.begin(),e=joints.end();
+		auto i=joints.begin(),e=joints.end();
 		for(;i!=e;++i) (*i)->Activate();
 	}	
 	
@@ -81,14 +81,13 @@ void CPHShell::Activate(const Fmatrix &transform,const Fvector& lin_vel,const Fv
 	if(isActive())return;
 	activate(disable);
 
-	ELEMENT_I i;
 	mXFORM.set(transform);
-	for(i=elements.begin();elements.end() != i;++i){
+	for(auto i=elements.begin();elements.end() != i;++i){
 		(*i)->Activate(transform,lin_vel, ang_vel);
 	}
 	
 	{
-		JOINT_I i=joints.begin(),e=joints.end();
+		auto i=joints.begin(),e=joints.end();
 		for(;i!=e;++i) (*i)->Activate();
 	}	
 
@@ -107,7 +106,6 @@ void CPHShell::Activate(const Fmatrix &transform,const Fvector& lin_vel,const Fv
 	//Activate(disable);
 	//set_LinearVel(lin_vel);
 	//set_AngularVel(ang_vel);
-
 }
 
 
@@ -118,12 +116,12 @@ void CPHShell::Activate(bool disable)
 
 	activate(disable);
 	{		
-		ELEMENT_I i=elements.begin(),e=elements.end();
-			 for(;i!=e;++i)(*i)->Activate(mXFORM,disable);
+		auto i=elements.begin(),e=elements.end();
+		for(;i!=e;++i)(*i)->Activate(mXFORM,disable);
 	}
 
 	{
-		JOINT_I i=joints.begin(),e=joints.end();
+		auto i=joints.begin(),e=joints.end();
 		for(;i!=e;++i) (*i)->Activate();
 	}	
 	
@@ -147,7 +145,7 @@ void CPHShell::Build(bool disable/*false*/)
 	m_flags.set(flActive,TRUE);
 
 	{		
-		ELEMENT_I i=elements.begin(),e=elements.end();
+		auto i=elements.begin(),e=elements.end();
 		for(;i!=e;++i)
 		{
 			(*i)->build(disable);
@@ -155,7 +153,7 @@ void CPHShell::Build(bool disable/*false*/)
 	}
 
 	{
-		JOINT_I i=joints.begin(),e=joints.end();
+		auto i=joints.begin(),e=joints.end();
 		for(;i!=e;++i) (*i)->Create();
 	}	
 	
@@ -170,11 +168,11 @@ void CPHShell::RunSimulation(bool place_current_forms/*true*/)
 	dSpaceSetCleanup(m_space,0);
 
 	{		
-		ELEMENT_I i=elements.begin(),e=elements.end();
+		auto i=elements.begin(),e=elements.end();
 		if(place_current_forms) for(;i!=e;++i)(*i)->RunSimulation(mXFORM);
 	}
 	{
-		JOINT_I i=joints.begin(),e=joints.end();
+		auto i=joints.begin(),e=joints.end();
 		for(;i!=e;++i) (*i)->RunSimulation();
 	}	
 
@@ -187,9 +185,8 @@ void CPHShell::AfterSetActive()
 	PureActivate();
 	//bActive=true;
 	m_flags.set(flActive,TRUE);
-	ELEMENT_I i=elements.begin(),e=elements.end();
+	auto i=elements.begin(),e=elements.end();
 	for(;i!=e;++i)(*i)->PresetActive();
-
 }
 
 void CPHShell::PureActivate()
@@ -252,16 +249,11 @@ void CPHShell::Deactivate(){
 	DisableObject();
 	CPHObject::remove_from_recently_deactivated();
 	
-
-	ELEMENT_I i;
-	for(i=elements.begin();elements.end() != i;++i)
+	for(auto i=elements.begin();elements.end() != i;++i)
 		(*i)->Deactivate();
 
-	JOINT_I j;
-	for(j=joints.begin();joints.end() != j;++j)
+	for(auto j=joints.begin();joints.end() != j;++j)
 		(*j)->Deactivate();
-
-	
 
 	if(m_space) {
 		dSpaceDestroy(m_space);

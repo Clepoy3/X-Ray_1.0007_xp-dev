@@ -33,7 +33,7 @@ protected:
 		fl_force_dword	= u32(-1)	};
 
 
-//.	DEF_VECTOR			(PLAYERS_LISTS, CUIDMPlayerList*);
+//	using PLAYERS_LISTS = xr_vector<CUIDMPlayerList*>;
 
 	CUIWindow*				m_pFragLists;
 	CUIWindow*				m_pPlayerLists;

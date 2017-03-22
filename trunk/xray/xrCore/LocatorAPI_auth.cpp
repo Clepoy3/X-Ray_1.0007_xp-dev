@@ -44,7 +44,7 @@ void	CLocatorAPI::auth_runtime		(void*	params)
 	if (!b_extern_auth)
 #endif // DEBUG
 	{
-		for (files_it it = files.begin(); it!=files.end(); ++it) {
+		for (auto it = files.begin(); it!=files.end(); ++it) {
 			const file&	f	=	*it;
 
 			// test for skip

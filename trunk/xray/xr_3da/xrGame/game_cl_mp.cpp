@@ -66,8 +66,7 @@ game_cl_mp::game_cl_mp()
 
 game_cl_mp::~game_cl_mp()
 {
-	CL_TEAM_DATA_LIST_it it = TeamList.begin();
-	for(;it!=TeamList.end();++it)
+	for(auto it = TeamList.begin();it!=TeamList.end();++it)
 	{
 		if (it->IndicatorShader)
 			it->IndicatorShader.destroy();
@@ -815,7 +814,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 				}break;
 			case SKT_HEADSHOT:		// Head Shot
 				{
-					BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "headshot");
+					auto it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "headshot");
 					if (it != m_pBonusList.end() && (*it == "headshot")) 
 					{
 						Bonus_Struct* pBS = &(*it);
@@ -833,7 +832,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 				}break;
 			case SKT_BACKSTAB:		// BackStab
 				{
-					BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "backstab");
+					auto it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "backstab");
 					if (it != m_pBonusList.end() && (*it == "backstab")) 
 					{
 						Bonus_Struct* pBS = &(*it);
@@ -1105,7 +1104,7 @@ void	game_cl_mp::OnEventMoneyChanged			(NET_Packet& P)
 				RectID = (local_player->rank+1)*2 + ModifyTeam(local_player->team);
 			}break;
 		};
-		BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), BName.c_str());
+		auto it = std::find(m_pBonusList.begin(), m_pBonusList.end(), BName.c_str());
 		if (it != m_pBonusList.end() && (*it == BName.c_str())) 
 		{
 			Bonus_Struct* pBS = &(*it);

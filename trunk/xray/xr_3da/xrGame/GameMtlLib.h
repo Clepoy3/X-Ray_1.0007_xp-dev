@@ -56,9 +56,9 @@
 	#define PSVec 		shared_str
 	#define ShaderVec 	shared_str
 #else
-	DEFINE_VECTOR(ref_sound,SoundVec,SoundIt);
-	DEFINE_VECTOR(shared_str,PSVec,PSIt);
-	DEFINE_VECTOR(ref_shader,ShaderVec,ShaderIt);
+	using SoundVec = xr_vector<ref_sound>;
+	using PSVec = xr_vector<shared_str>;
+	using ShaderVec = xr_vector<ref_shader>;
 #endif
 
 struct ECORE_API SGameMtl
@@ -132,7 +132,7 @@ public:
     void 				FillProp		(PropItemVec& values, ListItem* owner);
 #endif
 };
-DEFINE_VECTOR(SGameMtl*,GameMtlVec,GameMtlIt);
+using GameMtlVec = xr_vector<SGameMtl*>;
 
 struct ECORE_API SGameMtlPair{
 	friend class CGameMtlLibrary;
@@ -200,7 +200,7 @@ public:
 #endif
 };
 
-DEFINE_VECTOR(SGameMtlPair*,GameMtlPairVec,GameMtlPairIt);
+using GameMtlPairVec = xr_vector<SGameMtlPair*>;
 
 class ECORE_API CGameMtlLibrary{
 	int					material_index;
@@ -237,35 +237,35 @@ public:
 		material_count	= 0;
 		material_pairs_rt.clear();
 #endif
-		for (GameMtlIt m_it=materials.begin(); materials.end() != m_it; ++m_it)
+		for (auto m_it=materials.begin(); materials.end() != m_it; ++m_it)
 			xr_delete	(*m_it);
 		materials.clear();
-		for (GameMtlPairIt p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it)
+		for (auto p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it)
 			xr_delete	(*p_it);
 		material_pairs.clear();
 	}
     // material routine
-    IC GameMtlIt 		GetMaterialIt	(LPCSTR name)
+    IC auto GetMaterialIt	(LPCSTR name)
     {
-        for (GameMtlIt it=materials.begin(); materials.end() != it; ++it)
+        for (auto it=materials.begin(); materials.end() != it; ++it)
             if (0==strcmpi(*(*it)->m_Name,name)) return it;
         return materials.end();
     }
-    IC GameMtlIt 		GetMaterialIt	(shared_str& name)
+    IC auto GetMaterialIt	(shared_str& name)
     {
-        for (GameMtlIt it=materials.begin(); materials.end() != it; ++it)
+        for (auto it=materials.begin(); materials.end() != it; ++it)
             if (name.equal((*it)->m_Name)) return it;
         return materials.end();
     }
-    IC GameMtlIt 		GetMaterialItByID(int id)
+    IC auto GetMaterialItByID(int id)
     {
-        for (GameMtlIt it=materials.begin(); materials.end() != it; ++it)
+        for (auto it=materials.begin(); materials.end() != it; ++it)
             if ((*it)->ID==id) return it;
         return materials.end();
     }
 	IC u32				GetMaterialID	(LPCSTR name)
     {
-    	GameMtlIt it	= GetMaterialIt	(name);
+    	auto it	= GetMaterialIt	(name);
         return (it==materials.end())?GAMEMTL_NONE_ID:(*it)->ID;
     }
 #ifdef _EDITOR
@@ -284,14 +284,14 @@ public:
 	}
 #else
 	// game
-	IC u16				GetMaterialIdx	(int ID)		{GameMtlIt it=GetMaterialItByID(ID);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
-	IC u16				GetMaterialIdx	(LPCSTR name)	{GameMtlIt it=GetMaterialIt(name);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
+	IC u16				GetMaterialIdx	(int ID)		{auto it=GetMaterialItByID(ID);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
+	IC u16				GetMaterialIdx	(LPCSTR name)	{auto it=GetMaterialIt(name);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
 	IC SGameMtl*		GetMaterialByIdx(u16 idx)		{VERIFY(idx<materials.size()); return materials[idx];}
 	IC SGameMtl*		GetMaterialByID (s32 id)		{return GetMaterialByIdx(GetMaterialIdx(id));}
 #endif
 
-	IC GameMtlIt		FirstMaterial	(){return materials.begin();}
-	IC GameMtlIt		LastMaterial	(){return materials.end();}
+	IC auto		FirstMaterial	(){return materials.begin();}
+	IC auto		LastMaterial	(){return materials.end();}
 	IC u32				CountMaterial	(){return materials.size();}
 
 // material pair routine
@@ -316,8 +316,8 @@ public:
 	// game
 	IC SGameMtlPair*	GetMaterialPair		(u16 idx0, u16 idx1){R_ASSERT((idx0<material_count)&&(idx1<material_count)); return material_pairs_rt[idx1*material_count+idx0];}
 #endif
-	IC GameMtlPairIt	FirstMaterialPair	(){return material_pairs.begin();}
-	IC GameMtlPairIt	LastMaterialPair	(){return material_pairs.end();}
+	IC auto	FirstMaterialPair	(){return material_pairs.begin();}
+	IC auto	LastMaterialPair	(){return material_pairs.end();}
 
 	// IO routines
 	void				Load				();

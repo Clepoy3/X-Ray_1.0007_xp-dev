@@ -78,13 +78,9 @@ CUIStatsListItem * CUIStatsWnd::FindFrom(const u32 beg_pos, const char *strCapti
 	{
 		CUIStatsListItem *pSLItem = smart_cast<CUIStatsListItem*>(UIStatsList.GetItem(i));
 		R_ASSERT(beg_pos < pSLItem->FieldsVector.size());
-		for (FIELDS_VECTOR_it it = pSLItem->FieldsVector.begin() + beg_pos; it < pSLItem->FieldsVector.end(); ++it)
-		{
+		for (auto it = pSLItem->FieldsVector.begin() + beg_pos; it < pSLItem->FieldsVector.end(); ++it)
 			if (0 == xr_strcmp(strCaption, (*it)->GetText()))
-			{
 				return pSLItem;
-			}
-		}
 	}
 	return NULL;
 }
@@ -164,10 +160,8 @@ void CUIStatsListItem::XmlInit(const char *path, CUIXml &uiXml)
 
 void CUIStatsListItem::Highlight(bool bHighlight)
 {
-	for (FIELDS_VECTOR_it it = FieldsVector.begin(); it != FieldsVector.end(); ++it)
-	{
+	for (auto it = FieldsVector.begin(); it != FieldsVector.end(); ++it)
 		(*it)->HighlightItem(bHighlight);
-	}
 }
 
 //////////////////////////////////////////////////////////////////////////

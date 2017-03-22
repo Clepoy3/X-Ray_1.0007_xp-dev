@@ -344,7 +344,7 @@ void CHOM::OnRender	()
 {
 	if (psDeviceFlags.is(rsOcclusionDraw)){
 		if (m_pModel){
-			DEFINE_VECTOR		(FVF::L,LVec,LVecIt);
+			using LVec = xr_vector<FVF::L>;
 			static LVec	poly;	poly.resize(m_pModel->get_tris_count()*3);
 			static LVec	line;	line.resize(m_pModel->get_tris_count()*6);
 			for (int it=0; it<m_pModel->get_tris_count(); it++){

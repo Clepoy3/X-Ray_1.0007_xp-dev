@@ -37,4 +37,3 @@ private:
 	ENEMIES_MAP_IT		find_best_enemy			();
 
 };
-

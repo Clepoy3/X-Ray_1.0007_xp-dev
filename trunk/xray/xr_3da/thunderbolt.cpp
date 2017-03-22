@@ -70,7 +70,7 @@ SThunderboltCollection::SThunderboltCollection(CInifile* pIni, LPCSTR sect)
 }
 SThunderboltCollection::~SThunderboltCollection()
 {
-	for (DescIt d_it=palette.begin(); d_it!=palette.end(); d_it++)
+	for (auto d_it=palette.begin(); d_it!=palette.end(); d_it++)
 		xr_delete(*d_it);
 	palette.clear	();
 }
@@ -105,7 +105,7 @@ CEffect_Thunderbolt::CEffect_Thunderbolt()
 
 CEffect_Thunderbolt::~CEffect_Thunderbolt()
 {
-	for (CollectionVecIt d_it=collection.begin(); d_it!=collection.end(); d_it++)
+	for (auto d_it=collection.begin(); d_it!=collection.end(); d_it++)
     	xr_delete				(*d_it);
 	collection.clear			();
 	hGeom_model.destroy			();
@@ -115,7 +115,7 @@ CEffect_Thunderbolt::~CEffect_Thunderbolt()
 int CEffect_Thunderbolt::AppendDef(CInifile* pIni, LPCSTR sect)
 {
 	if (!sect||(0==sect[0])) return -1;
-	for (CollectionVecIt it=collection.begin(); it!=collection.end(); it++)
+	for (auto it=collection.begin(); it!=collection.end(); it++)
 		if ((*it)->section==sect)	return int(it-collection.begin());
 	collection.push_back		(xr_new<SThunderboltCollection>(pIni,sect));
 	return collection.size()-1;

@@ -80,9 +80,9 @@ BOOL EFS_Utils::LockFile(LPCSTR fname, bool bLog)
 	if (m_LockFiles.find(fn)==m_LockFiles.end()){
 		HANDLE handle=CreateFile(fn,GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0);
 		if (INVALID_HANDLE_VALUE!=handle){
-			LPSTR lp_fn			= fn;
-			std::pair<HANDLEPairIt, bool> I=m_LockFiles.insert(std::make_pair(lp_fn,handle));
-			R_ASSERT(			I.second);
+			LPSTR lp_fn = fn;
+			auto I = m_LockFiles.insert(std::make_pair(lp_fn,handle));
+			R_ASSERT(I.second);
 /*            
 			// register access              LockFile
             xr_string pref 		= initial?xr_string(FS.get_path(initial)->m_Add)+"\\":xr_string("");
@@ -110,7 +110,7 @@ BOOL EFS_Utils::UnlockFile(LPCSTR fname, bool bLog)
 {
 	string256 fn; strcpy(fn,fname);
 
-	HANDLEPairIt it 			= m_LockFiles.find(fn);
+	auto it 			= m_LockFiles.find(fn);
 	if (it!=m_LockFiles.end()){
     	void* handle 			= it->second;
 		m_LockFiles.erase		(it);

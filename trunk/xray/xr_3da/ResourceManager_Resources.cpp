@@ -496,7 +496,7 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 	fix_texture_name (Name);
 	// ***** first pass - search already loaded texture
 	LPSTR N			= LPSTR(Name);
-	map_TextureIt I = m_textures.find	(N);
+	auto I = m_textures.find	(N);
 	if (I!=m_textures.end())	return	I->second;
 	else
 	{

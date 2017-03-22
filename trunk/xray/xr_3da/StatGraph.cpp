@@ -129,7 +129,7 @@ void CStatGraph::RenderBars(FVF::TL0uv** ppv, ElementsDeq* pelements)
 
 	float column_width = elem_offs;
 	if (column_width > 1) column_width--;
-	for (ElementsDeqIt it=pelements->begin(); it!=pelements->end(); it++)
+	for (auto it=pelements->begin(); it!=pelements->end(); it++)
 	{
 		float X		= float(it-pelements->begin())*elem_offs+lt.x;
 		float Y0	= base_y;
@@ -158,9 +158,9 @@ void CStatGraph::RenderLines( FVF::TL0uv** ppv, ElementsDeq* pelements )
 	float elem_factor	= float(rb.y-lt.y)/float(mx-mn);
 	float base_y		= float(rb.y)+(mn*elem_factor);
 
-	for (ElementsDeqIt it=pelements->begin()+1;  it!=pelements->end() && it!=pelements->end()+1; it++)
+	for (auto it=pelements->begin()+1;  it!=pelements->end() && it!=pelements->end()+1; it++)
 	{
-		ElementsDeqIt it_prev = it-1;
+		auto it_prev = it-1;
 		float X0	= float(it_prev-pelements->begin())*elem_offs+lt.x;
 		float Y0	= base_y-it_prev->data*elem_factor;
 		(*ppv)->set		(X0,Y0,it->color); (*ppv)++;
@@ -176,9 +176,9 @@ void CStatGraph::RenderBarLines( FVF::TL0uv** ppv, ElementsDeq* pelements )
 	float elem_factor	= float(rb.y-lt.y)/float(mx-mn);
 	float base_y		= float(rb.y)+(mn*elem_factor);
 
-	for (ElementsDeqIt it=pelements->begin()+1; it!=pelements->end() && it!=pelements->end()+1; it++)
+	for (auto it=pelements->begin()+1; it!=pelements->end() && it!=pelements->end()+1; it++)
 	{
-		ElementsDeqIt it_prev = it-1;
+		auto it_prev = it-1;
 		float X0	= float(it_prev-pelements->begin())*elem_offs+lt.x+elem_offs;
 		float Y0	= base_y-it_prev->data*elem_factor;
 		(*ppv)->set		(X0,Y0,it->color); (*ppv)++;
@@ -213,7 +213,7 @@ void	CStatGraph::RenderMarkers	( FVF::TL0uv** ppv, MarkersDeq* pmarkers )
 	float elem_factor	= float(rb.y-lt.y)/float(mx-mn);
 	float base_y		= float(rb.y)+(mn*elem_factor);
 
-	for (MarkersDeqIt it=pmarkers->begin();  it!=pmarkers->end() && it!=pmarkers->end()+1; it++)
+	for (auto it=pmarkers->begin();  it!=pmarkers->end() && it!=pmarkers->end()+1; it++)
 	{
 		SMarker &CurMarker = *it;
 		float X0 = 0, Y0 = 0, X1 = 0, Y1 = 0;
@@ -249,7 +249,7 @@ void CStatGraph::OnRender()
 
 	u32			TriElem = 0;
 	u32			LineElem = 0;
-	for (SubGraphVecIt it=subgraphs.begin(); it!=subgraphs.end(); it++)
+	for (auto it=subgraphs.begin(); it!=subgraphs.end(); it++)
 	{
 		switch (it->style)
 		{
@@ -284,7 +284,7 @@ void CStatGraph::OnRender()
 		pv_Tri = pv_Tri_start;
 
 		pv_Tri = pv_Tri_start;
-		for (SubGraphVecIt it=subgraphs.begin(); it!=subgraphs.end(); it++)
+		for (auto it=subgraphs.begin(); it!=subgraphs.end(); it++)
 		{
 			switch(it->style)
 			{
@@ -302,7 +302,7 @@ void CStatGraph::OnRender()
 		pv_Line_start = (FVF::TL0uv*)RCache.Vertex.Lock(LineElem,hGeomLine->vb_stride,dwOffsetLine);
 		pv_Line = pv_Line_start;
 
-		for (SubGraphVecIt it=subgraphs.begin(); it!=subgraphs.end(); it++)
+		for (auto it=subgraphs.begin(); it!=subgraphs.end(); it++)
 		{
 			switch(it->style)
 			{

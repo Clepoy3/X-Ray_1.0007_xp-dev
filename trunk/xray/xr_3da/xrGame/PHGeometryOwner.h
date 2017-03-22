@@ -1,9 +1,10 @@
-#ifndef PH_GEOMETRY_OWNER_H
-#define PH_GEOMETRY_OWNER_H
+#pragma once
+
 #include "Geometry.h"
 #include "gamemtllib.h"
 
-DEFINE_VECTOR(CODEGeom*,GEOM_STORAGE,GEOM_I)
+using GEOM_STORAGE = xr_vector<CODEGeom*>;
+using GEOM_I = GEOM_STORAGE::iterator;
 
 struct SBoneShape;
 class CKinematics;
@@ -72,5 +73,3 @@ protected:
 virtual								~CPHGeometryOwner						();
 private:
 };
-
-#endif

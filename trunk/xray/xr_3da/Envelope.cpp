@@ -17,13 +17,13 @@ CEnvelope::CEnvelope(CEnvelope* source)
 
 void CEnvelope::Clear()
 {
-	for (KeyIt k_it=keys.begin(); k_it!=keys.end(); k_it++)
+	for (auto k_it=keys.begin(); k_it!=keys.end(); k_it++)
 		xr_delete(*k_it);
 }
 
 void CEnvelope::FindNearestKey(float t, KeyIt& min_k, KeyIt& max_k, float eps)
 {
-	for (KeyIt k_it=keys.begin(); k_it!=keys.end(); k_it++){
+	for (auto k_it=keys.begin(); k_it!=keys.end(); k_it++){
     	if (fsimilar((*k_it)->time,t,eps)){
         	max_k = k_it+1;
         	min_k = (k_it==keys.begin())?k_it:k_it-1;
@@ -39,9 +39,9 @@ void CEnvelope::FindNearestKey(float t, KeyIt& min_k, KeyIt& max_k, float eps)
     max_k=keys.end();
 }
 
-KeyIt CEnvelope::FindKey(float t, float eps)
+auto CEnvelope::FindKey(float t, float eps)
 {
-	for (KeyIt k_it=keys.begin(); k_it!=keys.end(); k_it++){
+	for (auto k_it=keys.begin(); k_it!=keys.end(); k_it++){
     	if (fsimilar((*k_it)->time,t,eps)) return k_it;
     	if ((*k_it)->time>t) return keys.end();
     }
@@ -71,7 +71,7 @@ void CEnvelope::InsertKey(float t, float val)
 
 void CEnvelope::DeleteKey(float t)
 {	
-	for (KeyIt k_it=keys.begin(); k_it!=keys.end(); k_it++){
+	for (auto k_it=keys.begin(); k_it!=keys.end(); k_it++){
     	if (fsimilar((*k_it)->time,t,EPS_L)){ 
         	xr_delete(*k_it);
             keys.erase(k_it);
@@ -82,12 +82,12 @@ void CEnvelope::DeleteKey(float t)
 
 BOOL CEnvelope::ScaleKeys(float from_time, float to_time, float scale_factor, float eps)
 {
-	KeyIt min_k	= FindKey(from_time,eps);
+	auto min_k	= FindKey(from_time,eps);
     if (min_k==keys.end()){
 	    KeyIt k0;
 		FindNearestKey(from_time, k0, min_k, eps);
     }
-    KeyIt max_k	= FindKey(to_time,eps);
+	auto max_k	= FindKey(to_time,eps);
     if (max_k==keys.end()){
 	    KeyIt k1;
 		FindNearestKey(to_time, max_k, k1, eps);
@@ -142,7 +142,7 @@ void CEnvelope::Save(IWriter& F)
 	F.w_u8		((u8)behavior[0]);
 	F.w_u8		((u8)behavior[1]);
 	F.w_u16		((u16)keys.size());
-	for (KeyIt k_it=keys.begin(); k_it!=keys.end(); k_it++)
+	for (auto k_it=keys.begin(); k_it!=keys.end(); k_it++)
     	(*k_it)->Save(F);
 }
 
@@ -217,7 +217,7 @@ void CEnvelope::LoadA(IReader& F)
 
 void CEnvelope::Optimize()
 {	
-	KeyIt it 		= keys.begin();
+	auto it 		= keys.begin();
     st_Key K 		= **it;	it++;
     bool equal		= true;
 	for (;it!=keys.end();it++){
@@ -230,7 +230,7 @@ void CEnvelope::Optimize()
         KeyVec		new_keys;
 		new_keys.push_back(xr_new<st_Key>(*keys.front()));
 		new_keys.push_back(xr_new<st_Key>(*keys.back()));
-        for (KeyIt k_it=keys.begin(); k_it!=keys.end(); k_it++)
+        for (auto k_it=keys.begin(); k_it!=keys.end(); k_it++)
             xr_delete(*k_it);
 		keys.clear_and_free	();
         keys				= new_keys;

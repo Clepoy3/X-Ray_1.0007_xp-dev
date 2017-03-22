@@ -162,8 +162,10 @@ dMass CPHElement::recursive_mass_summ(u16 start_geom,FRACTURE_I cur_fracture)
 {
 	dMass end_mass;
 	dMassSetZero(&end_mass);
-	GEOM_I i_geom=m_geoms.begin()+start_geom,	e=m_geoms.begin()+cur_fracture->m_start_geom_num;
-	for(;i_geom!=e;++i_geom)(*i_geom)->add_self_mass(end_mass,m_mass_center,static_dencity);
+	
+	for(auto i_geom=m_geoms.begin() + start_geom; i_geom != m_geoms.begin()+cur_fracture->m_start_geom_num; ++i_geom)
+		(*i_geom)->add_self_mass(end_mass,m_mass_center,static_dencity);
+
 	dMassAdd(&m_mass,&end_mass);
 	start_geom=cur_fracture->m_start_geom_num;
 	++cur_fracture;
@@ -1228,8 +1230,10 @@ void CPHElement::set_BoxMass(const Fobb& box, float mass)
 void CPHElement::calculate_it_data_use_density(const Fvector& mc,float density)
 {
 	dMassSetZero(&m_mass);
-	GEOM_I i_geom=m_geoms.begin(),e=m_geoms.end();
-	for(;i_geom!=e;++i_geom)(*i_geom)->add_self_mass(m_mass,mc,density);
+	
+	for(auto i_geom = m_geoms.begin(); i_geom != m_geoms.end(); ++i_geom)
+		(*i_geom)->add_self_mass(m_mass,mc,density);
+
 	VERIFY2(dMass_valide(&m_mass),"non valide mass obtained!");
 }
 
@@ -1295,9 +1299,9 @@ void	CPHElement::SetShell(CPHShell* p)
 }
 void CPHElement::PassEndGeoms(u16 from,u16 to,CPHElement* dest)
 {
-	GEOM_I i_from=m_geoms.begin()+from,e=m_geoms.begin()+to;
+	auto i_from=m_geoms.begin()+from,e=m_geoms.begin()+to;
 	u16 shift=to-from;
-	GEOM_I i=i_from;
+	auto i=i_from;
 	for(;i!=e;++i)
 	{
 		(*i)->remove_from_space(m_group);
@@ -1307,7 +1311,7 @@ void CPHElement::PassEndGeoms(u16 from,u16 to,CPHElement* dest)
 		u16& element_pos=(*i)->element_position();
 		element_pos=element_pos-shift;
 	}
-	GEOM_I last=m_geoms.end();
+	auto last=m_geoms.end();
 	for(;i!=last;++i)
 	{
 		u16& element_pos=(*i)->element_position();
@@ -1339,12 +1343,9 @@ void CPHElement::CreateSimulBase()
 }
 void CPHElement::ReAdjustMassPositions(const Fmatrix &shift_pivot,float density)
 {
-
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i)
-	{
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
 		(*i)->move_local_basis(shift_pivot);
-	}
+
 	if(m_shell->PKinematics())
 	{
 		float mass;
@@ -1387,17 +1388,15 @@ void CPHElement::ReInitDynamics(const Fmatrix &shift_pivot,float density)
 {
 	VERIFY(_valid(shift_pivot)&&_valid(density));
 	ReAdjustMassPositions(shift_pivot,density);
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i)
+	
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
 	{
 		(*i)->set_position(m_mass_center);
 		(*i)->set_body(m_body);
 		//if(object_contact_callback)geom.set_obj_contact_cb(object_contact_callback);
 		//if(m_phys_ref_object) geom.set_ref_object(m_phys_ref_object);
 		if(m_group)
-		{
 			(*i)->add_to_space((dSpaceID)m_group);
-		}
 	}	
 }
 

@@ -1,6 +1,4 @@
-//---------------------------------------------------------------------------
-#ifndef ParticleGroupH
-#define ParticleGroupH
+#pragma once
 
 #include "..\ParticleCustom.h"
 
@@ -35,7 +33,7 @@ namespace PS
             BOOL			Equal				(const SEffect&);
 #endif
 		};
-		DEFINE_VECTOR(SEffect*,EffectVec,EffectIt);
+		using EffectVec = xr_vector<SEffect*>;
 		EffectVec			m_Effects;
 #ifdef _EDITOR
         shared_str			m_OwnerName;
@@ -63,7 +61,7 @@ namespace PS
         void				Clone			(CPGDef* source);
 #endif
 	};
-	DEFINE_VECTOR(CPGDef*,PGDVec,PGDIt);
+	using PGDVec = xr_vector<CPGDef*>;
 
 	class ECORE_API CParticleGroup: public IParticleCustom
 	{
@@ -71,7 +69,7 @@ namespace PS
 		float				m_CurrentTime;
 		Fvector				m_InitialPosition;
 	public:
-    	DEFINE_VECTOR(IRender_Visual*,VisualVec,VisualVecIt);
+		using VisualVec = xr_vector<IRender_Visual*>;
     	struct SItem		{
         	IRender_Visual*	_effect;
             VisualVec		_children_related;
@@ -104,7 +102,7 @@ namespace PS
             void			Play			();
             void			Stop			(BOOL def_stop);
         };
-        DEFINE_VECTOR(SItem,SItemVec,SItemVecIt)
+		using SItemVec = xr_vector<SItem>;
 		SItemVec			items;
 	public:
 		enum{
@@ -149,6 +147,3 @@ namespace PS
 #define PGD_CHUNK_TIME_LIMIT	0x0005
 #define PGD_CHUNK_OWNER			0x0006
 #define PGD_CHUNK_EFFECTS2		0x0007
-
-//---------------------------------------------------------------------------
-#endif

@@ -15,8 +15,9 @@ CPHGeometryOwner::CPHGeometryOwner()
 
 CPHGeometryOwner::~CPHGeometryOwner()
 {
-	GEOM_I i_geom=m_geoms.begin(),e=m_geoms.end();
-	for(;i_geom!=e;++i_geom)xr_delete(*i_geom);
+	for(auto i_geom=m_geoms.begin(); i_geom != m_geoms.end(); ++i_geom)
+		xr_delete(*i_geom);
+
 	m_geoms.clear();
 }
 void CPHGeometryOwner::			build_Geom	(CODEGeom& geom)
@@ -56,17 +57,16 @@ void CPHGeometryOwner::build()
 void CPHGeometryOwner::destroy()
 {
 	if(! b_builded) return;
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i)
-	{
+	
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
 		(*i)->destroy();
-	}
+
 	b_builded=false;
 }
 void CPHGeometryOwner::set_body(dBodyID body)
 {
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i) (*i)->set_body(body);
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->set_body(body);
 }
 
 Fvector CPHGeometryOwner::			get_mc_data	(){
@@ -74,8 +74,8 @@ Fvector CPHGeometryOwner::			get_mc_data	(){
 	float pv;
 	m_mass_center.set(0,0,0);
 	m_volume=0.f;
-	GEOM_I i_geom=m_geoms.begin(),e=m_geoms.end();
-	for(;i_geom!=e;++i_geom)
+	
+	for(auto i_geom=m_geoms.begin(); i_geom != m_geoms.end(); ++i_geom)
 	{
 		pv=(*i_geom)->volume();
 		s.mul((*i_geom)->local_center(),pv);
@@ -98,8 +98,8 @@ void CPHGeometryOwner::get_mc_kinematics(CKinematics* K,Fvector& mc,float& mass)
 	mc.set(0.f,0.f,0.f);
 	mass=0.f;
 	m_volume=0.f;
-	GEOM_I i_geom=m_geoms.begin(),e=m_geoms.end();
-	for(;i_geom!=e;++i_geom)
+	
+	for(auto i_geom=m_geoms.begin(); i_geom != m_geoms.end(); ++i_geom)
 	{
 		CBoneData& data=K->LL_GetData((*i_geom)->bone_id());
 		Fvector add;
@@ -114,26 +114,26 @@ void CPHGeometryOwner::get_mc_kinematics(CKinematics* K,Fvector& mc,float& mass)
 void CPHGeometryOwner::			calc_volume_data	()
 {
 	m_volume=0.f;
-	GEOM_I i_geom=m_geoms.begin(),e=m_geoms.end();
-	for(;i_geom!=e;++i_geom)
-	{
+	
+	for(auto i_geom=m_geoms.begin(); i_geom != m_geoms.end(); ++i_geom)
 		m_volume+=(*i_geom)->volume();
-	}
 }
 
 void CPHGeometryOwner::SetMaterial(u16 m)
 {
 	ul_material=m;
 	if(!b_builded) return;
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i) (*i)->set_material(m);
+	
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->set_material(m);
 }
 
 void CPHGeometryOwner::SetPhObjectInGeomData(CPHObject* O)
 {
 	if(!b_builded) return;
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i) (*i)->set_ph_object(O);
+	
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->set_ph_object(O);
 }
 
 dGeomID CPHGeometryOwner::dSpacedGeometry()
@@ -240,8 +240,9 @@ void CPHGeometryOwner::set_ContactCallback(ContactCallbackFun* callback)
 {
 	contact_callback=callback;
 	if(!b_builded)return;
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i) (*i)->set_contact_cb(callback);
+	
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->set_contact_cb(callback);
 }
 
 
@@ -249,36 +250,33 @@ void CPHGeometryOwner::set_ObjectContactCallback(ObjectContactCallbackFun* callb
 {
 	object_contact_callback= callback;
 	if(!b_builded)return;
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i) (*i)->set_obj_contact_cb(callback);
+	
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->set_obj_contact_cb(callback);
 }
 
 void CPHGeometryOwner::add_ObjectContactCallback(ObjectContactCallbackFun* callback)
 {
-	
 	if(!object_contact_callback)
-	{
 		object_contact_callback= callback;
-	}
-	if(!b_builded)return;
-	{
-		GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-		for(;i!=e;++i) (*i)->add_obj_contact_cb(callback);
-	}
+
+	if(!b_builded)
+		return;
+
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->add_obj_contact_cb(callback);
 }
 
 void CPHGeometryOwner::remove_ObjectContactCallback(ObjectContactCallbackFun* callback)
 {
-
 	if(object_contact_callback==callback)
-	{
 		object_contact_callback= NULL;
-	}
-	if(!b_builded)return;
-	{
-		GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-		for(;i!=e;++i) (*i)->remove_obj_contact_cb(callback);
-	}
+
+	if(!b_builded)
+		return;
+
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->remove_obj_contact_cb(callback);
 }
 
 ObjectContactCallbackFun* CPHGeometryOwner::get_ObjectContactCallback()
@@ -288,8 +286,9 @@ ObjectContactCallbackFun* CPHGeometryOwner::get_ObjectContactCallback()
 void CPHGeometryOwner::set_CallbackData(void * cd)
 {
 	VERIFY(b_builded);
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i) (*i)->set_callback_data(cd);
+
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->set_callback_data(cd);
 }
 void*	CPHGeometryOwner::get_CallbackData()
 {
@@ -300,8 +299,9 @@ void CPHGeometryOwner::set_PhysicsRefObject(CPhysicsShellHolder* ref_object)
 {
 	m_phys_ref_object=ref_object;
 	if(!b_builded) return;
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i) (*i)->set_ref_object(ref_object);
+	
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->set_ref_object(ref_object);
 }
 
 u16	CPHGeometryOwner::numberOfGeoms()
@@ -312,8 +312,8 @@ u16	CPHGeometryOwner::numberOfGeoms()
 void CPHGeometryOwner::get_Extensions(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)
 {
 	lo_ext=dInfinity;hi_ext=-dInfinity;
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i)
+	
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
 	{
 		float temp_lo_ext,temp_hi_ext;
 		//GetTransformedGeometryExtensions((*i)->geometry_transform(),(float*)&axis,center_prg,&temp_lo_ext,&temp_hi_ext);
@@ -321,7 +321,6 @@ void CPHGeometryOwner::get_Extensions(const Fvector& axis,float center_prg,float
 		if(lo_ext>temp_lo_ext)lo_ext=temp_lo_ext;
 		if(hi_ext<temp_hi_ext)hi_ext=temp_hi_ext;
 	}
-
 }
 
 void CPHGeometryOwner::get_MaxAreaDir(Fvector& dir)
@@ -348,18 +347,17 @@ void CPHGeometryOwner::setStaticForm(const Fmatrix& form)
 	Fmatrix f;
 	f.set(form);
 	get_mc_vs_transform(f.c,form);
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i) (*i)->set_static_ref_form(f);
+	
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
+		(*i)->set_static_ref_form(f);
 }
 
 void CPHGeometryOwner::setPosition(const Fvector& pos)
 {
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i)
-	{
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
 		(*i)->set_position(pos);
-	}
 }
+
 void CPHGeometryOwner::CreateSimulBase()
 {
 	if(m_geoms.size()>1)
@@ -382,23 +380,16 @@ bool	operator () (CODEGeom* g)
 };
 CODEGeom* CPHGeometryOwner::GeomByBoneID(u16 bone_id)
 {
-	
-	GEOM_I g=std::find_if(m_geoms.begin(),m_geoms.end(),SFindPred(bone_id));
+	auto g=std::find_if(m_geoms.begin(),m_geoms.end(),SFindPred(bone_id));
+
 	if(g!=m_geoms.end())
-	{
 		return *g;
-	}
 	else
-	{
 		return NULL;
-	}
 }
 
 void CPHGeometryOwner::clear_cashed_tries()
 {
-	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
-	for(;i!=e;++i)
-	{
+	for(auto i=m_geoms.begin(); i != m_geoms.end(); ++i)
 		(*i)->clear_cashed_tries();
-	}
 }

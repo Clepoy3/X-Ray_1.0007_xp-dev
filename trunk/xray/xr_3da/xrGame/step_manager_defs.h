@@ -16,7 +16,7 @@ struct SStepParam {
 	u8			cycles;
 };
 
-//DEFINE_MAP(MotionID, SStepParam, STEPS_MAP, STEPS_MAP_IT);
+//using STEPS_MAP = xr_map<MotionID, SStepParam>;
 typedef associative_vector<MotionID, SStepParam>	STEPS_MAP;
 typedef STEPS_MAP::iterator							STEPS_MAP_IT;
 

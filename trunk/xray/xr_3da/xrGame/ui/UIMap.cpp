@@ -410,10 +410,10 @@ void CUILevelMap::UpdateSpots		()
 	AttachChild		(F);
 */
 	Locations& ls =Level().MapManager().Locations();
-	for(Locations_it it=ls.begin(); it!=ls.end(); ++it){
+
+	for(auto it=ls.begin(); it!=ls.end(); ++it)
 		if ((*it).location->Update())
 			(*it).location->UpdateLevelMap(this);
-	}
 }
 
 Frect CUILevelMap::CalcWndRectOnGlobal	()
@@ -549,8 +549,7 @@ void CUIMiniMap::UpdateSpots()
 {
 	DetachAll();
 	Locations& ls =Level().MapManager().Locations();
-	for(Locations_it it=ls.begin(); it!=ls.end(); ++it){
-			(*it).location->UpdateMiniMap(this);
-	}
 
+	for(auto it=ls.begin(); it!=ls.end(); ++it)
+		(*it).location->UpdateMiniMap(this);
 }

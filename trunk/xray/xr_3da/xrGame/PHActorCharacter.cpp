@@ -39,19 +39,13 @@ void CPHActorCharacter::Create(dVector3 sizes)
 	if(b_exist) return;
 	inherited::Create(sizes);
 	if(!IsGameTypeSingle())
-	{
 		ClearRestrictors();
-	}
-	RESTRICTOR_I i=begin(m_restrictors),e=end(m_restrictors);
-	for(;e!=i;++i)
-	{
+	
+	for(auto i=begin(m_restrictors); end(m_restrictors) != i; ++i)
 		(*i)->Create(this,sizes);
-	}
 
 	if(m_phys_ref_object)
-	{
 		SetPhysicsRefObject(m_phys_ref_object);
-	}
 }
 void SPHCharacterRestrictor::Create(CPHCharacter* ch,dVector3 sizes)
 {
@@ -82,7 +76,7 @@ void SPHCharacterRestrictor::Create(CPHCharacter* ch,dVector3 sizes)
 	
 }
 
-RESTRICTOR_I CPHActorCharacter::Restrictor(CPHCharacter::ERestrictionType rtype)
+auto CPHActorCharacter::Restrictor(CPHCharacter::ERestrictionType rtype)
 {
 	R_ASSERT2(rtype<rtActor,"not valide restrictor");
 	return begin(m_restrictors)+rtype;
@@ -105,17 +99,15 @@ void SPHCharacterRestrictor::SetRadius(float r)
 void CPHActorCharacter::Destroy()
 {
 	if(!b_exist) return;
-	RESTRICTOR_I i=begin(m_restrictors),e=end(m_restrictors);
-	for(;e!=i;++i)
-	{
+	
+	for(auto i=begin(m_restrictors); end(m_restrictors) != i; ++i)
 		(*i)->Destroy();
-	}
+
 	inherited::Destroy();
 }
 void CPHActorCharacter::ClearRestrictors()
 {
-	RESTRICTOR_I i=begin(m_restrictors),e=end(m_restrictors);
-	for(;e!=i;++i)
+	for(auto i=begin(m_restrictors); end(m_restrictors) != i; ++i)
 	{
 		(*i)->Destroy();
 		xr_delete(*i);
@@ -139,11 +131,9 @@ void SPHCharacterRestrictor::Destroy()
 void CPHActorCharacter::SetPhysicsRefObject(CPhysicsShellHolder* ref_object)
 {
 	inherited::SetPhysicsRefObject(ref_object);
-	RESTRICTOR_I i=begin(m_restrictors),e=end(m_restrictors);
-	for(;e!=i;++i)
-	{
+	
+	for(auto i=begin(m_restrictors); end(m_restrictors) != i; ++i)
 		(*i)->SetPhysicsRefObject(ref_object);
-	}
 }
 void SPHCharacterRestrictor::SetPhysicsRefObject(CPhysicsShellHolder* ref_object)
 {
@@ -154,11 +144,9 @@ void CPHActorCharacter::SetMaterial							(u16 material)
 {
 	inherited::SetMaterial(material);
 	if(!b_exist) return;
-	RESTRICTOR_I i=begin(m_restrictors),e=end(m_restrictors);
-	for(;e!=i;++i)
-	{
+	
+	for(auto i=begin(m_restrictors); end(m_restrictors) != i; ++i)
 		(*i)->SetMaterial(material);
-	}
 }
 void SPHCharacterRestrictor::SetMaterial(u16 material)
 {
@@ -228,7 +216,7 @@ void CPHActorCharacter::InitContact(dContact* c,bool &do_collide,u16 material_id
 
 	bool b1;
 	SFindPredicate fp(c,&b1);
-	RESTRICTOR_I r=std::find_if(begin(m_restrictors),end(m_restrictors),fp);
+	auto r=std::find_if(begin(m_restrictors),end(m_restrictors),fp);
 	bool b_restrictor=(r!=end(m_restrictors));
 	SGameMtl*	material_1=GMLib.GetMaterialByIdx(material_idx_1);
 	SGameMtl*	material_2=GMLib.GetMaterialByIdx(material_idx_2);

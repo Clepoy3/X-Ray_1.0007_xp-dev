@@ -174,7 +174,7 @@ bool CControlAnimationBase::CheckTransition(EMotionAnim from, EMotionAnim to)
 	EPState		state_from	= GetState(cur_from);
 	EPState		state_to	= GetState(to);
 
-	TRANSITION_ANIM_VECTOR_IT I = m_tTransitions.begin();
+	auto I = m_tTransitions.begin();
 	bool bVectEmpty = m_tTransitions.empty();
 
 	while (!bVectEmpty) {		// вход в цикл, если вектор переходов не пустой
@@ -215,7 +215,7 @@ bool CControlAnimationBase::CheckTransition(EMotionAnim from, EMotionAnim to)
 
 void CControlAnimationBase::CheckReplacedAnim()
 {
-	for (REPLACED_ANIM_IT it=m_tReplacedAnims.begin(); m_tReplacedAnims.end()!=it ;++it) 
+	for (auto it=m_tReplacedAnims.begin(); m_tReplacedAnims.end()!=it ;++it)
 		if ((cur_anim_info().motion == it->cur_anim) && (*(it->flag) == true)) { 
 			cur_anim_info().motion = it->new_anim;
 			return;
@@ -227,9 +227,9 @@ SAAParam &CControlAnimationBase::AA_GetParams(LPCSTR anim_name)
 	// искать текущую анимацию в AA_VECTOR
 	MotionID motion = smart_cast<CKinematicsAnimated*>(m_object->Visual())->LL_MotionID(anim_name);
 
-	for (AA_VECTOR_IT it = m_attack_anims.begin(); it != m_attack_anims.end(); it++) {
-		if (it->motion == motion) return (*it);
-	}
+	for (auto it = m_attack_anims.begin(); it != m_attack_anims.end(); it++)
+		if (it->motion == motion)
+			return (*it);
 	
 	VERIFY3(FALSE, "Error! No animation in AA_VECTOR! Animation = ", anim_name);
 	return (*(m_attack_anims.begin()));
@@ -238,9 +238,9 @@ SAAParam &CControlAnimationBase::AA_GetParams(LPCSTR anim_name)
 SAAParam &CControlAnimationBase::AA_GetParams(MotionID motion, float time_perc)
 {
 	// искать текущую анимацию в AA_VECTOR
-	for (AA_VECTOR_IT it = m_attack_anims.begin(); it != m_attack_anims.end(); it++) {
-		if ((it->motion == motion) && (it->time == time_perc)) return (*it);
-	}
+	for (auto it = m_attack_anims.begin(); it != m_attack_anims.end(); it++)
+		if ((it->motion == motion) && (it->time == time_perc))
+			return (*it);
 
 	VERIFY2(FALSE, "Error! No animation in AA_VECTOR! Animation = [UNKNOWN]");
 	return (*(m_attack_anims.begin()));
@@ -399,7 +399,7 @@ void CControlAnimationBase::UpdateAnimCount()
 {
 	CKinematicsAnimated *skel = smart_cast<CKinematicsAnimated*>(m_object->Visual());
 
-	for (ANIM_ITEM_VECTOR_IT it = m_anim_storage.begin(); it != m_anim_storage.end(); it++)	{
+	for (auto it = m_anim_storage.begin(); it != m_anim_storage.end(); it++)	{
 		if (!(*it)) continue;
 
 		// проверить, были ли уже загружены данные
@@ -444,8 +444,9 @@ shared_str CControlAnimationBase::GetAnimTranslation(const MotionID &motion)
 {
 	shared_str				ret_value;
 
-	ANIM_TO_MOTION_MAP_IT	anim_it = m_anim_motion_map.find(motion);
-	if (anim_it != m_anim_motion_map.end()) ret_value = anim_it->second;
+	auto anim_it = m_anim_motion_map.find(motion);
+	if (anim_it != m_anim_motion_map.end())
+		ret_value = anim_it->second;
 
 	return ret_value;
 }

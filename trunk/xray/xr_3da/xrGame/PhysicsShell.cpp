@@ -106,8 +106,9 @@ CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,BONE_P
 		pPhysicsShell=P_build_Shell(obj,not_active_state);
 
 
-	BONE_P_PAIR_IT i=p_bone_map->begin(),e=p_bone_map->end();
-	if(i!=e) pPhysicsShell->SetPrefereExactIntegration();
+	auto i=p_bone_map->begin(),e=p_bone_map->end();
+	if(i!=e)
+		pPhysicsShell->SetPrefereExactIntegration();
 	for(;i!=e;i++)
 	{
 		CPhysicsElement* fixed_element=i->second.element;
@@ -140,13 +141,14 @@ CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,U16Vec
 	bone_map.clear			();
 	CPhysicsShell*			pPhysicsShell;
 	if(!fixed_bones.empty())
-		for (U16It it=fixed_bones.begin(); it!=fixed_bones.end(); it++)
+		for (auto it=fixed_bones.begin(); it!=fixed_bones.end(); it++)
 			bone_map.insert(std::make_pair(*it,physicsBone()));
 	pPhysicsShell=P_build_Shell(obj,not_active_state,&bone_map);
 
 	// fix bones
-	BONE_P_PAIR_IT i=bone_map.begin(),e=bone_map.end();
-	if(i!=e) pPhysicsShell->SetPrefereExactIntegration();
+	auto i=bone_map.begin(),e=bone_map.end();
+	if(i!=e)
+		pPhysicsShell->SetPrefereExactIntegration();
 	for(;i!=e;i++){
 		CPhysicsElement* fixed_element=i->second.element;
 		//R_ASSERT2(fixed_element,"fixed bone has no physics");

@@ -1,8 +1,4 @@
-//---------------------------------------------------------------------------
-#ifndef ItemListTypesH
-#define ItemListTypesH
-
-//---------------------------------------------------------------------------
+#pragma once
 
 class ListItem{
 	friend class		CListHelper;
@@ -43,10 +39,4 @@ public:
     IC void				SetIcon			(int index){icon_index=index;}
 };
 
-DEFINE_VECTOR			(ListItem*,ListItemsVec,ListItemsIt);
-//---------------------------------------------------------------------------
-#endif
-
-
-
-
+using ListItemsVec = xr_vector<ListItem*>;

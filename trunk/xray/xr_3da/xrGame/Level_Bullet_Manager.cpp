@@ -358,7 +358,7 @@ void CBulletManager::Render	()
 										vOffset);
 	FVF::LIT	*start		=	verts;
 
-	for(BulletVecIt it = m_BulletsRendered.begin(); it!=m_BulletsRendered.end(); it++){
+	for(auto it = m_BulletsRendered.begin(); it!=m_BulletsRendered.end(); it++){
 		SBullet* bullet					= &(*it);
 		if(!bullet->flags.allow_tracer)	continue;
 		if (!bullet->flags.skipped_frame)  continue;

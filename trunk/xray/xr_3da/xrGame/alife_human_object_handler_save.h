@@ -45,8 +45,8 @@ CSE_ALifeItemWeapon	*CSE_ALifeHumanAbstract::tpfGetBestWeapon(EHitType &tHitType
 	fHitPower					= 0.f;
 	m_tpCurrentBestWeapon		= 0;
 	u32							l_dwBestWeapon = 0;
-	OBJECT_IT			I = children.begin();
-	OBJECT_IT			E = children.end();
+	auto			I = children.begin();
+	auto			E = children.end();
 	for ( ; I != E; ++I) {
 		CSE_ALifeItemWeapon		*l_tpALifeItemWeapon = smart_cast<CSE_ALifeItemWeapon*>(ai().alife().objects().object(*I));
 		if (!l_tpALifeItemWeapon)
@@ -162,8 +162,8 @@ u16	CSE_ALifeHumanAbstract::get_available_ammo_count(const CSE_ALifeItemWeapon *
 	if (!tpALifeItemWeapon->m_caAmmoSections)
 		return(u16(-1));
 	u32							l_dwResult = 0;
-	OBJECT_IT					I = tpObjectVector.begin();
-	OBJECT_IT					E = tpObjectVector.end();
+	auto					I = tpObjectVector.begin();
+	auto					E = tpObjectVector.end();
 	for ( ; I != E; ++I) {
 		CSE_ALifeItemAmmo		*l_tpALifeItemAmmo = smart_cast<CSE_ALifeItemAmmo*>(ai().alife().objects().object(*I));
 		if (l_tpALifeItemAmmo && strstr(tpALifeItemWeapon->m_caAmmoSections,*l_tpALifeItemAmmo->s_name))
@@ -249,7 +249,7 @@ void CSE_ALifeHumanAbstract::vfDetachAll(bool bFictitious)
 		if (!bFictitious)
 			alife().graph().detach	(*this,l_tpALifeInventoryItem,m_tGraphID);
 		else {
-			OBJECT_IT				I = children.begin();
+			auto				I = children.begin();
 			detach					(l_tpALifeInventoryItem,&I);
 		}
 	}
@@ -264,8 +264,8 @@ CSE_ALifeDynamicObject *CSE_ALifeHumanAbstract::tpfGetBestDetector()
 		u32							l_dwBestValue = 0;
 		if (!l_tpALifeGroupAbstract->m_wCount)
 			return					(0);
-		OBJECT_IT					I = l_tpALifeGroupAbstract->m_tpMembers.begin();
-		OBJECT_IT					E = l_tpALifeGroupAbstract->m_tpMembers.end();
+		auto					I = l_tpALifeGroupAbstract->m_tpMembers.begin();
+		auto					E = l_tpALifeGroupAbstract->m_tpMembers.end();
 		for ( ; I != E; ++I) {
 			CSE_ALifeHumanAbstract	*l_tpALifeHumanAbstract = smart_cast<CSE_ALifeHumanAbstract*>(ai().alife().objects().object(l_tpALifeGroupAbstract->m_tpMembers[0]));
 			R_ASSERT				(l_tpALifeHumanAbstract);
@@ -279,8 +279,8 @@ CSE_ALifeDynamicObject *CSE_ALifeHumanAbstract::tpfGetBestDetector()
 		return						(m_tpBestDetector);
 	}
 	
-	OBJECT_IT						I = children.begin();
-	OBJECT_IT						E = children.end();
+	auto						I = children.begin();
+	auto						E = children.end();
 	for ( ; I != E; ++I) {
 		CSE_ALifeDynamicObject		*l_tpALifeDynamicObject = ai().alife().objects().object(*I);
 		CSE_ALifeInventoryItem		*l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);

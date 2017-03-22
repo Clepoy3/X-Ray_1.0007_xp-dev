@@ -24,20 +24,19 @@ CPHFracturesHolder::~CPHFracturesHolder()
 }
 void CPHFracturesHolder::ApplyImpactsToElement(CPHElement* E)
 {
-	PH_IMPACT_I i=m_impacts.begin(),e=m_impacts.end();
 	BOOL ac_state=E->isActive();
 	//E->bActive=true;
 	E->m_flags.set(CPHElement::flActive,TRUE);
-	for(;e!=i;++i)
-	{
+
+	for(auto i=m_impacts.begin(); m_impacts.end() != i; ++i)
 		E->applyImpact(*i);
-	}
+
 	//E->bActive=ac_state;
 	E->m_flags.set(CPHElement::flActive,ac_state);
 }
 element_fracture CPHFracturesHolder::SplitFromEnd(CPHElement* element,u16 fracture)
 {
-	FRACTURE_I fract_i		=m_fractures.begin()+fracture;
+	auto fract_i		=m_fractures.begin()+fracture;
 	u16 geom_num			=fract_i->m_start_geom_num;
 	u16 end_geom_num		=fract_i->m_end_geom_num;
 	SubFractureMass			(fracture);
@@ -95,7 +94,7 @@ element_fracture CPHFracturesHolder::SplitFromEnd(CPHElement* element,u16 fractu
 
 void CPHFracturesHolder::PassEndFractures(u16 from,CPHElement* dest)
 {
-	FRACTURE_I i=m_fractures.begin(),i_from=m_fractures.begin()+from,e=m_fractures.end();
+	auto i=m_fractures.begin(),i_from=m_fractures.begin()+from,e=m_fractures.end();
 	u16 end_geom=i_from->m_end_geom_num;
 	u16 begin_geom_num=i_from->m_start_geom_num;
 	u16 leaved_geoms=begin_geom_num;
@@ -118,7 +117,7 @@ void CPHFracturesHolder::PassEndFractures(u16 from,CPHElement* dest)
 		cur_end_geom=cur_end_geom-leaved_geoms;
 		cur_geom=cur_geom-leaved_geoms;
 	}
-	FRACTURE_I i_to=i;
+	auto i_to=i;
 	for(;i!=e;++i)//correct data in the rest leaved fractures
 	{
 		u16 &cur_end_geom	=i->m_end_geom_num;
@@ -202,14 +201,13 @@ void CPHFracturesHolder::PhTune(dBodyID body)
 }
 bool CPHFracturesHolder::PhDataUpdate(CPHElement* element)
 {
-	FRACTURE_I i=m_fractures.begin(),e=m_fractures.end();
-	for(;i!=e;++i)
-	{
+	for(auto i=m_fractures.begin(); i != m_fractures.end(); ++i)
 		m_has_breaks=i->Update(element)||m_has_breaks;
-	}
-	if(!m_has_breaks)m_impacts.clear();
+
+	if(!m_has_breaks)
+		m_impacts.clear();
+
 	return m_has_breaks;
-	
 }
 
 void CPHFracturesHolder::AddImpact(const Fvector& force,const Fvector& point,u16 id)
@@ -228,28 +226,27 @@ CPHFracture& CPHFracturesHolder::Fracture(u16 num)
 }
 void CPHFracturesHolder::DistributeAdditionalMass(u16 geom_num,const dMass& m)
 {
-	FRACTURE_I f_i=m_fractures.begin(),f_e=m_fractures.end();
-	for(;f_i!=f_e;++f_i)
+	for(auto f_i=m_fractures.begin(); f_i != m_fractures.end(); ++f_i)
 	{
 		R_ASSERT2(u16(-1) != f_i->m_start_geom_num,"fracture does not initialized!");
 
-			if(f_i->m_end_geom_num==u16(-1))f_i->MassAddToSecond(m)	;
-			else							f_i->MassAddToFirst(m)	;
-		
+		if(f_i->m_end_geom_num==u16(-1))
+			f_i->MassAddToSecond(m);
+		else
+			f_i->MassAddToFirst(m);
 
-		
 		//f_i->MassAddToFirst(m);
 	}
 }
 void CPHFracturesHolder::SubFractureMass(u16 fracture_num)
 {
-	FRACTURE_I f_i=m_fractures.begin(),f_e=m_fractures.end();
-	FRACTURE_I fracture=f_i+fracture_num;
+	auto f_i=m_fractures.begin();
+	auto fracture=f_i+fracture_num;
 	u16 start_geom=fracture->m_start_geom_num;
 	u16	end_geom  =fracture->m_end_geom_num;
 	dMass& second_mass=fracture->m_secondM;
 	dMass& first_mass=fracture->m_firstM;
-	for(;f_i!=f_e;++f_i)
+	for(; f_i != m_fractures.end(); ++f_i)
 	{
 		if(f_i==fracture) continue;
 		R_ASSERT2(start_geom!=f_i->m_start_geom_num,"Double fracture!!!");
@@ -435,8 +432,7 @@ bool CPHFracture::Update(CPHElement* element)
 
 	}
 
-	PH_IMPACT_I i_i=impacts.begin(),i_e=impacts.end();
-	for(;i_i!=i_e;i_i++)
+	for(auto i_i=impacts.begin(); i_i != impacts.end(); i_i++)
 	{
 		u16 geom = i_i->geom;
 

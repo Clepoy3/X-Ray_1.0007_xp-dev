@@ -28,7 +28,7 @@ bool CAmebaZone::BlowoutState()
 	bool result = inherited::BlowoutState();
 	if(!result) UpdateBlowout();
 
-	for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
+	for(auto it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 		Affect(&(*it));
 
 	return result;
@@ -75,8 +75,7 @@ void  CAmebaZone::Affect(SZoneObjectInfo* O)
 
 void CAmebaZone::PhTune(dReal step)
 {
-	OBJECT_INFO_VEC_IT it;
-	for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
+	for(auto it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it)
 	{
 		CEntityAlive	*EA=smart_cast<CEntityAlive*>((*it).object);
 		if(EA)
@@ -92,7 +91,6 @@ void CAmebaZone::PhTune(dReal step)
 								mc->SetVelocityLimit(m_fVelocityLimit);
 			}
 		}
-		
 	}
 }
 

@@ -28,15 +28,15 @@ public:
     void				OnDestroy		();
 
     PS::CPEDef*			FindPED			(LPCSTR name);
-    PS::PEDIt			FindPEDIt		(LPCSTR name);
+	auto			FindPEDIt		(LPCSTR name);
     PS::CPGDef*			FindPGD			(LPCSTR name);
-    PS::PGDIt			FindPGDIt		(LPCSTR name);
+	auto			FindPGDIt		(LPCSTR name);
 
     // get object properties methods
-    IC PS::PEDIt		FirstPED		()	{return m_PEDs.begin();}
-    IC PS::PEDIt		LastPED			()	{return m_PEDs.end();}
-    IC PS::PGDIt		FirstPGD		()	{return m_PGDs.begin();}
-    IC PS::PGDIt		LastPGD			()	{return m_PGDs.end();}
+    IC auto		FirstPED		()	{return m_PEDs.begin();}
+    IC auto		LastPED			()	{return m_PEDs.end();}
+    IC auto		FirstPGD		()	{return m_PGDs.begin();}
+    IC auto		LastPGD			()	{return m_PGDs.end();}
 
     PS::CPEDef*			AppendPED		(PS::CPEDef* src=0);
     PS::CPGDef*			AppendPGD		(PS::CPGDef* src=0);

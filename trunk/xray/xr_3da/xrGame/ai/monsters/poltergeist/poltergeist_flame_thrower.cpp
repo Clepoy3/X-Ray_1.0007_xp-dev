@@ -182,7 +182,7 @@ void CPolterFlame::update_schedule()
 
 
 	// check all flames
-	for (FLAME_ELEMS_IT it = m_flames.begin();it != m_flames.end();it++) {
+	for (auto it = m_flames.begin();it != m_flames.end();it++) {
 		SFlameElement *elem = *it;
 	
 		// test switches to states
@@ -262,20 +262,20 @@ void CPolterFlame::on_destroy()
 {
 	inherited::on_destroy();
 
-	FLAME_ELEMS_IT I = m_flames.begin();
-	FLAME_ELEMS_IT E = m_flames.end();
-
 	// Пройти по всем объектам и проверить на хит врага
-	for ( ;I != E; ++I) {
-		if ((*I)->sound._feedback()) (*I)->sound.stop();
-		if ((*I)->particles_object) CParticlesObject::Destroy((*I)->particles_object);
+	for (auto I = m_flames.begin(); I != m_flames.end(); ++I) {
+		if ((*I)->sound._feedback())
+			(*I)->sound.stop();
+		if ((*I)->particles_object)
+			CParticlesObject::Destroy((*I)->particles_object);
 
 		xr_delete((*I));
 	}
 	
 	m_flames.clear();
 
-	if (m_scan_sound._feedback()) m_scan_sound.stop();
+	if (m_scan_sound._feedback())
+		m_scan_sound.stop();
 }
 
 void CPolterFlame::on_die()

@@ -61,7 +61,7 @@ public:
 		Fvector			offset;
 		float			wind_gust_factor;
 	};
-	DEFINE_VECTOR(SEffect,EffectVec,EffectVecIt);
+	using EffectVec = xr_vector<SEffect>;
 protected:
 	shared_str			section;
 	EffectVec			effects;
@@ -163,9 +163,9 @@ class ENGINE_API	CEnvironment
 		{	return xr_strcmp(x,y)<0;	}
 	};
 public:
-	DEFINE_VECTOR			(CEnvAmbient*,EnvAmbVec,EnvAmbVecIt);
-	DEFINE_VECTOR			(CEnvDescriptor*,EnvVec,EnvIt);
-	DEFINE_MAP_PRED			(shared_str,EnvVec,EnvsMap,EnvsMapIt,str_pred);
+	using EnvAmbVec = xr_vector<CEnvAmbient*>;
+	using EnvVec = xr_vector<CEnvDescriptor*>;
+	using EnvsMap = xr_map<shared_str, EnvVec, str_pred>;
 private:
 	// clouds
 	FvectorVec				CloudsVerts;

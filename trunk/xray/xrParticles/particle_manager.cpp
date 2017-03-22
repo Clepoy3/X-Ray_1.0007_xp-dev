@@ -86,7 +86,7 @@ void CParticleManager::PlayEffect(int effect_id, int alist_id)
 	ParticleActions* pa	= GetActionListPtr(alist_id);
 	if(pa == NULL)		return; // ERROR
 	// Step through all the actions in the action list.
-	for(PAVecIt it=pa->begin(); it!=pa->end(); it++){
+	for(auto it=pa->begin(); it!=pa->end(); it++){
 		switch((*it)->type){
 		case PASourceID: 	static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent,FALSE); break;
 		case PAExplosionID: static_cast<PAExplosion*>(*it)->age = 0.f; break;
@@ -101,7 +101,7 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
     ParticleActions* pa	= GetActionListPtr(alist_id);
     if(pa == NULL)		return; // ERROR
     // Step through all the actions in the action list.
-    for(PAVecIt it=pa->begin(); it!=pa->end(); it++){
+    for(auto it=pa->begin(); it!=pa->end(); it++){
         switch((*it)->type){
         case PASourceID: static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent,TRUE);		break;
         }
@@ -119,7 +119,7 @@ void CParticleManager::Update(int effect_id, int alist_id, float dt)
     ParticleEffect* pe	= GetEffectPtr(effect_id);
     ParticleActions* pa	= GetActionListPtr(alist_id);
 	// Step through all the actions in the action list.
-	for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+	for (auto it = pa->begin(); it != pa->end(); it++)
 	{
 		PAPI::ParticleAction *pa = (*it);
 		pa->Execute(pe, dt);		
@@ -139,7 +139,7 @@ void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvecto
 	Fmatrix mT;			mT.translate(full.c);
 
 	// Step through all the actions in the action list.
-	for(PAVecIt it=pa->begin(); it!=pa->end(); it++){
+	for(auto it=pa->begin(); it!=pa->end(); it++){
 		BOOL r 			= (*it)->m_Flags.is(ParticleAction::ALLOW_ROTATE);
 		const Fmatrix& m = r?full:mT;
         (*it)->Transform(m);
@@ -244,14 +244,6 @@ void CParticleManager::SaveActions(int alist_id, IWriter& W)
 	// Execute the specified action list.
 	ParticleActions* pa		= GetActionListPtr(alist_id);
     W.w_u32					(pa->size());
-    for (PAVecIt it=pa->begin(); it!=pa->end(); it++)
+    for (auto it=pa->begin(); it!=pa->end(); it++)
         (*it)->Save			(W);
 }
-
-
-
-
-
-
-
-

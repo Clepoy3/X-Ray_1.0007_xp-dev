@@ -31,7 +31,7 @@ struct SPHContactDBGDraw
 	Fvector pos;
 	float depth;
 };
-DEFINE_VECTOR(SPHContactDBGDraw,CONTACT_VECTOR,CONTACT_I);
+using CONTACT_VECTOR = xr_vector<SPHContactDBGDraw>;
 extern CONTACT_VECTOR Contacts0;
 extern CONTACT_VECTOR Contacts1;
 #endif
@@ -86,7 +86,7 @@ struct SPHObjDBGDraw
 	Fvector AABB_center;
 };
 
-DEFINE_VECTOR( SPHObjDBGDraw, PHOBJ_DBG_V, PHOBJ_DBG_I );
+using PHOBJ_DBG_V = xr_vector<SPHObjDBGDraw>;
 extern PHOBJ_DBG_V	dbg_draw_objects0;
 extern PHOBJ_DBG_V	dbg_draw_objects1;
 class CPHObject;
@@ -97,7 +97,7 @@ struct SPHDBGDrawAbsract
 	virtual void				render				( )						=0;
 	virtual						~SPHDBGDrawAbsract	( )						{ };
 };
-DEFINE_VECTOR( SPHDBGDrawAbsract*, PHABS_DBG_V, PHABS_DBG_I )					;
+using PHABS_DBG_V = xr_vector<SPHDBGDrawAbsract*>;
 extern PHABS_DBG_V	dbg_draw_abstruct0;
 extern PHABS_DBG_V	dbg_draw_abstruct1;
 void DBG_DrawStatBeforeFrameStep( );

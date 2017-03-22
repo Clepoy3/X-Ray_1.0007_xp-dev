@@ -97,7 +97,7 @@ public:
 	void					ChangeStateCallback		();
 };
 
-DEFINE_VECTOR(SGameTaskObjective, OBJECTIVE_VECTOR, OBJECTIVE_VECTOR_IT);
+using OBJECTIVE_VECTOR = xr_vector<SGameTaskObjective>;
 
 class CGameTask
 {

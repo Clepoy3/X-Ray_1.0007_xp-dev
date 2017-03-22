@@ -39,7 +39,7 @@ public:
 };
 
 
-DEFINE_VECTOR(CLevelFogOfWar,FOG_STORAGE_T,FOG_STORAGE_IT);
+using FOG_STORAGE_T = xr_vector<CLevelFogOfWar>;
 
 typedef CALifeAbstractRegistry<u16, FOG_STORAGE_T> CFogOfWarRegistry;
 

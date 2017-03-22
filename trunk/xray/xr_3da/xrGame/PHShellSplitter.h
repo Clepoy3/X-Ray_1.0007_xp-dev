@@ -23,9 +23,9 @@ private:
 class CPHShell;
 class CODEGeom;
 typedef std::pair<u16,CODEGeom*>	id_geom;
-DEFINE_MAP(u16,CODEGeom*,GEOM_MAP,GEOM_MAP_I)
-DEFINE_VECTOR(CPHShellSplitter,SPLITTER_STORAGE,SPLITTER_I)
-typedef		xr_vector<CPHShellSplitter>::reverse_iterator	SPLITTER_RI;
+using GEOM_MAP = xr_map<u16, CODEGeom*>;
+using SPLITTER_STORAGE = xr_vector<CPHShellSplitter>;
+typedef xr_vector<CPHShellSplitter>::reverse_iterator	SPLITTER_RI;
 
 class CPHShellSplitterHolder : public CPHUpdateObject			//call all Fractures and Breakable Joints Updates
 {

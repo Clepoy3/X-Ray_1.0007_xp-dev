@@ -72,7 +72,7 @@ CTexture*	CResourceManager::_FindTexture(LPCSTR Name)
 	char *ch = strstr(N, "*");
 	if (NULL == ch) // no wildcard?
 	{
-		map_TextureIt I = m_textures.find(N);
+		auto I = m_textures.find(N);
 		if (I != m_textures.end())	return	I->second;
 	}
 	else
@@ -80,7 +80,7 @@ CTexture*	CResourceManager::_FindTexture(LPCSTR Name)
 		// alpet: test for wildcard matching
 		ch[0] = 0; // remove *
 
-		for (map_TextureIt t = m_textures.begin(); t != m_textures.end(); t++)
+		for (auto t = m_textures.begin(); t != m_textures.end(); t++)
 		if (strstr(t->second->cName.c_str(), N))
 			return t->second;
 	}
@@ -298,7 +298,7 @@ void CResourceManager::Delete(const Shader* S)
 void	CResourceManager::DeferredUpload	()
 {
 	if (!Device.b_is_Ready)				return;
-	for (map_TextureIt t=m_textures.begin(); t!=m_textures.end(); t++)
+	for (auto t=m_textures.begin(); t!=m_textures.end(); t++)
 	{
 		t->second->Load();
 	}

@@ -88,11 +88,9 @@ void CUITabControl::RemoveItem(u32 Index)
 // Удаление всех элементов
 void CUITabControl::RemoveAll()
 {
-	TABS_VECTOR_it it = m_TabsArr.begin();
-	for (; it != m_TabsArr.end(); ++it)
-	{
+	for (auto it = m_TabsArr.begin(); it != m_TabsArr.end(); ++it)
 		DetachChild(*it);
-	}
+
 	m_TabsArr.clear();
 }
 

@@ -2,13 +2,11 @@
 // AI_PhraseDialogManager.h
 // Класс, от которого наследуются NPC персонажи, ведущие диалог
 // с актером
-//
 ///////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include "PhraseDialogManager.h"
-
 
 class CAI_PhraseDialogManager: public CPhraseDialogManager
 {
@@ -33,7 +31,7 @@ protected:
 	shared_str m_sStartDialog;
 	shared_str m_sDefaultStartDialog;
 
-	DEFINE_VECTOR(DIALOG_SHARED_PTR, DIALOG_SHARED_VECTOR, DIALOG_SHARED_IT);
+	using DIALOG_SHARED_VECTOR = xr_vector<DIALOG_SHARED_PTR>;
 	//список диалогов, на которые нужно ответить
 	DIALOG_SHARED_VECTOR m_PendingDialogs;
 };

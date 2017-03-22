@@ -192,7 +192,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 		known_info_registry->registry().init		(other_id);
 		KNOWN_INFO_VECTOR& known_info				= known_info_registry->registry().objects();
 
-		KNOWN_INFO_VECTOR_IT it = known_info.begin();
+		auto it = known_info.begin();
 		for(int i=0;it!=known_info.end();++it,++i){
 			(*it).info_id;	
 			NET_Packet		P;

@@ -454,7 +454,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 			// Вставляем иерархию разделов в энциклопедию
 			CUITreeViewItem *pNewItem = NULL;
 
-			for (GroupTree_it it2 = it; it2 != cont.end(); ++it2)
+			for (auto it2 = it; it2 != cont.end(); ++it2)
 			{
 				pNewItem = xr_new<CUITreeViewItem>();
 				pItemToIns->AddItem(pNewItem);
@@ -524,7 +524,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListWnd *pList
 		{
 			// Уже содержит. Надо искать глубже
 			pTVItemChilds = pTVItem;
-			for (GroupTree_it it = groupTree.begin() + 1; it != groupTree.end(); ++it)
+			for (auto it = groupTree.begin() + 1; it != groupTree.end(); ++it)
 			{
 				pTVItem = pTVItemChilds->Find(*(*it));
 				// Не нашли, надо вставлять хвост списка вложенности

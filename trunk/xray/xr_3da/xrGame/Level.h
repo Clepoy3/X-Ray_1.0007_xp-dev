@@ -131,7 +131,7 @@ private:
 	u32							m_dwNumSteps;
 	bool						m_bIn_CrPr;
 
-	DEF_VECTOR					(OBJECTS_LIST, CGameObject*);
+	using OBJECTS_LIST = xr_vector<CGameObject*>;
 
 	OBJECTS_LIST				pObjects4CrPr;
 	OBJECTS_LIST				pActors4CrPr;
@@ -167,7 +167,7 @@ public:
 public:
 	//////////////////////////////////////////////	
 	// static particles
-	DEFINE_VECTOR				(CParticlesObject*,POVec,POIt);
+	using POVec = xr_vector<CParticlesObject*>;
 	POVec						m_StaticParticles;
 
 	game_cl_GameState			*game;
@@ -187,7 +187,7 @@ public:
 
 private:
 	// preload sounds registry
-	DEFINE_MAP					(shared_str,ref_sound,SoundRegistryMap,SoundRegistryMapIt);
+	using SoundRegistryMap = xr_map<shared_str, ref_sound>;
 	SoundRegistryMap			sound_registry;
 
 public:

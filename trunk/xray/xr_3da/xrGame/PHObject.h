@@ -6,7 +6,7 @@
 #include "PHIsland.h"
 typedef u32	CLClassBits;
 typedef u32	CLBits;
-DEFINE_VECTOR(ISpatial*,qResultVec,qResultIt)
+using qResultVec = xr_vector<ISpatial*>;
 class CPHObject;
 class CPHUpdateObject;
 class CPHMoveStorage;

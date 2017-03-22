@@ -25,9 +25,9 @@ void CSE_ALifeGroupAbstract::switch_online	()
 	R_ASSERT					(!object->m_bOnline);
 	object->m_bOnline			= true;
 
-	ALife::OBJECT_IT			I = m_tpMembers.begin(), B = I;
-	ALife::OBJECT_IT			E = m_tpMembers.end();
-	u32							N = (u32)(E - I);
+	auto I = m_tpMembers.begin(), B = I;
+	auto E = m_tpMembers.end();
+	u32 N = (u32)(E - I);
 	for ( ; I != E; ++I) {
 		CSE_ALifeDynamicObject	*J = ai().alife().objects().object(*I);
 		if (m_bCreateSpawnPositions) {
@@ -52,8 +52,8 @@ void CSE_ALifeGroupAbstract::switch_offline	()
 	R_ASSERT					(object->m_bOnline);
 	object->m_bOnline			= false;
 
-	ALife::OBJECT_IT			I = m_tpMembers.begin();
-	ALife::OBJECT_IT			E = m_tpMembers.end();
+	auto I = m_tpMembers.begin();
+	auto E = m_tpMembers.end();
 	if (I != E) {
 		CSE_ALifeMonsterAbstract		*tpGroupMember	= smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(*I));
 		CSE_ALifeMonsterAbstract		*tpGroup		= smart_cast<CSE_ALifeMonsterAbstract*>(this);

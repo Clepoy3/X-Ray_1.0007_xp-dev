@@ -365,7 +365,7 @@ BOOL CSkeletonX_ext::_PickBoneHW1W		(Fvector& normal, float& dist, const Fvector
 	vertHW_1W* vertices;
 	CHK_DX				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
 	bool intersect		= FALSE;
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
+	for (auto it=faces.begin(); it!=faces.end(); it++){
 		Fvector			p[3];
 		u32 idx			= (*it)*3;
 		for (u32 k=0; k<3; k++){
@@ -388,7 +388,7 @@ BOOL CSkeletonX_ext::_PickBoneHW2W		(Fvector& normal, float& dist, const Fvector
 	vertHW_2W* vertices;
 	CHK_DX				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
 	bool intersect		= FALSE;
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
+	for (auto it=faces.begin(); it!=faces.end(); it++){
 		Fvector			p[3];
 		u32 idx			= (*it)*3;
 		for (u32 k=0; k<3; k++){
@@ -461,7 +461,7 @@ void CSkeletonX_ext::_FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& w
 {
 	vertHW_1W*			vertices;
 	CHK_DX				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
+	for (auto it=faces.begin(); it!=faces.end(); it++){
 		Fvector			p[3];
 		u32 idx			= (*it)*3;
 		CSkeletonWallmark::WMFace F;
@@ -496,7 +496,7 @@ void CSkeletonX_ext::_FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& w
 {
 	vertHW_2W* vertices;
 	CHK_DX				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
+	for (auto it=faces.begin(); it!=faces.end(); it++){
 		Fvector			p[3];
 		u32 idx			= (*it)*3;
 		CSkeletonWallmark::WMFace F;
@@ -621,7 +621,7 @@ void CSkeletonX_ext::TEnumBoneVertices	( vertHW_2W &verteses, u16 bone_id, u16* 
 template <typename vertex_buffer_type>
 IC void TEnumBoneVertices	(vertex_buffer_type vertices, u16* indices, CBoneData::FacesVec& faces, SEnumVerticesCallback &C ) 
 {
-		for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
+		for (auto it=faces.begin(); it!=faces.end(); it++){
 			u32 idx			= (*it)*3;
 			for (u32 k=0; k<3; k++){
 				Fvector		P;
@@ -661,4 +661,3 @@ void	CSkeletonX_ext::_EnumBoneVertices	( SEnumVerticesCallback &C, Fvisual* V, u
 		CHK_DX				(V->p_rm_Vertices->Unlock());
 	CHK_DX				(V->p_rm_Indices->Unlock());
 }
-

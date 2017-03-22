@@ -16,4 +16,4 @@ struct INFO_DATA : public IPureSerializeObject<IReader,IWriter>
 	ALife::_TIME_ID		receive_time;
 };
 
-DEFINE_VECTOR		(INFO_DATA, KNOWN_INFO_VECTOR, KNOWN_INFO_VECTOR_IT);
+using KNOWN_INFO_VECTOR = xr_vector<INFO_DATA>;

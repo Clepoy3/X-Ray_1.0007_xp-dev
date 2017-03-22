@@ -57,7 +57,7 @@ GameTasks&	CGameTaskManager::GameTasks	()
 CGameTask* CGameTaskManager::HasGameTask(const TASK_ID& id)
 {
 	FindTaskByID key(id);
-	GameTasks_it it = std::find_if(GameTasks().begin(),GameTasks().end(),key);
+	auto it = std::find_if(GameTasks().begin(),GameTasks().end(),key);
 	if( it!=GameTasks().end() )
 		return (*it).game_task;
 	
@@ -186,7 +186,7 @@ void CGameTaskManager::UpdateTasks						()
 	SGameTaskKey		*tasks = (SGameTaskKey*)_alloca(task_count*sizeof(SGameTaskKey));
 	SGameTaskKey		*I = tasks;
 	SGameTaskKey		*E = tasks + task_count;
-	GameTasks_it		i = GameTasks().begin();
+	auto				i = GameTasks().begin();
 	
 	for ( ; I != E; ++I, ++i)
 		new	(I)	SGameTaskKey(*i);
@@ -224,13 +224,11 @@ void CGameTaskManager::UpdateTasks						()
 }
 
 
-void CGameTaskManager::UpdateActiveTask				()
+void CGameTaskManager::UpdateActiveTask()
 {
-	GameTasks_it it								= GameTasks().begin();
-	GameTasks_it it_e							= GameTasks().end();
-	bool bHasSpotPointer						= false;
+	bool bHasSpotPointer = false;
 
-	for( ;it!=it_e; ++it )
+	for(auto it = GameTasks().begin(); it != GameTasks().end(); ++it )
 	{
 		CGameTask* t							= (*it).game_task;
 

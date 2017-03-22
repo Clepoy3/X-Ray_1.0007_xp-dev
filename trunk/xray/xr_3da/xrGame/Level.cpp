@@ -227,8 +227,9 @@ CLevel::~CLevel()
 	}
 
 	// destroy PSs
-	for (POIt p_it=m_StaticParticles.begin(); m_StaticParticles.end()!=p_it; ++p_it)
+	for (auto p_it=m_StaticParticles.begin(); m_StaticParticles.end()!=p_it; ++p_it)
 		CParticlesObject::Destroy(*p_it);
+
 	m_StaticParticles.clear		();
 
 	// Unload sounds
@@ -321,7 +322,7 @@ void CLevel::PrefetchSound		(LPCSTR name)
 	if (strext(tmp))			*strext(tmp)=0;
 	shared_str	snd_name		= tmp;
 	// find in registry
-	SoundRegistryMapIt it		= sound_registry.find(snd_name);
+	auto it = sound_registry.find(snd_name);
 	// if find failed - preload sound
 	if (it==sound_registry.end())
 		sound_registry[snd_name].create(snd_name.c_str(),st_Effect,sg_SourceType);
@@ -819,40 +820,42 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 
 void	CLevel::AddObject_To_Objects4CrPr	(CGameObject* pObj)
 {
-	if (!pObj) return;
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-	{
-		if (*OIt == pObj) return;
-	}
-	pObjects4CrPr.push_back(pObj);
+	if (!pObj)
+		return;
 
+	for	(auto OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
+		if (*OIt == pObj)
+			return;
+
+	pObjects4CrPr.push_back(pObj);
 }
+
 void	CLevel::AddActor_To_Actors4CrPr		(CGameObject* pActor)
 {
-	if (!pActor) return;
-	if (pActor->CLS_ID != CLSID_OBJECT_ACTOR) return;
-	for	(OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
-	{
-		if (*AIt == pActor) return;
-	}
+	if (!pActor)
+		return;
+	if (pActor->CLS_ID != CLSID_OBJECT_ACTOR)
+		return;
+
+	for	(auto AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
+		if (*AIt == pActor)
+			return;
+
 	pActors4CrPr.push_back(pActor);
 }
 
 void	CLevel::RemoveObject_From_4CrPr		(CGameObject* pObj)
 {
-	if (!pObj) return;
+	if (!pObj)
+		return;
 	
-	OBJECTS_LIST_it OIt = std::find(pObjects4CrPr.begin(), pObjects4CrPr.end(), pObj);
+	auto OIt = std::find(pObjects4CrPr.begin(), pObjects4CrPr.end(), pObj);
 	if (OIt != pObjects4CrPr.end())
-	{
 		pObjects4CrPr.erase(OIt);
-	}
 
-	OBJECTS_LIST_it AIt = std::find(pActors4CrPr.begin(), pActors4CrPr.end(), pObj);
+	auto AIt = std::find(pActors4CrPr.begin(), pActors4CrPr.end(), pObj);
 	if (AIt != pActors4CrPr.end())
-	{
 		pActors4CrPr.erase(AIt);
-	}
 }
 
 void CLevel::make_NetCorrectionPrediction	()
@@ -870,7 +873,7 @@ void CLevel::make_NetCorrectionPrediction	()
 	ph_world->Freeze();
 
 	//setting UpdateData and determining number of PH steps from last received update
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
+	for	(auto OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
 	{
 		CGameObject* pObj = *OIt;
 		if (!pObj) continue;
@@ -884,7 +887,7 @@ void CLevel::make_NetCorrectionPrediction	()
 	{
 		ph_world->Step();
 
-		for	(OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
+		for	(auto AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
 		{
 			CGameObject* pActor = *AIt;
 			if (!pActor || pActor->CrPr_IsActivated()) continue;
@@ -892,7 +895,7 @@ void CLevel::make_NetCorrectionPrediction	()
 		};
 	};
 //////////////////////////////////////////////////////////////////////////////////
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
+	for	(auto OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
 	{
 		CGameObject* pObj = *OIt;
 		if (!pObj) continue;
@@ -916,7 +919,7 @@ void CLevel::make_NetCorrectionPrediction	()
 #endif
 		}
 		//////////////////////////////////////////////////////////////////////////////////
-		for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
+		for	(auto OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
 		{
 			CGameObject* pObj = *OIt;
 			if (!pObj) continue;

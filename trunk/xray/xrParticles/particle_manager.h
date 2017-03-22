@@ -1,7 +1,5 @@
-//---------------------------------------------------------------------------
-#ifndef particle_managerH
-#define particle_managerH
-//---------------------------------------------------------------------------
+#pragma once
+
 #include "particle_actions.h"
 
 namespace PAPI{
@@ -9,8 +7,8 @@ namespace PAPI{
     {
 		// These are static because all threads access the same effects.
 		// All accesses to these should be locked.
-		DEFINE_VECTOR				(ParticleEffect*,ParticleEffectVec,ParticleEffectVecIt);
-		DEFINE_VECTOR				(ParticleActions*,ParticleActionsVec,ParticleActionsVecIt);
+		using ParticleEffectVec = xr_vector<ParticleEffect*>;
+		using ParticleActionsVec = xr_vector<ParticleActions*>;
 		ParticleEffectVec			effect_vec;
 		ParticleActionsVec			alist_vec;
     public:
@@ -48,5 +46,3 @@ namespace PAPI{
         virtual void				SaveActions			(int alist_id, IWriter& W);
     };
 };
-//---------------------------------------------------------------------------
-#endif

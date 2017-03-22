@@ -217,9 +217,8 @@ void game_cl_Deathmatch::SetBuyMenuItems		(PRESET_ITEMS* pItems, BOOL OnlyPreset
 		pCurBuyMenu->GetWeaponIndexByName("mp_wpn_knife", KnifeSlot, KnifeIndex);
 		//---------------------------------------------------------
 		PRESET_ITEMS		TmpPresetItems;
-		PRESET_ITEMS_it		It = pItems->begin();
-		PRESET_ITEMS_it		Et = pItems->end();
-		for ( ; It != Et; ++It) 
+
+		for (auto It = pItems->begin(); It != pItems->end(); ++It) 
 		{
 			PresetItem PIT = *It;
 			if (PIT.ItemID == KnifeIndex) continue;
@@ -249,16 +248,16 @@ void game_cl_Deathmatch::CheckItem			(PIItem pItem, PRESET_ITEMS* pPresetItems, 
 		if (pAmmo->m_boxCurr != pAmmo->m_boxSize) return;
 	}
 	//-----------------------------------------------------	
-	PRESET_ITEMS_it PresetItemIt = std::find(pPresetItems->begin(), pPresetItems->end(), BigID);
+	auto PresetItemIt = std::find(pPresetItems->begin(), pPresetItems->end(), BigID);
 	if (OnlyPreset)
-	{		
-		if (PresetItemIt == pPresetItems->end()) return;
-	}
+		if (PresetItemIt == pPresetItems->end())
+			return;
 
 	if (SlotID == PISTOL_SLOT)
 	{
-		PRESET_ITEMS_it DefPistolIt = std::find(PlayerDefItems.begin(), PlayerDefItems.end(), BigID);
-		if (DefPistolIt != PlayerDefItems.end() && PresetItemIt == pPresetItems->end()) return;
+		auto DefPistolIt = std::find(PlayerDefItems.begin(), PlayerDefItems.end(), BigID);
+		if (DefPistolIt != PlayerDefItems.end() && PresetItemIt == pPresetItems->end())
+			return;
 	}
 	
 	pCurBuyMenu->SectionToSlot(SlotID, ItemID, true);
@@ -430,9 +429,8 @@ void				game_cl_Deathmatch::LoadDefItemsForRank(IBuyWnd* pBuyMenu)
 	pCurBuyMenu->GetWeaponIndexByName("mp_wpn_knife", KnifeSlot, KnifeIndex);
 	//---------------------------------------------------------
 	PRESET_ITEMS		TmpPresetItems;
-	PRESET_ITEMS_it		It = PlayerDefItems.begin();
-	PRESET_ITEMS_it		Et = PlayerDefItems.end();
-	for ( ; It != Et; ++It) 
+	
+	for (auto It = PlayerDefItems.begin(); It != PlayerDefItems.end(); ++It) 
 	{
 		PresetItem PIT = *It;
 		if (PIT.ItemID == KnifeIndex) continue;

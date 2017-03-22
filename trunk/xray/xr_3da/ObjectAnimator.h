@@ -8,7 +8,7 @@
 class ENGINE_API CObjectAnimator
 {
 private:
-	DEFINE_VECTOR		(COMotion*,MotionVec,MotionIt);
+	using MotionVec = xr_vector<COMotion*>;
 protected:
 	bool				bLoop;
 

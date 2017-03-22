@@ -10,8 +10,8 @@ bool CSE_ALifeHumanAbstract::bfPerformAttack()
 			return						(true);
 		case 3 : {
 			bool						l_bOk = false;
-			OBJECT_IT			I = children.begin();
-			OBJECT_IT			E = children.end();
+			auto			I = children.begin();
+			auto			E = children.end();
 			for ( ; I != E; ++I)
 				if (*I == m_tpCurrentBestWeapon->ID) {
 					l_bOk				= true;
@@ -57,8 +57,8 @@ EMeetActionType	CSE_ALifeHumanAbstract::tfGetActionType(CSE_ALifeSchedulable *tp
 void CSE_ALifeHumanAbstract::vfChooseGroup(CSE_ALifeGroupAbstract *tpALifeGroupAbstract)
 {
 	{
-		OBJECT_IT					I = tpALifeGroupAbstract->m_tpMembers.begin();
-		OBJECT_IT					E = tpALifeGroupAbstract->m_tpMembers.end();
+		auto					I = tpALifeGroupAbstract->m_tpMembers.begin();
+		auto					E = tpALifeGroupAbstract->m_tpMembers.end();
 		for ( ; I != E; ++I) {
 			CSE_ALifeHumanAbstract	*l_tpALifeHumanAbstract = smart_cast<CSE_ALifeHumanAbstract*>(ai().alife().objects().object(*I));
 			R_ASSERT2				(l_tpALifeHumanAbstract,"Invalid group member");
@@ -67,8 +67,8 @@ void CSE_ALifeHumanAbstract::vfChooseGroup(CSE_ALifeGroupAbstract *tpALifeGroupA
 	}
 
 	{
-		OBJECT_IT					I = tpALifeGroupAbstract->m_tpMembers.begin();
-		OBJECT_IT					E = tpALifeGroupAbstract->m_tpMembers.end();
+		auto					I = tpALifeGroupAbstract->m_tpMembers.begin();
+		auto					E = tpALifeGroupAbstract->m_tpMembers.end();
 		for ( ; I != E; ++I) {
 			CSE_ALifeHumanAbstract	*l_tpALifeHumanAbstract = smart_cast<CSE_ALifeHumanAbstract*>(ai().alife().objects().object(*I));
 			R_ASSERT2				(l_tpALifeHumanAbstract,"Invalid group member");

@@ -267,10 +267,7 @@ void CMapListHelper::Load()
 	FS_FileSet			fset;
 	FS.file_list		(fset,"$game_levels$",FS_ListFiles,"*level.ltx");
 
-	FS_FileSetIt fit	= fset.begin();
-	FS_FileSetIt fit_e	= fset.end();
-
-	for( ;fit!=fit_e; ++fit)
+	for(auto fit = fset.begin(); fit != fset.end(); ++fit)
 	{
 		string_path					map_cfg_fn;
 		FS.update_path				(map_cfg_fn, "$game_levels$", (*fit).name.c_str());

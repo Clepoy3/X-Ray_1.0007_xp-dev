@@ -122,18 +122,16 @@ void CUIListWnd::SetWidth(float width)
 
 void CUIListWnd::RemoveItem(int index)
 {
-	if(index<0 || index>=(int)m_ItemList.size()) return;
-
-	LIST_ITEM_LIST_it it;
+	if(index<0 || index>=(int)m_ItemList.size())
+		return;
 
 	//выбрать нужный элемент
-	it = m_ItemList.begin();
+	auto it = m_ItemList.begin();
 	for(int i = 0; i<index;++i, ++it);
 
 	R_ASSERT(m_ItemList.end() != it);
 	
 	DetachChild(*it);
-
 
 	UpdateList();
 
@@ -150,23 +148,19 @@ void CUIListWnd::RemoveItem(int index)
 
 	//перенумеровать индексы заново
 	int i = 0;
-	for(LIST_ITEM_LIST_it it=m_ItemList.begin();  m_ItemList.end() != it; ++it,i++)
-	{
+	for(auto it=m_ItemList.begin(); m_ItemList.end() != it; ++it,i++)
 		(*it)->SetIndex(i);
-	}
-
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 CUIListItem* CUIListWnd::GetItem(int index)
 {
-	if(index<0 || index>=(int)m_ItemList.size()) return NULL;
-
-	LIST_ITEM_LIST_it it;
+	if(index<0 || index>=(int)m_ItemList.size())
+		return NULL;
 
 	//выбрать нужный элемент
-	it = m_ItemList.begin();
+	auto it = m_ItemList.begin();
 	for(int i=0; i<index;++i, ++it);
 
 	R_ASSERT(m_ItemList.end() != it);
@@ -177,7 +171,7 @@ CUIListItem* CUIListWnd::GetItem(int index)
 
 void CUIListWnd::DetachChild(CUIWindow* pChild)
 {
-	LIST_ITEM_LIST_it it = std::find(m_ItemList.begin(),m_ItemList.end(),pChild);
+	auto it = std::find(m_ItemList.begin(),m_ItemList.end(),pChild);
 	if(it!=m_ItemList.end())
 		m_ItemList.erase(it);
 
@@ -186,18 +180,13 @@ void CUIListWnd::DetachChild(CUIWindow* pChild)
 
 void CUIListWnd::RemoveAll()
 {
-	if(m_ItemList.empty()) return;
+	if(m_ItemList.empty())
+		return;
 
-	LIST_ITEM_LIST_it it;
-
-		
 	while(!m_ItemList.empty())
-	{
 		DetachChild(m_ItemList.front());
-	}
 
 	m_iFirstShownIndex = 0;
-	
 	
 	UpdateList();
 	Reset();
@@ -220,15 +209,12 @@ void CUIListWnd::UpdateList()
 		return;
 	}
 
-	LIST_ITEM_LIST_it it=m_ItemList.begin();
+	auto it=m_ItemList.begin();
 	
 	//спрятать все элементы до участка 
 	//отображающейся в данный момент
 	for(int i = 0; i<std::min(m_ItemList.size(), (u32)m_iFirstShownIndex); ++i, ++it)
-	{
 		(*it)->Show(false);
-	}
-
 
 	//показать текущий список
 	for(int i=m_iFirstShownIndex; i<std::min(m_ItemList.size(), u32(m_iFirstShownIndex + m_iRowNum+1)); ++i, ++it)
@@ -437,10 +423,8 @@ void CUIListWnd::SetItemHeight(float iItemHeight)
 
 void CUIListWnd::Reset()
 {
-	for(LIST_ITEM_LIST_it it=m_ItemList.begin();  m_ItemList.end() != it; ++it)
-	{
+	for(auto it=m_ItemList.begin(); m_ItemList.end() != it; ++it)
 		(*it)->Reset();
-	}
 
 	ResetAll();
 
@@ -454,20 +438,22 @@ void CUIListWnd::Reset()
 int CUIListWnd::FindItem(void* pData)
 {
 	int i=0;
-	for(LIST_ITEM_LIST_it it=m_ItemList.begin();  m_ItemList.end() != it; ++it,++i)
-	{
-		if((*it)->GetData()==pData) return i;
-	}
+
+	for(auto it=m_ItemList.begin(); m_ItemList.end() != it; ++it,++i)
+		if((*it)->GetData()==pData)
+			return i;
+
 	return -1;
 }
 
 int CUIListWnd::FindItemWithValue(int iValue)
 {
 	int i=0;
-	for(LIST_ITEM_LIST_it it=m_ItemList.begin();  m_ItemList.end() != it; ++it,++i)
-	{
-		if((*it)->GetValue()==iValue) return i;
-	}
+
+	for(auto it=m_ItemList.begin(); m_ItemList.end() != it; ++it,++i)
+		if((*it)->GetValue()==iValue)
+			return i;
+
 	return -1;
 }
 
@@ -583,10 +569,11 @@ void CUIListWnd::SetFocusedItem(int iNewFocusedItem)
 
 int CUIListWnd::GetItemPos(CUIListItem *pItem)
 {
-	LIST_ITEM_LIST_it it = m_ItemList.begin();
+	auto it = m_ItemList.begin();
 	for (u32 i = 0; i < m_ItemList.size(); ++i)
 	{
-		if (*it == pItem) return i;
+		if (*it == pItem)
+			return i;
 		++it;
 	}
 

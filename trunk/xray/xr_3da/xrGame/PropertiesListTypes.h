@@ -39,7 +39,7 @@ enum EPropType{
 struct 	xr_token;        
 class PropValue;
 class PropItem;
-DEFINE_VECTOR			(PropItem*,PropItemVec,PropItemIt);
+using PropItemVec = xr_vector<PropItem*>;
 
 //------------------------------------------------------------------------------
 #include "ChooseTypes.H"     
@@ -124,7 +124,7 @@ class PropItem
     EPropType			type;
 	void*				item;
 public:
-	DEFINE_VECTOR		(PropValue*,PropValueVec,PropValueIt);
+	using PropValueVec = xr_vector<PropValue*>;
 private:
     PropValueVec		values;
     TProperties* 		m_Owner;
@@ -152,7 +152,7 @@ public:
 						PropItem		(EPropType _type):type(_type),prop_color(0),val_color(0),item(0),key(0),OnClickEvent(0),OnDrawTextEvent(0),OnItemFocused(0){m_Flags.zero();}
 	virtual 			~PropItem		()
     {
-    	for (PropValueIt it=values.begin(); values.end() != it; ++it)
+    	for (auto it=values.begin(); values.end() != it; ++it)
         	xr_delete	(*it);
     };
     IC TProperties*		Owner			(){return m_Owner;}
@@ -162,7 +162,7 @@ public:
     }
     IC void				ResetValues		()
     {
-    	for (PropValueIt it=values.begin(); values.end() != it; ++it)
+    	for (auto it=values.begin(); values.end() != it; ++it)
         	(*it)->ResetValue();
         CheckMixed		();
     }
@@ -181,8 +181,8 @@ public:
     {
 		m_Flags.set		(flMixed,FALSE);
         if (values.size()>1){
-            PropValueIt F	= values.begin();
-        	PropValueIt it	= F; ++it;
+            auto F	= values.begin();
+        	auto it	= F; ++it;
 	    	for (; values.end() != it; ++it){
     	    	if (!(*it)->Equal(*F)){
                 	m_Flags.set(flMixed,TRUE);
@@ -232,7 +232,7 @@ public:
     IC BOOL				Enabled			(){return !m_Flags.is(flDisabled);}
 	IC void				OnChange		()
     {
-    	for (PropValueIt it=values.begin(); values.end() != it; ++it)
+    	for (auto it=values.begin(); values.end() != it; ++it)
         	if (!(*it)->OnChangeEvent.empty()) 	
             	(*it)->OnChangeEvent(*it);
     }

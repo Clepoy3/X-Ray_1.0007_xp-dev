@@ -103,7 +103,8 @@ struct st_Key{
 };
 #pragma pack( pop )
 
-DEFINE_VECTOR(st_Key*,KeyVec,KeyIt);
+using KeyVec = xr_vector<st_Key*>;
+using KeyIt = KeyVec::iterator;
 
 // refs
 class CExporter;
@@ -128,7 +129,7 @@ public:
 
     void		RotateKeys	(float angle);
 
-    KeyIt		FindKey		(float t, float eps);
+    auto		FindKey		(float t, float eps);
     void		FindNearestKey(float t, KeyIt& min, KeyIt& max, float eps);
     void		InsertKey	(float t, float val);                                   
     void		DeleteKey	(float t);

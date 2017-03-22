@@ -141,7 +141,7 @@ void CBreakableObject::DestroyUnbroken()
 	////shell->SetAirResistance(0.002f*skel_airr_lin_factor,
 	////	0.3f*skel_airr_ang_factor);
 	//ELEMENT_STORAGE& elements = pshell->Elements();
-	//ELEMENT_I i=elements.begin(),e=elements.end();
+	//auto i=elements.begin(),e=elements.end();
 	//for(;e!=i;i++)
 	//{
 	//	m_Shells.push_back(P_create_splited_Shell());

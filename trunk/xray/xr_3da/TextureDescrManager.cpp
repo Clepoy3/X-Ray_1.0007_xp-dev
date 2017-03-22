@@ -119,8 +119,8 @@ void CTextureDescrMngr::LoadTHM()
 	FS_FileSet				flist;
 	FS.file_list			(flist,"$game_textures$",FS_ListFiles,"*.thm");
 	Msg						("count of .thm files=%d", flist.size());
-	FS_FileSetIt It			= flist.begin();
-	FS_FileSetIt It_e		= flist.end();
+	auto It			= flist.begin();
+	auto It_e		= flist.end();
 	STextureParams			tp;
 	string_path				fn;
 	for(;It!=It_e;++It)

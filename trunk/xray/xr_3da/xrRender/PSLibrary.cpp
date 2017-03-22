@@ -24,25 +24,25 @@ void CPSLibrary::OnCreate()
     }else{
     	Msg("Can't find file: '%s'",fn);
     }
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
+	for (auto e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
     	(*e_it)->CreateShader();
 }
  
 void CPSLibrary::OnDestroy()
 {
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
+	for (auto e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
     	(*e_it)->DestroyShader();
 
 	for (auto e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
 		xr_delete	(*e_it);
 	m_PEDs.clear	();
 
-	for (PS::PGDIt g_it = m_PGDs.begin(); g_it!=m_PGDs.end(); g_it++)
+	for (auto g_it = m_PGDs.begin(); g_it!=m_PGDs.end(); g_it++)
 		xr_delete	(*g_it);
 	m_PGDs.clear	();
 }
 //----------------------------------------------------
-PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
+auto CPSLibrary::FindPEDIt(LPCSTR Name)
 {
 	if (!Name) return m_PEDs.end();
 #ifdef _EDITOR
@@ -50,7 +50,7 @@ PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
     	if (0==xr_strcmp((*it)->Name(),Name)) return it;
 	return m_PEDs.end();
 #else
-	PS::PEDIt I = std::lower_bound(m_PEDs.begin(),m_PEDs.end(),Name,ped_find_pred);
+	auto I = std::lower_bound(m_PEDs.begin(),m_PEDs.end(),Name,ped_find_pred);
 	if (I==m_PEDs.end() || (0!=xr_strcmp((*I)->m_Name,Name)))	return m_PEDs.end();
 	else														return I;
 #endif
@@ -58,11 +58,11 @@ PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
 
 PS::CPEDef* CPSLibrary::FindPED(LPCSTR Name)
 {
-	PS::PEDIt it = FindPEDIt(Name);
+	auto it = FindPEDIt(Name);
     return (it==m_PEDs.end())?0:*it;
 }
 
-PS::PGDIt CPSLibrary::FindPGDIt(LPCSTR Name)
+auto CPSLibrary::FindPGDIt(LPCSTR Name)
 {
 	if (!Name) return m_PGDs.end();
 #ifdef _EDITOR
@@ -70,7 +70,7 @@ PS::PGDIt CPSLibrary::FindPGDIt(LPCSTR Name)
     	if (0==xr_strcmp((*it)->m_Name,Name)) return it;
 	return m_PGDs.end();
 #else
-	PS::PGDIt I = std::lower_bound(m_PGDs.begin(),m_PGDs.end(),Name,pgd_find_pred);
+	auto I = std::lower_bound(m_PGDs.begin(),m_PGDs.end(),Name,pgd_find_pred);
 	if (I==m_PGDs.end() || (0!=xr_strcmp((*I)->m_Name,Name)))	return m_PGDs.end();
 	else														return I;
 #endif
@@ -78,7 +78,7 @@ PS::PGDIt CPSLibrary::FindPGDIt(LPCSTR Name)
 
 PS::CPGDef* CPSLibrary::FindPGD(LPCSTR Name)
 {
-	PS::PGDIt it = FindPGDIt(Name);
+	auto it = FindPGDIt(Name);
     return (it==m_PGDs.end())?0:*it;
 }
 
@@ -96,13 +96,13 @@ void CPSLibrary::RenamePGD(PS::CPGDef* src, LPCSTR new_name)
 
 void CPSLibrary::Remove(const char* nm)
 {
-	PS::PEDIt it = FindPEDIt(nm);
+	auto it = FindPEDIt(nm);
 	if (it!=m_PEDs.end()){
 		(*it)->DestroyShader();
 		xr_delete		(*it);
 		m_PEDs.erase	(it);
 	}else{
-		PS::PGDIt it = FindPGDIt(nm);
+		auto it = FindPGDIt(nm);
 		if (it!=m_PGDs.end()){
 			xr_delete	(*it);
 			m_PGDs.erase(it);

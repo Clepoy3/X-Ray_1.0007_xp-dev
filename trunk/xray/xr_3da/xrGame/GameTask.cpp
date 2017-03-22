@@ -579,11 +579,8 @@ void SGameTaskKey::save(IWriter &stream)
 	u32 cnt	= game_task->m_Objectives.size();
 	save_data(cnt, stream);
 
-	OBJECTIVE_VECTOR_IT it		= game_task->m_Objectives.begin();
-	OBJECTIVE_VECTOR_IT it_e	= game_task->m_Objectives.end();
-	for(;it!=it_e;++it)
+	for(auto it = game_task->m_Objectives.begin(); it != game_task->m_Objectives.end(); ++it)
 		save_data(*it, stream);
-
 }
 
 void SGameTaskKey::load(IReader &stream)

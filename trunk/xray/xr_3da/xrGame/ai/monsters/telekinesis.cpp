@@ -9,7 +9,7 @@ CTelekinesis::CTelekinesis()
 }
 CTelekinesis::~CTelekinesis()
 {
-	for (TELE_OBJECTS_IT it = objects.begin(); it != objects.end(); ++it) {
+	for (auto it = objects.begin(); it != objects.end(); ++it) {
 		(*it)->release();
 		xr_delete(*it);
 	}
@@ -42,7 +42,7 @@ void CTelekinesis::deactivate()
 
 	// отпустить все объекты
 	// 
-	for (TELE_OBJECTS_IT it = objects.begin(); it != objects.end(); ++it) {
+	for (auto it = objects.begin(); it != objects.end(); ++it) {
 		(*it)->release();
 		xr_delete(*it);
 	}
@@ -79,7 +79,7 @@ void CTelekinesis::deactivate(CPhysicsShellHolder *obj)
 {
 	// найти объект
 	
-	TELE_OBJECTS_IT it = std::find_if(objects.begin(), objects.end(), SFindPred(obj));
+	auto it = std::find_if(objects.begin(), objects.end(), SFindPred(obj));
 	if (it == objects.end()) return;
 
 	// отпустить объект
@@ -92,7 +92,7 @@ void CTelekinesis::deactivate(CPhysicsShellHolder *obj)
 void CTelekinesis::remove_object		(CPhysicsShellHolder *obj)
 {
 	// найти объект
-	TELE_OBJECTS_IT it = std::find_if(objects.begin(), objects.end(), SFindPred(obj));
+	auto it = std::find_if(objects.begin(), objects.end(), SFindPred(obj));
 	if (it == objects.end()) return;
 	//remove from list, delete...
 	remove_object(it);
@@ -127,7 +127,7 @@ void CTelekinesis::fire(CPhysicsShellHolder *obj, const Fvector &target, float p
 {
 	// найти объект
 
-	TELE_OBJECTS_IT it = std::find_if(objects.begin(), objects.end(),SFindPred(obj));
+	auto it = std::find_if(objects.begin(), objects.end(),SFindPred(obj));
 	if (it == objects.end()) return;
 
 	// бросить объект
@@ -136,7 +136,7 @@ void CTelekinesis::fire(CPhysicsShellHolder *obj, const Fvector &target, float p
 
 void CTelekinesis::fire_t(CPhysicsShellHolder *obj, const Fvector &target, float time)
 {
-	TELE_OBJECTS_IT it = std::find_if(objects.begin(), objects.end(),SFindPred(obj));
+	auto it = std::find_if(objects.begin(), objects.end(),SFindPred(obj));
 	if (it == objects.end()) return;
 
 	// бросить объект
@@ -146,7 +146,7 @@ void CTelekinesis::fire_t(CPhysicsShellHolder *obj, const Fvector &target, float
 bool CTelekinesis::is_active_object(CPhysicsShellHolder *obj)
 {
 	// найти объект
-	TELE_OBJECTS_IT it = std::find_if(objects.begin(), objects.end(), SFindPred(obj));
+	auto it = std::find_if(objects.begin(), objects.end(), SFindPred(obj));
 	if (it == objects.end()) return false;
 
 	return true;

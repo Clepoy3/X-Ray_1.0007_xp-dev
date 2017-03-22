@@ -91,10 +91,9 @@ void CRadioactiveZone::UpdateWorkload					(u32	dt)
 {
 	if (IsEnabled() && GameID() != GAME_SINGLE)
 	{	
-		OBJECT_INFO_VEC_IT it;
 		Fvector pos; 
 		XFORM().transform_tiny(pos,CFORM()->getSphere().P);
-		for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
+		for(auto it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
 		{
 			if( !(*it).object->getDestroy() && (*it).object->CLS_ID == CLSID_OBJECT_ACTOR)
 			{

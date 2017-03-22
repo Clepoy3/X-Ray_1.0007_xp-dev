@@ -1,5 +1,3 @@
-#ifndef SHADER_XRLC_H
-#define SHADER_XRLC_H
 #pragma once
 
 struct Shader_xrLC
@@ -46,7 +44,8 @@ public:
 	}
 };
 
-DEFINE_VECTOR(Shader_xrLC,Shader_xrLCVec,Shader_xrLCIt);
+using Shader_xrLCVec = xr_vector<Shader_xrLC>;
+
 class Shader_xrLC_LIB
 {
 	Shader_xrLCVec			library;
@@ -87,13 +86,13 @@ public:
 	}
 	u32						GetID	(LPCSTR name)
 	{
-		for (Shader_xrLCIt it=library.begin(); it!=library.end(); it++)
+		for (auto it=library.begin(); it!=library.end(); it++)
 			if (0==stricmp(name,it->Name)) return u32(it-library.begin());
 		return u32(-1);
 	}
 	Shader_xrLC*			Get		(LPCSTR name)
 	{
-		for (Shader_xrLCIt it=library.begin(); it!=library.end(); it++)
+		for (auto it=library.begin(); it!=library.end(); it++)
 			if (0==stricmp(name,it->Name)) return &(*it);
 		return NULL;
 	}
@@ -108,7 +107,7 @@ public:
 	}
 	void					Remove	(LPCSTR name)
 	{
-		for (Shader_xrLCIt it=library.begin(); it!=library.end(); it++)
+		for (auto it=library.begin(); it!=library.end(); it++)
 			if (0==stricmp(name,it->Name)){
             	library.erase(it);
                 break;
@@ -120,4 +119,3 @@ public:
 	}
 	Shader_xrLCVec&			Library	(){return library;}
 };
-#endif

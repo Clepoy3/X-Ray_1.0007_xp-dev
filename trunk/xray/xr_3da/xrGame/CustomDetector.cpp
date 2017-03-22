@@ -28,8 +28,7 @@ CCustomDetector::CCustomDetector(void)
 
 CCustomDetector::~CCustomDetector(void) 
 {
-	ZONE_TYPE_MAP_IT it;
-	for(it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it)
+	for(auto it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it)
 		HUD_SOUND::DestroySound(it->second.detect_snds);
 //		it->second.detect_snd.destroy();
 
@@ -110,8 +109,7 @@ void CCustomDetector::shedule_Update(u32 dt)
 
 void CCustomDetector::StopAllSounds()
 {
-	ZONE_TYPE_MAP_IT it;
-	for(it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it) 
+	for(auto it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it)
 	{
 		ZONE_TYPE& zone_type = (*it).second;
 		HUD_SOUND::StopSound(zone_type.detect_snds);
@@ -128,8 +126,7 @@ void CCustomDetector::UpdateCL()
 
 	if(!m_pCurrentActor) return;
 
-	ZONE_INFO_MAP_IT it;
-	for(it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it) 
+	for(auto it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it)
 	{
 		CCustomZone *pZone = it->first;
 		ZONE_INFO& zone_info = it->second;
@@ -267,8 +264,7 @@ void CCustomDetector::AddRemoveMapSpot(CCustomZone* pZone, bool bAdd)
 
 void CCustomDetector::UpdateMapLocations() // called on turn on/off only
 {
-	ZONE_INFO_MAP_IT it;
-	for(it = m_ZoneInfoMap.begin(); it != m_ZoneInfoMap.end(); ++it)
+	for(auto it = m_ZoneInfoMap.begin(); it != m_ZoneInfoMap.end(); ++it)
 		AddRemoveMapSpot(it->first,IsWorking());
 }
 
@@ -299,8 +295,7 @@ void CCustomDetector::UpdateNightVisionMode()
 				IsWorking() && 
 				m_nightvision_particle.size();
 
-	ZONE_INFO_MAP_IT it;
-	for(it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it) 
+	for(auto it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it)
 	{
 		CCustomZone *pZone = it->first;
 		ZONE_INFO& zone_info = it->second;
