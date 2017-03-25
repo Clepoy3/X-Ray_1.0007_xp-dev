@@ -1,35 +1,37 @@
 -- -*- mode: lua; coding: windows-1251-dos -*-
 log1("--LUA version: ["..(jit.version or _VERSION).."]")
---===================[string.upper и string.lower с поддержкой русских букв]====================
-if not jit.version_num or jit.version_num < 20000 then --В ТЧ 1.0006 c lua-фиксом работает такой вариант:
-	os.setlocale("Russian_Russia.1251", "ctype")
-else --В новом LuaJIT работает только такой вариант:
-	--!!ВАЖНО!! Для правильной работы этих функций, кодировка скрипта должна быть только ANSI!!
-	local lower = string.lower
-	string.lower = function(s)
-		return lower(s:gsub("([А-Я])",function(c) return string.char(c:byte()+32) end):gsub("Ё", "ё"))
-	end
-
-	local upper = string.upper
-	string.upper = function(s)
-		return upper(s:gsub("([а-я])",function(c) return string.char(c:byte()-32) end):gsub("ё", "Ё"))
-	end
+--==============[string.lower Рё string.upper СЃ РїРѕРґРґРµСЂР¶РєРѕР№ СЂСѓСЃСЃРєРёС… Р±СѓРєРІ by KRodin]===============
+FFI = require('ffi') --Р’РѕС‚ СЌС‚Рѕ РґРµР»Р°С‚СЊ С‚РѕР»СЊРєРѕ Р·РґРµСЃСЊ Рё С‚РѕР»СЊРєРѕ РѕРґРёРЅ СЂР°Р·!
+os.setlocale("", "ctype") --РњРѕРіСѓС‚ РІРѕР·РЅРёРєРЅСѓС‚СЊ РїСЂРѕР±Р»РµРјС‹, РµСЃР»Рё РєР°РєРёРµ-Р»РёР±Рѕ РїСѓС‚Рё/РЅР°Р·РІР°РЅРёСЏ С„Р°Р№Р»РѕРІ РЅР°РїРёСЃР°РЅС‹ СЂСѓСЃСЃРєРёРјРё Р±СѓРєРІР°РјРё. Р—Р° СЌС‚Рѕ РЅР°РґРѕ Р±РёС‚СЊ РїРѕ СЂСѓРєР°Рј С‚РѕРіРѕ, РєС‚Рѕ РёС… С‚Р°Рє РЅР°РїРёСЃР°Р», Рё РёСЃРїСЂР°РІР»СЏС‚СЊ РЅР° Р°РЅРіР»РёР№СЃРєРёРµ.
+FFI.cdef[[
+int tolower( int code );
+int toupper( int code );
+]]
+string.lower = function(s)
+	return s:gsub('.', function(x)
+		return string.char( FFI.C.tolower( x:byte() ) )
+	end)
 end
---=================================[Функции из xrLuaFix]========================================
---Срезать пробелы слева
+string.upper = function(s)
+	return s:gsub('.', function(x)
+		return string.char( FFI.C.toupper( x:byte() ) )
+	end)
+end
+--=================================[Р¤СѓРЅРєС†РёРё РёР· xrLuaFix]========================================
+--РЎСЂРµР·Р°С‚СЊ РїСЂРѕР±РµР»С‹ СЃР»РµРІР°
 if not string.trim_l then
 	string.trim_l = function(s) return s:gsub("^%s+",'') end
 end
---Срезать пробелы справа
+--РЎСЂРµР·Р°С‚СЊ РїСЂРѕР±РµР»С‹ СЃРїСЂР°РІР°
 if not string.trim_r then
 	string.trim_r = function(s) return s:gsub("%s*$",'') end
 end
---Срезать все пробелы слева и справа
+--РЎСЂРµР·Р°С‚СЊ РІСЃРµ РїСЂРѕР±РµР»С‹ СЃР»РµРІР° Рё СЃРїСЂР°РІР°
 if not string.trim then
 	string.trim = function(s) return s:gsub('^%s*(.-)%s*$', '%1') end
 end
 --==============================================================================================
--- Взято из аддона Naxac'a
+-- Р’Р·СЏС‚Рѕ РёР· Р°РґРґРѕРЅР° Naxac'a
 local to_ptrn = {
 	[' '] = '%s',
 	['.'] = '%.',
@@ -38,9 +40,9 @@ local to_ptrn = {
 	['-'] = '%-'
 }
 if not string.explode then
-	string.explode = function ( div,    -- разделитель
-								str,    -- строка
-								clear ) -- обрезать ли пробелы по краям строк (false/true)
+	string.explode = function ( div,    -- СЂР°Р·РґРµР»РёС‚РµР»СЊ
+								str,    -- СЃС‚СЂРѕРєР°
+								clear ) -- РѕР±СЂРµР·Р°С‚СЊ Р»Рё РїСЂРѕР±РµР»С‹ РїРѕ РєСЂР°СЏРј СЃС‚СЂРѕРє (false/true)
 		local ret = {}
 		for s in str:gmatch("([^"..(to_ptrn[div] or div).."]+)") do
 			ret[#ret+1] = clear and s:trim() or s
@@ -49,10 +51,10 @@ if not string.explode then
 	end
 end
 --==============================================================================================
---Поверхностное (простое) клонирование таблицы: 
---создаётся копия таблицы и копии всех элементов без их клонирования,
---т.е. для ссылочных типов обе таблицы будут содержать ссылки на одни и те же данные
---метатаблицы не копируются
+--РџРѕРІРµСЂС…РЅРѕСЃС‚РЅРѕРµ (РїСЂРѕСЃС‚РѕРµ) РєР»РѕРЅРёСЂРѕРІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹: 
+--СЃРѕР·РґР°С‘С‚СЃСЏ РєРѕРїРёСЏ С‚Р°Р±Р»РёС†С‹ Рё РєРѕРїРёРё РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ Р±РµР· РёС… РєР»РѕРЅРёСЂРѕРІР°РЅРёСЏ,
+--С‚.Рµ. РґР»СЏ СЃСЃС‹Р»РѕС‡РЅС‹С… С‚РёРїРѕРІ РѕР±Рµ С‚Р°Р±Р»РёС†С‹ Р±СѓРґСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ СЃСЃС‹Р»РєРё РЅР° РѕРґРЅРё Рё С‚Рµ Р¶Рµ РґР°РЅРЅС‹Рµ
+--РјРµС‚Р°С‚Р°Р±Р»РёС†С‹ РЅРµ РєРѕРїРёСЂСѓСЋС‚СЃСЏ
 if not table.clone_simple then
 	table.clone_simple = function(tbl)
 		local res = {}
@@ -63,14 +65,14 @@ if not table.clone_simple then
 	end
 end
 --==============================================================================================
--- выравнивание значения n в пределы от min до max
+-- РІС‹СЂР°РІРЅРёРІР°РЅРёРµ Р·РЅР°С‡РµРЅРёСЏ n РІ РїСЂРµРґРµР»С‹ РѕС‚ min РґРѕ max
 if not math.clamp then
 	math.clamp = function( n, min, max )
 		if min>max then min,max=max,min end
 		return (n>max and max) or (n<min and min) or n
 	end
 end
--- округление к ближайшему
+-- РѕРєСЂСѓРіР»РµРЅРёРµ Рє Р±Р»РёР¶Р°Р№С€РµРјСѓ
 if not math.round then
 	math.round = function(v) return math.floor(v + 0.5) end
 end
@@ -83,8 +85,8 @@ end
 --==============================================================================================
 math.randomseed(os.time())
 --==============================================================================================
---KRodin: TODO: может добавить прям в движок?
---Некоторые недостающие DIK_keys:
+--KRodin: TODO: РјРѕР¶РµС‚ РґРѕР±Р°РІРёС‚СЊ РїСЂСЏРј РІ РґРІРёР¶РѕРє?
+--РќРµРєРѕС‚РѕСЂС‹Рµ РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ DIK_keys:
 DIK_keys["DIK_MOUSE1"] = 337
 DIK_keys["DIK_MOUSE2"] = 338
 DIK_keys["DIK_MOUSE3"] = 339
@@ -94,7 +96,7 @@ DIK_keys["DIK_MOUSE6"] = 342
 DIK_keys["DIK_MOUSE7"] = 343
 DIK_keys["DIK_MOUSE8"] = 344
 
---Некоторые недостающие key_bindings:
+--РќРµРєРѕС‚РѕСЂС‹Рµ РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ key_bindings:
 key_bindings["kSPRINT_TOGGLE"] = 8
 key_bindings["kENGINE"] = 15
 key_bindings["kARTEFACT"] = 30
@@ -115,58 +117,58 @@ key_bindings["kUSE_BANDAGE"] = 73
 key_bindings["kUSE_MEDKIT"] = 74
 key_bindings["kQUICK_SAVE"] = 75
 key_bindings["kQUICK_LOAD"] = 76
---==============================[Функция перемотки времени из CoP]==============================
+--==============================[Р¤СѓРЅРєС†РёСЏ РїРµСЂРµРјРѕС‚РєРё РІСЂРµРјРµРЅРё РёР· CoP]==============================
 local _change_game_time = level.change_game_time
-level.change_game_time = function(...) --Для правильного обновления погоды и таймеров после перевода часов.
+level.change_game_time = function(...) --Р”Р»СЏ РїСЂР°РІРёР»СЊРЅРѕРіРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ РїРѕРіРѕРґС‹ Рё С‚Р°Р№РјРµСЂРѕРІ РїРѕСЃР»Рµ РїРµСЂРµРІРѕРґР° С‡Р°СЃРѕРІ.
 	_change_game_time(...)
 	ogse_signals.get_mgr():call("after_time_change")
 end
 --==================================[log3 & log4 by KRodin]=====================================
-local function isArray(tbl) --Является ли таблица массивом
+local function isArray(tbl) --РЇРІР»СЏРµС‚СЃСЏ Р»Рё С‚Р°Р±Р»РёС†Р° РјР°СЃСЃРёРІРѕРј
 	local n=0
 	for _ in pairs(tbl) do n=n+1 end
     return n <= #tbl
 end
 
---Конвертирование чего угодно в строку. Использовать только для вывода в лог!
+--РљРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРёРµ С‡РµРіРѕ СѓРіРѕРґРЅРѕ РІ СЃС‚СЂРѕРєСѓ. РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ РґР»СЏ РІС‹РІРѕРґР° РІ Р»РѕРі!
 local tostring_all_tbl = {
-	["table"] =		function(table, ind) --Распечатка таблиц
-						local res = "{" --Начало
-						local end_res = ind and "\n"..ind.."}" or "\n}" --Конец
-						local def_ind = "  " --Отступ от начала строки
-						ind = ind and ind..def_ind or def_ind --Для каждой "таблицы внутри таблицы" отступ увеличивается в 2 раза
-						if isArray(table) then --Если это массив, обрабатываем только значения:
-							for i=1, #table do --Это актуально только для отслеживания nil-аргументов в таблицах. В будущем, при переезде на новый jit, это надо бы убрать.
+	["table"] =		function(table, ind) --Р Р°СЃРїРµС‡Р°С‚РєР° С‚Р°Р±Р»РёС†
+						local res = "{" --РќР°С‡Р°Р»Рѕ
+						local end_res = ind and "\n"..ind.."}" or "\n}" --РљРѕРЅРµС†
+						local def_ind = "  " --РћС‚СЃС‚СѓРї РѕС‚ РЅР°С‡Р°Р»Р° СЃС‚СЂРѕРєРё
+						ind = ind and ind..def_ind or def_ind --Р”Р»СЏ РєР°Р¶РґРѕР№ "С‚Р°Р±Р»РёС†С‹ РІРЅСѓС‚СЂРё С‚Р°Р±Р»РёС†С‹" РѕС‚СЃС‚СѓРї СѓРІРµР»РёС‡РёРІР°РµС‚СЃСЏ РІ 2 СЂР°Р·Р°
+						if isArray(table) then --Р•СЃР»Рё СЌС‚Рѕ РјР°СЃСЃРёРІ, РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј С‚РѕР»СЊРєРѕ Р·РЅР°С‡РµРЅРёСЏ:
+							for i=1, #table do --Р­С‚Рѕ Р°РєС‚СѓР°Р»СЊРЅРѕ С‚РѕР»СЊРєРѕ РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ nil-Р°СЂРіСѓРјРµРЅС‚РѕРІ РІ С‚Р°Р±Р»РёС†Р°С…. Р’ Р±СѓРґСѓС‰РµРј, РїСЂРё РїРµСЂРµРµР·РґРµ РЅР° РЅРѕРІС‹Р№ jit, СЌС‚Рѕ РЅР°РґРѕ Р±С‹ СѓР±СЂР°С‚СЊ.
 								res = res.."\n"..ind..tostring_all(table[i], ind)..","
 							end
-						else --Если НЕ массив, обрабатываем и ключи, и значения:
+						else --Р•СЃР»Рё РќР• РјР°СЃСЃРёРІ, РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј Рё РєР»СЋС‡Рё, Рё Р·РЅР°С‡РµРЅРёСЏ:
 							for k, v in pairs(table) do
 								res = res.."\n"..ind.."["..tostring_all(k, ind).."] = "..tostring_all(v, ind)..","
 							end
 						end
 						return res..end_res
 					end,
-	["string"] =	function(v) return "'"..v.."'" end, --Строки берём в кавычки. Это нужно, чтобы можно было отличить строку "123" от числа 123, "nil" от nil и тд...
+	["string"] =	function(v) return "'"..v.."'" end, --РЎС‚СЂРѕРєРё Р±РµСЂС‘Рј РІ РєР°РІС‹С‡РєРё. Р­С‚Рѕ РЅСѓР¶РЅРѕ, С‡С‚РѕР±С‹ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ РѕС‚Р»РёС‡РёС‚СЊ СЃС‚СЂРѕРєСѓ "123" РѕС‚ С‡РёСЃР»Р° 123, "nil" РѕС‚ nil Рё С‚Рґ...
 	["number"] =	function(v) return tostring(v) end,
 	["boolean"] =	function(v) return tostring(v) end,
 	["nil"] =		function(v) return tostring(v) end,
-	["function"] =	function() return "[[FUNCTION]]" end, --Function, Userdata и Thread распечатать нельзя, просто заменим на строки
+	["function"] =	function() return "[[FUNCTION]]" end, --Function, Userdata Рё Thread СЂР°СЃРїРµС‡Р°С‚Р°С‚СЊ РЅРµР»СЊР·СЏ, РїСЂРѕСЃС‚Рѕ Р·Р°РјРµРЅРёРј РЅР° СЃС‚СЂРѕРєРё
 	["userdata"] =	function() return "[[USERDATA]]" end,
 	["thread"] =	function() return "[[THREAD]]" end,
 }
-function tostring_all(obj, ind) --ind - служебный аргумент для распечатки "таблиц в таблицах". НЕ ТРОГАТЬ ЕГО!!!
+function tostring_all(obj, ind) --ind - СЃР»СѓР¶РµР±РЅС‹Р№ Р°СЂРіСѓРјРµРЅС‚ РґР»СЏ СЂР°СЃРїРµС‡Р°С‚РєРё "С‚Р°Р±Р»РёС† РІ С‚Р°Р±Р»РёС†Р°С…". РќР• РўР РћР“РђРўР¬ Р•Р“Рћ!!!
 	return tostring_all_tbl[type(obj)](obj, ind)
 end
 
---Делает дополнительную работу по конвертации параметров, которые не воспринимаются родной функцией string.format.
---Параметры можно передавать ЛЮБОГО ТИПА! В строке формата они должны стоять как %s (потому, что будут сконвертированы в строки).
+--Р”РµР»Р°РµС‚ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ СЂР°Р±РѕС‚Сѓ РїРѕ РєРѕРЅРІРµСЂС‚Р°С†РёРё РїР°СЂР°РјРµС‚СЂРѕРІ, РєРѕС‚РѕСЂС‹Рµ РЅРµ РІРѕСЃРїСЂРёРЅРёРјР°СЋС‚СЃСЏ СЂРѕРґРЅРѕР№ С„СѓРЅРєС†РёРµР№ string.format.
+--РџР°СЂР°РјРµС‚СЂС‹ РјРѕР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ Р›Р®Р‘РћР“Рћ РўРРџРђ! Р’ СЃС‚СЂРѕРєРµ С„РѕСЂРјР°С‚Р° РѕРЅРё РґРѕР»Р¶РЅС‹ СЃС‚РѕСЏС‚СЊ РєР°Рє %s (РїРѕС‚РѕРјСѓ, С‡С‚Рѕ Р±СѓРґСѓС‚ СЃРєРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅС‹ РІ СЃС‚СЂРѕРєРё).
 function log3(fmt, ...)
 	local args = {...}
 	for i=1, #args do
 		args[i] = tostring_all(args[i])
 	end
 	local res, msg = pcall(string.format, fmt, unpack(args))
-	if not res then --Если произошла ошибка
+	if not res then --Р•СЃР»Рё РїСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°
 		msg = "!!log3 failed: "..msg.."\n"..debug.traceback()
 	end
 	--
@@ -174,13 +176,13 @@ function log3(fmt, ...)
 end
 
 -------------------------------
-log1(debug.traceback()) --Помогает определить, из за чего в некоторых случаях перезагружается _G
+log1(debug.traceback()) --РџРѕРјРѕРіР°РµС‚ РѕРїСЂРµРґРµР»РёС‚СЊ, РёР· Р·Р° С‡РµРіРѕ РІ РЅРµРєРѕС‚РѕСЂС‹С… СЃР»СѓС‡Р°СЏС… РїРµСЂРµР·Р°РіСЂСѓР¶Р°РµС‚СЃСЏ _G
 -------------------------------
 
 local logs_cach = {}
---Функция создаёт новый лог-файл и выводит текст в него.
---fname - название лог-файла, например "Anomaly_Evader". Он будет создан в папке logs, к названию добавится дата и время создания.
---fmt, ... - строка формата с параметрами как и в функции log3
+--Р¤СѓРЅРєС†РёСЏ СЃРѕР·РґР°С‘С‚ РЅРѕРІС‹Р№ Р»РѕРі-С„Р°Р№Р» Рё РІС‹РІРѕРґРёС‚ С‚РµРєСЃС‚ РІ РЅРµРіРѕ.
+--fname - РЅР°Р·РІР°РЅРёРµ Р»РѕРі-С„Р°Р№Р»Р°, РЅР°РїСЂРёРјРµСЂ "Anomaly_Evader". РћРЅ Р±СѓРґРµС‚ СЃРѕР·РґР°РЅ РІ РїР°РїРєРµ logs, Рє РЅР°Р·РІР°РЅРёСЋ РґРѕР±Р°РІРёС‚СЃСЏ РґР°С‚Р° Рё РІСЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ.
+--fmt, ... - СЃС‚СЂРѕРєР° С„РѕСЂРјР°С‚Р° СЃ РїР°СЂР°РјРµС‚СЂР°РјРё РєР°Рє Рё РІ С„СѓРЅРєС†РёРё log3
 function log4(fname, fmt, ...)
 	local f = logs_cach[fname]
 	if not f then
@@ -200,8 +202,8 @@ function log4(fname, fmt, ...)
 	f:write(msg..'\n')
 	f:flush()
 end
---======================================[Функции из OGSE]=======================================
--- Крешнуть игру (после вывода сообщения об ошибке в лог)
+--======================================[Р¤СѓРЅРєС†РёРё РёР· OGSE]=======================================
+-- РљСЂРµС€РЅСѓС‚СЊ РёРіСЂСѓ (РїРѕСЃР»Рµ РІС‹РІРѕРґР° СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕС€РёР±РєРµ РІ Р»РѕРі)
 function abort(...)
 	log1("!!************************************[ABORT]************************************")
 	log1(debug.traceback())
@@ -294,7 +296,7 @@ function dbg_sys_ini:r_line(sec, line_num)
 end
 --system_ini = function() return dbg_sys_ini() end
 
---Служебные функции для чтения параметров из секций объектов
+--РЎР»СѓР¶РµР±РЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ С‡С‚РµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ РёР· СЃРµРєС†РёР№ РѕР±СЉРµРєС‚РѕРІ
 sys_ini = system_ini()
 function get_string(section, param, def_val, ini_file)
 	local ini = ini_file or sys_ini
@@ -341,20 +343,20 @@ function get_float(section, param, def_val, ini_file)
 		return def_val
 	end
 end
--- получить класс из секции, полезно в том случае, если нет объекта (и недоступен метод clsid), а есть только имя секции
+-- РїРѕР»СѓС‡РёС‚СЊ РєР»Р°СЃСЃ РёР· СЃРµРєС†РёРё, РїРѕР»РµР·РЅРѕ РІ С‚РѕРј СЃР»СѓС‡Р°Рµ, РµСЃР»Рё РЅРµС‚ РѕР±СЉРµРєС‚Р° (Рё РЅРµРґРѕСЃС‚СѓРїРµРЅ РјРµС‚РѕРґ clsid), Р° РµСЃС‚СЊ С‚РѕР»СЊРєРѕ РёРјСЏ СЃРµРєС†РёРё
 function get_class(section)
 	ASSERT(sys_ini:section_exist(section), "get_class: section '"..section.."' doesn't exist")
 	ASSERT(sys_ini:line_exist(section, "class"), "get_class: there is no 'class' parameter in the section '"..section.."'")
 	return sys_ini:r_clsid(section, "class")
 end
--- читает строку вида "s1,s2,s3" и парсит на строковые значения, разделённые запятой, в таблицу вида {s1, s2, s3}
+-- С‡РёС‚Р°РµС‚ СЃС‚СЂРѕРєСѓ РІРёРґР° "s1,s2,s3" Рё РїР°СЂСЃРёС‚ РЅР° СЃС‚СЂРѕРєРѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ, СЂР°Р·РґРµР»С‘РЅРЅС‹Рµ Р·Р°РїСЏС‚РѕР№, РІ С‚Р°Р±Р»РёС†Сѓ РІРёРґР° {s1, s2, s3}
 function get_names(section, param, ini_file)
 	local ini = ini_file or sys_ini
 	ASSERT(ini:section_exist(section), "get_names: section '"..section.."' doesn't exist")
 	local s = ini:r_string(section, param)
 	return split_comma_separated_list(s)
 end
--- читает строку вида "s1,s2,s3" и парсит на численные значения, разделённые запятой, в таблицу вида {n1, n2, n3}
+-- С‡РёС‚Р°РµС‚ СЃС‚СЂРѕРєСѓ РІРёРґР° "s1,s2,s3" Рё РїР°СЂСЃРёС‚ РЅР° С‡РёСЃР»РµРЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ, СЂР°Р·РґРµР»С‘РЅРЅС‹Рµ Р·Р°РїСЏС‚РѕР№, РІ С‚Р°Р±Р»РёС†Сѓ РІРёРґР° {n1, n2, n3}
 function get_numbers(section, param, ini_file)
 	local t = {}
 	for i,sv in ipairs(get_names(section, param, ini_file)) do
@@ -398,7 +400,7 @@ function get_vector(section, param, def_val, ini_file)
 		end
 	end
 end
--- значение по умолчанию должно задаваться таблицей {num1, num2}
+-- Р·РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РґРѕР»Р¶РЅРѕ Р·Р°РґР°РІР°С‚СЊСЃСЏ С‚Р°Р±Р»РёС†РµР№ {num1, num2}
 function get_vector2(section, param, def_val, ini_file)
 	local ini = ini_file or sys_ini
 	ASSERT(ini:section_exist(section), "get_vector2: section '"..section.."' doesn't exist")
@@ -410,15 +412,15 @@ function get_vector2(section, param, def_val, ini_file)
 	end
 end
 
--- делит строку в виде "aaa,bbb,ccc" на строки "aaa", "bbb", "ccc" и возвращает их в виде массива
+-- РґРµР»РёС‚ СЃС‚СЂРѕРєСѓ РІ РІРёРґРµ "aaa,bbb,ccc" РЅР° СЃС‚СЂРѕРєРё "aaa", "bbb", "ccc" Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РёС… РІ РІРёРґРµ РјР°СЃСЃРёРІР°
 function split_comma_separated_list(s)
 	return string.explode(",", s)
 end
---Отличается от split_comma_separated_list тем, что срезает пробелы по краям строк (если они есть)
+--РћС‚Р»РёС‡Р°РµС‚СЃСЏ РѕС‚ split_comma_separated_list С‚РµРј, С‡С‚Рѕ СЃСЂРµР·Р°РµС‚ РїСЂРѕР±РµР»С‹ РїРѕ РєСЂР°СЏРј СЃС‚СЂРѕРє (РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ)
 function parse_names( s )
 	return string.explode(",", s, true)
 end
---Парсит строку вида "n1, n2, n3..." в таблицу { n1, n2, n3, ... } где n1, n2, n3... - числа
+--РџР°СЂСЃРёС‚ СЃС‚СЂРѕРєСѓ РІРёРґР° "n1, n2, n3..." РІ С‚Р°Р±Р»РёС†Сѓ { n1, n2, n3, ... } РіРґРµ n1, n2, n3... - С‡РёСЃР»Р°
 function parse_nums( s )
     local t = {}
     for i,entry in ipairs(parse_names( s )) do
@@ -428,10 +430,10 @@ function parse_nums( s )
     end
     return t
 end
---Конвертирует строку вида "actor, 0, actor_dolg, 1, actor_freedom, 2, ..."
---В таблицу вида { ["actor"] = "0", ["actor_dolg"] = "1", ["actor_freedom"] = "2", ... }
+--РљРѕРЅРІРµСЂС‚РёСЂСѓРµС‚ СЃС‚СЂРѕРєСѓ РІРёРґР° "actor, 0, actor_dolg, 1, actor_freedom, 2, ..."
+--Р’ С‚Р°Р±Р»РёС†Сѓ РІРёРґР° { ["actor"] = "0", ["actor_dolg"] = "1", ["actor_freedom"] = "2", ... }
 function parse_key_value( s )
-	if s == nil then return nil end --бывает и такое
+	if s == nil then return nil end --Р±С‹РІР°РµС‚ Рё С‚Р°РєРѕРµ
 
     local t = {}
 	local t0 = parse_names( s )
@@ -443,12 +445,12 @@ function parse_key_value( s )
     return t
 end
 
--- упаковать время в виде объекта CTime в строку значений, разделённых запятой
+-- СѓРїР°РєРѕРІР°С‚СЊ РІСЂРµРјСЏ РІ РІРёРґРµ РѕР±СЉРµРєС‚Р° CTime РІ СЃС‚СЂРѕРєСѓ Р·РЅР°С‡РµРЅРёР№, СЂР°Р·РґРµР»С‘РЅРЅС‹С… Р·Р°РїСЏС‚РѕР№
 function pack_time_to_string(t)
 	ASSERT(t, "pack_time_to_string: t is a nil reference")
 	return table.concat({t:get()}, ',')
 end
--- читает время, сохранённое в виде строки со значениями, разделёнными запятой, и конвертирует в значение класса CTime
+-- С‡РёС‚Р°РµС‚ РІСЂРµРјСЏ, СЃРѕС…СЂР°РЅС‘РЅРЅРѕРµ РІ РІРёРґРµ СЃС‚СЂРѕРєРё СЃРѕ Р·РЅР°С‡РµРЅРёСЏРјРё, СЂР°Р·РґРµР»С‘РЅРЅС‹РјРё Р·Р°РїСЏС‚РѕР№, Рё РєРѕРЅРІРµСЂС‚РёСЂСѓРµС‚ РІ Р·РЅР°С‡РµРЅРёРµ РєР»Р°СЃСЃР° CTime
 function unpack_time_from_string(str_time)
 	local time_values = {}
 	for i,s in ipairs(split_comma_separated_list(str_time)) do
@@ -490,7 +492,7 @@ function get_day_time_sec(t)
 	local y,m,d,h,min,s,ms = t:get()
 	return h * 3600.0 + min * 60.0 + s + ms * 1e-3
 end
--- получить текушее игровое время от начала суток, измеренное в часах (значение в пределах [0, 24) )
+-- РїРѕР»СѓС‡РёС‚СЊ С‚РµРєСѓС€РµРµ РёРіСЂРѕРІРѕРµ РІСЂРµРјСЏ РѕС‚ РЅР°С‡Р°Р»Р° СЃСѓС‚РѕРє, РёР·РјРµСЂРµРЅРЅРѕРµ РІ С‡Р°СЃР°С… (Р·РЅР°С‡РµРЅРёРµ РІ РїСЂРµРґРµР»Р°С… [0, 24) )
 function get_game_day_time_h()
 	local gt = game.get_game_time()
 	local y,m,d,h,min,sec,ms = gt:get()
@@ -540,7 +542,7 @@ function isKnife(object, class_id)
 	return id == clsid.wpn_knife or id == clsid.wpn_knife_s
 end
 
--- Вычисляет yaw в радианах
+-- Р’С‹С‡РёСЃР»СЏРµС‚ yaw РІ СЂР°РґРёР°РЅР°С…
 function yaw(v1, v2)
 	if v1 and v2 then
 		return math.abs(v2:getH()-v1:getH())
@@ -560,26 +562,26 @@ function vector_cross(v1, v2)
 	else return vector():set(0, 0, 0) end
 end
 
-function isIndoor(level_name) --KRodin: всем подземным уровням прописывается НЕ default погода. По этому признаку и будем проверять.
+function isIndoor(level_name) --KRodin: РІСЃРµРј РїРѕРґР·РµРјРЅС‹Рј СѓСЂРѕРІРЅСЏРј РїСЂРѕРїРёСЃС‹РІР°РµС‚СЃСЏ РќР• default РїРѕРіРѕРґР°. РџРѕ СЌС‚РѕРјСѓ РїСЂРёР·РЅР°РєСѓ Рё Р±СѓРґРµРј РїСЂРѕРІРµСЂСЏС‚СЊ.
 	return get_string(level_name, "weathers", nil, game_ini()) ~= "default"
 end
 --==============================================================================================
---KRodin: TODO: снести эту функцию вообще. Вызывать level.change_game_time напрямую.
---И сон, например, надо делать не просто переводом часов, а сделать как в OGSE. Чтобы учитывать выброс и тд.
+--KRodin: TODO: СЃРЅРµСЃС‚Рё СЌС‚Сѓ С„СѓРЅРєС†РёСЋ РІРѕРѕР±С‰Рµ. Р’С‹Р·С‹РІР°С‚СЊ level.change_game_time РЅР°РїСЂСЏРјСѓСЋ.
+--Р СЃРѕРЅ, РЅР°РїСЂРёРјРµСЂ, РЅР°РґРѕ РґРµР»Р°С‚СЊ РЅРµ РїСЂРѕСЃС‚Рѕ РїРµСЂРµРІРѕРґРѕРј С‡Р°СЃРѕРІ, Р° СЃРґРµР»Р°С‚СЊ РєР°Рє РІ OGSE. Р§С‚РѕР±С‹ СѓС‡РёС‚С‹РІР°С‚СЊ РІС‹Р±СЂРѕСЃ Рё С‚Рґ.
 function set_current_time( hour, min, sec )
 	log3("~~Called set_current_time from: %s", debug.traceback())
-	if hour == 0 and min == 0 then min = 1 end --Маловероятно, но на всякий случай.
-	level.change_game_time(0, hour, min) --дни, часы, минуты
+	if hour == 0 and min == 0 then min = 1 end --РњР°Р»РѕРІРµСЂРѕСЏС‚РЅРѕ, РЅРѕ РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№.
+	level.change_game_time(0, hour, min) --РґРЅРё, С‡Р°СЃС‹, РјРёРЅСѓС‚С‹
 end
 --==============================================================================================
 
 
-schemes, stypes = {}, {} -- соответствие схем модулям, типы схем
+schemes, stypes = {}, {} -- СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ СЃС…РµРј РјРѕРґСѓР»СЏРј, С‚РёРїС‹ СЃС…РµРј
 
--- Загружает схему из файла на диске и активирует в мотиваторе.
--- Здесь:
--- 	filename - имя файла, в котором реализована схема, без расширения
--- 	scheme - имя схемы
+-- Р—Р°РіСЂСѓР¶Р°РµС‚ СЃС…РµРјСѓ РёР· С„Р°Р№Р»Р° РЅР° РґРёСЃРєРµ Рё Р°РєС‚РёРІРёСЂСѓРµС‚ РІ РјРѕС‚РёРІР°С‚РѕСЂРµ.
+-- Р—РґРµСЃСЊ:
+-- 	filename - РёРјСЏ С„Р°Р№Р»Р°, РІ РєРѕС‚РѕСЂРѕРј СЂРµР°Р»РёР·РѕРІР°РЅР° СЃС…РµРјР°, Р±РµР· СЂР°СЃС€РёСЂРµРЅРёСЏ
+-- 	scheme - РёРјСЏ СЃС…РµРјС‹
 function load_scheme(filename, scheme, stype)
 	schemes[scheme] = filename
 	stypes[scheme] = stype
@@ -682,14 +684,14 @@ function distance_between(obj1, obj2)
     return obj1:position():distance_to(obj2:position())
 end
 
--- Если один объект nil, например нет актера, то считаем, что он далеко
+-- Р•СЃР»Рё РѕРґРёРЅ РѕР±СЉРµРєС‚ nil, РЅР°РїСЂРёРјРµСЂ РЅРµС‚ Р°РєС‚РµСЂР°, С‚Рѕ СЃС‡РёС‚Р°РµРј, С‡С‚Рѕ РѕРЅ РґР°Р»РµРєРѕ
 function distance_between_safe(obj1, obj2)
     if(obj1 == nil or obj2 == nil) then return 100000 end
 	return obj1:position():distance_to(obj2:position())
 end
 
 
---' Проверка на инфопоршны, даже если игрока не существует
+--' РџСЂРѕРІРµСЂРєР° РЅР° РёРЅС„РѕРїРѕСЂС€РЅС‹, РґР°Р¶Рµ РµСЃР»Рё РёРіСЂРѕРєР° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
 function has_alife_info(info_id)
 	local aa = alife()
 	if aa == nil then
@@ -700,24 +702,24 @@ end
 
 
 --------------------------------------------------
--- іласс LUA реализуі   ий Finite State Machine
--- для управления персонажами
+-- С–Р»Р°СЃСЃ LUA СЂРµР°Р»РёР·СѓС–   РёР№ Finite State Machine
+-- РґР»СЏ СѓРїСЂР°РІР»РµРЅРёСЏ РїРµСЂСЃРѕРЅР°Р¶Р°РјРё
 --------------------------------------------------
 class 'FSM'
 
---  инициализация путем задания объекта Non-Player Character
+--  РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїСѓС‚РµРј Р·Р°РґР°РЅРёСЏ РѕР±СЉРµРєС‚Р° Non-Player Character
 function FSM:__init(script_name, npc_obj)
-    -- указатель на подконтрольнvй NPC
+    -- СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕРґРєРѕРЅС‚СЂРѕР»СЊРЅvР№ NPC
     self.npc = npc_obj
-    -- строка - имя скрипта, которvй запускает игру
+    -- СЃС‚СЂРѕРєР° - РёРјСЏ СЃРєСЂРёРїС‚Р°, РєРѕС‚РѕСЂvР№ Р·Р°РїСѓСЃРєР°РµС‚ РёРіСЂСѓ
     self.script_name = script_name
-    -- матрица, задаі   ая граф переходов состояний
-    -- реализуется как двумерная таблица
+    -- РјР°С‚СЂРёС†Р°, Р·Р°РґР°С–   Р°СЏ РіСЂР°С„ РїРµСЂРµС…РѕРґРѕРІ СЃРѕСЃС‚РѕСЏРЅРёР№
+    -- СЂРµР°Р»РёР·СѓРµС‚СЃСЏ РєР°Рє РґРІСѓРјРµСЂРЅР°СЏ С‚Р°Р±Р»РёС†Р°
     self.transition_matrix = {[0] = {}}
-    -- номер теку   его состояния
+    -- РЅРѕРјРµСЂ С‚РµРєСѓ   РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
     self.current_state = 0
 
-    -- флаг того, что машина вклічена
+    -- С„Р»Р°Рі С‚РѕРіРѕ, С‡С‚Рѕ РјР°С€РёРЅР° РІРєР»С–С‡РµРЅР°
     self.machine_running = true
 
     printf("inialization FSM for NPC %s", self.npc:name())
@@ -739,8 +741,8 @@ function FSM:stop()
 end
 
 
---  добавление указателя на булеву
---  функциі условия перехода
+--  РґРѕР±Р°РІР»РµРЅРёРµ СѓРєР°Р·Р°С‚РµР»СЏ РЅР° Р±СѓР»РµРІСѓ
+--  С„СѓРЅРєС†РёС– СѓСЃР»РѕРІРёСЏ РїРµСЂРµС…РѕРґР°
 function FSM:set_transition(from_state_num, to_state_num, cond_func)
     printf("in setting transition %d, %d ", from_state_num, to_state_num)
 
@@ -751,7 +753,7 @@ function FSM:set_transition(from_state_num, to_state_num, cond_func)
     end
 end
 
--- единичная проверка FSM
+-- РµРґРёРЅРёС‡РЅР°СЏ РїСЂРѕРІРµСЂРєР° FSM
 function FSM:run()
     local transition_vector = self.transition_matrix[self.current_state]
     table.foreach(transition_vector,
@@ -775,7 +777,7 @@ function FSM:run()
 end
 
 
--- запуск бесконечного цикла FSM
+-- Р·Р°РїСѓСЃРє Р±РµСЃРєРѕРЅРµС‡РЅРѕРіРѕ С†РёРєР»Р° FSM
 function FSM:run_loop()
     printf("running FSM loop for NPC %s", self.npc:name())
 
@@ -807,13 +809,13 @@ function FSM:run_loop()
     end
 end
 
--- взятие под контроль скрипта NPC (переход из нулевого состояния)
+-- РІР·СЏС‚РёРµ РїРѕРґ РєРѕРЅС‚СЂРѕР»СЊ СЃРєСЂРёРїС‚Р° NPC (РїРµСЂРµС…РѕРґ РёР· РЅСѓР»РµРІРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ)
 function FSM:set_script_control()
     printf("set script control for FSM of NPC %s", self.npc:name())
     self.npc:script(true, self.script_name)
 end
 
--- отпускание из под контроля скрипта NPC (переход в нулевое состояние)
+-- РѕС‚РїСѓСЃРєР°РЅРёРµ РёР· РїРѕРґ РєРѕРЅС‚СЂРѕР»СЏ СЃРєСЂРёРїС‚Р° NPC (РїРµСЂРµС…РѕРґ РІ РЅСѓР»РµРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ)
 function FSM:reset_script_control()
     printf("reset script control for FSM of NPC %s", self.npc:name())
     self.npc:script(false, self.script_name)
@@ -849,7 +851,7 @@ function script_object:update()
 end
 
 --
--- іередача персонажу информации
+-- С–РµСЂРµРґР°С‡Р° РїРµСЂСЃРѕРЅР°Р¶Сѓ РёРЅС„РѕСЂРјР°С†РёРё
 --
 
 function GiveInfoViaPda(obj_receiver, obj_sender, info_number)
@@ -861,19 +863,19 @@ end
 -- Functions and variables added by Zmey
 --------------------------------------------------
 
--- іонстанта, которуі использовать в местах, где нужно задать неограниченное время действия
+-- С–РѕРЅСЃС‚Р°РЅС‚Р°, РєРѕС‚РѕСЂСѓС– РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІ РјРµСЃС‚Р°С…, РіРґРµ РЅСѓР¶РЅРѕ Р·Р°РґР°С‚СЊ РЅРµРѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РІСЂРµРјСЏ РґРµР№СЃС‚РІРёСЏ
 time_infinite = 100000000
 
--- =азвание скрипта, которvй в даннvй момент находится в отладке
--- (в этом скрипте будут срабатvвать вvзовv функции debug_log)
+-- =Р°Р·РІР°РЅРёРµ СЃРєСЂРёРїС‚Р°, РєРѕС‚РѕСЂvР№ РІ РґР°РЅРЅvР№ РјРѕРјРµРЅС‚ РЅР°С…РѕРґРёС‚СЃСЏ РІ РѕС‚Р»Р°РґРєРµ
+-- (РІ СЌС‚РѕРј СЃРєСЂРёРїС‚Рµ Р±СѓРґСѓС‚ СЃСЂР°Р±Р°С‚vРІР°С‚СЊ РІvР·РѕРІv С„СѓРЅРєС†РёРё debug_log)
 debug_script_name = ""
 
--- Tvводит в лог строчку, если script_name == debug_script_name
--- Lспользуется для отрадки сценариев
+-- TvРІРѕРґРёС‚ РІ Р»РѕРі СЃС‚СЂРѕС‡РєСѓ, РµСЃР»Рё script_name == debug_script_name
+-- LСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РѕС‚СЂР°РґРєРё СЃС†РµРЅР°СЂРёРµРІ
 function debug_log(script_name, fmt, ...)
 end
 
--- +сли в даннvй момент вvполняется какое-то действие, прерvвает его и отклічает скриптовvй режим
+-- +СЃР»Рё РІ РґР°РЅРЅvР№ РјРѕРјРµРЅС‚ РІvРїРѕР»РЅСЏРµС‚СЃСЏ РєР°РєРѕРµ-С‚Рѕ РґРµР№СЃС‚РІРёРµ, РїСЂРµСЂvРІР°РµС‚ РµРіРѕ Рё РѕС‚РєР»С–С‡Р°РµС‚ СЃРєСЂРёРїС‚РѕРІvР№ СЂРµР¶РёРј
 function interrupt_action(who, script_name)
   if who:get_script() then
     who:script(false, script_name)
@@ -1078,7 +1080,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- Evaluators
 ----------------------------------------------------------------------------------------------------------------------
--- зарезервированv id с номерами от 0 до 256 для создания стандартнvх эвалуаторов.
+-- Р·Р°СЂРµР·РµСЂРІРёСЂРѕРІР°РЅv id СЃ РЅРѕРјРµСЂР°РјРё РѕС‚ 0 РґРѕ 256 РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚Р°РЅРґР°СЂС‚РЅvС… СЌРІР°Р»СѓР°С‚РѕСЂРѕРІ.
 
 --Constant evaluator
 class "const_evaluator" (property_evaluator)
@@ -1181,8 +1183,8 @@ function random_number (min_value, max_value)
     end
 end
 
--- ‚аҐ¬п бгв®Є ў ¬б
--- —гЈ ©
+-- вЂљР°ТђВ¬Рї Р±РіРІВ®Р„ Сћ В¬Р±
+-- вЂ”РіР€В В©
 local ms_per_day = 24 * 60 * 60 * 1000
 function day_time()
     return math.mod( game.time(), ms_per_day )
@@ -1194,7 +1196,7 @@ function local_hours()
 end
 
 
--- Їа®ўҐапҐв, Ґбвм «Ё ®ЎкҐЄв ў ®­« ©­Ґ
+-- Р‡Р°В®СћТђР°РїТђРІ, ТђР±РІРј В«РЃ В®РЋРєТђР„РІ Сћ В®В­В«В В©В­Тђ
 function is_object_online(obj_id)
 	return level.object_by_id(obj_id) ~= nil
 end
@@ -1211,7 +1213,7 @@ function get_clsid(npc)
 --    end
 end
 
---Вращает вектор вокруг оси y против часовой стрелки
+--Р’СЂР°С‰Р°РµС‚ РІРµРєС‚РѕСЂ РІРѕРєСЂСѓРі РѕСЃРё y РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё
 function vector_rotate_y (v, angle)
     angle = angle * 0.017453292519943295769236907684886
     local c = math.cos (angle)
@@ -1219,16 +1221,16 @@ function vector_rotate_y (v, angle)
     return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
 end
 
--- очистка таблицы
+-- РѕС‡РёСЃС‚РєР° С‚Р°Р±Р»РёС†С‹
 function clear_table (t)
     while table.getn (t) > 0 do
           table.remove (t, table.getn (t))
     end
 end
 
---€бЇ®«м§гҐв ¤«п ¬®­бва®ў. ‚лЎ®а в®зЄЁ, Єг¤  Ё¤вЁ ў ­ҐЄ®в®а®¬ а ¤ЁгбҐ Ё зв®Ў в®зЄ  Ўл«  ¤ «миҐ ­  а ббв®п­ЁЁ
--- min_radius ®в вҐЄгйҐ© Ї®§ЁжЁЁ(Ґб«Ё нв® Ї®«гзЁвбп). center_id - жҐ­ва Ї®§ЁжЁЁ, ў®ЄагЈ Є®в®а®© ¦ЁўҐ¬,
--- position_id - вгЄгй п Ї®§ЁжЁп, radius - ў Є Є®¬ а ¤ЁгбҐ ўлЎЁа вм в®зЄг, min_radius - ¬Ё­Ё¬ «м­®Ґ а ббв®п­ЁҐ, ®в вҐЄгйҐ© Ї®§ЁжЁЁ ¤® ­®ў®© в®зЄЁ.
+--в‚¬Р±Р‡В®В«РјВ§РіТђРІ В¤В«Рї В¬В®В­Р±РІР°В®Сћ. вЂљР»РЋВ®Р° РІВ®Р·Р„РЃ, Р„РіВ¤В  РЃВ¤РІРЃ Сћ В­ТђР„В®РІВ®Р°В®В¬ Р°В В¤РЃРіР±Тђ РЃ Р·РІВ®РЋ РІВ®Р·Р„В  РЋР»В«В  В¤В В«РјРёТђ В­В  Р°В Р±Р±РІВ®РїВ­РЃРЃ
+-- min_radius В®РІ РІТђР„РіР№ТђВ© Р‡В®В§РЃР¶РЃРЃ(ТђР±В«РЃ РЅРІВ® Р‡В®В«РіР·РЃРІР±Рї). center_id - Р¶ТђВ­РІР° Р‡В®В§РЃР¶РЃРЃ, СћВ®Р„Р°РіР€ Р„В®РІВ®Р°В®В© В¦РЃСћТђВ¬,
+-- position_id - РІРіР„РіР№В Рї Р‡В®В§РЃР¶РЃРї, radius - Сћ Р„В Р„В®В¬ Р°В В¤РЃРіР±Тђ СћР»РЋРЃР°В РІРј РІВ®Р·Р„Рі, min_radius - В¬РЃВ­РЃВ¬В В«РјВ­В®Тђ Р°В Р±Р±РІВ®РїВ­РЃТђ, В®РІ РІТђР„РіР№ТђВ© Р‡В®В§РЃР¶РЃРЃ В¤В® В­В®СћВ®В© РІВ®Р·Р„РЃ.
 function new_point(center_id, position_id,radius, min_radius)
     local dir = vector():set(math.random(-1000, 1000)/1000.0, 0.0001, math.random(-1000, 1000)/1000.0)
     local pos = level.vertex_in_direction(center_id, dir, radius)
@@ -1250,7 +1252,7 @@ function stop_play_sound(obj)
 	end
 end
 
-function object_type(obj) --Удалить нафиг!!!
+function object_type(obj) --РЈРґР°Р»РёС‚СЊ РЅР°С„РёРі!!!
     local otype = get_clsid(obj)
     local type
 
@@ -1324,7 +1326,7 @@ function object_type(obj) --Удалить нафиг!!!
         type = "none"
     end
 
-    -- Їа®ўҐапҐ¬ ­Ґ вагЇ «Ё нв®
+    -- Р‡Р°В®СћТђР°РїТђВ¬ В­Тђ РІР°РіР‡ В«РЃ РЅРІВ®
     if type == "stalker" or
        type == "monstr" then
         if obj:alive() == false then
@@ -1336,8 +1338,8 @@ function object_type(obj) --Удалить нафиг!!!
 end
 
 
--- Является ли оbj монстром
-function is_object_monster(obj) --Удалить нафиг!!!
+-- РЇРІР»СЏРµС‚СЃСЏ Р»Рё Рѕbj РјРѕРЅСЃС‚СЂРѕРј
+function is_object_monster(obj) --РЈРґР°Р»РёС‚СЊ РЅР°С„РёРі!!!
 	local otype = get_clsid(obj)
 	if(otype == clsid.crow			or
 		otype == clsid.zombie		or
@@ -1358,14 +1360,14 @@ function is_object_monster(obj) --Удалить нафиг!!!
 	return false
 end
 
---ў®§ўа й Ґв Їа®Ё§ў®«м­го в®зЄг ЇгвЁ г Є®в®а®© гбв ­®ў«Ґ­ ЎЁв
-function point_with_bit(patrol_path, bit, old_point)      -- old_point - Ё­¤ҐЄб в®зЄЁ, Є®в®аго ­Ґ ­ ¤® ўлЎЁа вм,
-  local points = {}                                       -- Ї а ¬Ґва ­Ґ ®Ўп§ вҐ«м­л©( ­ ЇаЁ¬Ґа вҐЄгйҐ© в®зЄЁ )
+--СћВ®В§СћР°В Р№В ТђРІ Р‡Р°В®РЃВ§СћВ®В«РјВ­РіРѕ РІВ®Р·Р„Рі Р‡РіРІРЃ Рі Р„В®РІВ®Р°В®В© РіР±РІВ В­В®СћВ«ТђВ­ РЋРЃРІ
+function point_with_bit(patrol_path, bit, old_point)      -- old_point - РЃВ­В¤ТђР„Р± РІВ®Р·Р„РЃ, Р„В®РІВ®Р°РіРѕ В­Тђ В­В В¤В® СћР»РЋРЃР°В РІРј,
+  local points = {}                                       -- Р‡В Р°В В¬ТђРІР° В­Тђ В®РЋРїВ§В РІТђВ«РјВ­Р»В©( В­В Р‡Р°РЃВ¬ТђР° РІТђР„РіР№ТђВ© РІВ®Р·Р„РЃ )
 
     for i = 0, patrol_path:count()-1 do
-      --„®Ў®ў«пҐ¬ ў в Ў«Ёжг в®зЄЁ б ­г¦­л¬ ЎЁв®¬
+      --вЂћВ®РЋВ®СћВ«РїТђВ¬ Сћ РІВ РЋВ«РЃР¶Рі РІВ®Р·Р„РЃ Р± В­РіВ¦В­Р»В¬ РЋРЃРІВ®В¬
       if( patrol_path:flag(i, bit)) then
-            --„®Ў ў«пҐ¬ в®зЄг Ґб«Ё old_point == nil Ё«Ё ­®ў п в®зЄ  ­Ґ б®ўЇ ¤ Ґв б old_point
+            --вЂћВ®РЋВ СћВ«РїТђВ¬ РІВ®Р·Р„Рі ТђР±В«РЃ old_point == nil РЃВ«РЃ В­В®СћВ Рї РІВ®Р·Р„В  В­Тђ Р±В®СћР‡В В¤В ТђРІ Р± old_point
             if(old_point == nil) then
                 table.insert(points, patrol_path:point(i))
             elseif(old_point ~= i) then
@@ -1385,14 +1387,14 @@ function point_with_bit(patrol_path, bit, old_point)      -- old_point - Ё­¤ҐЄб 
     end
 end
 
---ў®§ўа й Ґв Їа®Ё§ў®«м­го в®зЄг ЇгвЁ г Є®в®а®© гбв ­®ў«Ґ­ ЎЁв
-function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - Ё­¤ҐЄб в®зЄЁ, Є®в®аго ­Ґ ­ ¤® ўлЎЁа вм,
-    local points = {}                                          -- Ї а ¬Ґва ­Ґ ®Ўп§ вҐ«м­л©( ­ ЇаЁ¬Ґа вҐЄгйҐ© в®зЄЁ )
+--СћВ®В§СћР°В Р№В ТђРІ Р‡Р°В®РЃВ§СћВ®В«РјВ­РіРѕ РІВ®Р·Р„Рі Р‡РіРІРЃ Рі Р„В®РІВ®Р°В®В© РіР±РІВ В­В®СћВ«ТђВ­ РЋРЃРІ
+function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - РЃВ­В¤ТђР„Р± РІВ®Р·Р„РЃ, Р„В®РІВ®Р°РіРѕ В­Тђ В­В В¤В® СћР»РЋРЃР°В РІРј,
+    local points = {}                                          -- Р‡В Р°В В¬ТђРІР° В­Тђ В®РЋРїВ§В РІТђВ«РјВ­Р»В©( В­В Р‡Р°РЃВ¬ТђР° РІТђР„РіР№ТђВ© РІВ®Р·Р„РЃ )
 
     for i = 0, patrol_path:count()-1 do
-      --„®Ў®ў«пҐ¬ ў в Ў«Ёжг в®зЄЁ б ­г¦­л¬ ЎЁв®¬
+      --вЂћВ®РЋВ®СћВ«РїТђВ¬ Сћ РІВ РЋВ«РЃР¶Рі РІВ®Р·Р„РЃ Р± В­РіВ¦В­Р»В¬ РЋРЃРІВ®В¬
       if( patrol_path:flag(i, bit)) then
-            --„®Ў ў«пҐ¬ в®зЄг Ґб«Ё old_point == nil Ё«Ё ­®ў п в®зЄ  ­Ґ б®ўЇ ¤ Ґв б old_point
+            --вЂћВ®РЋВ СћВ«РїТђВ¬ РІВ®Р·Р„Рі ТђР±В«РЃ old_point == nil РЃВ«РЃ В­В®СћВ Рї РІВ®Р·Р„В  В­Тђ Р±В®СћР‡В В¤В ТђРІ Р± old_point
             if(old_point == nil) then
                 table.insert(points, i)
             elseif(old_point ~= i) then
@@ -1412,7 +1414,7 @@ function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - Ё­
     end
 end
 
---‚®§ўа й Ґв Ё­¤ҐЄб б ¬®© Ў«Ё¦­Ґ© в®зЄЁ ЇгвЁ б § ¤ ­л¬ ЎЁв®¬, ®в вҐЄгйҐ© в®зЄЁ
+--вЂљВ®В§СћР°В Р№В ТђРІ РЃВ­В¤ТђР„Р± Р±В В¬В®В© РЋВ«РЃВ¦В­ТђВ© РІВ®Р·Р„РЃ Р‡РіРІРЃ Р± В§В В¤В В­Р»В¬ РЋРЃРІВ®В¬, В®РІ РІТђР„РіР№ТђВ© РІВ®Р·Р„РЃ
 function near_point_with_bit(point, patrol_path, bit)
     local new_point = nil
     local index     = nil
@@ -1421,7 +1423,7 @@ function near_point_with_bit(point, patrol_path, bit)
     for i = 0, patrol_path:count()-1 do
         if( patrol_path:flag(i, bit) ) then
             if(new_point == nil or patrol_path:point(i):distance_to(point) < dist) then
-                --…б«Ё нв  в®зЄ  ЇҐаў п Ё§ ­ иҐ¤иЁебп, «ЁЎ® ®в ­ҐҐ Їгвм Ў«Ё¦Ґ, в® § Ї®¬Ё­ Ґ¬ ҐҐ
+                --вЂ¦Р±В«РЃ РЅРІВ  РІВ®Р·Р„В  Р‡ТђР°СћВ Рї РЃВ§ В­В РёТђВ¤РёРЃРµР±Рї, В«РЃРЋВ® В®РІ В­ТђТђ Р‡РіРІРј РЋВ«РЃВ¦Тђ, РІВ® В§В Р‡В®В¬РЃВ­В ТђВ¬ ТђТђ
                 new_point   = patrol_path:point(i)
                 index       = i
                 dist        = new_point:distance_to(point)
@@ -1497,7 +1499,7 @@ function set_inactivate_input_time(delta)
 	db.storage[db.actor:id()].disable_input_idle = delta
 	level.disable_input()
 end
--- Принимает: позицию положения, позицию куда смотреть, время сна в минутах.
+-- РџСЂРёРЅРёРјР°РµС‚: РїРѕР·РёС†РёСЋ РїРѕР»РѕР¶РµРЅРёСЏ, РїРѕР·РёС†РёСЋ РєСѓРґР° СЃРјРѕС‚СЂРµС‚СЊ, РІСЂРµРјСЏ СЃРЅР° РІ РјРёРЅСѓС‚Р°С….
 function set_sleep_relocate(point, look, timeout)
 	db.storage[db.actor:id()].sleep_relocate_time = game.get_game_time()
 	db.storage[db.actor:id()].sleep_relocate_idle = timeout*60
@@ -1508,12 +1510,12 @@ function set_sleep_relocate(point, look, timeout)
 	--db.actor:actor_sleep(0, timeout)
 end
 
--- проверяет целую часть числа на нечётность
+-- РїСЂРѕРІРµСЂСЏРµС‚ С†РµР»СѓСЋ С‡Р°СЃС‚СЊ С‡РёСЃР»Р° РЅР° РЅРµС‡С‘С‚РЅРѕСЃС‚СЊ
 function odd( x )
 	return math.floor( x * 0.5 ) * 2 == math.floor( x )
 end
 
---' Усталость
+--' РЈСЃС‚Р°Р»РѕСЃС‚СЊ
 function on_actor_critical_power()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_11_weakness")
@@ -1526,7 +1528,7 @@ end
 function on_actor_critical_max_power()
 end
 
---' Кровотечение
+--' РљСЂРѕРІРѕС‚РµС‡РµРЅРёРµ
 function on_actor_bleeding()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_8_wound")
@@ -1539,7 +1541,7 @@ end
 function on_actor_satiety()
 end
 
---' Радиация
+--' Р Р°РґРёР°С†РёСЏ
 function on_actor_radiation()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_6_radiation")
@@ -1549,7 +1551,7 @@ function on_actor_radiation()
 	end
 end
 
---' Заклинило оружие
+--' Р—Р°РєР»РёРЅРёР»Рѕ РѕСЂСѓР¶РёРµ
 function on_actor_weapon_jammed()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_9_weapon")
@@ -1559,7 +1561,7 @@ function on_actor_weapon_jammed()
 	end
 end
 
---' не может ходить изза веса
+--' РЅРµ РјРѕР¶РµС‚ С…РѕРґРёС‚СЊ РёР·Р·Р° РІРµСЃР°
 function on_actor_cant_walk_weight()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_14_overload")
@@ -1569,7 +1571,7 @@ function on_actor_cant_walk_weight()
 	end
 end
 
---' пси воздействие
+--' РїСЃРё РІРѕР·РґРµР№СЃС‚РІРёРµ
 function on_actor_psy()
 end
 
