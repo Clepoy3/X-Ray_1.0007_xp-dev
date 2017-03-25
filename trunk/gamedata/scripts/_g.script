@@ -158,38 +158,23 @@ function tostring_all(obj, ind) --ind - служебный аргумент для распечатки "табли
 	return tostring_all_tbl[type(obj)](obj, ind)
 end
 
---В связи с добавлением функции вывода произвольного текста в лог, стала доступна возможность выделять этот текст различными цветами.
---После спец-символа цвета обязательно должен быть один пробел (или любой другой символ), иначе строка будет выведена обрезанной.
-local subs_tbl = { --Спец-символы цветов:
-	["-"] = true, --Зелёный
-	["~"] = true, --Жёлтый
-	["!"] = true, --Красный
-	["*"] = true, --Серый
-	["#"] = true, --Бирюзовый
-}
---Функциональная обёртка для log1.
 --Делает дополнительную работу по конвертации параметров, которые не воспринимаются родной функцией string.format.
 --Параметры можно передавать ЛЮБОГО ТИПА! В строке формата они должны стоять как %s (потому, что будут сконвертированы в строки).
 function log3(fmt, ...)
 	local args = {...}
-	for i=1, #args do --Для корректной обработки nil-аргументов (циклы pairs и ipairs останавливаются на первом _значении_ nil)
+	for i=1, #args do
 		args[i] = tostring_all(args[i])
 	end
 	local res, msg = pcall(string.format, fmt, unpack(args))
 	if not res then --Если произошла ошибка
 		msg = "!!log3 failed: "..msg.."\n"..debug.traceback()
 	end
-	local subs = msg:sub(1, 1)
-	local color = subs_tbl[subs] and subs.." " or false
-	local not_first_line = false
-	for s in msg:gmatch("([^\n]+)") do --Разбиваем текст на разделённые строки. Нужно для того, чтобы избежать ограничения в 1024 символа, после которых log1 просто обрезает текст.
-		log1((not_first_line and color) and color..s or s) --Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы цветными были все строки текста, а не только первая.
-		not_first_line = true
-	end
+	--
+	log1(msg)
 end
 
 -------------------------------
-log3("%s", debug.traceback()) --Помогает определить, из за чего в некоторых случаях перезагружается _G
+log1(debug.traceback()) --Помогает определить, из за чего в некоторых случаях перезагружается _G
 -------------------------------
 
 local logs_cach = {}
@@ -219,7 +204,7 @@ end
 -- Крешнуть игру (после вывода сообщения об ошибке в лог)
 function abort(...)
 	log1("!!************************************[ABORT]************************************")
-	log3(debug.traceback())
+	log1(debug.traceback())
 	log3(...)
 	log1("!!*******************************************************************************")
 	--
@@ -244,67 +229,67 @@ function dbg_sys_ini:__init()
 end
 function dbg_sys_ini:line_count(sec)
 	log3("dbg_sys_ini:line_count: %s", sec)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:line_count(sec)
 end
 function dbg_sys_ini:section_exist(sec)
 	log3("dbg_sys_ini:section_exist: %s", sec)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:section_exist(sec)
 end
 function dbg_sys_ini:line_exist(sec, param)
 	log3("dbg_sys_ini:line_exist: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:line_exist(sec, param)
 end
 function dbg_sys_ini:r_bool(sec, param)
 	log3("dbg_sys_ini:r_bool: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_bool(sec, param)
 end
 function dbg_sys_ini:r_float(sec, param)
 	log3("dbg_sys_ini:r_float: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_float(sec, param)
 end
 function dbg_sys_ini:r_clsid(sec, param)
 	log3("dbg_sys_ini:r_clsid: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_clsid(sec, param)
 end
 function dbg_sys_ini:r_s32(sec, param)
 	log3("dbg_sys_ini:r_s32: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_s32(sec, param)
 end
 function dbg_sys_ini:r_u32(sec, param)
 	log3("dbg_sys_ini:r_u32: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_u32(sec, param)
 end
 function dbg_sys_ini:r_vector(sec, param)
 	log3("dbg_sys_ini:r_vector: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_vector(sec, param)
 end
 function dbg_sys_ini:r_string_wq(sec, param)
 	log3("dbg_sys_ini:r_string_wq: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_string_wq(sec, param)
 end
 function dbg_sys_ini:r_string(sec, param)
 	log3("dbg_sys_ini:r_string: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_string(sec, param)
 end
 function dbg_sys_ini:r_token(sec, param)
 	log3("dbg_sys_ini:r_token: %s - %s", sec, param)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_token(sec, param)
 end
 function dbg_sys_ini:r_line(sec, line_num)
 	log3("dbg_sys_ini:r_line: %s - %s", sec, line_num)
-	log3(debug.traceback())
+	log1(debug.traceback())
 	return orig_sys_ini:r_line(sec, line_num)
 end
 --system_ini = function() return dbg_sys_ini() end

@@ -579,6 +579,7 @@ public:
 	}
 };
 
+/* Выключено, т.к. теперь не работает, да и не нужно.
 class CCC_ClearLog : public IConsole_Command {
 public:
 	CCC_ClearLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -588,6 +589,7 @@ public:
 		Msg						("* Log file has been cleaned successfully!");
 	}
 };
+*/
 
 class CCC_FloatBlock : public CCC_Float {
 public:
@@ -1375,7 +1377,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_LoadLastSave,		"load_last_save"		);		// load last saved game from ...
 
 	CMD1(CCC_FlushLog,			"flush"					);		// flush log
-	CMD1(CCC_ClearLog,			"clear_log"					);
+	//CMD1(CCC_ClearLog,			"clear_log"					);
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_ALifeTimeFactor,		"al_time_factor"		);		// set time factor

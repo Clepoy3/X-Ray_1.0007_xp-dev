@@ -28,8 +28,6 @@ static u32	init_counter	= 0;
 
 extern char g_application_path[256];
 
-//. extern xr_vector<shared_str>*	LogFile;
-
 void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
 	strcpy_s					(ApplicationName,_ApplicationName);
@@ -186,7 +184,6 @@ void xrCore::_destroy		()
 			_control87		( _RC_NEAR, MCW_RC );
 			_control87		( _MCW_EM,  MCW_EM );
 		}
-//.		LogFile.reserve		(256);
 		break;
 	case DLL_THREAD_ATTACH:
 		CoInitializeEx	(NULL, COINIT_MULTITHREADED);

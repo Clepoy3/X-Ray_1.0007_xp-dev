@@ -2,6 +2,8 @@
 #pragma hdrstop
 
 #include <time.h>
+#include <sstream> //для std::stringstream
+
 #include "resource.h"
 #include "log.h"
 #include "../../build_config_defines.h"
@@ -13,14 +15,9 @@ static BOOL 				no_log			= TRUE;
 str_container				verbosity_filters; // набор фильтров для вывода регулярных сообщений
  u32						verbosity_level = 3;
 
-#define	LOG_TIME_PRECISE
-bool __declspec(dllexport) force_flush_log = false;	// alpet: выставить в true если лог все-же записывается плохо при вылете. Слишком частая запись лога вредит SSD и снижает произволительность.
+bool __declspec(dllexport) force_flush_log = true /*false*/; // alpet: выставить в true если лог все-же записывается плохо при вылете. Слишком частая запись лога вредит SSD и снижает произволительность.
 
-#ifdef PROFILE_CRITICAL_SECTIONS
-	static xrCriticalSection	logCS(MUTEX_PROFILE_ID(log));
-#else // PROFILE_CRITICAL_SECTIONS
-	static xrCriticalSection	logCS;
-#endif // PROFILE_CRITICAL_SECTIONS
+static std::recursive_mutex logCS;
 xr_vector<shared_str>*		LogFile			= NULL;
 static LogCallback			LogCB			= 0;
 
@@ -60,85 +57,72 @@ void __cdecl InitVerbosity (const char *filters)
 extern bool shared_str_initialized;
 
 
-void AddOne				(const char *split) 
+void AddOne(const char *split, bool first_line)
 {
-	if(!LogFile)		
-						return;
+	if(!LogFile)  return;
 
-	logCS.Enter			();
+	std::lock_guard<decltype(logCS)> lock(logCS);
 
 #ifdef DEBUG
 	OutputDebugString	(split);
 	OutputDebugString	("\n");
 #endif
 
-	//exec CallBack
-	if (LogExecCB&&LogCB)LogCB(split);
+	if (LogExecCB && LogCB) LogCB(split); //Вывод в консоль?
 
-//	DUMP_PHASE;
+	if (shared_str_initialized)
 	{
-		if (shared_str_initialized)
-		{
-			shared_str			temp = shared_str(split);
-			LogFile->push_back(temp);
-		}
-
-		//+RvP, alpet
-		if (LogWriter)
-		{				
-			switch (*split)
-			{
-			case 0x21:
-			case 0x23:
-			case 0x25:
-				split ++; // пропустить первый символ, т.к. это вероятно цветовой тег
-				break;
-			}
-
-			char buf[64];
-#ifdef	LOG_TIME_PRECISE 
-			SYSTEMTIME lt;
-			GetLocalTime(&lt);
-			
-			sprintf_s(buf, 64, "[%02d.%02d.%02d %02d:%02d:%02d.%03d] ", lt.wDay, lt.wMonth, lt.wYear % 100, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);						
-			LogWriter->w_printf("%s%s\r\n", buf, split);
-			cached_log += xr_strlen(buf);
-			cached_log += xr_strlen(split) + 2;
-#else
-			time_t t = time(NULL);
-			tm* ti = localtime(&t);
-			
-			strftime(buf, 64, "[%x %X]\t", ti);
-
-			LogWriter->wprintf("%s %s\r\n", buf, split);
-#endif
-			if (force_flush_log || cached_log >= 32768)
-				FlushLog();
-		}
-		//-RvP
+		shared_str temp = shared_str(split);
+		LogFile->push_back(temp); //И это тоже?
 	}
 
+	if (!LogWriter) return;
 
-	logCS.Leave				();
+	if (first_line)
+	{
+		SYSTEMTIME lt;
+		GetLocalTime(&lt);
+		char buf[64];
+		sprintf_s(buf, 64, "[%02d.%02d.%02d %02d:%02d:%02d.%03d] ", lt.wDay, lt.wMonth, lt.wYear % 100, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
+		LogWriter->w_printf("\n%s%s", buf, split);
+		cached_log += xr_strlen(buf);
+	}
+	else
+		LogWriter->w_printf("\n%s", split);
+
+	cached_log += xr_strlen(split) + 2;
+	if (force_flush_log || cached_log >= 32768)
+		FlushLog();
 }
 
-void Log				(const char *s) 
+void Log(const char *s)
 {
-	int		i,j;
-	char	split[1024];
+	std::string str(s);
 
-	for (i=0,j=0; s[i]!=0; i++) {
-		if (s[i]=='\n') {
-			split[j]=0;	// end of line
-			if (split[0]==0) { split[0]=' '; split[1]=0; }
-			AddOne(split);
-			j=0;
-		} else {
-			split[j++]=s[i];
+	if (str.empty()) return; //Строка пуста - выходим
+
+	bool not_first_line = false;
+	bool have_color = false;
+	auto color_s = str.front();
+	if ( //Ищем в начале строки цветовой код
+		   color_s == '-' //Зелёный
+		|| color_s == '~' //Жёлтый
+		|| color_s == '!' //Красный
+		|| color_s == '*' //Серый
+		|| color_s == '#' //Бирюзовый
+	) have_color = true;
+	
+	std::stringstream ss(str);
+	for (std::string item; std::getline(ss, item);) //Разбиваем текст по "\n"
+	{
+		if (not_first_line && have_color)
+		{
+			item = ' ' + item;
+			item = color_s + item; //Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы в консоли цветными были все строки текста, а не только первая.
 		}
+		AddOne(item.c_str(), !not_first_line);
+		not_first_line = true;
 	}
-	split[j]=0;
-	AddOne(split);
 }
 
 
@@ -215,7 +199,7 @@ void __cdecl MsgV (const char *verbosity, const char *format, ...)
 }
 
 void Log				(const char *msg, const char *dop) {
-	char buf[1024];
+	string4096	buf;
 
 	if (dop)	sprintf_s(buf,sizeof(buf),"%s %s",msg,dop);
 	else		sprintf_s(buf,sizeof(buf),"%s",msg);
@@ -224,35 +208,35 @@ void Log				(const char *msg, const char *dop) {
 }
 
 void Log				(const char *msg, u32 dop) {
-	char buf[1024];
+	string4096	buf;
 
 	sprintf_s	(buf,sizeof(buf),"%s %d",msg,dop);
 	Log			(buf);
 }
 
 void Log				(const char *msg, int dop) {
-	char buf[1024];
+	string4096	buf;
 
 	sprintf_s	(buf, sizeof(buf),"%s %d",msg,dop);
 	Log		(buf);
 }
 
 void Log				(const char *msg, float dop) {
-	char buf[1024];
+	string4096	buf;
 
 	sprintf_s	(buf, sizeof(buf),"%s %f",msg,dop);
 	Log		(buf);
 }
 
 void Log				(const char *msg, const Fvector &dop) {
-	char buf[1024];
+	string4096	buf;
 
 	sprintf_s	(buf,sizeof(buf),"%s (%f,%f,%f)",msg,dop.x,dop.y,dop.z);
 	Log		(buf);
 }
 
 void Log				(const char *msg, const Fmatrix &dop)	{
-	char	buf	[1024];
+	string4096	buf;
 
 	sprintf_s	(buf,sizeof(buf),"%s:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n",msg,dop.i.x,dop.i.y,dop.i.z,dop._14_
 																				,dop.j.x,dop.j.y,dop.j.z,dop._24_
@@ -261,9 +245,6 @@ void Log				(const char *msg, const Fmatrix &dop)	{
 	Log		(buf);
 }
 
-void LogWinErr			(const char *msg, long err_code)	{
-	Msg					("%s: %s",msg,Debug.error2string(err_code)	);
-}
 
 typedef void (WINAPI *OFFSET_UPDATER)(LPCSTR key, u32 ofs);
 
