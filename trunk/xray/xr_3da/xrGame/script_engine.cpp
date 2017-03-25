@@ -329,7 +329,9 @@ bool CScriptEngine::process_file_if_exists(LPCSTR file_name, bool warn_if_not_ex
 			add_no_file(file_name, string_length);
 			return false;
 		}
+#ifdef DEBUG
 		Msg("[CScriptEngine::process_file_if_exists] loading script: [%s]", S1);
+#endif
 		m_reload_modules = false;
 		load_file_into_namespace(S, *file_name ? file_name : GlobalNamespace);
 	}

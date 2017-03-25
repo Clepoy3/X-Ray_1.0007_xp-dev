@@ -45,7 +45,7 @@ struct profile_timer_script {
 	u64							m_count;
 	int							m_recurse_mark;
 	
-	IC								profile_timer_script	()
+	ICF								profile_timer_script	()
 	{
 		m_start_cpu_tick_count	= 0;
 		m_accumulator			= 0;
@@ -53,12 +53,12 @@ struct profile_timer_script {
 		m_recurse_mark			= 0;
 	}
 
-	IC								profile_timer_script	(const profile_timer_script &profile_timer)
+	ICF								profile_timer_script	(const profile_timer_script &profile_timer)
 	{
 		*this					= profile_timer;
 	}
 
-	IC		profile_timer_script&	operator=				(const profile_timer_script &profile_timer)
+	ICF		profile_timer_script&	operator=				(const profile_timer_script &profile_timer)
 	{
 		m_start_cpu_tick_count	= profile_timer.m_start_cpu_tick_count;
 		m_accumulator			= profile_timer.m_accumulator;
@@ -67,12 +67,12 @@ struct profile_timer_script {
 		return					(*this);
 	}
 
-	IC		bool					operator<				(const profile_timer_script &profile_timer) const
+	ICF		bool					operator<				(const profile_timer_script &profile_timer) const
 	{
 		return					(m_accumulator < profile_timer.m_accumulator);
 	}
 
-	IC		void					start					()
+	ICF		void					start					()
 	{
 		if (m_recurse_mark) {
 			++m_recurse_mark;
@@ -84,7 +84,7 @@ struct profile_timer_script {
 		m_start_cpu_tick_count	= CPU::GetCLK();
 	}
 
-	IC		void					stop					()
+	ICF		void					stop					()
 	{
 		if (!m_recurse_mark)
 			return;
@@ -98,7 +98,7 @@ struct profile_timer_script {
 			m_accumulator		+= finish - m_start_cpu_tick_count;
 	}
 
-	IC		float					time					() const
+	ICF		float					time					() const
 	{
 		FPU::m64r				();
 		float					result = (float(double(m_accumulator)/double(CPU::clk_per_second))*1000000.f);
@@ -107,7 +107,7 @@ struct profile_timer_script {
 	}
 };
 
-IC	profile_timer_script	operator+	(const profile_timer_script &portion0, const profile_timer_script &portion1)
+ICF	profile_timer_script	operator+	(const profile_timer_script &portion0, const profile_timer_script &portion1)
 {
 	profile_timer_script	result;
 	result.m_accumulator	= portion0.m_accumulator + portion1.m_accumulator;
@@ -115,10 +115,8 @@ IC	profile_timer_script	operator+	(const profile_timer_script &portion0, const p
 	return					(result);
 }
 
-std::ostream& operator<<(std::ostream& os, const profile_timer_script& pt) //KRodin: Раскомментировал, так же сделано в OpenXray
-{
-	return os << pt.time();
-}
+//std::ostream& operator<<(std::ostream& os, const profile_timer_script& pt)
+//{ return os << pt.time(); }
 
 #ifdef XRGAME_EXPORTS
 ICF	u32	script_time_global	()	{ return Device.dwTimeGlobal; }
@@ -133,14 +131,14 @@ void CScriptEngine::script_register(lua_State *L)
 {
 	module(L)
 	[
-		def("log1",	(void(*)(LPCSTR)) &Log),	//RvP		
+		def("log1",	(void(*)(const char*)) &Log), //RvP
 
 		class_<profile_timer_script>("profile_timer")
 			.def(constructor<>())
 			.def(constructor<profile_timer_script&>())
 			.def(const_self + profile_timer_script())
 			.def(const_self < profile_timer_script())
-			.def(tostring(self)) //KRodin: раскомментировал
+			//.def(tostring(self))
 			.def("start",&profile_timer_script::start)
 			.def("stop",&profile_timer_script::stop)
 			.def("time",&profile_timer_script::time)
