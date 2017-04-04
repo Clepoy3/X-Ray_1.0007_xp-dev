@@ -14,10 +14,6 @@ function main_menu:__init() super()
    self:InitCallBacks()
 end
 
-function main_menu:__finalize()
-
-end
-
 function main_menu:InitControls()
 	self:Init(0,0,1024,768)			  
     local xml = CScriptXmlInit()
@@ -32,7 +28,7 @@ function main_menu:InitControls()
 	self:Register(self.message_box, "msg_box")	
 	
 	local _ver = xml:InitStatic		("static_version",self)
-	local mm						= _G.main_menu.get_main_menu()
+	local mm						= _G['main_menu'].get_main_menu()
 	_ver:SetText					("ver. " .. mm:GetGSVer())
 	
 end
@@ -48,7 +44,7 @@ function main_menu:InitCallBacks()
 	self:AddCallback("btn_stalker",		ui_events.BUTTON_CLICKED,				self.OnButton_new_stalker_game,		self)
 	self:AddCallback("btn_veteran",		ui_events.BUTTON_CLICKED,				self.OnButton_new_veteran_game,		self)
 	self:AddCallback("btn_master",		ui_events.BUTTON_CLICKED,				self.OnButton_new_master_game,		self)
-	self:AddCallback("btn_spawn",		ui_events.BUTTON_CLICKED,				self.OnButton_load_spawn,			self)
+	--self:AddCallback("btn_spawn",		ui_events.BUTTON_CLICKED,				self.OnButton_load_spawn,			self) --???
 	-- options																											
 	self:AddCallback("btn_options",     ui_events.BUTTON_CLICKED,				self.OnButton_options_clicked,		self)
 	-- load																												
@@ -56,7 +52,7 @@ function main_menu:InitCallBacks()
 	-- save																												
 	self:AddCallback("btn_save",		ui_events.BUTTON_CLICKED,				self.OnButton_save_clicked,			self)
 	-- multiplayer																										
-	self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
+	--self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
 	-- quit																												
 	self:AddCallback("btn_quit",		ui_events.BUTTON_CLICKED,				self.OnButton_quit_clicked,			self)
 	self:AddCallback("btn_quit_to_mm",	ui_events.BUTTON_CLICKED,				self.OnButton_disconnect_clicked,	self)
@@ -182,7 +178,7 @@ function main_menu:StartGame()
 	console:execute("main_menu off")
 end
 
-function main_menu:OnButton_load_spawn()
+--[=[function main_menu:OnButton_load_spawn()
 	if self.spawn_dlg == nil then
 		self.spawn_dlg = ui_spawn_dialog.spawn_dialog()
 		self.spawn_dlg.owner = self
@@ -191,7 +187,7 @@ function main_menu:OnButton_load_spawn()
 	self:GetHolder():start_stop_menu(self.spawn_dlg, true)
 	self:GetHolder():start_stop_menu(self, true) --new
 	self:Show(false)
-end
+end--]=]
 
 function main_menu:OnButton_save_clicked()
 	if self.save_dlg == nil then
@@ -227,6 +223,7 @@ function main_menu:OnButton_load_clicked()
 	self:Show(false)
 end
 
+--[=[
 function main_menu:OnButton_multiplayer_clicked()
 	if self.mp_dlg ==nil then
 		self.mp_dlg = ui_mp_main.mp_main()
@@ -244,12 +241,22 @@ function main_menu:OnButton_multiplayer_clicked()
 	
 	self.mp_dlg:OnRadio_NetChanged()
 end
+--]=]
 
 function main_menu:Dispatch(cmd, param)  --virtual function
-	if cmd == 2 then
-		self:OnButton_multiplayer_clicked()
-	end
+	--if cmd == 2 then
+	--	self:OnButton_multiplayer_clicked()
+	--end
 	return true
+end
+
+--// Метод описан и открыт Malandrinus'om. 
+function main_menu:personal_test()
+	local res, err = pcall( function()
+		local chunk, err = dofile(getFS():update_path("$game_scripts$", "personal_test.lua"))
+		if err then log1("!!"..err) end
+	end )
+	log1(res and "~~Succesfull personal_test Execution!" or "~~"..err)
 end
 
 function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
@@ -264,10 +271,12 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 			end
 		end
 		
---		if dik == DIK_keys.DIK_S then
---			self:OnButton_load_spawn()
-			
---		else
+-----------------------------------------------------------
+		if dik == DIK_keys.DIK_N then
+			self.personal_test()
+		end
+-----------------------------------------------------------
+
 		if dik == DIK_keys.DIK_Q then
 			self:OnMessageQuitWin()
 		end

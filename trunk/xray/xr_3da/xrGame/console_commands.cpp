@@ -30,7 +30,6 @@
 #include "ai/monsters/BaseMonster/base_monster.h"
 #include "date_time.h"
 #include "mt_config.h"
-#include "ui/UIOptConCom.h"
 #include "zone_effector.h"
 #include "GameTask.h"
 #include "MainMenu.h"
@@ -39,9 +38,6 @@
 #include "../resourcemanager.h"
 #include "doug_lea_memory_allocator.h"
 #include "cameralook.h"
-
-#include "GameSpy/GameSpy_Full.h"
-#include "GameSpy/GameSpy_Patching.h"
 
 #ifdef DEBUG
 #	include "PHDebug.h"
@@ -81,8 +77,6 @@ extern	BOOL	g_show_wnd_rect2			;
 //-----------------------------------------------------------
 extern	float	g_fTimeFactor;
 
-
-void register_mp_console_commands();
 //-----------------------------------------------------------
 
 		BOOL	g_bCheckTime			= FALSE;
@@ -113,8 +107,6 @@ Flags32 g_uCommonFlags;
 enum E_COMMON_FLAGS{
 	flAiUseTorchDynamicLights = 1
 };
-
-CUIOptConCom g_OptConCom;
 
 /*
 #ifndef PURE_ALLOC
@@ -174,13 +166,6 @@ public:
 	virtual void Execute(LPCSTR args) {
 		CCC_Token::Execute(args);
 		if (g_pGameLevel && Level().game){
-//#ifndef	DEBUG
-			if (GameID() != GAME_SINGLE){
-				Msg("For this game type difficulty level is disabled.");
-				return;
-			};
-//#endif
-
 			game_cl_Single* game		= smart_cast<game_cl_Single*>(Level().game); VERIFY(game);
 			game->OnDifficultyChanged	();
 		}
@@ -246,7 +231,7 @@ class CCC_ALifeSwitchDistance : public IConsole_Command {
 public:
 	CCC_ALifeSwitchDistance(LPCSTR N) : IConsole_Command(N)  { };
 	virtual void Execute(LPCSTR args) {
-		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
+		if (ai().get_alife()) {
 			float id1 = 0.0f;
 			sscanf(args ,"%f",&id1);
 			if (id1 < 2.0f)
@@ -267,7 +252,7 @@ class CCC_ALifeProcessTime : public IConsole_Command {
 public:
 	CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command(N)  { };
 	virtual void Execute(LPCSTR args) {
-		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
+		if (ai().get_alife()) {
 			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
 			VERIFY			(tpGame);
 			int id1 = 0;
@@ -287,7 +272,7 @@ class CCC_ALifeObjectsPerUpdate : public IConsole_Command {
 public:
 	CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command(N)  { };
 	virtual void Execute(LPCSTR args) {
-		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
+		if (ai().get_alife()) {
 			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
 			VERIFY			(tpGame);
 			int id1 = 0;
@@ -303,7 +288,7 @@ class CCC_ALifeSwitchFactor : public IConsole_Command {
 public:
 	CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command(N)  { };
 	virtual void Execute(LPCSTR args) {
-		if ((GameID() == GAME_SINGLE)  &&ai().get_alife()) {
+		if (ai().get_alife()) {
 			game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
 			VERIFY			(tpGame);
 			float id1 = 0;
@@ -336,13 +321,6 @@ public:
 
 	CCC_DemoRecord(LPCSTR N) : IConsole_Command(N) {};
 	virtual void Execute(LPCSTR args) {
-		#ifndef	DEBUG
-		if (GameID() != GAME_SINGLE) 
-		{
-			Msg("For this game type Demo Record is disabled.");
-			return;
-		};
-		#endif
 		Console->Hide	();
 		string_path		fn_; 
 		strconcat		(sizeof(fn_),fn_, args, ".xrdemo");
@@ -359,13 +337,6 @@ public:
 	  IConsole_Command(N) 
 	  { bEmptyArgsHandled = TRUE; };
 	  virtual void Execute(LPCSTR args) {
-		#ifndef	DEBUG
-		if (GameID() != GAME_SINGLE) 
-		{
-			Msg("For this game type Demo Play is disabled.");
-			return;
-		};
-		#endif
 		  if (0==g_pGameLevel)
 		  {
 			  Msg	("! There are no level(s) started");
@@ -414,10 +385,6 @@ public:
 			return;
 		}
 #endif
-		if(!IsGameTypeSingle()){
-			Msg("for single-mode only");
-			return;
-		}
 		if(!g_actor || !Actor()->g_Alive())
 		{
 			Msg("cannot make saved game because actor is dead :(");
@@ -599,16 +566,7 @@ public:
 
 	  virtual void	Execute	(LPCSTR args)
 	  {
-#ifdef _DEBUG
-		  CCC_Float::Execute(args);
-#else
-		  if (!g_pGameLevel || GameID() == GAME_SINGLE)
-			  CCC_Float::Execute(args);
-		  else
-		  {
-			  Msg ("! Command disabled for this type of game");
-		  }
-#endif
+		CCC_Float::Execute(args);
 	  }
 };
 
@@ -943,13 +901,6 @@ public:
 	  virtual void	Execute	(LPCSTR args)
 	  {
 		  if(!ph_world)	return;
-#ifndef DEBUG
-		  if (g_pGameLevel && Level().game && GameID() != GAME_SINGLE)
-		  {
-			  Msg("Command is not available in Multiplayer");
-			  return;
-		  }
-#endif
 		  ph_world->SetGravity(float(atof(args)));
 	  }
 	  virtual void	Status	(TStatus& S)
@@ -1307,36 +1258,6 @@ public:
 	}
 };
 
-class CCC_GSCheckForUpdates : public IConsole_Command {
-public:
-	CCC_GSCheckForUpdates(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR arguments)
-	{
-		if (!MainMenu()) return;
-		/*
-		CGameSpy_Available GSA;
-		shared_str result_string;
-		if (!GSA.CheckAvailableServices(result_string))
-		{
-			Msg(*result_string);
-//			return;
-		};
-		CGameSpy_Patching GameSpyPatching;
-		*/
-		bool InformOfNoPatch = true;
-		if (arguments && *arguments) {
-			int bInfo = 1;
-			sscanf	(arguments,"%d", &bInfo);
-			InformOfNoPatch = (bInfo != 0);
-		}
-		
-//		GameSpyPatching.CheckForPatch(InformOfNoPatch);
-		
-		MainMenu()->GetGS()->m_pGS_Patching->CheckForPatch(InformOfNoPatch);
-	}
-};
-
-
 
 class CCC_Net_SV_GuaranteedPacketMode : public CCC_Integer {
 protected:
@@ -1356,9 +1277,6 @@ public:
 
 void CCC_RegisterCommands()
 {
-	// options
-	g_OptConCom.Init();
-
 	CMD1(CCC_MemStats,			"stat_memory"			);
 	// game
 	psActorFlags.set(AF_ALWAYSRUN, true);
@@ -1608,7 +1526,6 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Vector3,		"psp_cam_offset",				&CCameraLook2::m_cam_offset, Fvector().set(-1000,-1000,-1000),Fvector().set(1000,1000,1000));
 #endif // MASTER_GOLD
 
-	CMD1(CCC_GSCheckForUpdates, "check_for_updates");
 #ifdef DEBUG
 	CMD1(CCC_DumpObjects,							"dump_all_objects");
 	CMD3(CCC_String, "stalker_death_anim", dbg_stalker_death_anim, 32);
@@ -1620,6 +1537,4 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer,		"dbg_dump_physics_step", &g_bDebugDumpPhysicsStep, 0, 1);
 #endif
 	*g_last_saved_game	= 0;
-
-	register_mp_console_commands					();
 }

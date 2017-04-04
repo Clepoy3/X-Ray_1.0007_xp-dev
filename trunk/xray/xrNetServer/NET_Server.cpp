@@ -115,14 +115,14 @@ void gen_auth_code()
 		test.push_back			(xr_string("gamedata\\textures\\act"));
 		test.push_back			(xr_string("gamedata\\textures\\wpn"));
 
-		test.push_back			(xr_string("xrd3d9-null.dll"));
+		//test.push_back			(xr_string("xrd3d9-null.dll")); //KRodin: ???
 		test.push_back			(xr_string("ode.dll"));
 		test.push_back			(xr_string("xrcdb.dll"));
 		test.push_back			(xr_string("xrcore.dll"));
 		test.push_back			(xr_string("xrcpu_pipe.dll"));
 		test.push_back			(xr_string("xrgame.dll"));
-		test.push_back			(xr_string("xrgamespy.dll"));
-		test.push_back			(xr_string("xrlua.old"));
+		//test.push_back			(xr_string("xrgamespy.dll")); //KRodin: ???
+		//test.push_back			(xr_string("xrlua.old")); //KRodin: ???
 		test.push_back			(xr_string("xrnetserver.dll"));
 		test.push_back			(xr_string("xrparticles.dll"));
 		test.push_back			(xr_string("xrrender_r1.dll"));
@@ -131,7 +131,7 @@ void gen_auth_code()
 		test.push_back			(xr_string("xrxmlparser.dll"));
 //		test.push_back			(xr_string("xr_3da.exe"));
 
-		FS.auth_generate		(ignore,test);
+		FS.auth_generate		(ignore,test); //KRodin: ??? это всё вообще зачем?
 }
 
 IClient::IClient( CTimer* timer )

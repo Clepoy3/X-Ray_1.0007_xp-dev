@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)
-#define AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_
 #pragma once
 
 #include "../igame_level.h"
@@ -14,7 +12,6 @@
 #include "alife_space.h"
 #include "xrDebug.h"
 #include "xrServer.h"
-#include "battleye_system.h"
 
 class	CHUDManager;
 class	CParticlesObject;
@@ -161,7 +158,6 @@ private:
 	bool						m_bConnectResult;
 	xr_string					m_sConnectResult;
 public:	
-	void						OnGameSpyChallenge				(NET_Packet* P);
 	void						OnBuildVersionChallenge			();
 	void						OnConnectResult					(NET_Packet* P);
 public:
@@ -178,12 +174,6 @@ public:
 	xr_deque<CSE_Abstract*>		game_spawn_queue;
 	xrServer*					Server;
 	GlobalFeelTouch				m_feel_deny;
-
-
-#ifdef BATTLEYE
-	BattlEyeSystem				battleye_system;
-	virtual bool				TestLoadBEClient();
-#endif // BATTLEYE
 
 private:
 	// preload sounds registry
@@ -408,14 +398,11 @@ IC CPHCommander & CLevel::ph_commander_scripts()
 	return *m_ph_commander_scripts;
 }
 //by Mad Max 
-IC bool					OnServer()	{ return Level().IsServer();}
+IC bool					OnServer()	{ return Level().IsServer();} //Разобраться, если эти проверки на мульти/синглплеер - избавиться от них.
 IC bool					OnClient()	{ return Level().IsClient();}
-
-	bool				IsGameTypeSingle();
 
 class  CPHWorld;
 extern CPHWorld*				ph_world;
 extern BOOL						g_bDebugEvents;
 
 
-#endif // !defined(AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_)

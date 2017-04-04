@@ -530,7 +530,7 @@ void CLevelGraph::draw_game_graph	()
 		}
 	}
 
-	if (GameID() == GAME_SINGLE && ai().get_alife()) {
+	if (ai().get_alife()) {
 		{
 			GameGraph::_LEVEL_ID	J = ai().game_graph().vertex(ai().alife().graph().actor()->m_tGraphID)->level_id();
 			for (int i=0, n=(int)ai().game_graph().header().vertex_count(); i<n; ++i) {

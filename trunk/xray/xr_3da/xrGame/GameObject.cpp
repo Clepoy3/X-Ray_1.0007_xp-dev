@@ -217,8 +217,6 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
 		{
 		case GE_HIT_STATISTIC:
 		{
-			if (GameID() != GAME_SINGLE)
-				Game().m_WeaponUsageStatistic->OnBullet_Check_Request(&HDS);
 		}break;
 		default:
 		{
@@ -226,10 +224,6 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
 		}
 		SetHitInfo(Hitter, Weapon, HDS.bone(), HDS.p_in_bone_space, HDS.dir);
 		Hit(&HDS);
-		//---------------------------------------------------------------------------
-		if (GameID() != GAME_SINGLE)
-			Game().m_WeaponUsageStatistic->OnBullet_Check_Result(false);
-		//---------------------------------------------------------------------------
 	}
 		break;
 	case GE_DESTROY:
@@ -273,8 +267,6 @@ BOOL CGameObject::net_Spawn(CSE_Abstract*	DC)
 		cName_set(E->name_replace());
 
 	setID(E->ID);
-	//	if (GameID() != GAME_SINGLE)
-	//		Msg ("CGameObject::net_Spawn -- object %s[%x] setID [%d]", *(E->s_name), this, E->ID);
 	//	R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
 
 	// XForm
@@ -823,15 +815,6 @@ void CGameObject::DestroyObject()
 
 void CGameObject::shedule_Update(u32 dt)
 {
-	//уничтожить
-	if (!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
-	{
-#ifdef DEBUG
-		Msg("--NeedToDestroyObject for [%d][%d]", ID(), Device.dwFrame);
-#endif
-		DestroyObject();
-	}
-
 	// Msg							("-SUB-:[%x][%s] CGameObject::shedule_Update",smart_cast<void*>(this),*cName());
 	inherited::shedule_Update(dt);
 

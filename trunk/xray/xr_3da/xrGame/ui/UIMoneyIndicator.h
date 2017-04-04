@@ -2,7 +2,6 @@
 
 #include "UIWindow.h"
 #include "UIStatic.h"
-#include "KillMessageStruct.h"
 
 class CUIXml;
 class CUIColorAnimatorWrapper;
@@ -16,8 +15,6 @@ public:
 			void InitFromXML(CUIXml& xml_doc);
 			void SetMoneyAmount(LPCSTR money);
 			void SetMoneyChange(LPCSTR money);
-			//void SetMoneyBonus(LPCSTR money);
-			void AddBonusMoney(KillMessageStruct& msg);
 
 protected:
 	CUIStatic	m_back;
@@ -27,6 +24,4 @@ protected:
 
 	CUIColorAnimatorWrapper* m_pAnimChange;
 //	CUIColorAnimatorWrapper* m_pAnimBonus;
-
-	CUIGameLog*			m_pBonusMoney;
 };

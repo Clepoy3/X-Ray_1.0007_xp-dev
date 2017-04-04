@@ -3,9 +3,6 @@ class "opt_video_adv" (CUIWindow)
 function opt_video_adv:__init() super()
 end
 
-function opt_video_adv:__finalize()
-end
-
 function only_2_mode(ctrl, _id)
 	local bEnabled	= _id==2
 	ctrl:Enable		(bEnabled)

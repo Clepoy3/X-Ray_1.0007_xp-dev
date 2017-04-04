@@ -50,7 +50,7 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 		dir.set(0,0,0);
 	
 		Fvector position_in_bone_space;
-		float power = (GameID() == GAME_SINGLE) ? Power(GO->Position().distance_to(pos)) : 0.0f;
+		float power = Power(GO->Position().distance_to(pos));
 		float impulse = 0.f;
 		if(power > EPS) 
 		{
@@ -65,13 +65,6 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 void CRadioactiveZone::feel_touch_new					(CObject* O	)
 {
 	inherited::feel_touch_new(O);
-	if (GameID() != GAME_SINGLE)
-	{
-		if (O->CLS_ID == CLSID_OBJECT_ACTOR)
-		{
-			CreateHit(O->ID(),ID(),Fvector().set(0, 0, 0),0.0f,BI_NONE,Fvector().set(0, 0, 0),0.0f,ALife::eHitTypeRadiation);
-		}
-	};
 };
 
 #include "actor.h"
@@ -89,40 +82,5 @@ BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
 
 void CRadioactiveZone::UpdateWorkload					(u32	dt)
 {
-	if (IsEnabled() && GameID() != GAME_SINGLE)
-	{	
-		Fvector pos; 
-		XFORM().transform_tiny(pos,CFORM()->getSphere().P);
-		for(auto it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
-		{
-			if( !(*it).object->getDestroy() && (*it).object->CLS_ID == CLSID_OBJECT_ACTOR)
-			{
-				//=====================================
-				NET_Packet	l_P;
-				l_P.write_start();
-				l_P.read_start();
-
-				float dist = (*it).object->Position().distance_to(pos);
-				float power = Power(dist)*dt/1000;
-///				Msg("Zone Dist %f, Radiation Power %f, ", dist, power);
-
-				SHit HS;
-				HS.GenHeader(GE_HIT, (*it).object->ID());
-				HS.whoID  =ID();
-				HS.weaponID = ID();
-				HS.dir = Fvector().set(0,0,0);
-				HS.power = power;
-				HS.boneID = BI_NONE;
-				HS.p_in_bone_space = Fvector().set(0, 0, 0);
-				HS.impulse = 0.0f;
-				HS.hit_type = ALife::eHitTypeRadiation;
-				
-				HS.Write_Packet_Cont(l_P);
-
-				(*it).object->OnEvent(l_P, HS.PACKET_TYPE);
-				//=====================================
-			};
-		}
-	}
 	inherited::UpdateWorkload(dt);
 }

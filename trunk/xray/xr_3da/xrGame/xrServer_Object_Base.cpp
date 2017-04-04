@@ -384,18 +384,18 @@ Flags16&	CSE_Abstract::flags			()
 xr_token game_types[]={
 	{ "any game",		GAME_ANY		},
 	{ "single",			GAME_SINGLE		},
-	{ "deathmatch",		GAME_DEATHMATCH },
+//	{ "deathmatch",		GAME_DEATHMATCH },
 //	{ "CTF",			GAME_CTF		},
 //	{ "assault",		GAME_ASSAULT	},
-	{ "counterstrike",	GAME_CS			},
-	{ "teamdeathmatch",	GAME_TEAMDEATHMATCH },
-	{ "artefacthunt",	GAME_ARTEFACTHUNT },
+//	{ "counterstrike",	GAME_CS			},
+//	{ "teamdeathmatch",	GAME_TEAMDEATHMATCH },
+//	{ "artefacthunt",	GAME_ARTEFACTHUNT },
 	{ 0,				0				}
 };
 
 void CSE_Abstract::FillProps				(LPCSTR pref, PropItemVec& items)
 {
-#ifdef XRGAME_EXPORTS
+/*#ifdef XRGAME_EXPORTS
 #	ifdef DEBUG
 	PHelper().CreateToken8		(items,	PrepareKey(pref,"Game Type"),			&s_gameid,		game_types);
     PHelper().CreateU16			(items,	PrepareKey(pref, "Respawn Time (s)"),	&RespawnTime,	0,43200);
@@ -410,6 +410,7 @@ void CSE_Abstract::FillProps				(LPCSTR pref, PropItemVec& items)
 //	PHelper().CreateFlag32		(items,PrepareKey(pref,*s_name,"Spawn\\auto destroy on spawn"),		&m_spawn_flags,			flSpawnDestroyOnSpawn);
 #	endif // DEBUG
 #endif // XRGAME_EXPORTS
+*/
 }
 
 void CSE_Abstract::FillProp					(LPCSTR pref, PropItemVec &items)

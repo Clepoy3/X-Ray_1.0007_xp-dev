@@ -17,13 +17,12 @@
 #include "resource.h"
 #include "LightAnimLibrary.h"
 #include "ispatial.h"
-#include "CopyProtection.h"
 #include "Text_Console.h"
 #include "../../build_config_defines.h"
 #include <process.h>
 
 //---------------------------------------------------------------------
-ENGINE_API CInifile* pGameIni		= NULL;
+ENGINE_API CInifile* pGameIni		= nullptr;
 BOOL	g_bIntroFinished			= FALSE;
 extern	void	Intro				( void* fn );
 extern	void	Intro_DSHOW			( void* fn );
@@ -143,7 +142,6 @@ void InitEngine		()
 	Engine.Initialize			( );
 	while (!g_bIntroFinished)	Sleep	(100);
 	Device.Initialize			( );
-	CheckCopyProtection			( );
 }
 
 void InitSettings	()
@@ -281,7 +279,6 @@ void Startup					( )
 	logoWindow					= NULL;
 
 	// Main cycle
-	CheckCopyProtection			( );
 	Memory.mem_usage();
 	Device.Run					( );
 
@@ -494,52 +491,6 @@ struct damn_keys_filter {
 #undef dwFilterKeysStructSize
 #undef dwToggleKeysStructSize
 
-// Приблудина для SecuROM-а
-#include "securom_api.h"
-
-// Фунция для тупых требований THQ и тупых американских пользователей
-BOOL IsOutOfVirtualMemory()
-{
-#define VIRT_ERROR_SIZE 256
-#define VIRT_MESSAGE_SIZE 512
-
-	SECUROM_MARKER_HIGH_SECURITY_ON(1)
-
-	MEMORYSTATUSEX statex;
-	DWORD dwPageFileInMB = 0;
-	DWORD dwPhysMemInMB = 0;
-	HINSTANCE hApp = 0;
-	char	pszError[ VIRT_ERROR_SIZE ];
-	char	pszMessage[ VIRT_MESSAGE_SIZE ];
-
-	std::memset( &statex, 0, sizeof( MEMORYSTATUSEX ) );
-	statex.dwLength = sizeof( MEMORYSTATUSEX );
-	
-	if ( ! GlobalMemoryStatusEx( &statex ) )
-		return 0;
-
-	dwPageFileInMB = ( DWORD ) ( statex.ullTotalPageFile / ( 1024 * 1024 ) ) ;
-	dwPhysMemInMB = ( DWORD ) ( statex.ullTotalPhys / ( 1024 * 1024 ) ) ;
-
-	// Довольно отфонарное условие
-	if ( ( dwPhysMemInMB > 500 ) && ( ( dwPageFileInMB + dwPhysMemInMB ) > 2500  ) )
-		return 0;
-
-	hApp = GetModuleHandle( NULL );
-
-	if ( ! LoadString( hApp , RC_VIRT_MEM_ERROR , pszError , VIRT_ERROR_SIZE ) )
-		return 0;
- 
-	if ( ! LoadString( hApp , RC_VIRT_MEM_TEXT , pszMessage , VIRT_MESSAGE_SIZE ) )
-		return 0;
-
-	MessageBox( NULL , pszMessage , pszError , MB_OK | MB_ICONHAND );
-
-	SECUROM_MARKER_HIGH_SECURITY_OFF(1)
-
-	return 1;
-}
-
 #include "xr_ioc_cmd.h"
 
 typedef void DUMMY_STUFF (const void*,const u32&,void*);
@@ -595,12 +546,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 {
 //	foo();
 #ifndef DEDICATED_SERVER
-
-	// Check for virtual memory
-
-	if ( ( strstr( lpCmdLine , "--skipmemcheck" ) == NULL ) && IsOutOfVirtualMemory() )
-		return 0;
-
 	// Check for another instance
 #ifdef NO_MULTI_INSTANCES
 	#define STALKER_PRESENCE_MUTEX "STALKER-SoC"
@@ -993,8 +938,6 @@ void CApplication::LoadBegin	()
 #endif
 		phase_timer.Start	();
 		load_stage			= 0;
-
-		CheckCopyProtection	();
 	}
 }
 
@@ -1035,7 +978,6 @@ void CApplication::LoadDraw		()
 		load_draw_internal			();
 
 	Device.End					();
-	CheckCopyProtection			();
 }
 
 void CApplication::LoadTitleInt(LPCSTR str)
@@ -1138,9 +1080,6 @@ void CApplication::Level_Set(u32 L)
 		hLevelLogo.create	("font", temp);
 	else
 		hLevelLogo.create	("font", "intro\\intro_no_start_picture");
-		
-
-	CheckCopyProtection		();
 }
 
 int CApplication::Level_ID(LPCSTR name)

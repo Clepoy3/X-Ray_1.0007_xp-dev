@@ -109,14 +109,14 @@ void	xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, char* ResultStr)
 	
 };
 
-void xrServer::Check_GameSpy_CDKey_Success			(IClient* CL)
+/*void xrServer::Check_GameSpy_CDKey_Success			(IClient* CL)
 {
 	if (NeedToCheckClient_BuildVersion(CL))				return;
 	//-------------------------------------------------------------
 	Check_BuildVersion_Success(CL);	
-};
+};*/
 
-BOOL	g_SV_Disable_Auth_Check = FALSE;
+/*BOOL	g_SV_Disable_Auth_Check = FALSE;
 
 bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)	
 {
@@ -132,7 +132,7 @@ bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)
 	return true;
 
 //#endif
-};
+};*/
 
 void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 {
@@ -162,7 +162,7 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 				
 		if( CL->flags.bLocal || bAccessUser )
 		{
-			Check_BuildVersion_Success( CL );
+			//Check_BuildVersion_Success( CL );
 		}
 		else
 		{
@@ -176,8 +176,8 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 	}
 };
 
-void xrServer::Check_BuildVersion_Success			( IClient* CL )
+/*void xrServer::Check_BuildVersion_Success			( IClient* CL )
 {
 	CL->flags.bVerified = TRUE;
 	SendConnectResult(CL, 1, 0, "All Ok");
-};
+};*/

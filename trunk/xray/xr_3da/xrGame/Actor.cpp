@@ -265,8 +265,7 @@ void CActor::Load	(LPCSTR section )
 	CInventoryOwner::Load		(section);
 	m_location_manager->Load	(section);
 
-	if (GameID() == GAME_SINGLE)
-		OnDifficultyChanged		();
+	OnDifficultyChanged();
 	//////////////////////////////////////////////////////////////////////////
 	ISpatial*		self			=	smart_cast<ISpatial*> (this);
 	if (self)	{
@@ -460,37 +459,6 @@ void	CActor::Hit							(SHit* pHDS)
 	bool bPlaySound = true;
 	if (!g_Alive()) bPlaySound = false;
 
-	if (!IsGameTypeSingle() && !g_dedicated_server)
-	{
-		game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-		if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
-		{
-			bPlaySound = false;
-			if (Device.dwFrame != last_hit_frame &&
-				HDS.bone() != BI_NONE)
-			{		
-				// вычислить позицию и направленность партикла
-				Fmatrix pos; 
-
-				CParticlesPlayer::MakeXFORM(this,HDS.bone(),HDS.dir,HDS.p_in_bone_space,pos);
-
-				// установить particles
-				CParticlesObject* ps = NULL;
-
-				if (eacFirstEye == cam_active && this == Level().CurrentEntity())
-					ps = CParticlesObject::Create(invincibility_fire_shield_1st,TRUE);
-				else
-					ps = CParticlesObject::Create(invincibility_fire_shield_3rd,TRUE);
-
-				ps->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));
-				GamePersistent().ps_needtoplay.push_back(ps);
-			};
-		};
-		 
-
-		last_hit_frame = Device.dwFrame;
-	};
-
 	if(	!g_dedicated_server	&& 
 		!sndHit[HDS.hit_type].empty()			&& 
 		(ALife::eHitTypeTelepatic != HDS.hit_type))
@@ -549,65 +517,21 @@ void	CActor::Hit							(SHit* pHDS)
 		HitMark			(HDS.damage(), HDS.dir, HDS.who, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
 	}
 
-	switch (GameID())
+	float hit_power	= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+
+	if (GodMode())//psActorFlags.test(AF_GODMODE))
 	{
-	case GAME_SINGLE:		
-		{
-			float hit_power	= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-
-			if (GodMode())//psActorFlags.test(AF_GODMODE))
-			{
-				HDS.power = 0.0f;
-//				inherited::Hit(0.f,dir,who,element,position_in_bone_space,impulse, hit_type);
-				inherited::Hit(&HDS);
-				return;
-			}
-			else 
-			{
-				//inherited::Hit		(hit_power,dir,who,element,position_in_bone_space, impulse, hit_type);
-				HDS.power = hit_power;
-				inherited::Hit(&HDS);
-			};
-		}
-		break;
-	default:
-		{
-			m_bWasBackStabbed = false;
-			if (HDS.hit_type == ALife::eHitTypeWound_2 && Check_for_BackStab_Bone(HDS.bone()))
-			{
-				// convert impulse into local coordinate system
-				Fmatrix					mInvXForm;
-				mInvXForm.invert		(XFORM());
-				Fvector					vLocalDir;
-				mInvXForm.transform_dir	(vLocalDir,HDS.dir);
-				vLocalDir.invert		();
-
-				Fvector a	= {0,0,1};
-				float res = a.dotproduct(vLocalDir);
-				if (res < -0.707)
-				{
-					game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-					if (!ps || !ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))						
-						m_bWasBackStabbed = true;
-				}
-			};
-			
-			float hit_power = 0;
-
-			if (m_bWasBackStabbed) hit_power = (HDS.damage() == 0) ? 0 : 100000.0f;
-			else hit_power	= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-
-			HDS.power			= hit_power;
-			inherited::Hit		(&HDS);
-
-			if(OnServer() && !g_Alive() && HDS.hit_type==ALife::eHitTypeExplosion)
-			{
-				game_PlayerState* ps							= Game().GetPlayerByGameID(ID());
-				Game().m_WeaponUsageStatistic->OnExplosionKill	(ps, HDS);
-			}
-		}		
-		break;
+		HDS.power = 0.0f;
+//		inherited::Hit(0.f,dir,who,element,position_in_bone_space,impulse, hit_type);
+		inherited::Hit(&HDS);
+		return;
 	}
+	else 
+	{
+		//inherited::Hit		(hit_power,dir,who,element,position_in_bone_space, impulse, hit_type);
+		HDS.power = hit_power;
+		inherited::Hit(&HDS);
+	};
 }
 
 void CActor::HitMark	(float P, 
@@ -730,18 +654,8 @@ void CActor::Die(CObject* who)
 			if (slot_idx == inventory().GetActiveSlot()) 
 			{
 				if((*I).m_pIItem)
-				{
-					if (IsGameTypeSingle())
-						(*I).m_pIItem->SetDropManual(TRUE);
-					else
-					{
-						if ((*I).m_pIItem->object().CLS_ID!=CLSID_OBJECT_W_KNIFE && slot_idx!=GRENADE_SLOT)
-						{
-							(*I).m_pIItem->SetDropManual(TRUE);
-						}							
-					}
-				};
-			continue;
+					(*I).m_pIItem->SetDropManual(TRUE);
+				continue;
 			}
 			else
 			{
@@ -757,30 +671,6 @@ void CActor::Die(CObject* who)
 		TIItemContainer &l_blist = inventory().m_belt;
 		while (!l_blist.empty())	
 			inventory().Ruck(l_blist.front());
-
-		if (!IsGameTypeSingle())
-		{
-			//if we are on server and actor has PDA - destroy PDA
-			TIItemContainer &l_rlist	= inventory().m_ruck;
-			for(TIItemContainer::iterator l_it = l_rlist.begin(); l_rlist.end() != l_it; ++l_it)
-			{
-				if (GameID() == GAME_ARTEFACTHUNT)
-				{
-					CArtefact* pArtefact = smart_cast<CArtefact*> (*l_it);
-					if (pArtefact)
-					{
-						(*l_it)->SetDropManual(TRUE);
-						continue;
-					};
-				};
-
-				if ((*l_it)->object().CLS_ID == CLSID_OBJECT_PLAYERS_BAG)
-				{
-					(*l_it)->SetDropManual(TRUE);
-					continue;
-				};
-			};
-		};
 	};
 
 	cam_Set					(eacFreeLook);
@@ -795,10 +685,7 @@ void CActor::Die(CObject* who)
 		m_BloodSnd.stop			();		
 	}
 
-	if(IsGameTypeSingle())
-	{
-		start_tutorial		("game_over");
-	}
+	start_tutorial		("game_over");
 	xr_delete				(m_sndShockEffector);
 }
 
@@ -987,8 +874,7 @@ void CActor::shedule_Update	(u32 DT)
 
 	//обновление инвентаря
 	UpdateInventoryOwner			(DT);
-	if (GameID() == GAME_SINGLE)
-		GameTaskManager().UpdateTasks	();
+	GameTaskManager().UpdateTasks	();
 
 	if(m_holder || !getEnabled() || !Ready())
 	{
@@ -1170,8 +1056,6 @@ void CActor::shedule_Update	(u32 DT)
 		m_pVehicleWeLookingAt			= smart_cast<CHolderCustom*>(game_object);
 		CEntityAlive* pEntityAlive		= smart_cast<CEntityAlive*>(game_object);
 		
-		if (GameID() == GAME_SINGLE )
-		{
 			if (m_pUsableObject && m_pUsableObject->tip_text())
 			{
 				m_sDefaultObjAction = CStringTable().translate( m_pUsableObject->tip_text() );
@@ -1200,7 +1084,6 @@ void CActor::shedule_Update	(u32 DT)
 				else 
 					m_sDefaultObjAction = NULL;
 			}
-		}
 	}
 	else 
 	{
@@ -1429,7 +1312,6 @@ float CActor::Radius()const
 
 bool		CActor::use_bolts				() const
 {
-	if (GameID() != GAME_SINGLE) return false;
 	return CInventoryOwner::use_bolts();
 };
 

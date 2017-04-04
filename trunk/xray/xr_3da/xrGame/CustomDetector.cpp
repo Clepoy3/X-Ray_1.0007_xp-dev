@@ -273,21 +273,7 @@ void CCustomDetector::UpdateMapLocations() // called on turn on/off only
 void CCustomDetector::UpdateNightVisionMode()
 {
 //	CObject* tmp = Level().CurrentViewEntity();	
-	bool bNightVision = false;
-	if (GameID() == GAME_SINGLE)
-	{
-		bNightVision = Actor()->Cameras().GetPPEffector(EEffectorPPType(effNightvision))!=NULL;
-	}
-	else
-	{
-		if (Level().CurrentViewEntity() && 
-			Level().CurrentViewEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
-		{
-			CActor* pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-			if (pActor)
-				bNightVision = pActor->Cameras().GetPPEffector(EEffectorPPType(effNightvision))!=NULL;
-		}
-	}
+	bool bNightVision = Actor()->Cameras().GetPPEffector(EEffectorPPType(effNightvision))!=NULL;
 
 	bool bOn =	bNightVision && 
 				m_pCurrentActor &&

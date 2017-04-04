@@ -87,11 +87,9 @@ void CUIInventoryWnd::Init()
 
 /*
 #ifdef INV_NEW_SLOTS_SYSTEM
-	if (GameID() == GAME_SINGLE){
-		AttachChild							(&UISleepWnd);
-		UISleepWnd.Init();
-		UISleepWnd.SetWindowName("sleep_wnd");  // для лучшего нахождения через GetStatic
-	}
+	AttachChild							(&UISleepWnd);
+	UISleepWnd.Init();
+	UISleepWnd.SetWindowName("sleep_wnd");  // для лучшего нахождения через GetStatic
 #endif
 */
 
@@ -99,18 +97,7 @@ void CUIInventoryWnd::Init()
 	xml_init.InitFrameWindow			(uiXml, "character_frame_window", 0, &UIPersonalWnd);
 
 	AttachChild							(&UIProgressBack);
-	xml_init.InitStatic					(uiXml, "progress_background", 0, &UIProgressBack);
-
-	if (GameID() != GAME_SINGLE){
-		AttachChild						(&UIProgressBack_rank);
-		xml_init.InitStatic				(uiXml, "progress_back_rank", 0, &UIProgressBack_rank);
-
-		UIProgressBack_rank.AttachChild	(&UIProgressBarRank);
-		xml_init.InitProgressBar		(uiXml, "progress_bar_rank", 0, &UIProgressBarRank);
-		UIProgressBarRank.SetProgressPos(100);
-
-	}
-	
+	xml_init.InitStatic					(uiXml, "progress_background", 0, &UIProgressBack);	
 
 	UIProgressBack.AttachChild (&UIProgressBarHealth);
 	xml_init.InitProgressBar (uiXml, "progress_bar_health", 0, &UIProgressBarHealth);
@@ -122,10 +109,8 @@ void CUIInventoryWnd::Init()
 	xml_init.InitProgressBar (uiXml, "progress_bar_radiation", 0, &UIProgressBarRadiation);
 
 #ifdef INV_NEW_SLOTS_SYSTEM
-	if (GameID() == GAME_SINGLE){
-		UIProgressBack.AttachChild	(&UIProgressBarSatiety);
-		xml_init.InitProgressBar (uiXml, "progress_bar_satiety", 0, &UIProgressBarSatiety);
-	}
+	UIProgressBack.AttachChild	(&UIProgressBarSatiety);
+	xml_init.InitProgressBar (uiXml, "progress_bar_satiety", 0, &UIProgressBarSatiety);
 #endif
 
 	UIPersonalWnd.AttachChild			(&UIStaticPersonal);
@@ -138,17 +123,6 @@ void CUIInventoryWnd::Init()
 
 	//Элементы автоматического добавления
 	xml_init.InitAutoStatic				(uiXml, "auto_static", this);
-
-
-	if (GameID() != GAME_SINGLE){
-		UIRankFrame = xr_new<CUIStatic> (); UIRankFrame->SetAutoDelete(true);
-		UIRank = xr_new<CUIStatic> (); UIRank->SetAutoDelete(true);
-
-		CUIXmlInit::InitStatic(uiXml, "rank", 0, UIRankFrame);
-		CUIXmlInit::InitStatic(uiXml, "rank:pic", 0, UIRank);
-		AttachChild(UIRankFrame);
-		UIRankFrame->AttachChild(UIRank);		
-	}
 
 	m_pUIBagList						= xr_new<CUIDragDropListEx>(); UIBagWnd.AttachChild(m_pUIBagList); m_pUIBagList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_bag", 0, m_pUIBagList);
@@ -176,7 +150,6 @@ void CUIInventoryWnd::Init()
 	xml_init.InitDragDropListEx(uiXml, "dragdrop_slot_weapon_2", 0, m_pUIAutomaticList);
 	BindDragDropListEnents(m_pUIAutomaticList);
 
-	if (GameID() == GAME_SINGLE){
 		m_pUIKnifeList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIKnifeList); m_pUIKnifeList->SetAutoDelete(true);
 		xml_init.InitDragDropListEx			(uiXml, "dragdrop_slot_weapon_0", 0, m_pUIKnifeList);
 		BindDragDropListEnents				(m_pUIKnifeList);	
@@ -227,7 +200,6 @@ void CUIInventoryWnd::Init()
 		m_slots_array[SLOT_QUICK_ACCESS_1]		= m_pUISlotQuickAccessList_1;
 		m_slots_array[SLOT_QUICK_ACCESS_2]		= m_pUISlotQuickAccessList_2;
 		m_slots_array[SLOT_QUICK_ACCESS_3]		= m_pUISlotQuickAccessList_3;
-	}
 #else
 	m_pUIPistolList = xr_new<CUIDragDropListEx>(); AttachChild(m_pUIPistolList); m_pUIPistolList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx(uiXml, "dragdrop_pistol", 0, m_pUIPistolList);
@@ -368,27 +340,14 @@ void CUIInventoryWnd::Update()
 		UIProgressBarRadiation.SetProgressPos	(v);
 		
 #ifdef INV_NEW_SLOTS_SYSTEM
-		if (GameID() == GAME_SINGLE){
-			CActor*	m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
-			
-			v =(m_pActor->conditions().GetSatiety())*100.0f;
-			UIProgressBarSatiety.SetProgressPos	(v);
-		}
+		CActor*	m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
+
+		v =(m_pActor->conditions().GetSatiety())*100.0f;
+		UIProgressBarSatiety.SetProgressPos	(v);
 #endif
 
 		CInventoryOwner* pOurInvOwner	= smart_cast<CInventoryOwner*>(pEntityAlive);
-		u32 _money						= 0;
-
-		if (GameID() != GAME_SINGLE){
-			game_PlayerState* ps = Game().GetPlayerByGameID(pEntityAlive->ID());
-			if (ps){
-				UIProgressBarRank.SetProgressPos(ps->experience_D*100);
-				_money							= ps->money_for_round;
-			}
-		}else
-		{
-			_money							= pOurInvOwner->get_money();
-		}
+		u32 _money = pOurInvOwner->get_money();
 		// update money
 		string64						sMoney;
 		//red_virus
@@ -411,30 +370,6 @@ void CUIInventoryWnd::Show()
 	InitInventory			();
 	inherited::Show			();
 
-	if (!IsGameTypeSingle())
-	{
-		CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor) return;
-
-		pActor->SetWeaponHideState(INV_STATE_INV_WND, true);
-
-		//rank icon		
-		int team = Game().local_player->team;
-		int rank = Game().local_player->rank;
-		string256 _path;		
-		if (GameID() != GAME_DEATHMATCH){
-			if (1==team)
-		        sprintf_s(_path, "ui_hud_status_green_0%d", rank+1);
-			else
-				sprintf_s(_path, "ui_hud_status_blue_0%d", rank+1);
-		}
-		else
-		{
-			sprintf_s(_path, "ui_hud_status_green_0%d", rank+1);
-		}
-		UIRank->InitTexture(_path);
-	}
-
 	SendInfoToActor						("ui_inventory");
 
 	Update								();
@@ -456,14 +391,6 @@ void CUIInventoryWnd::Hide()
 	{
 		pActor->inventory().Activate(m_iCurrentActiveSlot);
 		m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
-	}
-
-	if (!IsGameTypeSingle())
-	{
-		CActor *pActor		= smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor)			return;
-
-		pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
 	}
 }
 

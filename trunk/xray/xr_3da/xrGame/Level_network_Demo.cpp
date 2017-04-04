@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Level.h"
 #include "HUDManager.h"
-#include "UIGameDM.h"
 #include "xrServer.h"
 
 #define DEMO_DATA_SIZE	65536
@@ -390,6 +389,8 @@ void						CLevel::Demo_Update				()
 		};
 	};	
 	//-------------------------------
+	Msg("!!KRodin: Called Demo_update!");
+	/* //KRodin: !!! пока закомментировал, посмотрим, что получится.
 	if (HUD().GetUI())
 	{
 		CUIGameDM* game_dm_ui = smart_cast<CUIGameDM*>( HUD().GetUI()->UIGame());
@@ -419,6 +420,7 @@ void						CLevel::Demo_Update				()
 			
 		}
 	}
+	*/
 	//---------------------------------
 
 //	m_dwCurDemoFrame++;

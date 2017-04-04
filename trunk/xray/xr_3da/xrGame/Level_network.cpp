@@ -23,7 +23,6 @@ extern bool	g_b_ClearGameCaptions;
 
 void CLevel::remove_objects	()
 {
-	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - Start");
 	BOOL						b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
 
 	Game().reset_ui				();
@@ -89,7 +88,6 @@ void CLevel::remove_objects	()
 
 //.	xr_delete									(m_seniority_hierarchy_holder);
 //.	m_seniority_hierarchy_holder				= xr_new<CSeniorityHierarchyHolder>();
-	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - End");
 }
 
 #ifdef DEBUG
@@ -124,15 +122,6 @@ void CLevel::net_Stop		()
 
 void CLevel::ClientSend()
 {
-	if (GameID() != GAME_SINGLE && OnClient()) // https://www.gameru.net/forum/index.php?showtopic=67297&view=findpost&p=1609615
-	{
-		if ( !net_HasBandwidth() ) return;
-	};
-
-#ifdef BATTLEYE
-	battleye_system.UpdateClient();
-#endif // BATTLEYE
-
 	NET_Packet				P;
 	u32						start	= 0;
 	//----------- for E3 -----------------------------
@@ -256,12 +245,6 @@ void CLevel::Send		(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 		Server->OnMessage	(P,Game().local_svdpnid	);
 	}else											
 		IPureClient::Send	(P,dwFlags,dwTimeout	);
-
-	if (g_pGameLevel && Level().game && GameID() != GAME_SINGLE && !g_SV_Disable_Auth_Check)		{
-		// anti-cheat
-		phTimefactor		= 1.f					;
-		psDeviceFlags.set	(rsConstantFPS,FALSE)	;	
-	}
 }
 
 void CLevel::net_Update	()
@@ -369,31 +352,8 @@ void			CLevel::OnConnectResult				(NET_Packet*	P)
 	u8  res1					= P->r_u8();
 	string128 ResultStr			;	
 	P->r_stringZ(ResultStr)		;
-	if (!result)				
-	{
-		m_bConnectResult	= false			;	
-		switch (res1)
-		{
-		case 0:		//Standart error
-			{
-				if (!xr_strcmp(ResultStr, "Data verification failed. Cheater? [2]"))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrDifferentVersion);
-			}break;
-		case 1:		//GameSpy CDKey
-			{
-				if (!xr_strcmp(ResultStr, "Invalid CD Key"))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyInvalid);//, ResultStr);
-				if (!xr_strcmp(ResultStr, "CD Key in use"))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyInUse);//, ResultStr);
-				if (!xr_strcmp(ResultStr, "Your CD Key is disabled. Contact customer service."))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyDisabled);//, ResultStr);
-			}break;		
-		case 2:		//login+password
-			{
-				MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidPassword);
-			}break;		
-		}
-	};	
+	if (!result)
+		m_bConnectResult	= false;	
 	m_sConnectResult			= ResultStr;
 	
 	if (IsDemoSave())
@@ -482,29 +442,21 @@ void			CLevel::ClearAllObjects				()
 void				CLevel::OnInvalidHost			()
 {
 	IPureClient::OnInvalidHost();
-	if (MainMenu()->GetErrorDialogType() == CMainMenu::ErrNoError)
-		MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidHost);
 };
 
 void				CLevel::OnInvalidPassword		()
 {
 	IPureClient::OnInvalidPassword();
-	MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidPassword);
 };
 
 void				CLevel::OnSessionFull			()
 {
 	IPureClient::OnSessionFull();
-	if (MainMenu()->GetErrorDialogType() == CMainMenu::ErrNoError)
-		MainMenu()->SetErrorDialog(CMainMenu::ErrSessionFull);
 }
 
 void				CLevel::OnConnectRejected		()
 {
 	IPureClient::OnConnectRejected();
-
-//	if (MainMenu()->GetErrorDialogType() != CMainMenu::ErrNoError)
-//		MainMenu()->SetErrorDialog(CMainMenu::ErrServerReject);
 };
 
 void				CLevel::net_OnChangeSelfName			(NET_Packet* P)

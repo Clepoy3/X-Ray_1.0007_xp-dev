@@ -67,11 +67,7 @@ xrServer::~xrServer()
 
 bool  xrServer::HasBattlEye()
 {
-#ifdef BATTLEYE
-	return (g_pGameLevel && Level().battleye_system.server)? true : false;
-#else
 	return false;
-#endif // BATTLEYE
 }
 
 //--------------------------------------------------------------------
@@ -408,13 +404,6 @@ void xrServer::SendUpdatesToAll()
 	if (game->sv_force_sync)	Perform_game_export();
 
 	VERIFY						(verify_entities());
-
-#ifdef BATTLEYE
-	if ( g_pGameLevel )
-	{
-		Level().battleye_system.UpdateServer( this );
-	}
-#endif // BATTLEYE
 }
 
 xr_vector<shared_str>	_tmp_log;
@@ -561,13 +550,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 				CL->ps->DeathTime = Device.dwTimeGlobal;
 				game->OnPlayerConnectFinished(sender);
 				CL->ps->setName( CL->name.c_str() );
-				
-#ifdef BATTLEYE
-				if ( g_pGameLevel && Level().battleye_system.server )
-				{
-					Level().battleye_system.server->AddConnected_OnePlayer( CL );
-				}
-#endif // BATTLEYE
 			};
 			game->signal_Syncronize	();
 			VERIFY					(verify_entities());
@@ -675,12 +657,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		}break;
 	case M_BATTLEYE:
 		{
-#ifdef BATTLEYE
-			if ( g_pGameLevel )
-			{
-				Level().battleye_system.ReadPacketServer( sender.value(), &P );
-			}
-#endif // BATTLEYE
 		}
 	}
 
@@ -803,8 +779,7 @@ void			xrServer::Server_Client_Check	( IClient* CL )
 
 bool		xrServer::OnCL_QueryHost		() 
 {
-	if (game->Type() == GAME_SINGLE) return false;
-	return (client_Count() != 0); 
+	return false;
 };
 
 CSE_Abstract*	xrServer::GetEntity			(u32 Num)
@@ -961,11 +936,6 @@ void xrServer::PerformCheckClientsForMaxPing()
 	};
 }
 
-extern	s32		g_sv_dm_dwFragLimit;
-extern  s32		g_sv_ah_dwArtefactsNum;
-extern	s32		g_sv_dm_dwTimeLimit;
-extern	int		g_sv_ah_iReinforcementTime;
-
 xr_token game_types[];
 void xrServer::GetServerInfo( CServerInfo* si )
 {
@@ -977,31 +947,11 @@ void xrServer::GetServerInfo( CServerInfo* si )
 	si->AddItem( "Uptime", time, RGB(255,228,0) );
 
 	strcpy_s( tmp256, get_token_name(game_types, game->Type() ) );
-	if ( game->Type() == GAME_DEATHMATCH || game->Type() == GAME_TEAMDEATHMATCH )
-	{
-		strcat_s( tmp256, " [" );
-		strcat_s( tmp256, itoa( g_sv_dm_dwFragLimit, tmp, 10 ) );
-		strcat_s( tmp256, "] " );
-	}
-	else if ( game->Type() == GAME_ARTEFACTHUNT )
-	{
-		strcat_s( tmp256, " [" );
-		strcat_s( tmp256, itoa( g_sv_ah_dwArtefactsNum, tmp, 10 ) );
-		strcat_s( tmp256, "] " );
-		g_sv_ah_iReinforcementTime;
-	}
 	
 	//if ( g_sv_dm_dwTimeLimit > 0 )
 	{
 		strcat_s( tmp256, " time limit [" );
-		strcat_s( tmp256, itoa( g_sv_dm_dwTimeLimit, tmp, 10 ) );
 		strcat_s( tmp256, "] " );
-	}
-	if ( game->Type() == GAME_ARTEFACTHUNT )
-	{
-		strcat_s( tmp256, " RT [" );
-		strcat_s( tmp256, itoa( g_sv_ah_iReinforcementTime, tmp, 10 ) );
-		strcat_s( tmp256, "]" );
 	}
 	si->AddItem( "Game type", tmp256, RGB(128,255,255) );
 }

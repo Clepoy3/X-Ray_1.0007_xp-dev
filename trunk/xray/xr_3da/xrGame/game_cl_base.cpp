@@ -12,8 +12,6 @@
 #include "string_table.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
-#include "game_sv_mp_vote_flags.h"
-
 game_cl_GameState::game_cl_GameState()
 {
 	m_WeaponUsageStatistic		= xr_new<WeaponUsageStatistic>();
@@ -108,8 +106,6 @@ void	game_cl_GameState::net_import_state	(NET_Packet& P)
 			//-----------------------------------------------
 			IP->net_Import(P);
 			//-----------------------------------------------
-			if (OldFlags != IP->flags__)
-				if (Type() != GAME_SINGLE) OnPlayerFlagsChanged(IP);
 			if (OldVote != IP->m_bCurrentVoteAgreed)
 				OnPlayerVoted(IP);
 			//***********************************************
@@ -119,8 +115,6 @@ void	game_cl_GameState::net_import_state	(NET_Packet& P)
 		}else{
 			IP = createPlayerState();
 			IP->net_Import		(P);
-
-			if (Type() != GAME_SINGLE) OnPlayerFlagsChanged(IP);
 
 			players_new.insert(std::make_pair(ID,IP));
 		}
@@ -155,8 +149,6 @@ void	game_cl_GameState::net_import_update(NET_Packet& P)
 		//-----------------------------------------------
 		IP->net_Import(P);
 		//-----------------------------------------------
-		if (OldFlags != IP->flags__)
-			if (Type() != GAME_SINGLE) OnPlayerFlagsChanged(IP);
 		if (OldVote != IP->m_bCurrentVoteAgreed)
 			OnPlayerVoted(IP);
 		//***********************************************
@@ -165,7 +157,6 @@ void	game_cl_GameState::net_import_update(NET_Packet& P)
 	{
 		game_PlayerState*	PS = createPlayerState();
 		PS->net_Import		(P);
-		if (Type() != GAME_SINGLE) OnPlayerFlagsChanged(PS);
 		xr_delete(PS);
 	};
 
@@ -189,15 +180,6 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 	{
 	case GAME_EVENT_PLAYER_CONNECTED:
 		{
-
-#ifdef BATTLEYE
-			if ( g_pGameLevel && Level().battleye_system.GetTestClient() )
-			{
-				bool res_battleye = Level().battleye_system.LoadClient();
-				VERIFY( res_battleye );
-			}
-#endif // BATTLEYE
-
 			string64 PlayerName;
 			P.r_stringZ(PlayerName);
 			
@@ -287,22 +269,9 @@ void game_cl_GameState::shedule_Update		(u32 dt)
 {
 	ISheduled::shedule_Update	(dt);
 
-	if(!m_game_ui_custom){
+	if(!m_game_ui_custom)
 		if( HUD().GetUI() )
 			m_game_ui_custom = HUD().GetUI()->UIGame();
-	} 
-	//---------------------------------------
-	switch (Phase())
-	{
-	case GAME_PHASE_INPROGRESS:
-		{
-			if (!IsGameTypeSingle())
-				m_WeaponUsageStatistic->Update();
-		}break;
-	default:
-		{
-		}break;
-	};
 };
 
 void game_cl_GameState::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)

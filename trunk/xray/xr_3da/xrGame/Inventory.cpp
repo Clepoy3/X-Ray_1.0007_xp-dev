@@ -711,40 +711,20 @@ bool CInventory::Action(s32 cmd, u32 flags)
 	case kWPN_4:
 	case kWPN_5:
 	case kWPN_6:
-       {
-		   if (cmd == kWPN_6 && !IsGameTypeSingle()) return false;
-
+		{
 			if(flags&CMD_START)
-			{
-                if((int)m_iActiveSlot == cmd - kWPN_1 &&
-					m_slots[m_iActiveSlot].m_pIItem )
-				{
-					if(IsGameTypeSingle())
-						b_send_event = Activate(NO_ACTIVE_SLOT);
-					else
-					{
-						ActivateNextItemInActiveSlot();
-					}
-				}else{ 					
-					if ((int)m_iActiveSlot == cmd - kWPN_1 && !IsGameTypeSingle())
-						break;
-
+                if((int)m_iActiveSlot == cmd - kWPN_1 && m_slots[m_iActiveSlot].m_pIItem )
+					b_send_event = Activate(NO_ACTIVE_SLOT);
+				else					
 					b_send_event = Activate(cmd - kWPN_1, eKeyAction);
-				}
-			}
 		}break;
 	case kARTEFACT:
 		{
 			if(flags&CMD_START)
-			{
-                if((int)m_iActiveSlot == ARTEFACT_SLOT &&
-					m_slots[m_iActiveSlot].m_pIItem && IsGameTypeSingle())
-				{
+                if((int)m_iActiveSlot == ARTEFACT_SLOT && m_slots[m_iActiveSlot].m_pIItem)
 					b_send_event = Activate(NO_ACTIVE_SLOT);
-				}else {
+				else
 					b_send_event = Activate(ARTEFACT_SLOT);
-				}
-			}
 		}break;
 	}
 
@@ -1014,7 +994,7 @@ bool CInventory::Eat(PIItem pIItem)
 	
 	pItemToEat->UseBy		(entity_alive);
 
-	if(IsGameTypeSingle() && Actor()->m_inventory == this)
+	if(Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
 
 	if(pItemToEat->Empty() && entity_alive->Local())
@@ -1183,13 +1163,12 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 
 bool CInventory::isBeautifulForActiveSlot	(CInventoryItem *pIItem)
 {
-	if (!IsGameTypeSingle()) return (true);
 	TISlotArr::iterator it =  m_slots.begin();
 	for( ; it!=m_slots.end(); ++it) {
 		if ((*it).m_pIItem && (*it).m_pIItem->IsNecessaryItem(pIItem))
-			return		(true);
+			return true;
 	}
-	return				(false);
+	return false;
 }
 
 #include "WeaponHUD.h"

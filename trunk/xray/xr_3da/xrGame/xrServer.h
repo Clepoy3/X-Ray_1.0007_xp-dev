@@ -3,18 +3,15 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_)
-#define AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_
 #pragma once
 
 #include "../../xrNetServer/net_server.h"
 #include "game_sv_base.h"
 #include "id_generator.h"
-#include "battleye.h"
 
-#ifdef DEBUG
+/*#ifdef DEBUG
 //. #define SLOW_VERIFY_ENTITIES
-#endif
+#endif*/
 
 
 class CSE_Abstract;
@@ -148,13 +145,11 @@ protected:
 	virtual IClient*		new_client				( SClientConnectData* cl_data );
 	
 	virtual bool			Check_ServerAccess( IClient* CL, string512& reason )	{ return true; }
-
-	virtual bool			NeedToCheckClient_GameSpy_CDKey		(IClient* CL)	{ return false; }
-	virtual void			Check_GameSpy_CDKey_Success			(IClient* CL);
-	
+/*
+	virtual void			Check_GameSpy_CDKey_Success			(IClient* CL);	
 	virtual bool			NeedToCheckClient_BuildVersion		(IClient* CL);
 	virtual void			Check_BuildVersion_Success			(IClient* CL);
-
+*/
 	void					SendConnectionData		(IClient* CL);
 	void					OnChatMessage			(NET_Packet* P, xrClientData* CL);
 
@@ -214,4 +209,3 @@ public:
 #endif
 };
 
-#endif // !defined(AFX_XRSERVER_H__65728A25_16FC_4A7B_8CCE_D798CA5EC64E__INCLUDED_)

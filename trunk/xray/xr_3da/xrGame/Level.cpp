@@ -490,8 +490,6 @@ void CLevel::ProcessGameEvents		()
 
 		
 	}
-	if (OnServer() && GameID()!= GAME_SINGLE)
-		Game().m_WeaponUsageStatistic->Send_Check_Respond();
 }
 
 #ifdef DEBUG_MEMORY_MANAGER
@@ -522,8 +520,7 @@ void CLevel::OnFrame	()
 
 	m_feel_deny.update					();
 
-	if (GameID()!=GAME_SINGLE)			psDeviceFlags.set(rsDisableObjectsAsCrows,true);
-	else								psDeviceFlags.set(rsDisableObjectsAsCrows,false);
+	psDeviceFlags.set(rsDisableObjectsAsCrows,false);
 
 	// commit events from bullet manager from prev-frame
 	Device.Statistic->TEST0.Begin		();
@@ -533,9 +530,6 @@ void CLevel::OnFrame	()
 	// Client receive
 	if (net_isDisconnected())	
 	{
-		if (OnClient() && GameID() != GAME_SINGLE) 
-			ClearAllObjects();
-
 		Engine.Event.Defer				("kernel:disconnect");
 		return;
 	} else {
@@ -724,13 +718,6 @@ void CLevel::OnRender()
 			CTeamBaseZone	*team_base_zone = smart_cast<CTeamBaseZone*>(_O);
 			if (team_base_zone)
 				team_base_zone->OnRender();
-			
-			if (GameID() != GAME_SINGLE)
-			{
-				CInventoryItem* pIItem = smart_cast<CInventoryItem*>(_O);
-				if (pIItem) pIItem->OnRender();
-			}
-
 			
 			if (dbg_net_Draw_Flags.test(1<<11)) //draw skeleton
 			{
@@ -970,22 +957,8 @@ bool		CLevel::InterpolationDisabled	()
 	return g_cl_lvInterp < 0; 
 };
 
-void 		CLevel::PhisStepsCallback		( u32 Time0, u32 Time1 )
+void 		CLevel::PhisStepsCallback( u32, u32) //TODO: DELETE IT
 {
-	if (GameID() == GAME_SINGLE)	return;
-
-//#pragma todo("Oles to all: highly inefficient and slow!!!")
-//fixed (Andy)
-	/*
-	for (xr_vector<CObject*>::iterator O=Level().Objects.objects.begin(); O!=Level().Objects.objects.end(); ++O) 
-	{
-		if( (*O)->CLS_ID == CLSID_OBJECT_ACTOR){
-			CActor* pActor = smart_cast<CActor*>(*O);
-			if (!pActor || pActor->Remote()) continue;
-				pActor->UpdatePosStack(Time0, Time1);
-		}
-	};
-	*/
 };
 
 void				CLevel::SetNumCrSteps		( u32 NumSteps )
@@ -1104,20 +1077,6 @@ u32	GameID()
 }
 
 #include "../IGame_Persistent.h"
-
-bool	IsGameTypeSingle()
-{
-	return g_pGamePersistent->GameType()==GAME_SINGLE || g_pGamePersistent->GameType()==GAME_ANY;
-}
-
-#ifdef BATTLEYE
-
-bool CLevel::TestLoadBEClient()
-{
-	return battleye_system.TestLoadClient();
-}
-
-#endif // BATTLEYE
 
 GlobalFeelTouch::GlobalFeelTouch()
 {

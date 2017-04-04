@@ -345,16 +345,6 @@ void game_sv_GameState::Create					(shared_str &options)
 				//u16 res					= 
 				O->r_u8	();
 
-				if (GameType != rpgtGameAny)
-				{
-					if ((GameType == rpgtGameDeathmatch && Type() != GAME_DEATHMATCH) ||
-						(GameType == rpgtGameTeamDeathmatch && Type() != GAME_TEAMDEATHMATCH)	||
-						(GameType == rpgtGameArtefactHunt && Type() != GAME_ARTEFACTHUNT)
-						)
-					{
-						continue;
-					};
-				};
 				switch (type)
 				{
 				case rptActorSpawn:
@@ -377,24 +367,6 @@ void game_sv_GameState::Create					(shared_str &options)
 		}
 
 		FS.r_close	(F);
-	}
-
-	if (!g_dedicated_server)
-	{
-		// loading scripts
-		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
-		string_path					S;
-		FS.update_path				(S,"$game_config$","script.ltx");
-		CInifile					*l_tpIniFile = xr_new<CInifile>(S);
-		R_ASSERT					(l_tpIniFile);
-
-		if( l_tpIniFile->section_exist( type_name() ) )
-			if (l_tpIniFile->r_string(type_name(),"script"))
-				ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame,xr_new<CScriptProcess>("game",l_tpIniFile->r_string(type_name(),"script")));
-			else
-				ai().script_engine().add_script_process(ScriptEngine::eScriptProcessorGame,xr_new<CScriptProcess>("game",""));
-
-		xr_delete					(l_tpIniFile);
 	}
 
 	//---------------------------------------------------------------------
@@ -663,15 +635,6 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			u16		id_dest				= tNetPacket.r_u16();
 			u16     id_src				= tNetPacket.r_u16();
 			CSE_Abstract*	e_src		= get_entity_from_eid	(id_src	);
-
-			if(!e_src)  // && !IsGameTypeSingle() added by andy because of Phantom does not have server entity
-			{
-				if( IsGameTypeSingle() ) break;
-
-				game_PlayerState* ps	= get_eid(id_src);
-				if (!ps)				break;
-				id_src					= ps->GameID;
-			}
 
 			OnHit(id_src, id_dest, tNetPacket);
 			m_server->SendBroadcast		(BroadcastCID,tNetPacket,net_flags(TRUE,TRUE));

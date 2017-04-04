@@ -114,11 +114,7 @@ void CWeapon::UpdateXForm()
 		CEntityAlive*	E = smart_cast<CEntityAlive*>(H_Parent());
 
 		if (!E)
-		{
-			if (!IsGameTypeSingle())
-				UpdatePosition(H_Parent()->XFORM());
 			return;
-		}
 
 		const CInventoryOwner	*parent = smart_cast<const CInventoryOwner*>(E);
 		if (parent && parent->use_simplified_visual())
@@ -722,9 +718,6 @@ void CWeapon::UpdateCL()
 	//нарисовать партиклы
 	UpdateFlameParticles();
 	UpdateFlameParticles2();
-
-	if (!IsGameTypeSingle())
-		make_Interpolation();
 
 	VERIFY(smart_cast<CKinematics*>(Visual()));
 }
@@ -1544,12 +1537,7 @@ void CWeapon::OnDrawUI()
 
 bool CWeapon::unlimited_ammo()
 {
-	if (GameID() == GAME_SINGLE)
-		return psActorFlags.test(AF_UNLIMITEDAMMO) &&
-		m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
-
-	return (GameID() != GAME_ARTEFACTHUNT) &&
-		m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
+	return psActorFlags.test(AF_UNLIMITEDAMMO) && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
 };
 
 LPCSTR	CWeapon::GetCurrentAmmo_ShortName()
@@ -1583,10 +1571,7 @@ float CWeapon::Weight()
 }
 void CWeapon::Hide()
 {
-	if (IsGameTypeSingle())
-		SwitchState(eHiding);
-	else
-		SwitchState(eHidden);
+	SwitchState(eHiding);
 
 	OnZoomOut();
 }

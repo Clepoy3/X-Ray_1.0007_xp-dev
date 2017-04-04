@@ -848,7 +848,6 @@ void CLevel::script_register(lua_State *L)
 		,
 */
 		def("command_line",						&command_line),
-		def("IsGameTypeSingle",					&IsGameTypeSingle),
 		class_<CRayPick>("ray_pick")
 			.def(								constructor<>())
 			.def(								constructor<Fvector&, Fvector&, float, collide::rq_target, CScriptGameObject*>())
