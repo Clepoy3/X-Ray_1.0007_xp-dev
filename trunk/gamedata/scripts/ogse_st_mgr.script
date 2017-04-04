@@ -91,8 +91,8 @@ get_timer("my_timer"):stop() -- передумали и остановили
 
 
 function attach(sm)
-  sm:subscribe({ signal = "on_load",   fun = this.on_load   })
-  sm:subscribe( {signal = "on_save",   fun = this.on_save   })
+  sm:subscribe({ signal = "on_load",   fun = this.on_load })
+  sm:subscribe({ signal = "on_save",   fun = this.on_save })
 end
 
 
@@ -357,7 +357,8 @@ function savable_timer:start( high_priority )
     self   = self,
     fun    = self._aux_cond,
     queued = (not self._residual_time and not self._game_termination_time and not high_priority), --Низкий приоритет может быть только у таймеров БЕЗ любого таймаута (т.е у таймеров, которые срабатывают по условию)
-	script_name = ( self.script_name or self.class )
+	script_name = ( self.script_name or self.class ),
+	line   = "unknown",
   }
   self.sm:subscribe( self._cond_slot_desc )
   registry[ self.id ] = self

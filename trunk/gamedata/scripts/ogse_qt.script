@@ -95,18 +95,21 @@ function quick_timer:start( low_priority )
     -- то запоминаем время останова
     self.termination_time = self.start_time + self.timeout
   end
+  local d = debug.getinfo(2)
+  ASSERT(d, "")
   if not self.script_name then
-    local d = debug.getinfo( 2, "S" )
-    if d then
-      self.script_name = d.source
-    end
+    self.script_name = d.short_src
+  end
+  if not self.line then --Номер строки скрипта, на которой расположена функция
+    self.line = d.linedefined
   end
   self.slot_desc = {
     signal = "on_update",
     self   = self,
 	fun    = self.aux_cond,
     queued = (not self.timeout and low_priority),
-	script_name = self.script_name
+    script_name = self.script_name,
+    line   = self.line,
   }
   self.sm = ogse_signals.get_mgr()
   self.sm:subscribe( self.slot_desc )

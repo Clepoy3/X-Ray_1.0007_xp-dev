@@ -575,6 +575,13 @@ function set_current_time( hour, min, sec )
 end
 --==============================================================================================
 
+-- очистка таблицы
+function clear_table(t)
+	for k,_ in pairs(t) do
+		t[k] = nil
+	end
+end
+
 
 schemes, stypes = {}, {} -- соответствие схем модулям, типы схем
 
@@ -1219,13 +1226,6 @@ function vector_rotate_y (v, angle)
     local c = math.cos (angle)
     local s = math.sin (angle)
     return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
-end
-
--- очистка таблицы
-function clear_table (t)
-    while table.getn (t) > 0 do
-          table.remove (t, table.getn (t))
-    end
 end
 
 --€бЇ®«м§гҐв ¤«п ¬®­бва®ў. ‚лЎ®а в®зЄЁ, Єг¤  Ё¤вЁ ў ­ҐЄ®в®а®¬ а ¤ЁгбҐ Ё зв®Ў в®зЄ  Ўл«  ¤ «миҐ ­  а ббв®п­ЁЁ
