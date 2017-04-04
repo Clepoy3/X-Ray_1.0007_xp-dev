@@ -1117,7 +1117,6 @@
     <ClInclude Include="lua_tools.h" />
     <ClInclude Include="OGSE_Weather_Mgr.hpp" />
     <ClInclude Include="_d3d_extensions.h" />
-    <ClInclude Include="CopyProtection.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="trivial_encryptor.h" />

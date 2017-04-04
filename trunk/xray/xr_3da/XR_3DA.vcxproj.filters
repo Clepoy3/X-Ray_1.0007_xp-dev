@@ -10,9 +10,6 @@
     <Filter Include="Interfaces">
       <UniqueIdentifier>{e75ff485-ec3d-4449-b615-3b17cfb19a8f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\Sound">
-      <UniqueIdentifier>{933df6c9-4515-43bd-ba58-f388e802b67c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\Input">
       <UniqueIdentifier>{5d73be10-351d-4419-97b1-456590c05eb6}</UniqueIdentifier>
     </Filter>
@@ -130,18 +127,12 @@
     <Filter Include="Engine\Core">
       <UniqueIdentifier>{a2426bac-c9ab-49be-bf45-f0792a43b371}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Core\Scripting">
-      <UniqueIdentifier>{b7f651c3-7947-498f-9158-f112a8e5fd76}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Noise">
       <UniqueIdentifier>{512d64ef-b8f1-4223-bcdc-b738a59ac6eb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="CopyProtection.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="defines.h">
