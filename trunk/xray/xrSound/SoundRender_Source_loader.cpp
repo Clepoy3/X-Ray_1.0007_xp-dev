@@ -129,11 +129,12 @@ void CSoundRender_Source::load(LPCSTR name)
 	strconcat			(sizeof(fn),fn,N,".ogg");
 	if (!FS.exist("$level$",fn))	FS.update_path	(fn,"$game_sounds$",fn);
 
-#ifdef _EDITOR
-	if (!FS.exist(fn)){ 
+	if (!FS.exist(fn)) // http://www.amk-team.ru/forum/topic/10339-redaktirovanie-dvizhka-x-ray/page-117#entry1075070
+	{
+		Msg("! Can't find sound '%s.ogg'", N);
 		FS.update_path	(fn,"$game_sounds$","$no_sound.ogg");
     }
-#endif
+
 	LoadWave			(fn);		//.R_ASSERT(wave);
 	SoundRender->cache.cat_create	(CAT, dwBytesTotal);
 
