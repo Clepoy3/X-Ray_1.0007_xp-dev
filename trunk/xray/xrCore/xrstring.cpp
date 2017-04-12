@@ -125,7 +125,7 @@ void		str_container::dump	()
 	cdb::iterator	end	= container.end		();
 	FILE* F		= fopen("x:\\$str_dump$.txt","w");
 	for (; it!=end; it++)
-		fprintf		(F,"ref[%4d]-len[%3d]-crc[%8X] : %s\n",(*it)->dwReference,(*it)->dwLength,(*it)->dwCRC,(*it)->value);
+		fprintf		(F,"ref[%4u]-len[%3u]-crc[%8X] : %s\n",(*it)->dwReference,(*it)->dwLength,(*it)->dwCRC,(*it)->value); // https://github.com/OpenXRay/xray-16/commit/2aa3eb1418fbbb1de4b2b83b093380cfee6a767c
 	fclose		(F);
 }
 

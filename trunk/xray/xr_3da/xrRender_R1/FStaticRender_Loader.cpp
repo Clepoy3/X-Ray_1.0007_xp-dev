@@ -171,13 +171,10 @@ void CRender::LoadBuffers	(CStreamReader *base_fs)
 		u32 count				= fs->r_u32();
 		DCL.resize				(count);
 		VB.resize				(count);
+		u32 buffer_size = (MAXD3DDECLLENGTH+1)*sizeof(D3DVERTEXELEMENT9); // https://github.com/OpenXRay/xray-16/commit/266f6bbd2bf876d4406f392a073f6c352c71d5cb
+		D3DVERTEXELEMENT9	*dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
 		for (u32 i=0; i<count; i++)
 		{
-			// decl
-
-//			D3DVERTEXELEMENT9	*dcl = (D3DVERTEXELEMENT9*) fs->pointer();
-			u32					buffer_size = (MAXD3DDECLLENGTH+1)*sizeof(D3DVERTEXELEMENT9);
-			D3DVERTEXELEMENT9	*dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
 			fs->r				(dcl,buffer_size);
 			fs->advance			(-(int)buffer_size);
 

@@ -115,7 +115,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		EFS._initialize		();
 #ifdef DEBUG
     #ifndef	_EDITOR
-		Msg					("CRT heap 0x%08x",_get_heap_handle());
+		//Msg					("CRT heap 0x%08x",_get_heap_handle()); // https://github.com/OpenXRay/xray-16/commit/be102732b1d6933c4d0f272b5d25a9bc7505b1fc
 		Msg					("Process heap 0x%08x",GetProcessHeap());
     #endif
 #endif // DEBUG

@@ -87,9 +87,9 @@ void	INetLog::FlushLog()
 		{
 			SLogPacket* pLPacket = &(*it);
 			if (pLPacket->m_u16Type >= sizeof(PacketName)/sizeof(PacketName[0]))
-				fprintf(m_pLogFile, "%s %10d %10d %10d\n", pLPacket->m_bIsIn ? "In:" : "Out:", pLPacket->m_u32Time, pLPacket->m_u16Type, pLPacket->m_u32Size);
+				fprintf(m_pLogFile, "%s %10u %10u %10u\n", pLPacket->m_bIsIn ? "In:" : "Out:", pLPacket->m_u32Time, pLPacket->m_u16Type, pLPacket->m_u32Size); // https://github.com/OpenXRay/xray-16/commit/e8d6c17238f07acb87afd7086029731f10b3278f
 			else
-				fprintf(m_pLogFile, "%s %10d %10s %10d\n", pLPacket->m_bIsIn ? "In:" : "Out:", pLPacket->m_u32Time, PacketName[pLPacket->m_u16Type], pLPacket->m_u32Size);
+				fprintf(m_pLogFile, "%s %10u %10s %10u\n", pLPacket->m_bIsIn ? "In:" : "Out:", pLPacket->m_u32Time, PacketName[pLPacket->m_u16Type], pLPacket->m_u32Size);
 		};
 	};
 

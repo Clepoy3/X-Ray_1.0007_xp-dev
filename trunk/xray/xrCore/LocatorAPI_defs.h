@@ -57,13 +57,13 @@ struct XRCORE_API FS_File{
 	time_t	  	time_write;
 	long     	size;
 	xr_string	name;			// low-case name
-	void		set			(xr_string nm, long sz, time_t modif,unsigned attr);
+	void		set			(const xr_string& nm, long sz, time_t modif,unsigned attr); // https://github.com/OpenXRay/xray-16/commit/7202f2355cbbb4a2fca1286386df1ffae7a7ad0e
 public:
 				FS_File		(){}
-				FS_File		(xr_string nm);
+				FS_File		(const xr_string& nm);
 				FS_File		(const _FINDDATA_T& f);
-				FS_File		(xr_string nm, const _FINDDATA_T& f);
-				FS_File		(xr_string nm, long sz, time_t modif,unsigned attr);
+				FS_File		(const xr_string& nm, const _FINDDATA_T& f);
+				FS_File		(const xr_string& nm, long sz, time_t modif,unsigned attr);
 	bool 		operator<	(const FS_File& _X) const	{return xr_strcmp(name.c_str(),_X.name.c_str())<0; }
 };
 using FS_FileSet = xr_set<FS_File>;

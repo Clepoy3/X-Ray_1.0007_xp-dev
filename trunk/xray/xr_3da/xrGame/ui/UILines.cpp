@@ -460,16 +460,16 @@ u32 CUILines::GetColorFromText(const xr_string& str)const{
 
 	begin = str.find(BEGIN);
 	end = str.find(END, begin);
-	R_ASSERT2(npos != begin, "CUISubLine::GetColorFromText -- can't find beginning tag %c[");
-	R_ASSERT2(npos != end, "CUISubLine::GetColorFromText -- can't find ending tag ]");
+	if (begin == npos || end == npos)
+		return m_dwTextColor;
 	
 	// try default color
-	if (npos != str.find("%c[default]", begin, end - begin))
+	if (npos != str.find("%c[default]", begin, end - begin)) // https://github.com/OpenXRay/xray-16/commit/5ee7d8bea7538001b65e3e912d2d2583f179d210
 		return m_dwTextColor;
 
 	// Try predefined in XML colors
 //	CUIXmlInit xml;
-	for (CUIXmlInit::ColorDefs::const_iterator it = CUIXmlInit::GetColorDefs()->begin(); it != CUIXmlInit::GetColorDefs()->end(); ++it)
+	for (auto it = CUIXmlInit::GetColorDefs()->begin(); it != CUIXmlInit::GetColorDefs()->end(); ++it)
 	{
 		int cmp = str.compare(begin+3, end-begin-3, *it->first);			
 		if (cmp == 0)
@@ -481,10 +481,8 @@ u32 CUILines::GetColorFromText(const xr_string& str)const{
 	comma2_pos = str.find(",", comma1_pos + 1);
 	comma3_pos = str.find(",", comma2_pos + 1);
 
-    R_ASSERT2(npos != comma1_pos, "CUISubLine::GetColorFromText -- can't find first comma");        
-	R_ASSERT2(npos != comma2_pos, "CUISubLine::GetColorFromText -- can't find second comma");
-	R_ASSERT2(npos != comma3_pos, "CUISubLine::GetColorFromText -- can't find third comma");
-	
+	if (comma1_pos == npos || comma2_pos == npos || comma3_pos == npos)
+		return m_dwTextColor;
 
 	u32 a, r, g, b;
 	xr_string single_color;

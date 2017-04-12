@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "VertexCache.h"
 
-VertexCache::VertexCache()
+VertexCache::VertexCache() : VertexCache(16) // https://github.com/OpenXRay/xray-16/commit/6747a1971ac622ba095908a6c164c1dd41786551
 {
-  VertexCache(16);
 }
 
 

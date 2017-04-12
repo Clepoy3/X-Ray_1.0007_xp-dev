@@ -302,7 +302,7 @@ _DDS:
 		D3DXIMAGE_INFO			IMG;
 		S						= FS.r_open	(fn);
 #ifdef DEBUG
-		Msg						("* Loaded: %s[%d]b",fn,S->length());
+		Msg						("* Loaded: %s[%d]",fn,S->length()); // https://github.com/OpenXRay/xray-16/commit/1cad4a9f5d08c3cda9693b7698b3b4f86403ee4f
 #endif // DEBUG
 		img_size				= S->length	();
 		R_ASSERT				(S);
