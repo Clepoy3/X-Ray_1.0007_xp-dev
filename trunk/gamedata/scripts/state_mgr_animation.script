@@ -1,6 +1,7 @@
 local anima=0
-local tmp_table = {}
 local k,v = 0,0
+local state_lib_states = state_lib.states
+local animations_list = state_mgr_animation_list.animations
 
 --' Анимации персонажа
 --' мы уже находимся в необходимом состоянии?
@@ -11,14 +12,14 @@ end
 function eva_state_mgr_animation:evaluate()
 	if self.st.callback ~= nil and
 		self.st.callback.func ~= nil and
-		state_lib.states[self.st.target_state].animation == nil and
+		state_lib_states[self.st.target_state].animation == nil and
 		self.st.callback.begin == nil
 	then
 		--printf("animation false")
 		return false
 	end
 
-	return state_lib.states[self.st.target_state].animation == self.st.animation:state()
+	return state_lib_states[self.st.target_state].animation == self.st.animation:state()
 end
 --' нужно ли нам отыгрывать извращенную анимацию
 class "eva_state_mgr_animation_play" (property_evaluator)
@@ -26,9 +27,9 @@ function eva_state_mgr_animation_play:__init(name, st) super (nil, name)
 	self.st = st
 end
 function eva_state_mgr_animation_play:evaluate()
-	return state_lib.states[self.st.target_state].animation ~= nil
+	return state_lib_states[self.st.target_state].animation ~= nil
 end
---' Отыгрываем ли мы сейчас извращенную анимацию
+--' Отыгрываем ли мы сейчас извращенную анимацию	(НЕ ИСПОЛЬЗУЕТСЯ)
 class "eva_state_mgr_animation_play_now" (property_evaluator)
 function eva_state_mgr_animation_play_now:__init(name, st) super (nil, name)
 	self.st = st
@@ -36,13 +37,13 @@ end
 function eva_state_mgr_animation_play_now:evaluate()
 	return self.st.animation:state() ~= "_wait" and self.st.animation:state() ~= nil
 end
---' нужно ли нам вообще не отыгрывать анимацию
+--' нужно ли нам вообще не отыгрывать анимацию	(НЕ ИСПОЛЬЗУЕТСЯ)
 class "eva_state_mgr_animation_none" (property_evaluator)
 function eva_state_mgr_animation_none:__init(name, st) super (nil, name)
 	self.st = st
 end
 function eva_state_mgr_animation_none:evaluate()
-	return state_lib.states[self.st.target_state].animation == nil
+	return state_lib_states[self.st.target_state].animation == nil
 end
 --' мы уже не отыгрываем никакую извращенную анимацию
 class "eva_state_mgr_animation_none_now" (property_evaluator)
@@ -58,24 +59,19 @@ function eva_state_mgr_animation_reset:__init(name, st) super (nil, name)
 	self.st = st
 end
 function eva_state_mgr_animation_reset:evaluate()
-	--printf("reset state [%s]", utils.to_str(self.st.reset_state))
-	--printf("state [%s]", utils.to_str(state_lib.states[target_state]))
---	if state_lib.states[target_state] ~= nil then
---		--printf("state reset [%s]", utils.to_str(state_lib.states[target_state].reset))
---	end
+	local state = state_lib_states[self.st.target_state]
 
 	if self.st.callback ~= nil and
 		self.st.callback.func ~= nil and
-		state_lib.states[self.st.target_state].animation == nil and
+		state.animation == nil and
 		self.st.callback.begin == nil
 	then
 		return true
 	end
-	
+
 	return self.st.reset_state == true and
-		   state_lib.states[self.st.target_state] ~= nil and
 		   self.st.current_state == self.st.target_state and
-		   state_lib.states[self.st.target_state].reset == true	
+		   state.reset == true
 end
 --' залочена ли схема
 class "eva_state_mgr_animation_locked" (property_evaluator)
@@ -83,9 +79,8 @@ function eva_state_mgr_animation_locked:__init(name, st) super (nil, name)
 	self.st = st
 end
 function eva_state_mgr_animation_locked:evaluate()
---	printf("animstate %s", utils.to_str(self.st.animation:state()))
-	return self.st.animation:state() == "_wait" or
-		   self.st.animation:state() == "_new"
+	local state = self.st.animation:state()
+	return state == "_wait" or state == "_new"
 end
 
 
@@ -96,7 +91,7 @@ function act_state_mgr_animation_start:__init(name, st) super (nil, name)
 end
 function act_state_mgr_animation_start:initialize()
 	action_base.initialize(self)
-	self.st.animation:set_state(state_lib.states[self.st.target_state].animation)
+	self.st.animation:set_state(state_lib_states[self.st.target_state].animation)
 end
 function act_state_mgr_animation_start:execute()
 	action_base.execute(self)
@@ -112,7 +107,7 @@ end
 function act_state_mgr_animation_reset:initialize()
 	action_base.initialize(self)
 	--printf("RESET")
-	self.st.animation:set_state(state_lib.states[self.st.target_state].animation, true)
+	self.st.animation:set_state(state_lib_states[self.st.target_state].animation, true)
 	self.st.reset_state = false
 end
 function act_state_mgr_animation_reset:execute()
@@ -142,7 +137,7 @@ class "animation"
 function animation:__init(npc, mgr)
 	self.mgr = mgr
 	self.npc = npc
-	
+
 	self.states = {
 		last_id = nil,
 		current_state = nil,
@@ -150,30 +145,21 @@ function animation:__init(npc, mgr)
 		begin = nil,
 		idle = nil,
 		anim_level = 0,
-		attach_items = {hand_radio	= {mode = "detach", done = true},
-						bread		= {mode = "detach", done = true},
-						vodka		= {mode = "detach", done = true},
-						energy_drink= {mode = "detach", done = true},
-						kolbasa		= {mode = "detach", done = true},
-						guitar_a	= {mode = "detach", done = true},
-						harmonica_a	= {mode = "detach", done = true},
-						wpn_binoc	= {mode = "detach", done = true},
-						kruglov_flash	= {mode = "detach", done = true}}
+		attach_items = rx_utils.parse_list(nil,npc:section(),"attachable_items",function() return {mode = "detach", done = true} end)
 	}
-	
+
 	self.clb_settings = {}
 	self.clb_cnt = 0
 end
 --' установка нового состояния
 function animation:set_state(id, reset)
 --'	printf("[%s] set new animation [%s], current_state [%s]", self.npc:name(), tostring(id), tostring(self.states.target_state))
-
 	local nn = 0
 	local wpn_slot = self:weapon_slot()
 	--' выход из старого состояния
 	self.npc:clear_animations()
 	self:clear_anim_callback()
-	if state_mgr_animation_list.animations[self.states.target_state] ~= nil then
+	if animations_list[self.states.target_state] ~= nil then
 		if self.mgr.emerg.animation_nout == true or
 		   self.mgr.emerg.animation == true
 		then
@@ -181,7 +167,7 @@ function animation:set_state(id, reset)
 			if self.npc:active_sound_count() > 0 then
 				if self.mgr.subanim > 0 then
 					for key = self.mgr.subanim, 0 do
-						local a = state_mgr_animation_list.animations[self.states.target_state].subanim[key]
+						local a = animations_list[self.states.target_state].subanim[key]
 						if a and a.into_music then
 							stop_play_sound(self.npc)
 							break
@@ -189,10 +175,10 @@ function animation:set_state(id, reset)
 					end
 				end
 			end
-						
+
 			--' (2) экстренный выход, необходимо дропнуть приатаченные предметы
-			if state_mgr_animation_list.animations[self.states.target_state].out ~= nil then
-				anima = self:anim_for_slot(wpn_slot,state_mgr_animation_list.animations[self.states.target_state].out)
+			if animations_list[self.states.target_state].out ~= nil then
+				anima = self:anim_for_slot(wpn_slot,animations_list[self.states.target_state].out)
 				if anima then
 					if type(anima) == "table" then
 						for k,v in pairs(anima) do
@@ -207,18 +193,18 @@ function animation:set_state(id, reset)
 							end
 						end
 					end
-				end	
-			end		
+				end
+			end
 		else
-			--' выход из поданимаций	
+			--' выход из поданимаций
 			if self.mgr.subanim > 0 then
 				for key = self.mgr.subanim, 0 do
-					local a = state_mgr_animation_list.animations[self.states.target_state].subanim[key]
-					if a then 
+					local a = animations_list[self.states.target_state].subanim[key]
+					if a then
 						if a.out then
 							anima = self:anim_for_slot(wpn_slot,a.out)
 							if anima then
-								add_anim(self.npc, anima, true)							
+								add_anim(self.npc, anima, true)
 							end
 						end
 						if a.into_music then
@@ -226,12 +212,12 @@ function animation:set_state(id, reset)
 						end
 					end
 				end
-			end			
+			end
 
 
 
-			if state_mgr_animation_list.animations[self.states.target_state].out ~= nil then
-				anima = self:anim_for_slot(wpn_slot,state_mgr_animation_list.animations[self.states.target_state].out)
+			if animations_list[self.states.target_state].out ~= nil then
+				anima = self:anim_for_slot(wpn_slot,animations_list[self.states.target_state].out)
 				if anima then
 					if type(anima) == "table" then
 						for k,v in pairs(anima) do
@@ -245,7 +231,7 @@ function animation:set_state(id, reset)
 						add_anim(self.npc, anima, true)
 					end
 					nn = nn +1
-				end			
+				end
 			end
 		end
 	end
@@ -262,14 +248,14 @@ function animation:set_state(id, reset)
 				end
 			end
 			v.mode = "detach"
-			v.done = true				
+			v.done = true
 		end
 	end
 
-	--' вход в новое состояние	
-	if state_mgr_animation_list.animations[id] ~= nil then
-		if state_mgr_animation_list.animations[id].into ~= nil then
-			anima = self:anim_for_slot(wpn_slot,state_mgr_animation_list.animations[id].into)
+	--' вход в новое состояние
+	if animations_list[id] ~= nil then
+		if animations_list[id].into ~= nil then
+			anima = self:anim_for_slot(wpn_slot,animations_list[id].into)
 			if type(anima) == "table" then
 				for k,v in pairs(anima) do
 					if type(v) == "table" then
@@ -288,10 +274,10 @@ function animation:set_state(id, reset)
 			if self.mgr.callback ~= nil then
 				self.mgr.callback.begin = nil
 			end
-			self:play_rnd(id, 100)			
+			self:play_rnd(id, 100)
 		end
-		if state_mgr_animation_list.animations[id].idle ~= nil then
-			anima = self:anim_for_slot(wpn_slot,state_mgr_animation_list.animations[id].idle)
+		if animations_list[id].idle ~= nil then
+			anima = self:anim_for_slot(wpn_slot,animations_list[id].idle)
 			if anima then
 				add_anim(self.npc, anima, true)
 			end
@@ -313,18 +299,18 @@ function animation:set_state(id, reset)
 end
 --' апдейт
 function animation:update()
---	printf("		time %s", time_global())				
+--	printf("		time %s", time_global())
 --	printf("		current state %s", utils.to_str(self.states.current_state))
 --	printf("		target state %s", utils.to_str(self.states.target_state))
 --	printf("		anims %s", self.npc:animation_count())
 	self.is_called = false
-	
+
 	-- !!! проверка что закончился играться наш звук
 	if self.sound_played then
 		if self.npc:active_sound_count() == 0 then
 			self.sound_played = false
 		end
-	end	
+	end
 
 	-- АТТАЧ ДЕТАЧ ОБЪЕКТОВ
 	for k,v in pairs(self.states.attach_items) do
@@ -345,16 +331,15 @@ function animation:update()
 			v.done = true
 		end
 	end
-	
+
 	if self.states.current_state == nil then
 		self:callback_process()
 		return
 	end
 
 	-- обрубить анимации и экстренно начать сразу
-	if self.mgr.emerg ~= nil and  
+	if self.mgr.emerg ~= nil and
 	   self.mgr.emerg.animation == true then
-		
 
 		self.npc:clear_animations()
 		self:set_state(nil)
@@ -367,8 +352,8 @@ function animation:update()
 	-- проверка закончился ли переход в состояние
 	if self.states.current_state == "_new" then
 		local nnum = 0
-		if (state_mgr_animation_list.animations[self.states.target_state] ~= nil and
-		   state_mgr_animation_list.animations[self.states.target_state].idle ~= nil) or
+		if (animations_list[self.states.target_state] ~= nil and
+		   animations_list[self.states.target_state].idle ~= nil) or
 		   self.mgr.animstate:idle_animation_present()
 		then
 			nnum = 1
@@ -379,12 +364,12 @@ function animation:update()
 		end
 		return
 	end
-	
+
 	--' ожидаем окончания перехода.
-	if self.states.current_state == "_wait" then		
+	if self.states.current_state == "_wait" then
 		local nnum = 0
-		if (state_mgr_animation_list.animations[self.states.target_state] ~= nil and
-		   state_mgr_animation_list.animations[self.states.target_state].idle ~= nil) or
+		if (animations_list[self.states.target_state] ~= nil and
+		   animations_list[self.states.target_state].idle ~= nil) or
 		   self.mgr.animstate:idle_animation_present()
 		then
 			nnum = 1
@@ -392,35 +377,35 @@ function animation:update()
 		if self.npc:animation_count() <= nnum then
 			self.states.current_state = self.states.target_state
 		end
-		
+
 		-- инициализация коллбека при повторном вызове этого же стейта
-		if self.states.target_state == state_lib.states[self.mgr.target_state].animation and
+--[[		if self.states.target_state == state_lib_states[self.mgr.target_state].animation and
 		   self.mgr.callback and self.mgr.callback.func and self.mgr.callback.timeout and
 		   self.mgr.callback.begin == nil
 		then
 			self:callback_init(true)
 		end
-		self:callback_process()
+		self:callback_process()]]
 		return
 	end
-	
+
 	-- Отыгрыш рандомных анимашек, если они есть
-	if 	self.states.current_state == self.states.target_state then
+	if self.states.current_state == self.states.target_state then
 		-- Инициализация колбека
 		if self.mgr.callback and self.mgr.callback.func and self.mgr.callback.timeout and
 		   self.mgr.callback.begin == nil
 		then
 			self:callback_init(true)
 		end
-	
-		--' проверка на экстренный ресет схемы	
+
+		--' проверка на экстренный ресет схемы
 		if self:callback_process() == true then
 			return
 		end
 		local wpn_slot = self:weapon_slot()
 		-- Проверка на уровень рекурсивности.
 		-- Если текущая анимация не позволяет рекурсию, ставить текущий уровень нулевым.
-		if state_mgr_animation_list.animations[self.states.current_state].subanim == nil then
+		if animations_list[self.states.current_state].subanim == nil then
 			self.states.anim_level = 0
 			self.mgr.subanim = 0
 		end
@@ -430,7 +415,7 @@ function animation:update()
 		if self.states.anim_level < self.mgr.subanim then
 			self.npc:clear_animations()
 			for key = self.states.anim_level+1, self.mgr.subanim do
-				local a = state_mgr_animation_list.animations[self.states.current_state].subanim[key]
+				local a = animations_list[self.states.current_state].subanim[key]
 				if a and a.into then
 					anima = self:anim_for_slot(wpn_slot,a.into)
 					if anima then
@@ -440,22 +425,22 @@ function animation:update()
 				--' устанавливаем музыку
 				if a.into_music then
 					xr_sound.set_sound_play(self.npc, a.into_music)
-				end				
+				end
 			end
 			self.states.anim_level = self.mgr.subanim
 			-- добавляем айдл текущего уровня
-			anima = self:anim_for_slot(wpn_slot,state_mgr_animation_list.animations[self.states.current_state].subanim[self.states.anim_level].idle)
+			anima = self:anim_for_slot(wpn_slot,animations_list[self.states.current_state].subanim[self.states.anim_level].idle)
 			if anima then
 				add_anim(self.npc, anima, true)
-			end		
-			self.states.current_state = "_wait"			
+			end
+			self.states.current_state = "_wait"
 			return
 		end
 		-- если текущий уровень рекурсии выше, чем необходимый - отыграть набор выходных анимаций из него.
 		if self.states.anim_level > self.mgr.subanim then
 			self.npc:clear_animations()
 			for key = self.states.anim_level, self.mgr.subanim+1 do
-				local a = state_mgr_animation_list.animations[self.states.current_state].subanim[key]
+				local a = animations_list[self.states.current_state].subanim[key]
 				if a and a.out then
 					anima = self:anim_for_slot(wpn_slot,a.out)
 					if anima then
@@ -467,45 +452,45 @@ function animation:update()
 			-- добавляем айдл текущего уровня
 			local anima
 			if self.states.anim_level == 0 then
-				anima = self:anim_for_slot(wpn_slot,state_mgr_animation_list.animations[self.states.current_state].idle)
+				anima = self:anim_for_slot(wpn_slot,animations_list[self.states.current_state].idle)
 			else
-				anima = self:anim_for_slot(wpn_slot,state_mgr_animation_list.animations[self.states.current_state].subanim[self.states.anim_level].idle)
+				anima = self:anim_for_slot(wpn_slot,animations_list[self.states.current_state].subanim[self.states.anim_level].idle)
 			end
 			if anima then
 				add_anim(self.npc, anima, true)
-			end		
+			end
 			self.states.current_state = "_wait"
 			return
 		end
 		--' Определяем нужно ли добавлять анимацию или ждать
-		if	state_mgr_animation_list.animations[self.states.current_state] ~= nil then
-			local state			
+		if animations_list[self.states.current_state] ~= nil then
+			local state
 			if self.states.anim_level == 0 then
-				state = state_mgr_animation_list.animations[self.states.current_state]
+				state = animations_list[self.states.current_state]
 			else
-				state = state_mgr_animation_list.animations[self.states.current_state].subanim[self.states.anim_level]
+				state = animations_list[self.states.current_state].subanim[self.states.anim_level]
 			end
 			if state.rnd ~= nil then
-				if self.states.begin == nil then				
+				if self.states.begin == nil then
 					self:play_rnd(state, true)
 				elseif time_global() - self.states.begin > self.states.idle then
 					self:play_rnd(state)
 				end
 			end
-		end		
-	
+		end
+
 	end
 end
 -- Отыгрыш рандомной анимации
 function animation:play_rnd(state, must_play)
 	--printf("try to add rnd animation [%s] for [%s]", utils.to_str(state), utils.to_str(rnd))
 	-- нельзя добавлять рандом во время лока схемы.
-	if not (self.mgr.planner:evaluator(self.mgr.properties["animation"]):evaluate() and
-	        self.mgr.planner:evaluator(self.mgr.properties["weapon"]):evaluate())
+	if not (self.mgr.locked or
+		self.mgr.planner:evaluator(self.mgr.properties["animation"]):evaluate() and
+		self.mgr.planner:evaluator(self.mgr.properties["weapon"]):evaluate())
 	then
 		return
 	end
-	
 	-- !!! проверка что закончился играться наш звук
 	if self.sound_played then
 		if self.npc:active_sound_count() == 0 then
@@ -513,20 +498,23 @@ function animation:play_rnd(state, must_play)
 		end
 		return
 	end
-	
-	--' Определение промежутков времени между анимациями	
+
+	--' Определение промежутков времени между анимациями
 	self.states.begin = time_global()
-	self.states.idle = (math.random(state.prop.maxidle) + 
-									state.prop.sumidle) * 1000
-	if math.random(100) < state.prop.rnd or must_play then	
+	if state.prop.maxidle == 0 then
+		self.states.idle = state.prop.sumidle*1000
+	else
+		self.states.idle = (state.prop.sumidle + math.random(state.prop.maxidle))*1000
+	end
+	if math.random(100) < state.prop.rnd or must_play then
 		local wpn_slot = self:weapon_slot()
 		local anima = self:anim_for_slot(wpn_slot,state.rnd)
-		if anima == nil then			
+		if anima == nil then
 			return
 		end
-		
+
 		local r
-		if table.getn(anima) > 1 then			
+		if table.getn(anima) > 1 then
 			if self.states.last_id == nil then
 				r = math.random(table.getn(anima))
 			else
@@ -538,14 +526,14 @@ function animation:play_rnd(state, must_play)
 			self.states.last_id = r
 		else
 			r = 1
-		end		
+		end
 		self.npc:clear_animations()
 		if anima[r] ~= nil then
 			add_anim(self.npc, anima[r], true)
 			-- добавить рандомный звук
 			if self.mgr.synsound and self.npc:active_sound_count() == 0 then
 				xr_sound.set_sound_play(self.npc, self.mgr.synsound)
-				self.sound_played = true		   
+				self.sound_played = true
 			end
 		end
 		if state.idle ~= nil then
@@ -556,29 +544,29 @@ function animation:play_rnd(state, must_play)
 		else
 			-- Для политкорректности просим анимстейт отыграть свою айдловую анимацию
 			self.mgr.animstate:add_idle_animation()
-		end				
-		self.states.current_state = "_wait"				
+		end
+		self.states.current_state = "_wait"
 	end
 end
 -- Инициализация коллбека
 function animation:callback_init(recall)
 --'		printf("callback init anim[%s]", tostring(self.states.current_state))
---'		printf("state_lib.states[self.mgr.target_state].animation == self.states.current_state [%s]", tostring(state_lib.states[self.mgr.target_state].animation == self.states.current_state))
-		
+--'		printf("state_lib_states[self.mgr.target_state].animation == self.states.current_state [%s]", tostring(state_lib_states[self.mgr.target_state].animation == self.states.current_state))
+
 		if self.mgr.callback ~= nil and
 		   self.mgr.callback.func ~= nil and
-		   (state_lib.states[self.mgr.target_state].animation == self.states.current_state or
+		   (state_lib_states[self.mgr.target_state].animation == self.states.current_state or
 		    recall == true) and
 		   self.mgr.callback.begin == nil
 		then
 				self.mgr.callback.begin = time_global()
---'				printf("		Callback initialized %s", time_global())				
+--'				printf("		Callback initialized %s", time_global())
 		end
 end
 --' обработка колбека на время
 function animation:callback_process()
 		local ret = false
-		
+
 		if self.mgr.callback ~= nil and
 		   self.mgr.callback.func ~= nil and
 		   self.mgr.callback.begin ~= nil
@@ -587,7 +575,7 @@ function animation:callback_process()
 --'			printf("	%s - %s ? %s", time_global(), utils.to_str(self.mgr.callback.begin), utils.to_str(self.mgr.callback.timeout))
 			if time_global() - self.mgr.callback.begin >= self.mgr.callback.timeout then
 --'				printf("		Callback called %s", time_global())
-				
+
 				local a = self.mgr.callback.func
 				local b = self.mgr.callback.obj
 				self.mgr.callback.begin = nil
@@ -611,7 +599,7 @@ function animation:set_anim_callback(value)
 	local table_size = table.getn(self.clb_settings)
 	local anim_count = self.npc:animation_count()
 	--printf("for debug [%s] [%s]", table_size, anim_count)
-	
+
 	for key = table_size+1, anim_count do
 		table.insert(self.clb_settings, "nil")
 	end
@@ -630,27 +618,27 @@ function animation:anim_callback()
 	--print_table(self.clb_settings)
 	-- Проходим по таблице, из 1 позиции вычитываем действий. Остальные просто сдвигаем
 	v = self.clb_settings[1]
-	
+
 	if v == nil then
 		return true
-	end	
+	end
 	if v == "nil" then
 		table.remove(self.clb_settings, 1)
 		return true
 	end
-	
+
 	-- Производим действия находящиеся на 1 позиции
 	if v.a ~= nil and
-		self.states.attach_items[v.a] ~= nil 
+		self.states.attach_items[v.a] ~= nil
 	then
 --'		printf("item [%s] attach", utils.to_str(v.a))
 		self.states.attach_items[v.a].mode = "attach"
 		self.states.attach_items[v.a].done = false
 	end
 	if v.d ~= nil and
-		self.states.attach_items[v.d] ~= nil 
+		self.states.attach_items[v.d] ~= nil
 	then
---'		printf("item [%s] detach", utils.to_str(v.d))	
+--'		printf("item [%s] detach", utils.to_str(v.d))
 		self.states.attach_items[v.d].mode = "detach"
 		self.states.attach_items[v.d].done = false
 	end
@@ -673,7 +661,7 @@ function animation:anim_callback()
 		v.f(self.npc)
 	end
 	table.remove(self.clb_settings, 1)
-	return true 
+	return true
 end
 --' в каком состоянии мы находимся
 function animation:state()
@@ -689,9 +677,9 @@ function animation:weapon_slot()
 	if weapon == nil or self.npc:weapon_strapped() == true then
 		return 0
 	end
-	
+
 --	printf("SLOT [%s]", utils.to_str(weapon:animation_slot()))
-		
+
 	return weapon:animation_slot()
 end
 --' оружейный слот
@@ -701,14 +689,11 @@ function animation:anim_for_slot(slot, t)
 		return t[slot]
 	else
 		return t[0]
-	end			
+	end
 end
 
 
 function add_anim(npc, anim, bb)
 --'	printf("ANIMATION [%s] added [%s]", npc:name(), anim)
 	npc:add_animation(anim, bb, false)
-end
-
-function clear_anim(npc)
 end

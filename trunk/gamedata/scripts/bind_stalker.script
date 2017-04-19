@@ -52,6 +52,8 @@ function actor_binder:net_spawn(data)
 	--' Загружаем настройки дропа
 	death_manager.init_drop_settings()
 
+	if rx_ai then rx_ai.actor_net_spawn() end
+
 	self.sm:call("on_spawn", data)
 
 	return true
@@ -206,6 +208,8 @@ function actor_binder:on_item_take (obj)
 
 	level_tasks.proceed(self.object)
 
+	if rx_ai then rx_ai.actor_item_take(obj) end
+
 	self.sm:call("on_take", obj, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -215,6 +219,8 @@ function actor_binder:on_item_drop (obj)
 	if not sobj then return end
 
     level_tasks.proceed(self.object)
+	
+--	if rx_ai then rx_ai.actor_item_drop(obj) end
 
 	self.sm:call("on_drop", obj, sobj)
 end
@@ -356,7 +362,9 @@ function actor_binder:update(delta)
 		level_tasks.add_lchanger_location()
 
 		self.bCheckStart = false		
-	end		
+	end
+	
+	if rx_ai then rx_ai.actor_update() end
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_key(key)
@@ -364,6 +372,8 @@ function actor_binder:on_key(key)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
+	if rx_ai then rx_ai.actor_save(packet) end
+
 	local save_treasure_manager = true
 
 	--' Сохраняем уровень сложности
@@ -392,7 +402,7 @@ function actor_binder:save(packet)
 
 	task_manager.save(packet)
 	--self.actor_detector:save(packet)
-
+	
 	self.sm:call("on_save", packet)
 	self.sm:call("on_save_after_all")
 end
