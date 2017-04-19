@@ -11,18 +11,6 @@ IC	bool compare_safe(const luabind::object &o1, const luabind::object &o2)
 	return (o1 == o2);
 }
 
-#ifndef LUABIND_NO_EXCEPTIONS
-#	define process_error \
-		catch(luabind::error &e) {\
-			if (e.state())\
-				ai().script_engine().print_output(e.state(),"",LUA_ERRRUN);\
-			else\
-				ai().script_engine().print_output(ai().script_engine().lua(),"",LUA_ERRRUN);\
-		}
-#else
-#	define process_error
-#endif
-
 template<typename TResult>
 class CScriptCallbackEx
 {
@@ -117,9 +105,9 @@ public:
 					return TResult(m_functor(std::forward<Args>(args)...));
 				}
 			}
-			process_error catch (std::exception &)
+			catch (...)
 			{
-				ai().script_engine().print_output(ai().script_engine().lua(), "", 1);
+				ai().script_engine().print_output(ai().script_engine().lua(), "", LUA_ERRRUN);
 			}
 		}
 		catch (...)
@@ -149,9 +137,9 @@ public:
 					return TResult(m_functor(std::forward<Args>(args)...));
 				}
 			}
-			process_error catch (std::exception &)
+			catch (...)
 			{
-				ai().script_engine().print_output(ai().script_engine().lua(), "", 1);
+				ai().script_engine().print_output(ai().script_engine().lua(), "", LUA_ERRRUN);
 			}
 		}
 		catch (...)
@@ -184,9 +172,9 @@ void CScriptCallbackEx<void>::operator()(Args &&...args) const
 					m_functor(std::forward<Args>(args)...);
 			}
 		}
-		process_error catch (std::exception &)
+		catch (...)
 		{
-			ai().script_engine().print_output(ai().script_engine().lua(), "", 1);
+			ai().script_engine().print_output(ai().script_engine().lua(), "", LUA_ERRRUN);
 		}
 	}
 	catch (...)
@@ -217,9 +205,9 @@ void CScriptCallbackEx<void>::operator()(Args &&...args)
 					m_functor(std::forward<Args>(args)...);
 			}
 		}
-		process_error catch (std::exception &)
+		catch (...)
 		{
-			ai().script_engine().print_output(ai().script_engine().lua(), "", 1);
+			ai().script_engine().print_output(ai().script_engine().lua(), "", LUA_ERRRUN);
 		}
 	}
 	catch (...)

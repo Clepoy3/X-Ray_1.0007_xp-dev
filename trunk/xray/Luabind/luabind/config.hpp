@@ -23,9 +23,9 @@
 #pragma once
 
 //KRodin: эти настройки пусть будут здесь:
-//#define NDEBUG //не рекомендую раскомментировать.
+//#define NDEBUG //KRodin: не рекомендую раскомментировать.
 #define LUABIND_NO_ERROR_CHECKING //KRodin: закомментировать только при отладке проблемных мест или для дампа lua_help! С некоторыми скриптами проверка ошибок несовместима, т.к воспринимает как ошибки то, что ошибками не является.
-//#define LUABIND_NO_EXCEPTIONS //KRodin: Пока не рекомендую включать. Надо поэкспериментировать.
+#define LUABIND_NO_EXCEPTIONS //KRodin: !!!НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!! В нескольких местах я заменил try - catch на __try - __except, т.ч. теперь неизвестно, как там будут обрабатываться C++ исключения.
 #pragma comment(lib, "LuaJIT.lib") //LuaJIT подключается только здесь и больше нигде.
 //KRodin - end
 
@@ -80,7 +80,6 @@
 // Luabind requires that no function called directly or indirectly
 // by luabind throws an exception (throwing exceptions through
 // C code has undefined behavior, lua is written in C).
-// #define LUABIND_NO_EXCEPTIONS
 
 // If you're building luabind as a dll on windows with devstudio
 // you can set LUABIND_EXPORT to __declspec(dllexport)
@@ -90,9 +89,9 @@
 // select import or export depending on it
 #ifdef LUABIND_BUILDING
 #	define LUABIND_API 		__declspec(dllexport)
-#else // #ifdef LUABIND_BUILDING
+#else
 #	define LUABIND_API		__declspec(dllimport)
-#endif // #ifdef LUABIND_BUILDING
+#endif
 
 #include <luabind/luabind_memory.h>
 

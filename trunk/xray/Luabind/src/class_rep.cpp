@@ -553,6 +553,8 @@ int luabind::detail::class_rep::constructor_dispatcher(lua_State* L)
 	1: object_rep* self, points to the object the call is being made on
 */
 
+#include <excpt.h> //для EXCEPTION_EXECUTE_HANDLER
+
 int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 {
 #ifndef NDEBUG
@@ -647,50 +649,20 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 
 #endif
 
-#ifndef LUABIND_NO_EXCEPTIONS
-
-	try
+	__try //KRodin: try-catch здесь пропускает многие ошибки
 	{
-
-#endif
-
 		const overload_rep& o = rep->overloads()[match_index];
 
-        if (force_static_call && !o.has_static())
-		{
+		if (force_static_call && !o.has_static())
 			lua_pushstring(L, "pure virtual function called");
-        }
 		else
-		{
-	        return o.call(L, force_static_call != 0);
-		}
-
-#ifndef LUABIND_NO_EXCEPTIONS
-
+			return o.call(L, force_static_call != 0);
 	}
-    catch(const error&)
-    {
-    }
-    catch(const std::exception& e)
+	__except(EXCEPTION_EXECUTE_HANDLER)
 	{
-		lua_pushstring(L, e.what());
-	}
-	catch (const char* s)
-	{
-		lua_pushstring(L, s);
-	}
-	catch(...)
-	{
-		string_class msg = rep->crep->name();
-		msg += ":";
-		msg += rep->name;
-		msg += "() threw an exception";
-		lua_pushstring(L, msg.c_str());
+		lua_pushstring(L, "[luabind::detail::class_rep::function_dispatcher] Caught a hardware exception!");
 	}
 
-#endif
-
-	// we can only reach this line if an error occured
 	lua_error(L);
 	return 0; // will never be reached
 }

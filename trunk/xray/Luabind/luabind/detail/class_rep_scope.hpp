@@ -34,6 +34,8 @@
 #include <luabind/detail/get_overload_signature.hpp>
 #include <luabind/error.hpp>
 
+#include <excpt.h> //для EXCEPTION_EXECUTE_HANDLER
+
 namespace luabind
 {
 
@@ -598,47 +600,20 @@ namespace luabind { namespace detail
 
 #endif
 
-#ifndef LUABIND_NO_EXCEPTIONS
-
-			try
+			__try //KRodin: try-catch здесь пропускает многие ошибки
 			{
-
-#endif
-
 				const overload_rep& o = rep->overloads()[match_index];
 				return o.call(L, *obj);
+			}
+			__except(EXCEPTION_EXECUTE_HANDLER)
+			{
+				lua_pushstring(L, "[luabind::detail::class_rep_scope::function_dispatcher] Caught a hardware exception!");
+			}
 
-#ifndef LUABIND_NO_EXCEPTIONS
-
-			}
-			catch(const std::exception& e)
-			{
-				lua_pushstring(L, e.what());
-			}
-			catch (const char* s)
-			{
-				lua_pushstring(L, s);
-			}
-			catch(...)
-			{
-				string_class msg = rep->crep->name();
-				msg += ":";
-				msg += rep->name;
-				msg += "() threw an exception";
-				lua_pushstring(L, msg.c_str());
-			}
 			// we can only reach this line if an exception was thrown
 			lua_error(L);
-			return 0; // will never be reached
-
-#endif
-			
+			return 0; // will never be reached			
 		}
-
-
-
-
-
 
 		struct base_info
 		{

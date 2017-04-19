@@ -61,7 +61,9 @@ public:
 	/*lua_State**/ void init(/*bool loadGlobalNamespace*/);
 	virtual	void				unload						();
 	static	int					lua_panic					(lua_State *L);
+#ifdef LUABIND_NO_EXCEPTIONS
 	static	void				lua_error					(lua_State *L);
+#endif
 	static	int					lua_pcall_failed			(lua_State *L);
 	static	void				lua_hook_call				(lua_State *L, lua_Debug *dbg);
 			void				load_common_scripts			();

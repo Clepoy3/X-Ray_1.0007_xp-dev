@@ -103,6 +103,7 @@ int CScriptEngine::lua_panic(lua_State *L) //Fixed
 	return 0;
 }
 
+#ifdef LUABIND_NO_EXCEPTIONS
 void CScriptEngine::lua_error(lua_State *L) //Fixed
 {
 	print_output(L, "", LUA_ERRRUN);
@@ -112,6 +113,7 @@ void CScriptEngine::lua_error(lua_State *L) //Fixed
 		Debug.fatal(DEBUG_INFO, "LUA error: %s", error ? error : "NULL");
 	#endif
 }
+#endif
 
 int CScriptEngine::lua_pcall_failed(lua_State *L) //Fixed
 {
@@ -124,11 +126,13 @@ int CScriptEngine::lua_pcall_failed(lua_State *L) //Fixed
 	return LUA_ERRRUN;
 }
 
+#ifdef LUABIND_NO_EXCEPTIONS
 void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info) //fixed
 {
 	CScriptEngine::print_output(L, "", LUA_ERRRUN);
 	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info.name()); //KRodin: Тут наверное вылетать не надо.
 }
+#endif
 
 #ifdef DEBUG //Надо изучить, что там
 #	include "script_thread.h"
