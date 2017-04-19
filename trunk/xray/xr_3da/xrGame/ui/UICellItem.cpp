@@ -6,24 +6,31 @@
 #include "../level.h"
 #include "../object_broker.h"
 #include "UIDragDropListEx.h"
+
+#ifdef INV_NEW_SLOTS_SYSTEM
 #include "UIProgressBar.h"
 
 #include "UIXmlInit.h"
 #include "UIInventoryWnd.h"
 #include "../Weapon.h"
 #include "../CustomOutfit.h"
+#endif
 
 CUICellItem::CUICellItem()
 {
 	m_pParentList		= NULL;
+#ifdef INV_NEW_SLOTS_SYSTEM
 	m_text				= NULL;
+#endif
 	m_pData				= NULL;
 	m_custom_draw		= NULL;
 	m_b_already_drawn	= false;
 	SetAccelerator		(0);
 	m_b_destroy_childs	= true;
+#ifdef INV_NEW_SLOTS_SYSTEM
 	m_pConditionState 	= NULL;
 	init();
+#endif
 }
 
 CUICellItem::~CUICellItem()
@@ -37,6 +44,7 @@ CUICellItem::~CUICellItem()
 
 void CUICellItem::init()
 {
+#ifdef INV_NEW_SLOTS_SYSTEM
 	CUIXml uiXml;
 	bool xml_result						= uiXml.Init(CONFIG_PATH, UI_PATH, "inventory_new.xml");
 	R_ASSERT3							(xml_result, "file parsing error ", uiXml.m_xml_file_name);
@@ -52,6 +60,7 @@ void CUICellItem::init()
 	AttachChild(m_pConditionState);
 	CUIXmlInit::InitProgressBar(uiXml, "condition_progess_bar", 0, m_pConditionState);
 	m_pConditionState->Show(true);
+#endif
 }
 
 void CUICellItem::Draw()
@@ -128,12 +137,15 @@ CUIDragItem* CUICellItem::CreateDragItem()
 void CUICellItem::SetOwnerList(CUIDragDropListEx* p)	
 {
 	m_pParentList=p;
+#ifdef INV_NEW_SLOTS_SYSTEM
 	UpdateConditionProgressBar();
+#endif
 }
 
 void CUICellItem::UpdateConditionProgressBar()
 {
-    if(m_pParentList && m_pParentList->GetConditionProgBarVisibility())
+#ifdef INV_NEW_SLOTS_SYSTEM
+	if(m_pParentList && m_pParentList->GetConditionProgBarVisibility())
     {
         PIItem itm = (PIItem)m_pData;
         CWeapon* pWeapon = smart_cast<CWeapon*>(itm);
@@ -158,6 +170,7 @@ void CUICellItem::UpdateConditionProgressBar()
         }
     }
     m_pConditionState->Show(false);
+#endif
 }
 
 
@@ -202,12 +215,19 @@ void CUICellItem::UpdateItemText()
 		if ( ChildsCount() )
 		{
 			sprintf_s				(str,"x%d",ChildsCount()+1);
+#ifdef INV_NEW_SLOTS_SYSTEM
 			m_text->SetText(str);
 			m_text->Show( true );
+#endif
 		}else{
 			sprintf_s				(str,"");
+#ifdef INV_NEW_SLOTS_SYSTEM
 			m_text->Show( false );
+#endif
 		}
+#ifndef INV_NEW_SLOTS_SYSTEM
+		SetText(str);
+#endif
 }
 
 void CUICellItem::Update()

@@ -444,8 +444,10 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
 	pWnd->SetVerticalPlacement(tmp!=0); 
 	tmp						= xml_doc.ReadAttribInt(path, index, "show_grid", 1);
 	pWnd->SetDrawGrid		(tmp != 0);
+#ifdef INV_NEW_SLOTS_SYSTEM
 	tmp 					= xml_doc.ReadAttribInt(path, index, "condition_progress_bar", 0);
 	pWnd->SetConditionProgBarVisibility(tmp!=0);	
+#endif
 
 	if (xr_strlen(path))
 		pWnd->SetWindowName (path, TRUE);

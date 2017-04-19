@@ -351,7 +351,11 @@ void CUIInventoryWnd::Update()
 		// update money
 		string64						sMoney;
 		//red_virus
+#ifdef INV_NEW_SLOTS_SYSTEM
 		sprintf_s						(sMoney,"%d %s", _money, *CStringTable().translate("ui_st_money_regional"));
+#else
+		sprintf_s(sMoney, "%d RU", _money);
+#endif
 		UIMoneyWnd.SetText				(sMoney);
 
 		// update outfit parameters

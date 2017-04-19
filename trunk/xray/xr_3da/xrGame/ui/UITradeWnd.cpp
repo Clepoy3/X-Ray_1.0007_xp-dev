@@ -449,16 +449,32 @@ void CUITradeWnd::UpdatePrices()
 
 
 	string256				buf;
+#ifdef INV_NEW_SLOTS_SYSTEM
 	sprintf_s					(buf, "%d %s", m_iOurTradePrice,*CStringTable().translate("ui_st_money_regional"));
+#else
+	sprintf_s(buf, "%d RU", m_iOurTradePrice);
+#endif
 	m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str = buf;
+#ifdef INV_NEW_SLOTS_SYSTEM
 	sprintf_s					(buf, "%d %s", m_iOthersTradePrice,*CStringTable().translate("ui_st_money_regional"));
+#else
+	sprintf_s(buf, "%d RU", m_iOthersTradePrice);
+#endif
 	m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str = buf;
 
+#ifdef INV_NEW_SLOTS_SYSTEM
 	sprintf_s					(buf, "%d %s", m_pInvOwner->get_money(),*CStringTable().translate("ui_st_money_regional"));
+#else
+	sprintf_s(buf, "%d RU", m_pInvOwner->get_money());
+#endif
 	m_uidata->UIOurMoneyStatic.SetText(buf);
 
 	if(!m_pOthersInvOwner->InfinitiveMoney()){
+#ifdef INV_NEW_SLOTS_SYSTEM
 		sprintf_s					(buf, "%d %s", m_pOthersInvOwner->get_money(),*CStringTable().translate("ui_st_money_regional"));
+#else
+		sprintf_s(buf, "%d RU", m_pOthersInvOwner->get_money());
+#endif
 		m_uidata->UIOtherMoneyStatic.SetText(buf);
 	}else
 	{
@@ -608,7 +624,11 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 
 		string256			str;
 
+#ifdef INV_NEW_SLOTS_SYSTEM
 		sprintf_s				(str, "%d %s", m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying),*CStringTable().translate("ui_st_money_regional") );
+#else
+		sprintf_s(str, "%d RU", m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying));
+#endif
 		m_uidata->UIItemInfo.UICost->SetText (str);
 	}
 }

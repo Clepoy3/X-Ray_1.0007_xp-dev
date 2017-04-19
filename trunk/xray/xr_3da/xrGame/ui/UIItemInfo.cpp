@@ -147,7 +147,11 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 	}
 	if( UICost )
 	{
+#ifdef INV_NEW_SLOTS_SYSTEM
 		sprintf_s				(str, "%d %s", pInvItem->Cost(),*CStringTable().translate("ui_st_money_regional"));		// will be owerwritten in multiplayer
+#else
+		sprintf_s(str, "%d RU", pInvItem->Cost());		// will be owerwritten in multiplayer
+#endif
 		UICost->SetText		(str);
 	}
 
