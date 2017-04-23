@@ -122,5 +122,5 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 void CSE_ALifeAnomalousZone::on_spawn						()
 {
 	inherited::on_spawn		();
-	spawn_artefacts			();
+	//spawn_artefacts			(); //KRodin: выключил, т.к. оно теперь вызывает вылет. Да и вообще, оно и не работает, вроде как.
 }

@@ -90,8 +90,9 @@ void CScriptStorage::print_stack() //KRodin: fixed
 	Msg("%s", traceback);
 }
 
-int CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...) //Используется в очень многих местах //Очень много пишет в лог, из многих мест. Наверное надо только в дебаге использовать
+void CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...) //Используется в очень многих местах //Очень много пишет в лог.
 {
+#ifdef DEBUG
 	va_list marker;
 	va_start(marker, caFormat);
 	//
@@ -136,14 +137,13 @@ int CScriptStorage::script_log(ScriptStorage::ELuaMessageType tLuaMessageType, L
 	}
 	xr_strcpy(S2, S);
 	S1 = S2 + xr_strlen(S);
-	int result = vsprintf(S1, caFormat, marker);
+	vsprintf(S1, caFormat, marker);
 	Msg("-----------------------------------------");
 	Msg("[script_log] %s", S2);
 	ai().script_engine().print_stack();
 	Msg("-----------------------------------------");
 	va_end(marker);
-	//
-	return result;
+#endif
 }
 
 /* //Эта функция ломает скрипты, вернул старую.

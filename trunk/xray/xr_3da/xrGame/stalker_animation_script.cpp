@@ -51,7 +51,7 @@ void CStalkerAnimationManager::add_script_animation	(LPCSTR animation, bool hand
 {
 	const MotionID					&motion = m_skeleton_animated->ID_Cycle_Safe(animation);
 	if (!motion) {
-		ai().script_engine().script_log(eLuaMessageTypeError,"There is no animation %s (object %s)!",animation,*object().cName());
+		Msg( "!![CStalkerAnimationManager::add_script_animation] There is no animation %s (object %s)!", animation, *object().cName() );
 		return;
 	}
 

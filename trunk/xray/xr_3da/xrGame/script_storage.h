@@ -63,7 +63,7 @@ public:
 			bool				object						(LPCSTR	caIdentifier, int type);
 			bool				object						(LPCSTR	caNamespaceName, LPCSTR	caIdentifier, int type);
 			luabind/*::adl*/::object name_space					(LPCSTR	namespace_name);
-	static	int	script_log					(ELuaMessageType message,	LPCSTR	caFormat, ...);
+	void	script_log					(ELuaMessageType message,	LPCSTR	caFormat, ...);
 	static	bool				print_output				(lua_State *L,		LPCSTR	caScriptName,		int		iErorCode = 0);
 	static const char *const GlobalNamespace;
 	void print_stack();
