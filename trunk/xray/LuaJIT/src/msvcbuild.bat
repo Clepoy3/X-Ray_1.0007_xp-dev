@@ -14,7 +14,7 @@
 @if not defined INCLUDE goto :FAIL
 
 @setlocal
-@set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE
+@set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
 @set LJLINK=link /nologo
 @set LJMT=mt /nologo
 @set LJLIB=lib /nologo /nodefaultlib
@@ -97,6 +97,9 @@ buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 if exist %LJDLLNAME%.manifest^
   %LJMT% -manifest %LJDLLNAME%.manifest -outputresource:%LJDLLNAME%;2
 
+goto :NO_build_LuaJIT_exe
+--KRodin: LuaJIT.exe нам совсем не нужно
+
 %LJCOMPILE% luajit.c
 @if errorlevel 1 goto :BAD
 %LJLINK% /out:%LJBINPATH%LuaJIT.exe luajit.obj %LJLIBNAME%
@@ -104,7 +107,9 @@ if exist %LJDLLNAME%.manifest^
 if exist %LJBINPATH%LuaJIT.exe.manifest^
   %LJMT% -manifest %LJBINPATH%LuaJIT.exe.manifest -outputresource:%LJBINPATH%LuaJIT.exe
 
-@del *.obj *.manifest minilua.exe buildvm.exe
+:NO_build_LuaJIT_exe
+
+@del *.obj *.manifest minilua.exe minilua.exp minilua.lib buildvm.exe buildvm.exp buildvm.lib jit\vmdef.lua
 @del host\buildvm_arch.h
 @del lj_bcdef.h lj_ffdef.h lj_libdef.h lj_recdef.h lj_folddef.h
 @echo.
