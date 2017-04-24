@@ -22,28 +22,15 @@
 
 #pragma once
 
-//KRodin: эти настройки пусть будут здесь:
-//#define NDEBUG //KRodin: не рекомендую раскомментировать.
-#define LUABIND_NO_ERROR_CHECKING //KRodin: закомментировать только при отладке проблемных мест или для дампа lua_help! С некоторыми скриптами проверка ошибок несовместима, т.к воспринимает как ошибки то, что ошибками не является.
-#define LUABIND_NO_EXCEPTIONS //KRodin: !!!НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!! В нескольких местах я заменил try - catch на __try - __except, т.ч. теперь неизвестно, как там будут обрабатываться C++ исключения.
-#pragma comment(lib, "LuaJIT.lib") //LuaJIT подключается только здесь и больше нигде.
-//KRodin - end
+//***************************************[KRodin: Настройки]***************************************
+#define NDEBUG //Закомментировать только при отладке проблемных мест или для дампа lua_help! Но в принципе, можно постоянно держать отключенным, если не жалко немного производительности. В будущем наверное надо вынести этот дефайн в настройки проекта и включать его только в релизе.
+#define LUABIND_NO_ERROR_CHECKING //Закомментировать только при отладке проблемных мест или для дампа lua_help! С некоторыми скриптами проверка ошибок несовместима, т.к воспринимает как ошибки то, что ошибками не является, да и производительность жрёт довольно сильно.
+#define LUABIND_NO_EXCEPTIONS //!!!НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!! В нескольких местах я заменил try - catch на __try - __except, т.ч. теперь неизвестно, как там будут обрабатываться C++ исключения.
+#pragma comment(lib, "LuaJIT.lib") //LuaJIT теперь подключается только здесь и больше нигде.
+#define LUABIND_DONT_COPY_STRINGS // ?
+//*************************************************************************************************
 
-#define LUABIND_DONT_COPY_STRINGS
-
-// LUABIND_NO_ERROR_CHECKING
-// define this to remove all error checks
-// this will improve performance and memory
-// footprint.
-// if it is defined matchers will only be called on
-// overloaded functions, functions that's
-// not overloaded will be called directly. The
-// parameters on the lua stack are assumed
-// to match those of the function.
-// exceptions will still be catched when there's
-// no error checking.
-
-// LUABIND_NOT_THREADSAFE
+//#define LUABIND_NOT_THREADSAFE
 // this define will make luabind non-thread safe. That is,
 // it will rely on a static variable. You can still have
 // multiple lua states and use coroutines, but only
@@ -71,15 +58,6 @@
 #	define LUABIND_INVALID_TYPE_INFO &typeid(detail::null_type)
 #	include <typeinfo>
 #endif
-
-// LUABIND_NO_EXCEPTIONS
-// this define will disable all usage of try, catch and throw in
-// luabind. This will in many cases disable runtime-errors, such
-// as invalid casts, when calling lua-functions that fails or
-// returns values that cannot be converted by the given policy.
-// Luabind requires that no function called directly or indirectly
-// by luabind throws an exception (throwing exceptions through
-// C code has undefined behavior, lua is written in C).
 
 // If you're building luabind as a dll on windows with devstudio
 // you can set LUABIND_EXPORT to __declspec(dllexport)
