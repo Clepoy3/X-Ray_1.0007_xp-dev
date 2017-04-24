@@ -97,17 +97,20 @@ buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 if exist %LJDLLNAME%.manifest^
   %LJMT% -manifest %LJDLLNAME%.manifest -outputresource:%LJDLLNAME%;2
 
-goto :NO_build_LuaJIT_exe
---KRodin: LuaJIT.exe нам совсем не нужно
-
 %LJCOMPILE% luajit.c
 @if errorlevel 1 goto :BAD
-%LJLINK% /out:%LJBINPATH%LuaJIT.exe luajit.obj %LJLIBNAME%
+%LJLINK% /out:%LJBINPATH%Lua_JIT.exe luajit.obj %LJLIBNAME%
 @if errorlevel 1 goto :BAD
-if exist %LJBINPATH%LuaJIT.exe.manifest^
-  %LJMT% -manifest %LJBINPATH%LuaJIT.exe.manifest -outputresource:%LJBINPATH%LuaJIT.exe
+if exist %LJBINPATH%Lua_JIT.exe.manifest^
+  %LJMT% -manifest %LJBINPATH%Lua_JIT.exe.manifest -outputresource:%LJBINPATH%Lua_JIT.exe
 
-:NO_build_LuaJIT_exe
+if not exist %LJBINPATH%lua\*.* (
+	md %LJBINPATH%lua\
+)
+if not exist %LJBINPATH%lua\jit\*.* (
+	md %LJBINPATH%lua\jit\
+)
+copy /Y jit\*.* %LJBINPATH%lua\jit\
 
 @del *.obj *.manifest minilua.exe minilua.exp minilua.lib buildvm.exe buildvm.exp buildvm.lib jit\vmdef.lua
 @del host\buildvm_arch.h
