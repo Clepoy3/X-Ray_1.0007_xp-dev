@@ -1,8 +1,9 @@
 -- -*- mode: lua; coding: windows-1251-dos -*-
 log1("--LUA version: ["..(jit.version or _VERSION).."]")
---==============[string.lower Ð¸ string.upper Ñ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¾Ð¹ Ñ€ÑƒÑÑÐºÐ¸Ñ… Ð±ÑƒÐºÐ² by KRodin]===============
-FFI = require('ffi') --Ð’Ð¾Ñ‚ ÑÑ‚Ð¾ Ð´ÐµÐ»Ð°Ñ‚ÑŒ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð·Ð´ÐµÑÑŒ Ð¸ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¾Ð´Ð¸Ð½ Ñ€Ð°Ð·!
-os.setlocale("", "ctype") --ÐœÐ¾Ð³ÑƒÑ‚ Ð²Ð¾Ð·Ð½Ð¸ÐºÐ½ÑƒÑ‚ÑŒ Ð¿Ñ€Ð¾Ð±Ð»ÐµÐ¼Ñ‹, ÐµÑÐ»Ð¸ ÐºÐ°ÐºÐ¸Ðµ-Ð»Ð¸Ð±Ð¾ Ð¿ÑƒÑ‚Ð¸/Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ñ Ñ„Ð°Ð¹Ð»Ð¾Ð² Ð½Ð°Ð¿Ð¸ÑÐ°Ð½Ñ‹ Ñ€ÑƒÑÑÐºÐ¸Ð¼Ð¸ Ð±ÑƒÐºÐ²Ð°Ð¼Ð¸. Ð—Ð° ÑÑ‚Ð¾ Ð½Ð°Ð´Ð¾ Ð±Ð¸Ñ‚ÑŒ Ð¿Ð¾ Ñ€ÑƒÐºÐ°Ð¼ Ñ‚Ð¾Ð³Ð¾, ÐºÑ‚Ð¾ Ð¸Ñ… Ñ‚Ð°Ðº Ð½Ð°Ð¿Ð¸ÑÐ°Ð», Ð¸ Ð¸ÑÐ¿Ñ€Ð°Ð²Ð»ÑÑ‚ÑŒ Ð½Ð° Ð°Ð½Ð³Ð»Ð¸Ð¹ÑÐºÐ¸Ðµ.
+--==============[string.lower è string.upper ñ ïîääåðæêîé ðóññêèõ áóêâ by KRodin]===============
+FFI = require('ffi') --Âîò ýòî äåëàòü òîëüêî çäåñü è òîëüêî îäèí ðàç!
+--[=[ --KRodin: ýòîò âàðèàíò ðàáîòàåò, íî èç-çà setlocale ñëèøêîì ìíîãî ïðîáëåì âîçíèêàåò â ðàçíûõ ìåñòàõ
+os.setlocale("", "ctype")
 FFI.cdef[[
 int tolower( int code );
 int toupper( int code );
@@ -17,21 +18,35 @@ string.upper = function(s)
 		return string.char( FFI.C.toupper( x:byte() ) )
 	end)
 end
---=================================[Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð¸Ð· xrLuaFix]========================================
---Ð¡Ñ€ÐµÐ·Ð°Ñ‚ÑŒ Ð¿Ñ€Ð¾Ð±ÐµÐ»Ñ‹ ÑÐ»ÐµÐ²Ð°
+--]=]
+--Ýòîò âàðèàíò íå òðåáóåò setlocale
+--!!ÂÀÆÍÎ!! Äëÿ ïðàâèëüíîé ðàáîòû ýòèõ ôóíêöèé, êîäèðîâêà ñêðèïòà äîëæíà áûòü òîëüêî ANSI!!
+do
+	local lower = string.lower
+	string.lower = function(s)
+		return lower(s:gsub("([À-ß])",function(c) return string.char(c:byte()+32) end):gsub("¨", "¸"))
+	end
+
+	local upper = string.upper
+	string.upper = function(s)
+		return upper(s:gsub("([à-ÿ])",function(c) return string.char(c:byte()-32) end):gsub("¸", "¨"))
+	end
+end
+--=================================[Ôóíêöèè èç xrLuaFix]========================================
+--Ñðåçàòü ïðîáåëû ñëåâà
 if not string.trim_l then
 	string.trim_l = function(s) return s:gsub("^%s+",'') end
 end
---Ð¡Ñ€ÐµÐ·Ð°Ñ‚ÑŒ Ð¿Ñ€Ð¾Ð±ÐµÐ»Ñ‹ ÑÐ¿Ñ€Ð°Ð²Ð°
+--Ñðåçàòü ïðîáåëû ñïðàâà
 if not string.trim_r then
 	string.trim_r = function(s) return s:gsub("%s*$",'') end
 end
---Ð¡Ñ€ÐµÐ·Ð°Ñ‚ÑŒ Ð²ÑÐµ Ð¿Ñ€Ð¾Ð±ÐµÐ»Ñ‹ ÑÐ»ÐµÐ²Ð° Ð¸ ÑÐ¿Ñ€Ð°Ð²Ð°
+--Ñðåçàòü âñå ïðîáåëû ñëåâà è ñïðàâà
 if not string.trim then
 	string.trim = function(s) return s:gsub('^%s*(.-)%s*$', '%1') end
 end
 --==============================================================================================
--- Ð’Ð·ÑÑ‚Ð¾ Ð¸Ð· Ð°Ð´Ð´Ð¾Ð½Ð° Naxac'a
+-- Âçÿòî èç àääîíà Naxac'a
 local to_ptrn = {
 	[' '] = '%s',
 	['.'] = '%.',
@@ -40,9 +55,9 @@ local to_ptrn = {
 	['-'] = '%-'
 }
 if not string.explode then
-	string.explode = function ( div,    -- Ñ€Ð°Ð·Ð´ÐµÐ»Ð¸Ñ‚ÐµÐ»ÑŒ
-								str,    -- ÑÑ‚Ñ€Ð¾ÐºÐ°
-								clear ) -- Ð¾Ð±Ñ€ÐµÐ·Ð°Ñ‚ÑŒ Ð»Ð¸ Ð¿Ñ€Ð¾Ð±ÐµÐ»Ñ‹ Ð¿Ð¾ ÐºÑ€Ð°ÑÐ¼ ÑÑ‚Ñ€Ð¾Ðº (false/true)
+	string.explode = function ( div,    -- ðàçäåëèòåëü
+								str,    -- ñòðîêà
+								clear ) -- îáðåçàòü ëè ïðîáåëû ïî êðàÿì ñòðîê (false/true)
 		local ret = {}
 		for s in str:gmatch("([^"..(to_ptrn[div] or div).."]+)") do
 			ret[#ret+1] = clear and s:trim() or s
@@ -51,10 +66,10 @@ if not string.explode then
 	end
 end
 --==============================================================================================
---ÐŸÐ¾Ð²ÐµÑ€Ñ…Ð½Ð¾ÑÑ‚Ð½Ð¾Ðµ (Ð¿Ñ€Ð¾ÑÑ‚Ð¾Ðµ) ÐºÐ»Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹: 
---ÑÐ¾Ð·Ð´Ð°Ñ‘Ñ‚ÑÑ ÐºÐ¾Ð¿Ð¸Ñ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ Ð¸ ÐºÐ¾Ð¿Ð¸Ð¸ Ð²ÑÐµÑ… ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð±ÐµÐ· Ð¸Ñ… ÐºÐ»Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ,
---Ñ‚.Ðµ. Ð´Ð»Ñ ÑÑÑ‹Ð»Ð¾Ñ‡Ð½Ñ‹Ñ… Ñ‚Ð¸Ð¿Ð¾Ð² Ð¾Ð±Ðµ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ Ð±ÑƒÐ´ÑƒÑ‚ ÑÐ¾Ð´ÐµÑ€Ð¶Ð°Ñ‚ÑŒ ÑÑÑ‹Ð»ÐºÐ¸ Ð½Ð° Ð¾Ð´Ð½Ð¸ Ð¸ Ñ‚Ðµ Ð¶Ðµ Ð´Ð°Ð½Ð½Ñ‹Ðµ
---Ð¼ÐµÑ‚Ð°Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ Ð½Ðµ ÐºÐ¾Ð¿Ð¸Ñ€ÑƒÑŽÑ‚ÑÑ
+--Ïîâåðõíîñòíîå (ïðîñòîå) êëîíèðîâàíèå òàáëèöû: 
+--ñîçäà¸òñÿ êîïèÿ òàáëèöû è êîïèè âñåõ ýëåìåíòîâ áåç èõ êëîíèðîâàíèÿ,
+--ò.å. äëÿ ññûëî÷íûõ òèïîâ îáå òàáëèöû áóäóò ñîäåðæàòü ññûëêè íà îäíè è òå æå äàííûå
+--ìåòàòàáëèöû íå êîïèðóþòñÿ
 if not table.clone_simple then
 	table.clone_simple = function(tbl)
 		local res = {}
@@ -65,14 +80,14 @@ if not table.clone_simple then
 	end
 end
 --==============================================================================================
--- Ð²Ñ‹Ñ€Ð°Ð²Ð½Ð¸Ð²Ð°Ð½Ð¸Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ n Ð² Ð¿Ñ€ÐµÐ´ÐµÐ»Ñ‹ Ð¾Ñ‚ min Ð´Ð¾ max
+-- âûðàâíèâàíèå çíà÷åíèÿ n â ïðåäåëû îò min äî max
 if not math.clamp then
 	math.clamp = function( n, min, max )
 		if min>max then min,max=max,min end
 		return (n>max and max) or (n<min and min) or n
 	end
 end
--- Ð¾ÐºÑ€ÑƒÐ³Ð»ÐµÐ½Ð¸Ðµ Ðº Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐµÐ¼Ñƒ
+-- îêðóãëåíèå ê áëèæàéøåìó
 if not math.round then
 	math.round = function(v) return math.floor(v + 0.5) end
 end
@@ -85,8 +100,8 @@ end
 --==============================================================================================
 math.randomseed(os.time())
 --==============================================================================================
---KRodin: TODO: Ð¼Ð¾Ð¶ÐµÑ‚ Ð´Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¿Ñ€ÑÐ¼ Ð² Ð´Ð²Ð¸Ð¶Ð¾Ðº?
---ÐÐµÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð½ÐµÐ´Ð¾ÑÑ‚Ð°ÑŽÑ‰Ð¸Ðµ DIK_keys:
+--KRodin: TODO: ìîæåò äîáàâèòü ïðÿì â äâèæîê?
+--Íåêîòîðûå íåäîñòàþùèå DIK_keys:
 DIK_keys["DIK_MOUSE1"] = 337
 DIK_keys["DIK_MOUSE2"] = 338
 DIK_keys["DIK_MOUSE3"] = 339
@@ -96,7 +111,7 @@ DIK_keys["DIK_MOUSE6"] = 342
 DIK_keys["DIK_MOUSE7"] = 343
 DIK_keys["DIK_MOUSE8"] = 344
 
---ÐÐµÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð½ÐµÐ´Ð¾ÑÑ‚Ð°ÑŽÑ‰Ð¸Ðµ key_bindings:
+--Íåêîòîðûå íåäîñòàþùèå key_bindings:
 key_bindings["kSPRINT_TOGGLE"] = 8
 key_bindings["kENGINE"] = 15
 key_bindings["kARTEFACT"] = 30
@@ -117,58 +132,58 @@ key_bindings["kUSE_BANDAGE"] = 73
 key_bindings["kUSE_MEDKIT"] = 74
 key_bindings["kQUICK_SAVE"] = 75
 key_bindings["kQUICK_LOAD"] = 76
---==============================[Ð¤ÑƒÐ½ÐºÑ†Ð¸Ñ Ð¿ÐµÑ€ÐµÐ¼Ð¾Ñ‚ÐºÐ¸ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ Ð¸Ð· CoP]==============================
+--==============================[Ôóíêöèÿ ïåðåìîòêè âðåìåíè èç CoP]==============================
 local _change_game_time = level.change_game_time
-level.change_game_time = function(...) --Ð”Ð»Ñ Ð¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ð¾Ð³Ð¾ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð¿Ð¾Ð³Ð¾Ð´Ñ‹ Ð¸ Ñ‚Ð°Ð¹Ð¼ÐµÑ€Ð¾Ð² Ð¿Ð¾ÑÐ»Ðµ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð° Ñ‡Ð°ÑÐ¾Ð².
+level.change_game_time = function(...) --Äëÿ ïðàâèëüíîãî îáíîâëåíèÿ ïîãîäû è òàéìåðîâ ïîñëå ïåðåâîäà ÷àñîâ.
 	_change_game_time(...)
 	ogse_signals.get_mgr():call("after_time_change")
 end
 --==================================[log3 & log4 by KRodin]=====================================
-local function isArray(tbl) --Ð¯Ð²Ð»ÑÐµÑ‚ÑÑ Ð»Ð¸ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ð° Ð¼Ð°ÑÑÐ¸Ð²Ð¾Ð¼
+function isArray(tbl) --ßâëÿåòñÿ ëè òàáëèöà ìàññèâîì
 	local n=0
 	for _ in pairs(tbl) do n=n+1 end
     return n <= #tbl
 end
 
---ÐšÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ñ‡ÐµÐ³Ð¾ ÑƒÐ³Ð¾Ð´Ð½Ð¾ Ð² ÑÑ‚Ñ€Ð¾ÐºÑƒ. Ð˜ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÑŒ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð´Ð»Ñ Ð²Ñ‹Ð²Ð¾Ð´Ð° Ð² Ð»Ð¾Ð³!
+--Êîíâåðòèðîâàíèå ÷åãî óãîäíî â ñòðîêó. Èñïîëüçîâàòü òîëüêî äëÿ âûâîäà â ëîã!
 local tostring_all_tbl = {
-	["table"] =		function(table, ind) --Ð Ð°ÑÐ¿ÐµÑ‡Ð°Ñ‚ÐºÐ° Ñ‚Ð°Ð±Ð»Ð¸Ñ†
-						local res = "{" --ÐÐ°Ñ‡Ð°Ð»Ð¾
-						local end_res = ind and "\n"..ind.."}" or "\n}" --ÐšÐ¾Ð½ÐµÑ†
-						local def_ind = "  " --ÐžÑ‚ÑÑ‚ÑƒÐ¿ Ð¾Ñ‚ Ð½Ð°Ñ‡Ð°Ð»Ð° ÑÑ‚Ñ€Ð¾ÐºÐ¸
-						ind = ind and ind..def_ind or def_ind --Ð”Ð»Ñ ÐºÐ°Ð¶Ð´Ð¾Ð¹ "Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ Ð²Ð½ÑƒÑ‚Ñ€Ð¸ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹" Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ ÑƒÐ²ÐµÐ»Ð¸Ñ‡Ð¸Ð²Ð°ÐµÑ‚ÑÑ Ð² 2 Ñ€Ð°Ð·Ð°
-						if isArray(table) then --Ð•ÑÐ»Ð¸ ÑÑ‚Ð¾ Ð¼Ð°ÑÑÐ¸Ð², Ð¾Ð±Ñ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ:
-							for i=1, #table do --Ð­Ñ‚Ð¾ Ð°ÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ð¾ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð´Ð»Ñ Ð¾Ñ‚ÑÐ»ÐµÐ¶Ð¸Ð²Ð°Ð½Ð¸Ñ nil-Ð°Ñ€Ð³ÑƒÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ð°Ñ…. Ð’ Ð±ÑƒÐ´ÑƒÑ‰ÐµÐ¼, Ð¿Ñ€Ð¸ Ð¿ÐµÑ€ÐµÐµÐ·Ð´Ðµ Ð½Ð° Ð½Ð¾Ð²Ñ‹Ð¹ jit, ÑÑ‚Ð¾ Ð½Ð°Ð´Ð¾ Ð±Ñ‹ ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ.
+	["table"] =		function(table, ind) --Ðàñïå÷àòêà òàáëèö
+						local res = "{" --Íà÷àëî
+						local end_res = ind and "\n"..ind.."}" or "\n}" --Êîíåö
+						local def_ind = "  " --Îòñòóï îò íà÷àëà ñòðîêè
+						ind = ind and ind..def_ind or def_ind --Äëÿ êàæäîé "òàáëèöû âíóòðè òàáëèöû" îòñòóï óâåëè÷èâàåòñÿ â 2 ðàçà
+						if isArray(table) then --Åñëè ýòî ìàññèâ, îáðàáàòûâàåì òîëüêî çíà÷åíèÿ:
+							for i=1, #table do --Ýòî àêòóàëüíî òîëüêî äëÿ îòñëåæèâàíèÿ nil-àðãóìåíòîâ â òàáëèöàõ. Â áóäóùåì, ïðè ïåðååçäå íà íîâûé jit, ýòî íàäî áû óáðàòü.
 								res = res.."\n"..ind..tostring_all(table[i], ind)..","
 							end
-						else --Ð•ÑÐ»Ð¸ ÐÐ• Ð¼Ð°ÑÑÐ¸Ð², Ð¾Ð±Ñ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ð¸ ÐºÐ»ÑŽÑ‡Ð¸, Ð¸ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ:
+						else --Åñëè ÍÅ ìàññèâ, îáðàáàòûâàåì è êëþ÷è, è çíà÷åíèÿ:
 							for k, v in pairs(table) do
 								res = res.."\n"..ind.."["..tostring_all(k, ind).."] = "..tostring_all(v, ind)..","
 							end
 						end
 						return res..end_res
 					end,
-	["string"] =	function(v) return "'"..v.."'" end, --Ð¡Ñ‚Ñ€Ð¾ÐºÐ¸ Ð±ÐµÑ€Ñ‘Ð¼ Ð² ÐºÐ°Ð²Ñ‹Ñ‡ÐºÐ¸. Ð­Ñ‚Ð¾ Ð½ÑƒÐ¶Ð½Ð¾, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¼Ð¾Ð¶Ð½Ð¾ Ð±Ñ‹Ð»Ð¾ Ð¾Ñ‚Ð»Ð¸Ñ‡Ð¸Ñ‚ÑŒ ÑÑ‚Ñ€Ð¾ÐºÑƒ "123" Ð¾Ñ‚ Ñ‡Ð¸ÑÐ»Ð° 123, "nil" Ð¾Ñ‚ nil Ð¸ Ñ‚Ð´...
+	["string"] =	function(v) return "'"..v.."'" end, --Ñòðîêè áåð¸ì â êàâû÷êè. Ýòî íóæíî, ÷òîáû ìîæíî áûëî îòëè÷èòü ñòðîêó "123" îò ÷èñëà 123, "nil" îò nil è òä...
 	["number"] =	function(v) return tostring(v) end,
 	["boolean"] =	function(v) return tostring(v) end,
 	["nil"] =		function(v) return tostring(v) end,
-	["function"] =	function() return "[[FUNCTION]]" end, --Function, Userdata Ð¸ Thread Ñ€Ð°ÑÐ¿ÐµÑ‡Ð°Ñ‚Ð°Ñ‚ÑŒ Ð½ÐµÐ»ÑŒÐ·Ñ, Ð¿Ñ€Ð¾ÑÑ‚Ð¾ Ð·Ð°Ð¼ÐµÐ½Ð¸Ð¼ Ð½Ð° ÑÑ‚Ñ€Ð¾ÐºÐ¸
+	["function"] =	function() return "[[FUNCTION]]" end, --Function, Userdata è Thread ðàñïå÷àòàòü íåëüçÿ, ïðîñòî çàìåíèì íà ñòðîêè
 	["userdata"] =	function() return "[[USERDATA]]" end,
 	["thread"] =	function() return "[[THREAD]]" end,
 }
-function tostring_all(obj, ind) --ind - ÑÐ»ÑƒÐ¶ÐµÐ±Ð½Ñ‹Ð¹ Ð°Ñ€Ð³ÑƒÐ¼ÐµÐ½Ñ‚ Ð´Ð»Ñ Ñ€Ð°ÑÐ¿ÐµÑ‡Ð°Ñ‚ÐºÐ¸ "Ñ‚Ð°Ð±Ð»Ð¸Ñ† Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ð°Ñ…". ÐÐ• Ð¢Ð ÐžÐ“ÐÐ¢Ð¬ Ð•Ð“Ðž!!!
+function tostring_all(obj, ind) --ind - ñëóæåáíûé àðãóìåíò äëÿ ðàñïå÷àòêè "òàáëèö â òàáëèöàõ". ÍÅ ÒÐÎÃÀÒÜ ÅÃÎ!!!
 	return tostring_all_tbl[type(obj)](obj, ind)
 end
 
---Ð”ÐµÐ»Ð°ÐµÑ‚ Ð´Ð¾Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒÐ½ÑƒÑŽ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ Ð¿Ð¾ ÐºÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð°Ñ†Ð¸Ð¸ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð², ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð½Ðµ Ð²Ð¾ÑÐ¿Ñ€Ð¸Ð½Ð¸Ð¼Ð°ÑŽÑ‚ÑÑ Ñ€Ð¾Ð´Ð½Ð¾Ð¹ Ñ„ÑƒÐ½ÐºÑ†Ð¸ÐµÐ¹ string.format.
---ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð¼Ð¾Ð¶Ð½Ð¾ Ð¿ÐµÑ€ÐµÐ´Ð°Ð²Ð°Ñ‚ÑŒ Ð›Ð®Ð‘ÐžÐ“Ðž Ð¢Ð˜ÐŸÐ! Ð’ ÑÑ‚Ñ€Ð¾ÐºÐµ Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð° Ð¾Ð½Ð¸ Ð´Ð¾Ð»Ð¶Ð½Ñ‹ ÑÑ‚Ð¾ÑÑ‚ÑŒ ÐºÐ°Ðº %s (Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ, Ñ‡Ñ‚Ð¾ Ð±ÑƒÐ´ÑƒÑ‚ ÑÐºÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ñ‹ Ð² ÑÑ‚Ñ€Ð¾ÐºÐ¸).
+--Äåëàåò äîïîëíèòåëüíóþ ðàáîòó ïî êîíâåðòàöèè ïàðàìåòðîâ, êîòîðûå íå âîñïðèíèìàþòñÿ ðîäíîé ôóíêöèåé string.format.
+--Ïàðàìåòðû ìîæíî ïåðåäàâàòü ËÞÁÎÃÎ ÒÈÏÀ! Â ñòðîêå ôîðìàòà îíè äîëæíû ñòîÿòü êàê %s (ïîòîìó, ÷òî áóäóò ñêîíâåðòèðîâàíû â ñòðîêè).
 function log3(fmt, ...)
 	local args = {...}
 	for i=1, #args do
 		args[i] = tostring_all(args[i])
 	end
 	local res, msg = pcall(string.format, fmt, unpack(args))
-	if not res then --Ð•ÑÐ»Ð¸ Ð¿Ñ€Ð¾Ð¸Ð·Ð¾ÑˆÐ»Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ°
+	if not res then --Åñëè ïðîèçîøëà îøèáêà
 		msg = "!!log3 failed: "..msg.."\n"..debug.traceback()
 	end
 	--
@@ -176,13 +191,13 @@ function log3(fmt, ...)
 end
 
 -------------------------------
-log1(debug.traceback()) --ÐŸÐ¾Ð¼Ð¾Ð³Ð°ÐµÑ‚ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ, Ð¸Ð· Ð·Ð° Ñ‡ÐµÐ³Ð¾ Ð² Ð½ÐµÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ñ… ÑÐ»ÑƒÑ‡Ð°ÑÑ… Ð¿ÐµÑ€ÐµÐ·Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÑ‚ÑÑ _G
+log1(debug.traceback()) --Ïîìîãàåò îïðåäåëèòü, èç çà ÷åãî â íåêîòîðûõ ñëó÷àÿõ ïåðåçàãðóæàåòñÿ _G
 -------------------------------
 
 local logs_cach = {}
---Ð¤ÑƒÐ½ÐºÑ†Ð¸Ñ ÑÐ¾Ð·Ð´Ð°Ñ‘Ñ‚ Ð½Ð¾Ð²Ñ‹Ð¹ Ð»Ð¾Ð³-Ñ„Ð°Ð¹Ð» Ð¸ Ð²Ñ‹Ð²Ð¾Ð´Ð¸Ñ‚ Ñ‚ÐµÐºÑÑ‚ Ð² Ð½ÐµÐ³Ð¾.
---fname - Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð»Ð¾Ð³-Ñ„Ð°Ð¹Ð»Ð°, Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€ "Anomaly_Evader". ÐžÐ½ Ð±ÑƒÐ´ÐµÑ‚ ÑÐ¾Ð·Ð´Ð°Ð½ Ð² Ð¿Ð°Ð¿ÐºÐµ logs, Ðº Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÑŽ Ð´Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑÑ Ð´Ð°Ñ‚Ð° Ð¸ Ð²Ñ€ÐµÐ¼Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ.
---fmt, ... - ÑÑ‚Ñ€Ð¾ÐºÐ° Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð° Ñ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸ ÐºÐ°Ðº Ð¸ Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ log3
+--Ôóíêöèÿ ñîçäà¸ò íîâûé ëîã-ôàéë è âûâîäèò òåêñò â íåãî.
+--fname - íàçâàíèå ëîã-ôàéëà, íàïðèìåð "Anomaly_Evader". Îí áóäåò ñîçäàí â ïàïêå logs, ê íàçâàíèþ äîáàâèòñÿ äàòà è âðåìÿ ñîçäàíèÿ.
+--fmt, ... - ñòðîêà ôîðìàòà ñ ïàðàìåòðàìè êàê è â ôóíêöèè log3
 function log4(fname, fmt, ...)
 	local f = logs_cach[fname]
 	if not f then
@@ -202,8 +217,8 @@ function log4(fname, fmt, ...)
 	f:write(msg..'\n')
 	f:flush()
 end
---======================================[Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð¸Ð· OGSE]=======================================
--- ÐšÑ€ÐµÑˆÐ½ÑƒÑ‚ÑŒ Ð¸Ð³Ñ€Ñƒ (Ð¿Ð¾ÑÐ»Ðµ Ð²Ñ‹Ð²Ð¾Ð´Ð° ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ñ Ð¾Ð± Ð¾ÑˆÐ¸Ð±ÐºÐµ Ð² Ð»Ð¾Ð³)
+--======================================[Ôóíêöèè èç OGSE]=======================================
+-- Êðåøíóòü èãðó (ïîñëå âûâîäà ñîîáùåíèÿ îá îøèáêå â ëîã)
 function abort(...)
 	log1("!!************************************[ABORT]************************************")
 	log1(debug.traceback())
@@ -296,7 +311,7 @@ function dbg_sys_ini:r_line(sec, line_num)
 end
 --system_ini = function() return dbg_sys_ini() end
 
---Ð¡Ð»ÑƒÐ¶ÐµÐ±Ð½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ñ‡Ñ‚ÐµÐ½Ð¸Ñ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ð¸Ð· ÑÐµÐºÑ†Ð¸Ð¹ Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²
+--Ñëóæåáíûå ôóíêöèè äëÿ ÷òåíèÿ ïàðàìåòðîâ èç ñåêöèé îáúåêòîâ
 sys_ini = system_ini()
 function get_string(section, param, def_val, ini_file)
 	local ini = ini_file or sys_ini
@@ -343,20 +358,20 @@ function get_float(section, param, def_val, ini_file)
 		return def_val
 	end
 end
--- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ»Ð°ÑÑ Ð¸Ð· ÑÐµÐºÑ†Ð¸Ð¸, Ð¿Ð¾Ð»ÐµÐ·Ð½Ð¾ Ð² Ñ‚Ð¾Ð¼ ÑÐ»ÑƒÑ‡Ð°Ðµ, ÐµÑÐ»Ð¸ Ð½ÐµÑ‚ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (Ð¸ Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½ Ð¼ÐµÑ‚Ð¾Ð´ clsid), Ð° ÐµÑÑ‚ÑŒ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¸Ð¼Ñ ÑÐµÐºÑ†Ð¸Ð¸
+-- ïîëó÷èòü êëàññ èç ñåêöèè, ïîëåçíî â òîì ñëó÷àå, åñëè íåò îáúåêòà (è íåäîñòóïåí ìåòîä clsid), à åñòü òîëüêî èìÿ ñåêöèè
 function get_class(section)
 	ASSERT(sys_ini:section_exist(section), "get_class: section '"..section.."' doesn't exist")
 	ASSERT(sys_ini:line_exist(section, "class"), "get_class: there is no 'class' parameter in the section '"..section.."'")
 	return sys_ini:r_clsid(section, "class")
 end
--- Ñ‡Ð¸Ñ‚Ð°ÐµÑ‚ ÑÑ‚Ñ€Ð¾ÐºÑƒ Ð²Ð¸Ð´Ð° "s1,s2,s3" Ð¸ Ð¿Ð°Ñ€ÑÐ¸Ñ‚ Ð½Ð° ÑÑ‚Ñ€Ð¾ÐºÐ¾Ð²Ñ‹Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ, Ñ€Ð°Ð·Ð´ÐµÐ»Ñ‘Ð½Ð½Ñ‹Ðµ Ð·Ð°Ð¿ÑÑ‚Ð¾Ð¹, Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ Ð²Ð¸Ð´Ð° {s1, s2, s3}
+-- ÷èòàåò ñòðîêó âèäà "s1,s2,s3" è ïàðñèò íà ñòðîêîâûå çíà÷åíèÿ, ðàçäåë¸ííûå çàïÿòîé, â òàáëèöó âèäà {s1, s2, s3}
 function get_names(section, param, ini_file)
 	local ini = ini_file or sys_ini
 	ASSERT(ini:section_exist(section), "get_names: section '"..section.."' doesn't exist")
 	local s = ini:r_string(section, param)
 	return split_comma_separated_list(s)
 end
--- Ñ‡Ð¸Ñ‚Ð°ÐµÑ‚ ÑÑ‚Ñ€Ð¾ÐºÑƒ Ð²Ð¸Ð´Ð° "s1,s2,s3" Ð¸ Ð¿Ð°Ñ€ÑÐ¸Ñ‚ Ð½Ð° Ñ‡Ð¸ÑÐ»ÐµÐ½Ð½Ñ‹Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ, Ñ€Ð°Ð·Ð´ÐµÐ»Ñ‘Ð½Ð½Ñ‹Ðµ Ð·Ð°Ð¿ÑÑ‚Ð¾Ð¹, Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ Ð²Ð¸Ð´Ð° {n1, n2, n3}
+-- ÷èòàåò ñòðîêó âèäà "s1,s2,s3" è ïàðñèò íà ÷èñëåííûå çíà÷åíèÿ, ðàçäåë¸ííûå çàïÿòîé, â òàáëèöó âèäà {n1, n2, n3}
 function get_numbers(section, param, ini_file)
 	local t = {}
 	for i,sv in ipairs(get_names(section, param, ini_file)) do
@@ -400,7 +415,7 @@ function get_vector(section, param, def_val, ini_file)
 		end
 	end
 end
--- Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð·Ð°Ð´Ð°Ð²Ð°Ñ‚ÑŒÑÑ Ñ‚Ð°Ð±Ð»Ð¸Ñ†ÐµÐ¹ {num1, num2}
+-- çíà÷åíèå ïî óìîë÷àíèþ äîëæíî çàäàâàòüñÿ òàáëèöåé {num1, num2}
 function get_vector2(section, param, def_val, ini_file)
 	local ini = ini_file or sys_ini
 	ASSERT(ini:section_exist(section), "get_vector2: section '"..section.."' doesn't exist")
@@ -412,15 +427,15 @@ function get_vector2(section, param, def_val, ini_file)
 	end
 end
 
--- Ð´ÐµÐ»Ð¸Ñ‚ ÑÑ‚Ñ€Ð¾ÐºÑƒ Ð² Ð²Ð¸Ð´Ðµ "aaa,bbb,ccc" Ð½Ð° ÑÑ‚Ñ€Ð¾ÐºÐ¸ "aaa", "bbb", "ccc" Ð¸ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¸Ñ… Ð² Ð²Ð¸Ð´Ðµ Ð¼Ð°ÑÑÐ¸Ð²Ð°
+-- äåëèò ñòðîêó â âèäå "aaa,bbb,ccc" íà ñòðîêè "aaa", "bbb", "ccc" è âîçâðàùàåò èõ â âèäå ìàññèâà
 function split_comma_separated_list(s)
 	return string.explode(",", s)
 end
---ÐžÑ‚Ð»Ð¸Ñ‡Ð°ÐµÑ‚ÑÑ Ð¾Ñ‚ split_comma_separated_list Ñ‚ÐµÐ¼, Ñ‡Ñ‚Ð¾ ÑÑ€ÐµÐ·Ð°ÐµÑ‚ Ð¿Ñ€Ð¾Ð±ÐµÐ»Ñ‹ Ð¿Ð¾ ÐºÑ€Ð°ÑÐ¼ ÑÑ‚Ñ€Ð¾Ðº (ÐµÑÐ»Ð¸ Ð¾Ð½Ð¸ ÐµÑÑ‚ÑŒ)
+--Îòëè÷àåòñÿ îò split_comma_separated_list òåì, ÷òî ñðåçàåò ïðîáåëû ïî êðàÿì ñòðîê (åñëè îíè åñòü)
 function parse_names( s )
 	return string.explode(",", s, true)
 end
---ÐŸÐ°Ñ€ÑÐ¸Ñ‚ ÑÑ‚Ñ€Ð¾ÐºÑƒ Ð²Ð¸Ð´Ð° "n1, n2, n3..." Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ { n1, n2, n3, ... } Ð³Ð´Ðµ n1, n2, n3... - Ñ‡Ð¸ÑÐ»Ð°
+--Ïàðñèò ñòðîêó âèäà "n1, n2, n3..." â òàáëèöó { n1, n2, n3, ... } ãäå n1, n2, n3... - ÷èñëà
 function parse_nums( s )
     local t = {}
     for i,entry in ipairs(parse_names( s )) do
@@ -430,10 +445,10 @@ function parse_nums( s )
     end
     return t
 end
---ÐšÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð¸Ñ€ÑƒÐµÑ‚ ÑÑ‚Ñ€Ð¾ÐºÑƒ Ð²Ð¸Ð´Ð° "actor, 0, actor_dolg, 1, actor_freedom, 2, ..."
---Ð’ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ Ð²Ð¸Ð´Ð° { ["actor"] = "0", ["actor_dolg"] = "1", ["actor_freedom"] = "2", ... }
+--Êîíâåðòèðóåò ñòðîêó âèäà "actor, 0, actor_dolg, 1, actor_freedom, 2, ..."
+--Â òàáëèöó âèäà { ["actor"] = "0", ["actor_dolg"] = "1", ["actor_freedom"] = "2", ... }
 function parse_key_value( s )
-	if s == nil then return nil end --Ð±Ñ‹Ð²Ð°ÐµÑ‚ Ð¸ Ñ‚Ð°ÐºÐ¾Ðµ
+	if s == nil then return nil end --áûâàåò è òàêîå
 
     local t = {}
 	local t0 = parse_names( s )
@@ -445,12 +460,12 @@ function parse_key_value( s )
     return t
 end
 
--- ÑƒÐ¿Ð°ÐºÐ¾Ð²Ð°Ñ‚ÑŒ Ð²Ñ€ÐµÐ¼Ñ Ð² Ð²Ð¸Ð´Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° CTime Ð² ÑÑ‚Ñ€Ð¾ÐºÑƒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ð¹, Ñ€Ð°Ð·Ð´ÐµÐ»Ñ‘Ð½Ð½Ñ‹Ñ… Ð·Ð°Ð¿ÑÑ‚Ð¾Ð¹
+-- óïàêîâàòü âðåìÿ â âèäå îáúåêòà CTime â ñòðîêó çíà÷åíèé, ðàçäåë¸ííûõ çàïÿòîé
 function pack_time_to_string(t)
 	ASSERT(t, "pack_time_to_string: t is a nil reference")
 	return table.concat({t:get()}, ',')
 end
--- Ñ‡Ð¸Ñ‚Ð°ÐµÑ‚ Ð²Ñ€ÐµÐ¼Ñ, ÑÐ¾Ñ…Ñ€Ð°Ð½Ñ‘Ð½Ð½Ð¾Ðµ Ð² Ð²Ð¸Ð´Ðµ ÑÑ‚Ñ€Ð¾ÐºÐ¸ ÑÐ¾ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸ÑÐ¼Ð¸, Ñ€Ð°Ð·Ð´ÐµÐ»Ñ‘Ð½Ð½Ñ‹Ð¼Ð¸ Ð·Ð°Ð¿ÑÑ‚Ð¾Ð¹, Ð¸ ÐºÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð¸Ñ€ÑƒÐµÑ‚ Ð² Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÐºÐ»Ð°ÑÑÐ° CTime
+-- ÷èòàåò âðåìÿ, ñîõðàí¸ííîå â âèäå ñòðîêè ñî çíà÷åíèÿìè, ðàçäåë¸ííûìè çàïÿòîé, è êîíâåðòèðóåò â çíà÷åíèå êëàññà CTime
 function unpack_time_from_string(str_time)
 	local time_values = {}
 	for i,s in ipairs(split_comma_separated_list(str_time)) do
@@ -492,7 +507,7 @@ function get_day_time_sec(t)
 	local y,m,d,h,min,s,ms = t:get()
 	return h * 3600.0 + min * 60.0 + s + ms * 1e-3
 end
--- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑƒÑˆÐµÐµ Ð¸Ð³Ñ€Ð¾Ð²Ð¾Ðµ Ð²Ñ€ÐµÐ¼Ñ Ð¾Ñ‚ Ð½Ð°Ñ‡Ð°Ð»Ð° ÑÑƒÑ‚Ð¾Ðº, Ð¸Ð·Ð¼ÐµÑ€ÐµÐ½Ð½Ð¾Ðµ Ð² Ñ‡Ð°ÑÐ°Ñ… (Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð² Ð¿Ñ€ÐµÐ´ÐµÐ»Ð°Ñ… [0, 24) )
+-- ïîëó÷èòü òåêóøåå èãðîâîå âðåìÿ îò íà÷àëà ñóòîê, èçìåðåííîå â ÷àñàõ (çíà÷åíèå â ïðåäåëàõ [0, 24) )
 function get_game_day_time_h()
 	local gt = game.get_game_time()
 	local y,m,d,h,min,sec,ms = gt:get()
@@ -542,7 +557,7 @@ function isKnife(object, class_id)
 	return id == clsid.wpn_knife or id == clsid.wpn_knife_s
 end
 
--- Ð’Ñ‹Ñ‡Ð¸ÑÐ»ÑÐµÑ‚ yaw Ð² Ñ€Ð°Ð´Ð¸Ð°Ð½Ð°Ñ…
+-- Âû÷èñëÿåò yaw â ðàäèàíàõ
 function yaw(v1, v2)
 	if v1 and v2 then
 		return math.abs(v2:getH()-v1:getH())
@@ -562,33 +577,35 @@ function vector_cross(v1, v2)
 	else return vector():set(0, 0, 0) end
 end
 
-function isIndoor(level_name) --KRodin: Ð²ÑÐµÐ¼ Ð¿Ð¾Ð´Ð·ÐµÐ¼Ð½Ñ‹Ð¼ ÑƒÑ€Ð¾Ð²Ð½ÑÐ¼ Ð¿Ñ€Ð¾Ð¿Ð¸ÑÑ‹Ð²Ð°ÐµÑ‚ÑÑ ÐÐ• default Ð¿Ð¾Ð³Ð¾Ð´Ð°. ÐŸÐ¾ ÑÑ‚Ð¾Ð¼Ñƒ Ð¿Ñ€Ð¸Ð·Ð½Ð°ÐºÑƒ Ð¸ Ð±ÑƒÐ´ÐµÐ¼ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÑ‚ÑŒ.
+function isIndoor(level_name) --KRodin: âñåì ïîäçåìíûì óðîâíÿì ïðîïèñûâàåòñÿ ÍÅ default ïîãîäà. Ïî ýòîìó ïðèçíàêó è áóäåì ïðîâåðÿòü.
 	return get_string(level_name, "weathers", nil, game_ini()) ~= "default"
 end
 --==============================================================================================
---KRodin: TODO: ÑÐ½ÐµÑÑ‚Ð¸ ÑÑ‚Ñƒ Ñ„ÑƒÐ½ÐºÑ†Ð¸ÑŽ Ð²Ð¾Ð¾Ð±Ñ‰Ðµ. Ð’Ñ‹Ð·Ñ‹Ð²Ð°Ñ‚ÑŒ level.change_game_time Ð½Ð°Ð¿Ñ€ÑÐ¼ÑƒÑŽ.
---Ð˜ ÑÐ¾Ð½, Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€, Ð½Ð°Ð´Ð¾ Ð´ÐµÐ»Ð°Ñ‚ÑŒ Ð½Ðµ Ð¿Ñ€Ð¾ÑÑ‚Ð¾ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð¾Ð¼ Ñ‡Ð°ÑÐ¾Ð², Ð° ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ ÐºÐ°Ðº Ð² OGSE. Ð§Ñ‚Ð¾Ð±Ñ‹ ÑƒÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°Ñ‚ÑŒ Ð²Ñ‹Ð±Ñ€Ð¾Ñ Ð¸ Ñ‚Ð´.
+--KRodin: TODO: ñíåñòè ýòó ôóíêöèþ âîîáùå. Âûçûâàòü level.change_game_time íàïðÿìóþ.
+--È ñîí, íàïðèìåð, íàäî äåëàòü íå ïðîñòî ïåðåâîäîì ÷àñîâ, à ñäåëàòü êàê â OGSE. ×òîáû ó÷èòûâàòü âûáðîñ è òä.
 function set_current_time( hour, min, sec )
 	log3("~~Called set_current_time from: %s", debug.traceback())
-	if hour == 0 and min == 0 then min = 1 end --ÐœÐ°Ð»Ð¾Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾, Ð½Ð¾ Ð½Ð° Ð²ÑÑÐºÐ¸Ð¹ ÑÐ»ÑƒÑ‡Ð°Ð¹.
-	level.change_game_time(0, hour, min) --Ð´Ð½Ð¸, Ñ‡Ð°ÑÑ‹, Ð¼Ð¸Ð½ÑƒÑ‚Ñ‹
+	if hour == 0 and min == 0 then min = 1 end --Ìàëîâåðîÿòíî, íî íà âñÿêèé ñëó÷àé.
+	level.change_game_time(0, hour, min) --äíè, ÷àñû, ìèíóòû
 end
 --==============================================================================================
 
--- Ð¾Ñ‡Ð¸ÑÑ‚ÐºÐ° Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹
+-- î÷èñòêà òàáëèöû
 function clear_table(t)
-	for k,_ in pairs(t) do
-		t[k] = nil
-	end
+	t = {} --Ãîâîðÿò, òàê òîæå ìîæíî
+	--
+	--for k,_ in pairs(t) do
+	--	t[k] = nil
+	--end
 end
 
 
-schemes, stypes = {}, {} -- ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²Ð¸Ðµ ÑÑ…ÐµÐ¼ Ð¼Ð¾Ð´ÑƒÐ»ÑÐ¼, Ñ‚Ð¸Ð¿Ñ‹ ÑÑ…ÐµÐ¼
+schemes, stypes = {}, {} -- ñîîòâåòñòâèå ñõåì ìîäóëÿì, òèïû ñõåì
 
--- Ð—Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÑ‚ ÑÑ…ÐµÐ¼Ñƒ Ð¸Ð· Ñ„Ð°Ð¹Ð»Ð° Ð½Ð° Ð´Ð¸ÑÐºÐµ Ð¸ Ð°ÐºÑ‚Ð¸Ð²Ð¸Ñ€ÑƒÐµÑ‚ Ð² Ð¼Ð¾Ñ‚Ð¸Ð²Ð°Ñ‚Ð¾Ñ€Ðµ.
--- Ð—Ð´ÐµÑÑŒ:
--- 	filename - Ð¸Ð¼Ñ Ñ„Ð°Ð¹Ð»Ð°, Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼ Ñ€ÐµÐ°Ð»Ð¸Ð·Ð¾Ð²Ð°Ð½Ð° ÑÑ…ÐµÐ¼Ð°, Ð±ÐµÐ· Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ñ
--- 	scheme - Ð¸Ð¼Ñ ÑÑ…ÐµÐ¼Ñ‹
+-- Çàãðóæàåò ñõåìó èç ôàéëà íà äèñêå è àêòèâèðóåò â ìîòèâàòîðå.
+-- Çäåñü:
+-- 	filename - èìÿ ôàéëà, â êîòîðîì ðåàëèçîâàíà ñõåìà, áåç ðàñøèðåíèÿ
+-- 	scheme - èìÿ ñõåìû
 function load_scheme(filename, scheme, stype)
 	schemes[scheme] = filename
 	stypes[scheme] = stype
@@ -691,14 +708,14 @@ function distance_between(obj1, obj2)
     return obj1:position():distance_to(obj2:position())
 end
 
--- Ð•ÑÐ»Ð¸ Ð¾Ð´Ð¸Ð½ Ð¾Ð±ÑŠÐµÐºÑ‚ nil, Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€ Ð½ÐµÑ‚ Ð°ÐºÑ‚ÐµÑ€Ð°, Ñ‚Ð¾ ÑÑ‡Ð¸Ñ‚Ð°ÐµÐ¼, Ñ‡Ñ‚Ð¾ Ð¾Ð½ Ð´Ð°Ð»ÐµÐºÐ¾
+-- Åñëè îäèí îáúåêò nil, íàïðèìåð íåò àêòåðà, òî ñ÷èòàåì, ÷òî îí äàëåêî
 function distance_between_safe(obj1, obj2)
     if(obj1 == nil or obj2 == nil) then return 100000 end
 	return obj1:position():distance_to(obj2:position())
 end
 
 
---' ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð¸Ð½Ñ„Ð¾Ð¿Ð¾Ñ€ÑˆÐ½Ñ‹, Ð´Ð°Ð¶Ðµ ÐµÑÐ»Ð¸ Ð¸Ð³Ñ€Ð¾ÐºÐ° Ð½Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚
+--' Ïðîâåðêà íà èíôîïîðøíû, äàæå åñëè èãðîêà íå ñóùåñòâóåò
 function has_alife_info(info_id)
 	local aa = alife()
 	if aa == nil then
@@ -709,24 +726,24 @@ end
 
 
 --------------------------------------------------
--- Ñ–Ð»Ð°ÑÑ LUA Ñ€ÐµÐ°Ð»Ð¸Ð·ÑƒÑ–   Ð¸Ð¹ Finite State Machine
--- Ð´Ð»Ñ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°Ð¼Ð¸
+-- ³ëàññ LUA ðåàëèçó³   èé Finite State Machine
+-- äëÿ óïðàâëåíèÿ ïåðñîíàæàìè
 --------------------------------------------------
 class 'FSM'
 
---  Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Ð¿ÑƒÑ‚ÐµÐ¼ Ð·Ð°Ð´Ð°Ð½Ð¸Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Non-Player Character
+--  èíèöèàëèçàöèÿ ïóòåì çàäàíèÿ îáúåêòà Non-Player Character
 function FSM:__init(script_name, npc_obj)
-    -- ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° Ð¿Ð¾Ð´ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»ÑŒÐ½vÐ¹ NPC
+    -- óêàçàòåëü íà ïîäêîíòðîëüívé NPC
     self.npc = npc_obj
-    -- ÑÑ‚Ñ€Ð¾ÐºÐ° - Ð¸Ð¼Ñ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð°, ÐºÐ¾Ñ‚Ð¾Ñ€vÐ¹ Ð·Ð°Ð¿ÑƒÑÐºÐ°ÐµÑ‚ Ð¸Ð³Ñ€Ñƒ
+    -- ñòðîêà - èìÿ ñêðèïòà, êîòîðvé çàïóñêàåò èãðó
     self.script_name = script_name
-    -- Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ð°, Ð·Ð°Ð´Ð°Ñ–   Ð°Ñ Ð³Ñ€Ð°Ñ„ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð¾Ð² ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¹
-    -- Ñ€ÐµÐ°Ð»Ð¸Ð·ÑƒÐµÑ‚ÑÑ ÐºÐ°Ðº Ð´Ð²ÑƒÐ¼ÐµÑ€Ð½Ð°Ñ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ð°
+    -- ìàòðèöà, çàäà³   àÿ ãðàô ïåðåõîäîâ ñîñòîÿíèé
+    -- ðåàëèçóåòñÿ êàê äâóìåðíàÿ òàáëèöà
     self.transition_matrix = {[0] = {}}
-    -- Ð½Ð¾Ð¼ÐµÑ€ Ñ‚ÐµÐºÑƒ   ÐµÐ³Ð¾ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ
+    -- íîìåð òåêó   åãî ñîñòîÿíèÿ
     self.current_state = 0
 
-    -- Ñ„Ð»Ð°Ð³ Ñ‚Ð¾Ð³Ð¾, Ñ‡Ñ‚Ð¾ Ð¼Ð°ÑˆÐ¸Ð½Ð° Ð²ÐºÐ»Ñ–Ñ‡ÐµÐ½Ð°
+    -- ôëàã òîãî, ÷òî ìàøèíà âêë³÷åíà
     self.machine_running = true
 
     printf("inialization FSM for NPC %s", self.npc:name())
@@ -748,8 +765,8 @@ function FSM:stop()
 end
 
 
---  Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»Ñ Ð½Ð° Ð±ÑƒÐ»ÐµÐ²Ñƒ
---  Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ– ÑƒÑÐ»Ð¾Ð²Ð¸Ñ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð°
+--  äîáàâëåíèå óêàçàòåëÿ íà áóëåâó
+--  ôóíêöè³ óñëîâèÿ ïåðåõîäà
 function FSM:set_transition(from_state_num, to_state_num, cond_func)
     printf("in setting transition %d, %d ", from_state_num, to_state_num)
 
@@ -760,7 +777,7 @@ function FSM:set_transition(from_state_num, to_state_num, cond_func)
     end
 end
 
--- ÐµÐ´Ð¸Ð½Ð¸Ñ‡Ð½Ð°Ñ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° FSM
+-- åäèíè÷íàÿ ïðîâåðêà FSM
 function FSM:run()
     local transition_vector = self.transition_matrix[self.current_state]
     table.foreach(transition_vector,
@@ -784,7 +801,7 @@ function FSM:run()
 end
 
 
--- Ð·Ð°Ð¿ÑƒÑÐº Ð±ÐµÑÐºÐ¾Ð½ÐµÑ‡Ð½Ð¾Ð³Ð¾ Ñ†Ð¸ÐºÐ»Ð° FSM
+-- çàïóñê áåñêîíå÷íîãî öèêëà FSM
 function FSM:run_loop()
     printf("running FSM loop for NPC %s", self.npc:name())
 
@@ -816,13 +833,13 @@ function FSM:run_loop()
     end
 end
 
--- Ð²Ð·ÑÑ‚Ð¸Ðµ Ð¿Ð¾Ð´ ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»ÑŒ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð° NPC (Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´ Ð¸Ð· Ð½ÑƒÐ»ÐµÐ²Ð¾Ð³Ð¾ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ)
+-- âçÿòèå ïîä êîíòðîëü ñêðèïòà NPC (ïåðåõîä èç íóëåâîãî ñîñòîÿíèÿ)
 function FSM:set_script_control()
     printf("set script control for FSM of NPC %s", self.npc:name())
     self.npc:script(true, self.script_name)
 end
 
--- Ð¾Ñ‚Ð¿ÑƒÑÐºÐ°Ð½Ð¸Ðµ Ð¸Ð· Ð¿Ð¾Ð´ ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»Ñ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð° NPC (Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´ Ð² Ð½ÑƒÐ»ÐµÐ²Ð¾Ðµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ)
+-- îòïóñêàíèå èç ïîä êîíòðîëÿ ñêðèïòà NPC (ïåðåõîä â íóëåâîå ñîñòîÿíèå)
 function FSM:reset_script_control()
     printf("reset script control for FSM of NPC %s", self.npc:name())
     self.npc:script(false, self.script_name)
@@ -858,7 +875,7 @@ function script_object:update()
 end
 
 --
--- Ñ–ÐµÑ€ÐµÐ´Ð°Ñ‡Ð° Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ñƒ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¸
+-- ³åðåäà÷à ïåðñîíàæó èíôîðìàöèè
 --
 
 function GiveInfoViaPda(obj_receiver, obj_sender, info_number)
@@ -870,19 +887,19 @@ end
 -- Functions and variables added by Zmey
 --------------------------------------------------
 
--- Ñ–Ð¾Ð½ÑÑ‚Ð°Ð½Ñ‚Ð°, ÐºÐ¾Ñ‚Ð¾Ñ€ÑƒÑ– Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÑŒ Ð² Ð¼ÐµÑÑ‚Ð°Ñ…, Ð³Ð´Ðµ Ð½ÑƒÐ¶Ð½Ð¾ Ð·Ð°Ð´Ð°Ñ‚ÑŒ Ð½ÐµÐ¾Ð³Ñ€Ð°Ð½Ð¸Ñ‡ÐµÐ½Ð½Ð¾Ðµ Ð²Ñ€ÐµÐ¼Ñ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
+-- ³îíñòàíòà, êîòîðó³ èñïîëüçîâàòü â ìåñòàõ, ãäå íóæíî çàäàòü íåîãðàíè÷åííîå âðåìÿ äåéñòâèÿ
 time_infinite = 100000000
 
--- =Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð°, ÐºÐ¾Ñ‚Ð¾Ñ€vÐ¹ Ð² Ð´Ð°Ð½Ð½vÐ¹ Ð¼Ð¾Ð¼ÐµÐ½Ñ‚ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð² Ð¾Ñ‚Ð»Ð°Ð´ÐºÐµ
--- (Ð² ÑÑ‚Ð¾Ð¼ ÑÐºÑ€Ð¸Ð¿Ñ‚Ðµ Ð±ÑƒÐ´ÑƒÑ‚ ÑÑ€Ð°Ð±Ð°Ñ‚vÐ²Ð°Ñ‚ÑŒ Ð²vÐ·Ð¾Ð²v Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ debug_log)
+-- =àçâàíèå ñêðèïòà, êîòîðvé â äàíívé ìîìåíò íàõîäèòñÿ â îòëàäêå
+-- (â ýòîì ñêðèïòå áóäóò ñðàáàòvâàòü âvçîâv ôóíêöèè debug_log)
 debug_script_name = ""
 
--- TvÐ²Ð¾Ð´Ð¸Ñ‚ Ð² Ð»Ð¾Ð³ ÑÑ‚Ñ€Ð¾Ñ‡ÐºÑƒ, ÐµÑÐ»Ð¸ script_name == debug_script_name
--- LÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð´Ð»Ñ Ð¾Ñ‚Ñ€Ð°Ð´ÐºÐ¸ ÑÑ†ÐµÐ½Ð°Ñ€Ð¸ÐµÐ²
+-- Tvâîäèò â ëîã ñòðî÷êó, åñëè script_name == debug_script_name
+-- Lñïîëüçóåòñÿ äëÿ îòðàäêè ñöåíàðèåâ
 function debug_log(script_name, fmt, ...)
 end
 
--- +ÑÐ»Ð¸ Ð² Ð´Ð°Ð½Ð½vÐ¹ Ð¼Ð¾Ð¼ÐµÐ½Ñ‚ Ð²vÐ¿Ð¾Ð»Ð½ÑÐµÑ‚ÑÑ ÐºÐ°ÐºÐ¾Ðµ-Ñ‚Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ, Ð¿Ñ€ÐµÑ€vÐ²Ð°ÐµÑ‚ ÐµÐ³Ð¾ Ð¸ Ð¾Ñ‚ÐºÐ»Ñ–Ñ‡Ð°ÐµÑ‚ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ð²vÐ¹ Ñ€ÐµÐ¶Ð¸Ð¼
+-- +ñëè â äàíívé ìîìåíò âvïîëíÿåòñÿ êàêîå-òî äåéñòâèå, ïðåðvâàåò åãî è îòêë³÷àåò ñêðèïòîâvé ðåæèì
 function interrupt_action(who, script_name)
   if who:get_script() then
     who:script(false, script_name)
@@ -1087,7 +1104,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- Evaluators
 ----------------------------------------------------------------------------------------------------------------------
--- Ð·Ð°Ñ€ÐµÐ·ÐµÑ€Ð²Ð¸Ñ€Ð¾Ð²Ð°Ð½v id Ñ Ð½Ð¾Ð¼ÐµÑ€Ð°Ð¼Ð¸ Ð¾Ñ‚ 0 Ð´Ð¾ 256 Ð´Ð»Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ ÑÑ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½vÑ… ÑÐ²Ð°Ð»ÑƒÐ°Ñ‚Ð¾Ñ€Ð¾Ð².
+-- çàðåçåðâèðîâàív id ñ íîìåðàìè îò 0 äî 256 äëÿ ñîçäàíèÿ ñòàíäàðòívõ ýâàëóàòîðîâ.
 
 --Constant evaluator
 class "const_evaluator" (property_evaluator)
@@ -1190,8 +1207,8 @@ function random_number (min_value, max_value)
     end
 end
 
--- â€šÐ°ÒÂ¬Ð¿ Ð±Ð³Ð²Â®Ð„ Ñž Â¬Ð±
--- â€”Ð³ÐˆÂ Â©
+-- ‚à¥¬ï áãâ®ª ¢ ¬á
+-- —ã£ ©
 local ms_per_day = 24 * 60 * 60 * 1000
 function day_time()
     return math.mod( game.time(), ms_per_day )
@@ -1203,7 +1220,7 @@ function local_hours()
 end
 
 
--- Ð‡Ð°Â®ÑžÒÐ°Ð¿ÒÐ², ÒÐ±Ð²Ð¼ Â«Ð Â®ÐŽÐºÒÐ„Ð² Ñž Â®Â­Â«Â Â©Â­Ò
+-- ¯à®¢¥àï¥â, ¥áâì «¨ ®¡ê¥ªâ ¢ ®­« ©­¥
 function is_object_online(obj_id)
 	return level.object_by_id(obj_id) ~= nil
 end
@@ -1220,7 +1237,7 @@ function get_clsid(npc)
 --    end
 end
 
---Ð’Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð²ÐµÐºÑ‚Ð¾Ñ€ Ð²Ð¾ÐºÑ€ÑƒÐ³ Ð¾ÑÐ¸ y Ð¿Ñ€Ð¾Ñ‚Ð¸Ð² Ñ‡Ð°ÑÐ¾Ð²Ð¾Ð¹ ÑÑ‚Ñ€ÐµÐ»ÐºÐ¸
+--Âðàùàåò âåêòîð âîêðóã îñè y ïðîòèâ ÷àñîâîé ñòðåëêè
 function vector_rotate_y (v, angle)
     angle = angle * 0.017453292519943295769236907684886
     local c = math.cos (angle)
@@ -1228,9 +1245,9 @@ function vector_rotate_y (v, angle)
     return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
 end
 
---â‚¬Ð±Ð‡Â®Â«Ð¼Â§Ð³ÒÐ² Â¤Â«Ð¿ Â¬Â®Â­Ð±Ð²Ð°Â®Ñž. â€šÐ»ÐŽÂ®Ð° Ð²Â®Ð·Ð„Ð, Ð„Ð³Â¤Â  ÐÂ¤Ð²Ð Ñž Â­ÒÐ„Â®Ð²Â®Ð°Â®Â¬ Ð°Â Â¤ÐÐ³Ð±Ò Ð Ð·Ð²Â®ÐŽ Ð²Â®Ð·Ð„Â  ÐŽÐ»Â«Â  Â¤Â Â«Ð¼Ð¸Ò Â­Â  Ð°Â Ð±Ð±Ð²Â®Ð¿Â­ÐÐ
--- min_radius Â®Ð² Ð²ÒÐ„Ð³Ð¹ÒÂ© Ð‡Â®Â§ÐÐ¶ÐÐ(ÒÐ±Â«Ð Ð½Ð²Â® Ð‡Â®Â«Ð³Ð·ÐÐ²Ð±Ð¿). center_id - Ð¶ÒÂ­Ð²Ð° Ð‡Â®Â§ÐÐ¶ÐÐ, ÑžÂ®Ð„Ð°Ð³Ðˆ Ð„Â®Ð²Â®Ð°Â®Â© Â¦ÐÑžÒÂ¬,
--- position_id - Ð²Ð³Ð„Ð³Ð¹Â Ð¿ Ð‡Â®Â§ÐÐ¶ÐÐ¿, radius - Ñž Ð„Â Ð„Â®Â¬ Ð°Â Â¤ÐÐ³Ð±Ò ÑžÐ»ÐŽÐÐ°Â Ð²Ð¼ Ð²Â®Ð·Ð„Ð³, min_radius - Â¬ÐÂ­ÐÂ¬Â Â«Ð¼Â­Â®Ò Ð°Â Ð±Ð±Ð²Â®Ð¿Â­ÐÒ, Â®Ð² Ð²ÒÐ„Ð³Ð¹ÒÂ© Ð‡Â®Â§ÐÐ¶ÐÐ Â¤Â® Â­Â®ÑžÂ®Â© Ð²Â®Ð·Ð„Ð.
+--ˆá¯®«ì§ã¥â ¤«ï ¬®­áâà®¢. ‚ë¡®à â®çª¨, ªã¤  ¨¤â¨ ¢ ­¥ª®â®à®¬ à ¤¨ãá¥ ¨ çâ®¡ â®çª  ¡ë«  ¤ «ìè¥ ­  à ááâ®ï­¨¨
+-- min_radius ®â â¥ªãé¥© ¯®§¨æ¨¨(¥á«¨ íâ® ¯®«ãç¨âáï). center_id - æ¥­âà ¯®§¨æ¨¨, ¢®ªàã£ ª®â®à®© ¦¨¢¥¬,
+-- position_id - âãªãé ï ¯®§¨æ¨ï, radius - ¢ ª ª®¬ à ¤¨ãá¥ ¢ë¡¨à âì â®çªã, min_radius - ¬¨­¨¬ «ì­®¥ à ááâ®ï­¨¥, ®â â¥ªãé¥© ¯®§¨æ¨¨ ¤® ­®¢®© â®çª¨.
 function new_point(center_id, position_id,radius, min_radius)
     local dir = vector():set(math.random(-1000, 1000)/1000.0, 0.0001, math.random(-1000, 1000)/1000.0)
     local pos = level.vertex_in_direction(center_id, dir, radius)
@@ -1252,7 +1269,7 @@ function stop_play_sound(obj)
 	end
 end
 
-function object_type(obj) --Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð½Ð°Ñ„Ð¸Ð³!!!
+function object_type(obj) --Óäàëèòü íàôèã!!!
     local otype = get_clsid(obj)
     local type
 
@@ -1326,7 +1343,7 @@ function object_type(obj) --Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð½Ð°Ñ„Ð¸Ð³!!!
         type = "none"
     end
 
-    -- Ð‡Ð°Â®ÑžÒÐ°Ð¿ÒÂ¬ Â­Ò Ð²Ð°Ð³Ð‡ Â«Ð Ð½Ð²Â®
+    -- ¯à®¢¥àï¥¬ ­¥ âàã¯ «¨ íâ®
     if type == "stalker" or
        type == "monstr" then
         if obj:alive() == false then
@@ -1338,8 +1355,8 @@ function object_type(obj) --Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð½Ð°Ñ„Ð¸Ð³!!!
 end
 
 
--- Ð¯Ð²Ð»ÑÐµÑ‚ÑÑ Ð»Ð¸ Ð¾bj Ð¼Ð¾Ð½ÑÑ‚Ñ€Ð¾Ð¼
-function is_object_monster(obj) --Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð½Ð°Ñ„Ð¸Ð³!!!
+-- ßâëÿåòñÿ ëè îbj ìîíñòðîì
+function is_object_monster(obj) --Óäàëèòü íàôèã!!!
 	local otype = get_clsid(obj)
 	if(otype == clsid.crow			or
 		otype == clsid.zombie		or
@@ -1360,14 +1377,14 @@ function is_object_monster(obj) --Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð½Ð°Ñ„Ð¸Ð³!!!
 	return false
 end
 
---ÑžÂ®Â§ÑžÐ°Â Ð¹Â ÒÐ² Ð‡Ð°Â®ÐÂ§ÑžÂ®Â«Ð¼Â­Ð³Ð¾ Ð²Â®Ð·Ð„Ð³ Ð‡Ð³Ð²Ð Ð³ Ð„Â®Ð²Â®Ð°Â®Â© Ð³Ð±Ð²Â Â­Â®ÑžÂ«ÒÂ­ ÐŽÐÐ²
-function point_with_bit(patrol_path, bit, old_point)      -- old_point - ÐÂ­Â¤ÒÐ„Ð± Ð²Â®Ð·Ð„Ð, Ð„Â®Ð²Â®Ð°Ð³Ð¾ Â­Ò Â­Â Â¤Â® ÑžÐ»ÐŽÐÐ°Â Ð²Ð¼,
-  local points = {}                                       -- Ð‡Â Ð°Â Â¬ÒÐ²Ð° Â­Ò Â®ÐŽÐ¿Â§Â Ð²ÒÂ«Ð¼Â­Ð»Â©( Â­Â Ð‡Ð°ÐÂ¬ÒÐ° Ð²ÒÐ„Ð³Ð¹ÒÂ© Ð²Â®Ð·Ð„Ð )
+--¢®§¢à é ¥â ¯à®¨§¢®«ì­ãî â®çªã ¯ãâ¨ ã ª®â®à®© ãáâ ­®¢«¥­ ¡¨â
+function point_with_bit(patrol_path, bit, old_point)      -- old_point - ¨­¤¥ªá â®çª¨, ª®â®àãî ­¥ ­ ¤® ¢ë¡¨à âì,
+  local points = {}                                       -- ¯ à ¬¥âà ­¥ ®¡ï§ â¥«ì­ë©( ­ ¯à¨¬¥à â¥ªãé¥© â®çª¨ )
 
     for i = 0, patrol_path:count()-1 do
-      --â€žÂ®ÐŽÂ®ÑžÂ«Ð¿ÒÂ¬ Ñž Ð²Â ÐŽÂ«ÐÐ¶Ð³ Ð²Â®Ð·Ð„Ð Ð± Â­Ð³Â¦Â­Ð»Â¬ ÐŽÐÐ²Â®Â¬
+      --„®¡®¢«ï¥¬ ¢ â ¡«¨æã â®çª¨ á ­ã¦­ë¬ ¡¨â®¬
       if( patrol_path:flag(i, bit)) then
-            --â€žÂ®ÐŽÂ ÑžÂ«Ð¿ÒÂ¬ Ð²Â®Ð·Ð„Ð³ ÒÐ±Â«Ð old_point == nil ÐÂ«Ð Â­Â®ÑžÂ Ð¿ Ð²Â®Ð·Ð„Â  Â­Ò Ð±Â®ÑžÐ‡Â Â¤Â ÒÐ² Ð± old_point
+            --„®¡ ¢«ï¥¬ â®çªã ¥á«¨ old_point == nil ¨«¨ ­®¢ ï â®çª  ­¥ á®¢¯ ¤ ¥â á old_point
             if(old_point == nil) then
                 table.insert(points, patrol_path:point(i))
             elseif(old_point ~= i) then
@@ -1387,14 +1404,14 @@ function point_with_bit(patrol_path, bit, old_point)      -- old_point - ÐÂ­Â¤Ò
     end
 end
 
---ÑžÂ®Â§ÑžÐ°Â Ð¹Â ÒÐ² Ð‡Ð°Â®ÐÂ§ÑžÂ®Â«Ð¼Â­Ð³Ð¾ Ð²Â®Ð·Ð„Ð³ Ð‡Ð³Ð²Ð Ð³ Ð„Â®Ð²Â®Ð°Â®Â© Ð³Ð±Ð²Â Â­Â®ÑžÂ«ÒÂ­ ÐŽÐÐ²
-function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - ÐÂ­Â¤ÒÐ„Ð± Ð²Â®Ð·Ð„Ð, Ð„Â®Ð²Â®Ð°Ð³Ð¾ Â­Ò Â­Â Â¤Â® ÑžÐ»ÐŽÐÐ°Â Ð²Ð¼,
-    local points = {}                                          -- Ð‡Â Ð°Â Â¬ÒÐ²Ð° Â­Ò Â®ÐŽÐ¿Â§Â Ð²ÒÂ«Ð¼Â­Ð»Â©( Â­Â Ð‡Ð°ÐÂ¬ÒÐ° Ð²ÒÐ„Ð³Ð¹ÒÂ© Ð²Â®Ð·Ð„Ð )
+--¢®§¢à é ¥â ¯à®¨§¢®«ì­ãî â®çªã ¯ãâ¨ ã ª®â®à®© ãáâ ­®¢«¥­ ¡¨â
+function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - ¨­¤¥ªá â®çª¨, ª®â®àãî ­¥ ­ ¤® ¢ë¡¨à âì,
+    local points = {}                                          -- ¯ à ¬¥âà ­¥ ®¡ï§ â¥«ì­ë©( ­ ¯à¨¬¥à â¥ªãé¥© â®çª¨ )
 
     for i = 0, patrol_path:count()-1 do
-      --â€žÂ®ÐŽÂ®ÑžÂ«Ð¿ÒÂ¬ Ñž Ð²Â ÐŽÂ«ÐÐ¶Ð³ Ð²Â®Ð·Ð„Ð Ð± Â­Ð³Â¦Â­Ð»Â¬ ÐŽÐÐ²Â®Â¬
+      --„®¡®¢«ï¥¬ ¢ â ¡«¨æã â®çª¨ á ­ã¦­ë¬ ¡¨â®¬
       if( patrol_path:flag(i, bit)) then
-            --â€žÂ®ÐŽÂ ÑžÂ«Ð¿ÒÂ¬ Ð²Â®Ð·Ð„Ð³ ÒÐ±Â«Ð old_point == nil ÐÂ«Ð Â­Â®ÑžÂ Ð¿ Ð²Â®Ð·Ð„Â  Â­Ò Ð±Â®ÑžÐ‡Â Â¤Â ÒÐ² Ð± old_point
+            --„®¡ ¢«ï¥¬ â®çªã ¥á«¨ old_point == nil ¨«¨ ­®¢ ï â®çª  ­¥ á®¢¯ ¤ ¥â á old_point
             if(old_point == nil) then
                 table.insert(points, i)
             elseif(old_point ~= i) then
@@ -1414,7 +1431,7 @@ function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - Ð
     end
 end
 
---â€šÂ®Â§ÑžÐ°Â Ð¹Â ÒÐ² ÐÂ­Â¤ÒÐ„Ð± Ð±Â Â¬Â®Â© ÐŽÂ«ÐÂ¦Â­ÒÂ© Ð²Â®Ð·Ð„Ð Ð‡Ð³Ð²Ð Ð± Â§Â Â¤Â Â­Ð»Â¬ ÐŽÐÐ²Â®Â¬, Â®Ð² Ð²ÒÐ„Ð³Ð¹ÒÂ© Ð²Â®Ð·Ð„Ð
+--‚®§¢à é ¥â ¨­¤¥ªá á ¬®© ¡«¨¦­¥© â®çª¨ ¯ãâ¨ á § ¤ ­ë¬ ¡¨â®¬, ®â â¥ªãé¥© â®çª¨
 function near_point_with_bit(point, patrol_path, bit)
     local new_point = nil
     local index     = nil
@@ -1423,7 +1440,7 @@ function near_point_with_bit(point, patrol_path, bit)
     for i = 0, patrol_path:count()-1 do
         if( patrol_path:flag(i, bit) ) then
             if(new_point == nil or patrol_path:point(i):distance_to(point) < dist) then
-                --â€¦Ð±Â«Ð Ð½Ð²Â  Ð²Â®Ð·Ð„Â  Ð‡ÒÐ°ÑžÂ Ð¿ ÐÂ§ Â­Â Ð¸ÒÂ¤Ð¸ÐÐµÐ±Ð¿, Â«ÐÐŽÂ® Â®Ð² Â­ÒÒ Ð‡Ð³Ð²Ð¼ ÐŽÂ«ÐÂ¦Ò, Ð²Â® Â§Â Ð‡Â®Â¬ÐÂ­Â ÒÂ¬ ÒÒ
+                --…á«¨ íâ  â®çª  ¯¥à¢ ï ¨§ ­ è¥¤è¨åáï, «¨¡® ®â ­¥¥ ¯ãâì ¡«¨¦¥, â® § ¯®¬¨­ ¥¬ ¥¥
                 new_point   = patrol_path:point(i)
                 index       = i
                 dist        = new_point:distance_to(point)
@@ -1499,7 +1516,7 @@ function set_inactivate_input_time(delta)
 	db.storage[db.actor:id()].disable_input_idle = delta
 	level.disable_input()
 end
--- ÐŸÑ€Ð¸Ð½Ð¸Ð¼Ð°ÐµÑ‚: Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ, Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ ÐºÑƒÐ´Ð° ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ, Ð²Ñ€ÐµÐ¼Ñ ÑÐ½Ð° Ð² Ð¼Ð¸Ð½ÑƒÑ‚Ð°Ñ….
+-- Ïðèíèìàåò: ïîçèöèþ ïîëîæåíèÿ, ïîçèöèþ êóäà ñìîòðåòü, âðåìÿ ñíà â ìèíóòàõ.
 function set_sleep_relocate(point, look, timeout)
 	db.storage[db.actor:id()].sleep_relocate_time = game.get_game_time()
 	db.storage[db.actor:id()].sleep_relocate_idle = timeout*60
@@ -1510,12 +1527,12 @@ function set_sleep_relocate(point, look, timeout)
 	--db.actor:actor_sleep(0, timeout)
 end
 
--- Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÑ‚ Ñ†ÐµÐ»ÑƒÑŽ Ñ‡Ð°ÑÑ‚ÑŒ Ñ‡Ð¸ÑÐ»Ð° Ð½Ð° Ð½ÐµÑ‡Ñ‘Ñ‚Ð½Ð¾ÑÑ‚ÑŒ
+-- ïðîâåðÿåò öåëóþ ÷àñòü ÷èñëà íà íå÷¸òíîñòü
 function odd( x )
 	return math.floor( x * 0.5 ) * 2 == math.floor( x )
 end
 
---' Ð£ÑÑ‚Ð°Ð»Ð¾ÑÑ‚ÑŒ
+--' Óñòàëîñòü
 function on_actor_critical_power()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_11_weakness")
@@ -1528,7 +1545,7 @@ end
 function on_actor_critical_max_power()
 end
 
---' ÐšÑ€Ð¾Ð²Ð¾Ñ‚ÐµÑ‡ÐµÐ½Ð¸Ðµ
+--' Êðîâîòå÷åíèå
 function on_actor_bleeding()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_8_wound")
@@ -1541,7 +1558,7 @@ end
 function on_actor_satiety()
 end
 
---' Ð Ð°Ð´Ð¸Ð°Ñ†Ð¸Ñ
+--' Ðàäèàöèÿ
 function on_actor_radiation()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_6_radiation")
@@ -1551,7 +1568,7 @@ function on_actor_radiation()
 	end
 end
 
---' Ð—Ð°ÐºÐ»Ð¸Ð½Ð¸Ð»Ð¾ Ð¾Ñ€ÑƒÐ¶Ð¸Ðµ
+--' Çàêëèíèëî îðóæèå
 function on_actor_weapon_jammed()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_9_weapon")
@@ -1561,7 +1578,7 @@ function on_actor_weapon_jammed()
 	end
 end
 
---' Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ…Ð¾Ð´Ð¸Ñ‚ÑŒ Ð¸Ð·Ð·Ð° Ð²ÐµÑÐ°
+--' íå ìîæåò õîäèòü èççà âåñà
 function on_actor_cant_walk_weight()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_14_overload")
@@ -1571,7 +1588,7 @@ function on_actor_cant_walk_weight()
 	end
 end
 
---' Ð¿ÑÐ¸ Ð²Ð¾Ð·Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ
+--' ïñè âîçäåéñòâèå
 function on_actor_psy()
 end
 
