@@ -79,6 +79,7 @@ function actor_binder:net_destroy()
 	self.object:set_callback(callback.take_item_from_box, nil)
 	--
 	self.object:set_callback(callback.on_key_press, nil)
+	self.object:set_callback(callback.use_object, nil)
 	--
 	if sr_psy_antenna.psy_antenna then
 		sr_psy_antenna.psy_antenna:destroy()
@@ -113,6 +114,7 @@ function actor_binder:reinit()
 	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
 	--
 	self.object:set_callback(callback.on_key_press, self.on_key, self) -- нажатие клавиши
+	self.object:set_callback(callback.use_object, self.use_inventory_item, self)
 	--
 	self.sm:call("on_reinit")
 end
@@ -223,6 +225,14 @@ function actor_binder:on_item_drop (obj)
 --	if rx_ai then rx_ai.actor_item_drop(obj) end
 
 	self.sm:call("on_drop", obj, sobj)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:use_inventory_item(obj)
+	if not obj then return end
+	local sobj = alife():object(obj:id())
+	if not sobj then return end
+
+	self.sm:call("on_use", obj, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 

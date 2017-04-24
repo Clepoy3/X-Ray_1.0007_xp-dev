@@ -13,3 +13,4 @@ log1(rbt:lower())
 log1(emt:upper())
 log1(rmt:upper())
 --]]-----------------------------------------------------------
+_krodin_utils.spawn_item_in_inv("treasure_item")

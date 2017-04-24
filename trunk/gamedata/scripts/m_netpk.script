@@ -3303,11 +3303,13 @@ _G.torch_flags = { --/ torch
 	NightVisionActive = 2,
 	Attached          = 4
 }
---_G.addon_flags = { --/ weapon --KRodin: вот это совершенно не нужно, в ogse_wpn_utils свои флаги.
---	scope    = 1,
---	launcher = 2,
---	silencer = 4
---}
+if not ogse_wpn_utils then --KRodin: вот это совершенно не нужно, в ogse_wpn_utils свои флаги.
+	_G.addon_flags = { --/ weapon
+		scope    = 1,
+		launcher = 2,
+		silencer = 4
+	}
+end
 _G.hanging_lamp_flags = { --/ hanging lamp
 	Physic       =  1,
 	CastShadow   =  2,

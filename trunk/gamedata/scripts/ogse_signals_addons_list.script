@@ -6,4 +6,5 @@ addons = {
 	"ogse_qt",
 	"ogse_st_mgr",
 	"ogse_weather_mgr",
+	"dsh_rukzak",
 }
