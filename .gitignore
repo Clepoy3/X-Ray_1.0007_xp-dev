@@ -1,4 +1,4 @@
-# Precompiled Headers
+﻿# Precompiled Headers
 *.gch
 *.pch
 *.ipch
@@ -8,3 +8,8 @@
 *.suo
 *.user
 *.aps
+
+/binaries
+/intermediate
+/libraries
+ReadMe.txt
