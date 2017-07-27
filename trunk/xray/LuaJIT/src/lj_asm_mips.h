@@ -65,10 +65,9 @@ static Reg ra_alloc2(ASMState *as, IRIns *ir, RegSet allow)
 static void asm_sparejump_setup(ASMState *as)
 {
   MCode *mxp = as->mcbot;
-  /* Assumes sizeof(MCLink) == 8. */
-  if (((uintptr_t)mxp & (LJ_PAGESIZE-1)) == 8) {
+  if (((uintptr_t)mxp & (LJ_PAGESIZE-1)) == sizeof(MCLink)) {
     lua_assert(MIPSI_NOP == 0);
-    memset(mxp+2, 0, MIPS_SPAREJUMP*8);
+    memset(mxp, 0, MIPS_SPAREJUMP*2*sizeof(MCode));
     mxp += MIPS_SPAREJUMP*2;
     lua_assert(mxp < as->mctop);
     lj_mcode_sync(as->mcbot, mxp);
@@ -1933,7 +1932,11 @@ void lj_asm_patchexit(jit_State *J, GCtrace *T, ExitNo exitno, MCode *target)
   MCode tjump = MIPSI_J|(((uintptr_t)target>>2)&0x03ffffffu);
   for (p++; p < pe; p++) {
     if (*p == exitload) {  /* Look for load of exit number. */
-      if (((p[-1] ^ (px-p)) & 0xffffu) == 0) {  /* Look for exitstub branch. */
+      /* Look for exitstub branch. Yes, this covers all used branch variants. */
+      if (((p[-1] ^ (px-p)) & 0xffffu) == 0 &&
+	  ((p[-1] & 0xf0000000u) == MIPSI_BEQ ||
+	   (p[-1] & 0xfc1e0000u) == MIPSI_BLTZ ||
+	   (p[-1] & 0xffe00000u) == MIPSI_BC1F)) {
 	ptrdiff_t delta = target - p;
 	if (((delta + 0x8000) >> 16) == 0) {  /* Patch in-range branch. */
 	patchbranch:
@@ -1943,7 +1946,9 @@ void lj_asm_patchexit(jit_State *J, GCtrace *T, ExitNo exitno, MCode *target)
 	  if (!cstart) cstart = p-1;
 	} else {  /* Branch out of range. Use spare jump slot in mcarea. */
 	  int i;
-	  for (i = 2; i < 2+MIPS_SPAREJUMP*2; i += 2) {
+	  for (i = (int)(sizeof(MCLink)/sizeof(MCode));
+	       i < (int)(sizeof(MCLink)/sizeof(MCode)+MIPS_SPAREJUMP*2);
+	       i += 2) {
 	    if (mcarea[i] == tjump) {
 	      delta = mcarea+i - p;
 	      goto patchbranch;
