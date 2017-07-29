@@ -4,32 +4,17 @@
 #include "UICustomEdit.h"
 #include "../../LightAnimLibrary.h"
 
-
-static u32 DILetters[] = { DIK_A, DIK_B, DIK_C, DIK_D, DIK_E, 
-DIK_F, DIK_G, DIK_H, DIK_I, DIK_J, 
-DIK_K, DIK_L, DIK_M, DIK_N, DIK_O, 
-DIK_P, DIK_Q, DIK_R, DIK_S, DIK_T, 
-DIK_U, DIK_V, DIK_W, DIK_X, DIK_Y, DIK_Z,
-DIK_0, DIK_1, DIK_2, DIK_3, DIK_4, DIK_5, DIK_6, DIK_7,
-DIK_8, DIK_9};
-
-static xr_map<u32, char> gs_DIK2CHR;
-
 CUICustomEdit::CUICustomEdit()
 {
-	m_max_symb_count		= u32(-1);
-	char l_c;
-	for(l_c = 'a'; l_c <= 'z'; ++l_c) 
-		gs_DIK2CHR[DILetters[l_c-'a']] = l_c;
-	for(l_c = '0'; l_c <= '9'; ++l_c)
-		gs_DIK2CHR[DILetters['z'-'a'+l_c+1-'0']] = l_c;
+	m_max_symb_count = u32(-1);
 
 	m_bShift = false;
+	m_bAlt = false;
 	m_bInputFocus = false;
-
+   
 	m_iKeyPressAndHold = 0;
 	m_bHoldWaitMode = false;
-   
+
 	m_lines.SetVTextAlignment(valCenter);
 	m_lines.SetColoringMode(false);
 	m_lines.SetCutWordsMode(true);
@@ -117,33 +102,35 @@ bool CUICustomEdit::OnMouse(float x, float y, EUIMessages mouse_action)
 
 
 bool CUICustomEdit::OnKeyboard(int dik, EUIMessages keyboard_action)
-{	
-	if(!m_bInputFocus) 
+{
+	if (!m_bInputFocus)
 		return false;
-	if(keyboard_action == WINDOW_KEY_PRESSED)	
+
+	if (keyboard_action == WINDOW_KEY_PRESSED)
 	{
 		m_iKeyPressAndHold = dik;
 		m_bHoldWaitMode = true;
 
-		if(KeyPressed(dik))	return true;
+		if (KeyPressed(dik))
+			return true;
 	}
-	else if(keyboard_action == WINDOW_KEY_RELEASED)	
+	else if (keyboard_action == WINDOW_KEY_RELEASED)
 	{
-		if(m_iKeyPressAndHold == dik)
+		if (m_iKeyPressAndHold == dik)
 		{
 			m_iKeyPressAndHold = 0;
 			m_bHoldWaitMode = false;
 		}
-		if(KeyReleased(dik)) return true;
+		if (KeyReleased(dik))
+			return true;
 	}
 	return false;
 }
 
 bool CUICustomEdit::KeyPressed(int dik)
 {
-	xr_map<u32, char>::iterator it;
-	char out_me = 0;
 	bool bChanged = false;
+
 	switch(dik)
 	{
 	case DIK_LEFT:
@@ -157,6 +144,8 @@ bool CUICustomEdit::KeyPressed(int dik)
 	case DIK_LSHIFT:
 	case DIK_RSHIFT:
 		m_bShift = true;
+		if (m_bAlt)
+			PostMessage(GetForegroundWindow(), WM_INPUTLANGCHANGEREQUEST, 2, 0); //Переключили язык
 		break;
 	case DIK_ESCAPE:
 		if (xr_strlen(GetText()) != 0)
@@ -187,124 +176,122 @@ bool CUICustomEdit::KeyPressed(int dik)
 		m_lines.DelChar();
 		bChanged = true;
 		break;
-	case DIK_SPACE:
-		out_me = ' ';					break;
-	case DIK_LBRACKET:
-		out_me = m_bShift ? '{' : '[';	break;
-	case DIK_RBRACKET:
-		out_me = m_bShift ? '}' : ']';	break;
-	case DIK_SEMICOLON:
-		out_me = m_bShift ? ':' : ';';	break;
-	case DIK_APOSTROPHE:
-		out_me = m_bShift ? '"' : '\'';	break;
-	case DIK_BACKSLASH:
-		out_me = m_bShift ? '|' : '\\';	break;
-	case DIK_SLASH:
-		out_me = m_bShift ? '?' : '/';	break;
-	case DIK_COMMA:
-		out_me = m_bShift ? '<' : ',';	break;
-	case DIK_PERIOD:
-		out_me = m_bShift ? '>' : '.';	break;
-	case DIK_MINUS:
-		out_me = m_bShift ? '_' : '-';	break;
-	case DIK_EQUALS:
-		out_me = m_bShift ? '+' : '=';	break;
-	default:
-		it = gs_DIK2CHR.find(dik);
-
-		//нажата клавиша с буквой 
-		if (gs_DIK2CHR.end() != it){
-			AddLetter((*it).second);
-			bChanged = true;
-		}
-
+	case DIK_LALT:
+	case DIK_RALT:
+		m_bAlt = true;
 		break;
+	default:
+		char out_me = 0;
+		auto layout = GetKeyboardLayout(0);
+		if (m_bShift)
+		{
+			if ((int)layout == 67699721) //Включена английская раскладка
+				switch (dik)
+				{
+				case DIK_LBRACKET:   out_me = '{'; break;
+				case DIK_RBRACKET:   out_me = '}'; break;
+				case DIK_SEMICOLON:  out_me = ':'; break;
+				case DIK_APOSTROPHE: out_me = '"'; break;
+				case DIK_COMMA:      out_me = '<'; break;
+				case DIK_PERIOD:     out_me = '>'; break;
+				}
+			if (!out_me)
+				switch (dik)
+				{
+				case DIK_BACKSLASH: out_me = '|'; break;
+				case DIK_SLASH:     out_me = '?'; break;
+				case DIK_MINUS:     out_me = '_'; break;
+				case DIK_EQUALS:    out_me = '+'; break;
+				}
+		}
+		if (!out_me)
+		{
+			static byte State[256];
+			if (!GetKeyboardState(State)) { Msg("!![CUICustomEdit::KeyPressed] GetKeyboardState() == 0 !!!"); return true; };
+			auto vk = MapVirtualKeyEx(dik, 1, layout);
+			char c[4];
+			if (ToAsciiEx(vk, dik, State, (unsigned short *)c, 0, layout) == 1)
+			{
+				out_me = c[0];
+				if (m_bShift)
+					switch (out_me)
+					{
+					case '1': out_me = '!';	break;
+					case '2': out_me = '@';	break;
+					case '3': out_me = '#';	break;
+					case '4': out_me = '$';	break;
+					case '5': out_me = '%';	break;
+					case '6': out_me = '^';	break;
+					case '7': out_me = '&';	break;
+					case '8': out_me = '*';	break;
+					case '9': out_me = '(';	break;
+					case '0': out_me = ')';	break;
+					default:
+						if ((out_me >= 'а' && out_me <= 'я') || out_me == 'ё' || (out_me >= 'a' && out_me <= 'z')) //Символ является буквой нижнего регистра
+							//Сталкер работает с кодировкой ANSI, и последовательность символов в этой кодировке вполне линейна (кроме символов 'Ё' - 'ё')
+							if (out_me == 'ё')
+								out_me = 'Ё';
+							else
+								out_me -= 32;
+					}
+				else if ((out_me >= 'А' && out_me <= 'Я') || out_me == 'Ё' || (out_me >= 'A' && out_me <= 'Z')) //Костыль, чтоб не было проблем при нажатом капсе
+					if (out_me == 'Ё')
+						out_me = 'ё';
+					else
+						out_me += 32;
+			}
+		}
+		if (out_me)
+			if (!m_bNumbersOnly || ((!m_bShift && out_me >= '0' && out_me <= '9') || (m_bFloatNumbers && out_me == '.' && !strstr(m_lines.GetText(), "."))))
+			{
+				AddChar(out_me);
+				bChanged = true;
+			}
 	}
 
-	if (m_bNumbersOnly)
-	{
-		if (strstr(m_lines.GetText(), "."))
-			return true;
-		if (('.' == out_me) && m_bFloatNumbers){
-			AddChar(out_me);
-			bChanged = true;
-		}
-	}
-	else
-		if(out_me){
-			AddChar(out_me);
-			bChanged = true;
-		}
+	if(bChanged)
+		GetMessageTarget()->SendMessage(this,EDIT_TEXT_CHANGED,NULL);
 
-		if(bChanged)
-			GetMessageTarget()->SendMessage(this,EDIT_TEXT_CHANGED,NULL);
-
-		return true;
+	return true;
 }
+
 
 bool CUICustomEdit::KeyReleased(int dik)
 {
-	switch(dik)
+	switch (dik)
 	{
 	case DIK_LSHIFT:
 	case DIK_RSHIFT:
 		m_bShift = false;
-		return true;
+		break;
+	case DIK_LALT:
+	case DIK_RALT:
+		m_bAlt = false;
+		break;
 	}
 
 	return true;
 }
 
 
-
 void CUICustomEdit::AddChar(char c)
 {
-	if(xr_strlen(m_lines.GetText()) >= m_max_symb_count)					return;
+	if(xr_strlen(m_lines.GetText()) >= m_max_symb_count)
+		return;
 
 	float text_length	= m_lines.GetFont()->SizeOf_(m_lines.GetText());
 	UI()->ClientToScreenScaledWidth		(text_length);
 
-	if (!m_lines.GetTextComplexMode() && (text_length > GetWidth() - 1))	return;
+	if (!m_lines.GetTextComplexMode() && (text_length > GetWidth() - 1))
+		return;
 
 	m_lines.AddCharAtCursor(c);
 	m_lines.ParseText();
 	if (m_lines.GetTextComplexMode())
-	{
 		if (m_lines.GetVisibleHeight() > GetHeight())
 			m_lines.DelLeftChar();
-	}
 }
 
-void CUICustomEdit::AddLetter(char c)
-{
-	if (m_bNumbersOnly)
-	{
-		if ((c >= '0' && c<='9'))
-			AddChar(c);
-
-		return;
-	}
-	if(m_bShift)
-	{
-		switch(c) {
-		case '1': c='!';	break;
-		case '2': c='@';	break;
-		case '3': c='#';	break;
-		case '4': c='$';	break;
-		case '5': c='%';	break;
-		case '6': c='^';	break;
-		case '7': c='&';	break;
-		case '8': c='*';	break;
-		case '9': c='(';	break;
-		case '0': c=')';	break;
-		default:
-			c = c-'a';
-			c = c+'A';
-		}
-	}
-
-	AddChar(c);
-}
 
 //время для обеспечивания печатания
 //символа при удерживаемой кнопке
@@ -313,17 +300,17 @@ void CUICustomEdit::AddLetter(char c)
 
 void CUICustomEdit::Update()
 {
-	if(m_bInputFocus)
-	{	
-		static u32 last_time; 
+	if (m_bInputFocus)
+	{
+		static u32 last_time;
 
 		u32 cur_time = Device.TimerAsync();
 
-		if(m_iKeyPressAndHold)
+		if (m_iKeyPressAndHold)
 		{
-			if(m_bHoldWaitMode)
+			if (m_bHoldWaitMode)
 			{
-				if(cur_time - last_time>HOLD_WAIT_TIME)
+				if (cur_time - last_time>HOLD_WAIT_TIME)
 				{
 					m_bHoldWaitMode = false;
 					last_time = cur_time;
@@ -331,7 +318,7 @@ void CUICustomEdit::Update()
 			}
 			else
 			{
-				if(cur_time - last_time>HOLD_REPEAT_TIME)
+				if (cur_time - last_time>HOLD_REPEAT_TIME)
 				{
 					last_time = cur_time;
 					KeyPressed(m_iKeyPressAndHold);
@@ -342,12 +329,11 @@ void CUICustomEdit::Update()
 			last_time = cur_time;
 	}
 
-	m_lines.SetTextColor(m_textColor[IsEnabled()?0:1]);
-
+	m_lines.SetTextColor(m_textColor[IsEnabled() ? 0 : 1]);
 	CUIWindow::Update();
 }
 
-void  CUICustomEdit::Draw()
+void CUICustomEdit::Draw()
 {
 	CUIWindow::Draw			();
 	Fvector2				pos;

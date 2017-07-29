@@ -42,11 +42,11 @@ protected:
 	bool KeyPressed(int dik);
 	bool KeyReleased(int dik);
 
-	void AddLetter(char c);
 	virtual void AddChar(char c);
 
 	bool m_bInputFocus;
 	bool m_bShift;
+	bool m_bAlt;
 
 	bool m_bNumbersOnly;
 	bool m_bFloatNumbers;
@@ -57,8 +57,6 @@ protected:
 	//DIK клавиши, кот. нажата и удерживается, 0 если такой нет
 	int m_iKeyPressAndHold;
 	bool m_bHoldWaitMode;
-
-//	u32	m_cursorColor;
 
 	CLAItem*				m_lanim;
 };
