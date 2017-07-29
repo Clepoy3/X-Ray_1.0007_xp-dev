@@ -141,8 +141,6 @@
 
 #if defined(LZO_CFG_FREESTANDING)
 #  undef LZO_DEBUG
-#  undef assert
-#  define assert(e) ((void)0)
 #else
 #  include <assert.h>
 #endif

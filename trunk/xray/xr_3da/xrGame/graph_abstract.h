@@ -42,7 +42,7 @@ public:
 
 private:
 	VERTICES					m_vertices;
-	u32							m_edge_count;
+	/*u32*/size_t							m_edge_count;
 
 public:
 	IC									CGraphAbstract	();
