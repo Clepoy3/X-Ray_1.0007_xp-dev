@@ -91,7 +91,7 @@ function timeout( delay, fun, ... )
   --
   local d = debug.getinfo(2)
   ASSERT(d, "")
-  tmout.script_name = d.short_src
+  tmout.script_name = d.short_src:gsub('^.-([^\\]+)%.[^.]+$', '%1')
   tmout.line = d.linedefined
   --
   tmout:start()

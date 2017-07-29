@@ -98,7 +98,7 @@ function quick_timer:start( low_priority )
   local d = debug.getinfo(2)
   ASSERT(d, "")
   if not self.script_name then
-    self.script_name = d.short_src
+    self.script_name = d.short_src:gsub('^.-([^\\]+)%.[^.]+$', '%1')
   end
   if not self.line then --Номер строки скрипта, на которой расположена функция
     self.line = d.linedefined

@@ -236,7 +236,8 @@ local item_types_registry
 -- можно поместить и собственно помещения
 function create_item( name, value, typ, subtype )
   if typ then -- явно задали тип
-    if type( typ ) == "string" then
+    if type( typ ) ~= "number" then
+      ASSERT( types[ typ ], "ogse_unist.create_item: unknown type [%s]", typ )
       typ = types[ typ ]
     end
     local constructor = item_types_registry[ typ ]
@@ -1359,6 +1360,7 @@ end
 
 function set_value( name, value, typ, subtype )
   ASSERT( ready, "ogse_unist.set_value: storage is not yet ready" )
+  ASSERT( value ~= nil, "ogse_unist.set_value: trying set nil value for variable with name [%s]", name ) --nil в любом случае сохранять запрещено
   -- сначала в любом случае удаляем старое значение, если было
   if value_exist( name ) then
     remove_value( name )

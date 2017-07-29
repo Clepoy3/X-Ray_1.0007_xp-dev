@@ -12,7 +12,6 @@ se_item с функцией function wpn_state_read_and_modify
 
 --[=[ TODO:
 Чем-то заменить функциии ogse_wpn_utils.get_hidden_ammo_type( wpn ) и ogse_wpn_utils.get_ammo_elapsed2( wpn ). Скорее всего, придётся это делать в движке.
-Сделать в движке поддержку ввода русских букв в поле поиска.
 м_нетпк почему-то не хочет читать нетпакеты рюкзаков в функции _krodin_utils.clear_used_ai_locations(). Надо разобраться, что там такое.
 Адаптировать огсе_метку
 Переделать сортировку
