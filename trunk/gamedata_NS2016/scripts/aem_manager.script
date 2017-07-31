@@ -1031,9 +1031,9 @@ function CArenaext:update()
 		
 		-- трансфер в рюкзак ГГ предварительно переспавненного оружия с подстволами
 		if self.grenads then
-			if aem_grenade.unload2(self.grenads) then
+			--if aem_grenade.unload2(self.grenads) then
 				self.grenads = nil
-			end
+			--end
 		end
 	end
 	
@@ -1143,7 +1143,7 @@ function CArenaext:start(phr_id)
 		put_items_to_box(box, self.remove_items)
 		
 		-- отнимаем у ГГ оружие с подстволами
-		self.grenads = aem_grenade.unload1()
+		self.grenads = nil --aem_grenade.unload1()
 		
 		-- запускаем кучу логики, завязанную на этот info_portion
 		actor:give_info_portion("bar_arena_fight")
@@ -1427,23 +1427,24 @@ end
 -- Проверяем версию игры и подставляем нужный тип данных
 -------
 function chk_ver(pid)
-	if tonumber(_G.main_menu.get_main_menu():GetGSVer()) <= 1.0004 then
-		return pid
-	else
-		if pid == -1 then
-			return ""
-		else
+	--local ver = tonumber(_G.main_menu.get_main_menu():GetGSVer())
+	--if ver and ver <= 1.0004 then
+	--	return pid
+	--else
+		--if pid == -1 then
+		--	return ""
+		--else
 			return tostring(pid)
-		end
-	end
+		--end
+	--end
 end
 
 function chk_ver_back(ph_curr)
-	if tonumber(_G.main_menu.get_main_menu():GetGSVer()) <= 1.0004 then
-		return ph_curr
-	else
+	--if tonumber(_G.main_menu.get_main_menu():GetGSVer()) <= 1.0004 then
+	--	return ph_curr
+	--else
 		return tonumber(ph_curr)
-	end
+	--end
 end
 
 -------

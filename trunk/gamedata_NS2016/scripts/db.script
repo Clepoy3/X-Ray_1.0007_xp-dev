@@ -4,7 +4,7 @@
 --------------------------------------------------------------------------------------------------]]
 --tonumber(_G.main_menu.get_main_menu():GetGSVer()) <= 1.0004
 --ver                 = script_server_object_version() or -1 --/ метка весии игры
-ver                 = tonumber(_G.main_menu.get_main_menu():GetGSVer()) <= 1.0004 and 6 or 7 --/ метка весии игры
+ver                 = ( tonumber(_G.main_menu.get_main_menu():GetGSVer()) and tonumber(_G.main_menu.get_main_menu():GetGSVer()) <= 1.0004 ) and 6 or 7 --/ метка весии игры
 artefacts           = {}
 zone_by_name        = {}
 sl_by_name          = {}

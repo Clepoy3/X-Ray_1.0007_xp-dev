@@ -92,14 +92,6 @@ function trup_to_zombie(s_param)
 			if (trup:character_community() == 'zombied' and rand <= 0.4) --[[or rand <= 0.1]] then
 			--if math.random() <= 0.1 then
 				--Не очень хорошая идея(эти скелеты долго будут валятся на локе), поэтому просто взорвем!
-				--[[skelet = ex_all.spawn_valid_obj('breakable_object',trup_pos,lv,gv)
-				if skelet then 
-					t = amk.get_breakable_data(skelet)  
-					t.visual ='physics\\dead_body\\skelet_combine_pose_0'..tostring(math.random(3,5))
-					t.mass = 1.0
-					t.physic_type = 3
-					amk.set_breakable_data(t,skelet)
-				end]]
 				amk_particle.amk_particle({particle = 'amk\\zomb_explode', pos = trup_pos, sound = 'anomaly\\anomaly_body_tear_1'})
 				drop_unique_items(trup, strup)
 			--А этих превращаем в зомби 
@@ -113,15 +105,17 @@ function trup_to_zombie(s_param)
 					if section then
 						local zombie = ex_all.spawn_valid_obj(section, trup_pos, lv, gv)
 						if zombie then
-							local z = amk.read_stalker_params(zombie)
-							if z then
-								z.health = 0.1
-								z.updhealth = 0.05
-								z.charname = name
-								z.reputation = repa
-								z.rank = rank
-								amk.write_stalker_params(z, zombie)
-							end
+							--
+							local pk = get_netpk( zombie )
+							ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", zombie:name() )
+							local data = pk:get()
+							data.health = 0.1
+							data.upd.health = 0.1
+							data.character_name = name
+							data.reputation = repa
+							data.rank = rank
+							pk:set( data )
+							--
 							zombie.torch_on = strup.torch_on
 							if zombie.torch_on then
 								alife():create("device_torch",zombie.position,zombie.m_level_vertex_id,zombie.m_game_vertex_id, zombie.id)
@@ -158,16 +152,11 @@ function tag_get_npc_data(trup, strup)
 			name = trup:character_name()
 			repa = trup:character_reputation()
 			rank = sol_utils.getRankById(trup:id())
-			
-			local t = amk.read_stalker_params(strup)
-			local exo, vis
-			if t then
-				vis = t.visual
-				vis = Parse_StrToTbl(vis,"\\")
-				vis = vis[#vis]
-				exo = vis and string.find(vis, 'exo', 1, true) ~= nil
-			end
-			
+
+			local vis = Parse_StrToTbl(trup:get_visual_name(), "\\")
+			vis = vis[#vis]
+			local exo = vis and string.find(vis, 'exo', 1, true) ~= nil
+
 			if exo or exo == nil and rank >= 900 then
 				sect = 1
 			else

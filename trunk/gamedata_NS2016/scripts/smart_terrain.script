@@ -900,7 +900,7 @@ function read_smart_terrain_conditions( obj )	-- непись или моб на входе !
 	local r, k, v
 	for i = 0, n - 1 do
 		r, k, v = ini:r_line( sect, i, "", "" )
-		v = string_gsub( v, "{\-aes_arrive_to}", "true" )	-- todo: давно пора снести
+		v = string_gsub( v, "{\\-aes_arrive_to}", "true" )	-- todo: давно пора снести
 		t[k] = xr_logic.parse_condlist( v, obj, sect, k )
 	end
 	return t

@@ -148,15 +148,21 @@ end
 --' Регистрация
 function se_stalker:on_register()
 	-- Чистим рестрикторы
-	local tbl = amk.read_stalker_params(self)
-	tbl.crvu32u16u2 = {}
-		if self:smart_terrain_id() ~= 65535 then
-			tbl.baseoutr = ""
-			tbl.baseinr = ""
+	if self:smart_terrain_id() ~= 65535 then
+		local pk = get_netpk( self, 1 )
+		if pk:isOk() then
+			local data = pk:get()
+			local has_restrs = #data.dynamic_in_restrictions > 0 or #data.dynamic_out_restrictions > 0
+			if has_restrs then
+				data.dynamic_in_restrictions = {}
+				data.dynamic_out_restrictions = {}
+				pk:set( data )
+			end
 		end
-	amk.write_stalker_params(tbl,self)
+	end
+
 	cse_alife_human_stalker.on_register(self)
-	
+
 	if self:alive() then
 		-- регистрация в таблице рангов
 		if actor_stats.add_to_ranking and not no_ranking[self:community()] and self:rank() >= 900 then

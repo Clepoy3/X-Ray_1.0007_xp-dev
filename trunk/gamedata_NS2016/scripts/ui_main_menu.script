@@ -67,7 +67,7 @@ function main_menu:InitCallBacks()
 	-- save																												
 	self:AddCallback("btn_save",		ui_events.BUTTON_CLICKED,				self.OnButton_save_clicked,			self)
 	-- multiplayer																										
-	self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
+	--self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
 	-- quit																												
 	self:AddCallback("btn_quit",		ui_events.BUTTON_CLICKED,				self.OnButton_quit_clicked,			self)
 	self:AddCallback("btn_quit_to_mm",	ui_events.BUTTON_CLICKED,				self.OnButton_disconnect_clicked,	self)
@@ -256,6 +256,7 @@ function main_menu:OnButton_load_clicked()
 	self:Show(false)
 end
 
+--[=[
 function main_menu:OnButton_multiplayer_clicked()
 	if self.mp_dlg ==nil then
 		self.mp_dlg = ui_mp_main.mp_main()
@@ -273,11 +274,12 @@ function main_menu:OnButton_multiplayer_clicked()
 	
 	self.mp_dlg:OnRadio_NetChanged()
 end
+--]=]
 
 function main_menu:Dispatch(cmd, param)  --virtual function
-	if cmd == 2 then
-		self:OnButton_multiplayer_clicked()
-	end
+	--if cmd == 2 then
+	--	self:OnButton_multiplayer_clicked()
+	--end
 	return true
 end
 

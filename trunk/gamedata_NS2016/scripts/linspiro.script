@@ -30,18 +30,24 @@ function insert_custom_data(npc,actor)
 	end
 	
 	local id = npc_:id()
-	local obj = alife():object(id)
-	if (obj) then
-		local t = amk.read_stalker_params(obj)
-		local cd = amk.parse_custom_data(t.custom)
+	local sobj = alife():object(id)
+	if sobj then
+		--
+		local pk = get_netpk( sobj )
+		ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+		local data = pk:get()
+		local cd = data.custom_data:getTable()
+		--
 		if not cd.npc then 
 			cd.npc={} 
 		end
 		if not cd.npc.vv then 
 			cd.npc.vv = 0 
 		end
-		t.custom = amk.gen_custom_data(cd)
-		amk.write_stalker_params(t, obj, true) 
+		--
+		data.custom_data:set( cd )
+		pk:set( data )
+		--
 	end
 end
 
@@ -57,11 +63,15 @@ function precond(npc, actor)
 	
 	local zz = true
 	local id = npc_:id()
-	local obj = alife():object(id)
-	if (obj) then
-		local t = amk.read_stalker_params(obj)
-		local cd = amk.parse_custom_data(t.custom)
-		if (cd.npc and cd.npc.vv and tonumber(cd.npc.vv) == 0) then
+	local sobj = alife():object(id)
+	if sobj then
+		--
+		local pk = get_netpk( sobj )
+		ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+		local data = pk:get()
+		local cd = data.custom_data:getTable()
+		--
+		if cd.npc and cd.npc.vv and tonumber(cd.npc.vv) == 0 then
 			zz = false
 		end
 	end

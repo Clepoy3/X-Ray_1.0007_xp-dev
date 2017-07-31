@@ -265,10 +265,8 @@ end
 
 function metka_na_npc()
 	local sobj = alife():create("gar_stalker_flame",vector():set(24.86,0.40,209.75),198510,359)
-	local params = amk.read_stalker_params(sobj)
-	params.sid = 481516
-	amk.write_stalker_params(params,sobj)
-	amk.add_spot_on_map(sobj.id,"blue_location","Лёха Тамбовский")
+	alife():assign_story_id( sobj.id, 481516 )
+	amk.add_spot_on_map(sobj.id, "blue_location", "Лёха Тамбовский")
 end
 
 function start_work(first_speaker, second_speaker)

@@ -444,15 +444,12 @@ function se_respawn:binded_logic(sobj)
 	if not cfg_name then
 		return
 	end
-	local tabl
-	if IAmAMonster[sobj:clsid()] then
-		tabl = amk.read_monster_params(sobj)
-		tabl.custom = "[logic]\ncfg = scripts\\amk\\"..cfg_name..".ltx"
-		amk.write_monster_params(tabl,sobj)
-	elseif IAmAStalker[sobj:clsid()] then
-		tabl = amk.read_stalker_params(sobj)
-		tabl.custom = "[logic]\ncfg = scripts\\amk\\"..cfg_name..".ltx"
-		amk.write_stalker_params(tabl,sobj)
+	if IAmAMonster[sobj:clsid()] or IAmAStalker[sobj:clsid()] then
+		local pk = get_netpk( sobj, 1 )
+		ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+		local data = pk:get()
+		data.custom_data:set( "[logic]\ncfg = scripts\\amk\\"..cfg_name..".ltx" )
+		pk:set( data )
 	end
 end
 

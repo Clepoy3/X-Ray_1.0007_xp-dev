@@ -1,10 +1,230 @@
-if ( jit == nil ) then
-	profiler.setup_hook()
+-- -*- mode: lua; coding: windows-1251-dos -*-
+--*************************************************************************************************************************
+log1("--LUA version: ["..(jit.version or _VERSION).."]")
+--==============[string.lower и string.upper с поддержкой русских букв by KRodin]===============
+FFI = require('ffi') --Вот это делать только здесь и только один раз!
+--[=[ --KRodin: этот вариант работает, но из-за setlocale слишком много проблем возникает в разных местах
+os.setlocale("", "ctype")
+FFI.cdef[[
+int tolower( int code );
+int toupper( int code );
+]]
+string.lower = function(s)
+	return s:gsub('.', function(x)
+		return string.char( FFI.C.tolower( x:byte() ) )
+	end)
+end
+string.upper = function(s)
+	return s:gsub('.', function(x)
+		return string.char( FFI.C.toupper( x:byte() ) )
+	end)
+end
+--]=]
+--Этот вариант не требует setlocale
+--!!ВАЖНО!! Для правильной работы этих функций, кодировка скрипта должна быть только ANSI!!
+do
+	local lower = string.lower
+	string.lower = function(s)
+		return lower(s:gsub("([А-Я])",function(c) return string.char(c:byte()+32) end):gsub("Ё", "ё"))
+	end
+
+	local upper = string.upper
+	string.upper = function(s)
+		return upper(s:gsub("([а-я])",function(c) return string.char(c:byte()-32) end):gsub("ё", "Ё"))
+	end
+end
+--=================================[Функции из xrLuaFix]========================================
+--Срезать пробелы слева
+if not string.trim_l then
+	string.trim_l = function(s) return s:gsub("^%s+",'') end
+end
+--Срезать пробелы справа
+if not string.trim_r then
+	string.trim_r = function(s) return s:gsub("%s*$",'') end
+end
+--Срезать все пробелы слева и справа
+if not string.trim then
+	string.trim = function(s) return s:gsub('^%s*(.-)%s*$', '%1') end
+end
+--==============================================================================================
+-- Взято из аддона Naxac'a
+local to_ptrn = {
+	[' '] = '%s',
+	['.'] = '%.',
+	['%'] = '%%',
+	['*'] = '%*',
+	['-'] = '%-'
+}
+if not string.explode then
+	string.explode = function ( div,    -- разделитель
+								str,    -- строка
+								clear ) -- обрезать ли пробелы по краям строк (false/true)
+		local ret = {}
+		for s in str:gmatch("([^"..(to_ptrn[div] or div).."]+)") do
+			ret[#ret+1] = clear and s:trim() or s
+		end
+		return ret
+	end
+end
+--==============================================================================================
+--Поверхностное (простое) клонирование таблицы: 
+--создаётся копия таблицы и копии всех элементов без их клонирования,
+--т.е. для ссылочных типов обе таблицы будут содержать ссылки на одни и те же данные
+--метатаблицы не копируются
+if not table.clone_simple then
+	table.clone_simple = function(tbl)
+		local res = {}
+		for k,v in pairs(tbl) do
+			res[k] = v
+		end
+		return res
+	end
+end
+--==============================================================================================
+-- выравнивание значения n в пределы от min до max
+if not math.clamp then
+	math.clamp = function( n, min, max )
+		if min>max then min,max=max,min end
+		return (n>max and max) or (n<min and min) or n
+	end
+end
+-- округление к ближайшему
+if not math.round then
+	math.round = function(v) return math.floor(v + 0.5) end
+end
+if not math.lerp then
+	math.lerp = function(x1, x2, y1, y2, x) return (x - x1) * (y2 - y1) / (x2 - x1) end
+end
+if not math.similar then
+	math.similar = function(a1, a2, tol) return math.abs(a1 - a2) <= tol end
+end
+--==============================================================================================
+math.randomseed(os.time())
+--==============================================================================================
+--KRodin: TODO: может добавить прям в движок?
+--Некоторые недостающие DIK_keys:
+DIK_keys["DIK_MOUSE1"] = 337
+DIK_keys["DIK_MOUSE2"] = 338
+DIK_keys["DIK_MOUSE3"] = 339
+DIK_keys["DIK_MOUSE4"] = 340
+DIK_keys["DIK_MOUSE5"] = 341
+DIK_keys["DIK_MOUSE6"] = 342
+DIK_keys["DIK_MOUSE7"] = 343
+DIK_keys["DIK_MOUSE8"] = 344
+
+--Некоторые недостающие key_bindings:
+key_bindings["kSPRINT_TOGGLE"] = 8
+key_bindings["kENGINE"] = 15
+key_bindings["kARTEFACT"] = 30
+key_bindings["kWPN_FIREMODE_PREV"] = 38
+key_bindings["kWPN_FIREMODE_NEXT"] = 39
+key_bindings["kPAUSE"] = 40
+key_bindings["kCHAT_TEAM"] = 45
+key_bindings["kACTIVE_JOBS"] = 53
+key_bindings["kMAP"] = 54
+key_bindings["kCONTACTS"] = 55
+key_bindings["kVOTE_BEGIN"] = 57
+key_bindings["kVOTE"] = 58
+key_bindings["kVOTEYES"] = 59
+key_bindings["kVOTENO"] = 60
+key_bindings["kSPEECH_MENU_0"] = 63
+key_bindings["kSPEECH_MENU_1"] = 64
+key_bindings["kUSE_BANDAGE"] = 73
+key_bindings["kUSE_MEDKIT"] = 74
+key_bindings["kQUICK_SAVE"] = 75
+key_bindings["kQUICK_LOAD"] = 76
+--==================================[log3 & log4 by KRodin]=====================================
+function isArray(tbl) --Является ли таблица массивом
+	local n=0
+	for _ in pairs(tbl) do n=n+1 end
+    return n <= #tbl
 end
 
+--Конвертирование чего угодно в строку. Использовать только для вывода в лог!
+local tostring_all_tbl = {
+	["table"] =		function(table, ind) --Распечатка таблиц
+						local res = "{" --Начало
+						local end_res = ind and "\n"..ind.."}" or "\n}" --Конец
+						local def_ind = "  " --Отступ от начала строки
+						ind = ind and ind..def_ind or def_ind --Для каждой "таблицы внутри таблицы" отступ увеличивается в 2 раза
+						if isArray(table) then --Если это массив, обрабатываем только значения:
+							for i=1, #table do --Это актуально только для отслеживания nil-аргументов в таблицах. В будущем, при переезде на новый jit, это надо бы убрать.
+								res = res.."\n"..ind..tostring_all(table[i], ind)..","
+							end
+						else --Если НЕ массив, обрабатываем и ключи, и значения:
+							for k, v in pairs(table) do
+								res = res.."\n"..ind.."["..tostring_all(k, ind).."] = "..tostring_all(v, ind)..","
+							end
+						end
+						return res..end_res
+					end,
+	["string"] =	function(v) return "'"..v.."'" end, --Строки берём в кавычки. Это нужно, чтобы можно было отличить строку "123" от числа 123, "nil" от nil и тд...
+	["number"] =	function(v) return tostring(v) end,
+	["boolean"] =	function(v) return tostring(v) end,
+	["nil"] =		function(v) return tostring(v) end,
+	["function"] =	function() return "[[FUNCTION]]" end, --Function, Userdata и Thread распечатать нельзя, просто заменим на строки
+	["userdata"] =	function() return "[[USERDATA]]" end,
+	["thread"] =	function() return "[[THREAD]]" end,
+}
+function tostring_all(obj, ind) --ind - служебный аргумент для распечатки "таблиц в таблицах". НЕ ТРОГАТЬ ЕГО!!!
+	return tostring_all_tbl[type(obj)](obj, ind)
+end
+
+--Делает дополнительную работу по конвертации параметров, которые не воспринимаются родной функцией string.format.
+--Параметры можно передавать ЛЮБОГО ТИПА! В строке формата они должны стоять как %s (потому, что будут сконвертированы в строки).
+function log3(fmt, ...)
+	local args = {...}
+	for i=1, #args do
+		args[i] = tostring_all(args[i])
+	end
+	local res, msg = pcall(string.format, fmt, unpack(args))
+	if not res then --Если произошла ошибка
+		msg = "!!log3 failed: "..msg.."\n"..debug.traceback()
+	end
+	--
+	log1(msg)
+end
+
+local logs_cach = {}
+--Функция создаёт новый лог-файл и выводит текст в него.
+--fname - название лог-файла, например "Anomaly_Evader". Он будет создан в папке logs, к названию добавится дата и время создания.
+--fmt, ... - строка формата с параметрами как и в функции log3
+function log4(fname, fmt, ...)
+	local f = logs_cach[fname]
+	if not f then
+		local dt = os.date("*t")
+		local fpath = getFS():update_path("$logs$", ("%s_%02d.%02d.%02d_%02d.%02d.%02d.log"):format(fname,dt.day,dt.month,dt.year,dt.hour,dt.min,dt.sec))
+		f = io.open(fpath, "w")
+		logs_cach[fname] = f
+	end
+	local args = {...}
+	for i=1, #args do
+		args[i] = tostring_all(args[i])
+	end
+	local res, msg = pcall(string.format, fmt, unpack(args))
+	if not res then
+		msg = "!!log4 failed: "..msg.."\n"..debug.traceback()
+	end
+	f:write(msg..'\n')
+	f:flush()
+end
+--======================================[Функции из OGSE]=======================================
+-- Крешнуть игру (после вывода сообщения об ошибке в лог)
+function abort(...)
+	log1("!!************************************[ABORT]************************************")
+	log1(debug.traceback())
+	log3(...)
+	log1("!!*******************************************************************************")
+	--
+	local error ; error = 1/error; get_console():execute( "quit" )
+end
+function ASSERT(val, ...)
+	if not val then abort(...) end
+end
+--==============================================================================================
+--*************************************************************************************************************************
 
 -- ни какой "local" ЗДЕСЬ быть не должно. Это все надо на случай, если забыли или опечатались где-то еще
-
 string_sub, string_gsub = string.sub, string.gsub
 string_find, string_gfind = string.find, string.gfind
 string_match, string_gmatch = string.match, string.gmatch
@@ -27,18 +247,6 @@ function log( ct, fmt, ... )	-- src - откуда вызван, если false - не выводится, 
 --	get_console():execute( "load ~" .. ct .. "~ [_g] " .. ( fmt or "" ) )	-- для поиска потерянных аргументов и скрипта, их потерявшего
 --	get_console():execute( "load ~" .. ct .. "~ [_g] " .. ( ( ... and string_format( fmt, ... ) ) or fmt or "" ) )
 end
-
-
-function abort( fmt, ... )	-- тоже "короткий", полный - в утилитах
-	get_console():execute( string_format( "load ~error~: %s", ( ... and string_format( fmt, ... ) ) or fmt or "" ) )
-	get_console():execute( "load ~~~ Обнаружена ошибка. Описание ошибки смотрите выше. Игра остановлена." )
-	get_console():execute( "load ~~~ Пожалуйста, не надо сообщать об ошибке в строке 40." )
-	get_console():execute( "load ~~~ Какую-либо ценность имеют 10 строк ДО этого сообщения." )
-	get_console():execute( "flush" )
-	local error ; error = 1/error; get_console():execute( "quit" )
-	-- Warning ! Может не срабатывать из апдейтов и иже с ними, если это не актор. Используейте watchdog.
-end
-
 
 function round( v )
 	local min = math_floor( v )
@@ -134,41 +342,6 @@ function Parse_StrToTbl( sStr, sDiv, Mode, strong )
 	else cached_hit_Parse_StrToTbl = cached_hit_Parse_StrToTbl + 1
 	end
 	return cached_Parse_StrToTbl[key]
-end
-
--- комментарии в профилях и cd не использовать ! Сохраняются в cd как есть !
-function parse_custom_data( str )
-	local t = {}
-	if str then
-		local ts
-		for sect, data in string_gfind( str, "%s*%[([^%]]*)%]%s*([^%[%z]*)%s*" ) do
-			ts = {}
-			t[sect] = ts
-			for s in string_gfind( data or "", "([^\n]*)\n*" ) do
-				if string_find( s, "=" ) then
-					for k, v in string_gfind( s, "([^=]-)%s*=%s*(.*)" ) do
-						if v then
-							k = string_match( k, "^%s*(.*%S)" )
-							if k and k ~= "" then
-								ts[k] = string_match( v, "^%s*(.*%S)" )
-					end	end	end
-				else
-					local k = string_match( s, "^%s*(.*%S)" )
-					if k and k ~= "" then ts[k] = "<<no_value>>" end
-	end	end	end	end
-	return t
-end
-
-
-function gen_custom_data( t )	-- как и выше - для "мало-ли кого". Копировать из отдельного скрипта локально.
-	local s = ""
-	for k, v in pairs( t ) do
-		s = s .. "[" .. k .. "]\n"
-		for kk, vv in pairs( v ) do
-			if vv ~= "<<no_value>>" then s = s .. kk .. " = " .. vv .. "\n"
-			else s = s .. kk .. "\n"
-	end	end	end
-	return s
 end
 
 
@@ -1088,7 +1261,7 @@ function watch_condition()
 			if dead_time then
 				if dead_time + 2000 < time_global() then
 					if not dead_message then
-						dead_message = "Похоже, висим... или падаем ? \(".. amk.oau_watchdog .. "\)"
+						dead_message = "Похоже, висим... или падаем ? \\(".. amk.oau_watchdog .. "\\)"
 						amk.send_tip(actor_dead, "собака страшная", 0, 15, "gen_info")
 						-- if bind_stalker.watchdog_stage == 20 then
 						-- actor_dead = "meceni\.utils = " .. tostring(meceniy_utils.watchdog_stage) .. "\n"
@@ -1165,6 +1338,8 @@ valuable_clsid = {}
 
 
 function start_game_callback()
+
+	m_netpk.attach()
 
 	math.randomseed( time_global() )
 

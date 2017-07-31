@@ -563,12 +563,14 @@ function clear_outfits(stalker_id)
 	
 	if (money > 0) then
 		outfits_cost_returned = outfits_cost_returned + money
-		local npc = alife():object(stalker_id)
-		local tbl = amk.read_stalker_params(npc)
-		local old_money = tbl.money
-		if (old_money == nil) then old_money = 0 end
-		tbl.money = old_money + money
-		amk.write_stalker_params(tbl, npc)
+		local sobj = alife():object(stalker_id)
+		--
+		local pk = get_netpk( sobj, 1 )
+		ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+		local data = pk:get()
+		data.money = data.money + money
+		pk:set( data )
+		--
 		stalkers_outfits_costs_returned_count = stalkers_outfits_costs_returned_count + 1
 	end
 

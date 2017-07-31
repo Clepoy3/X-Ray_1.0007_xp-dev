@@ -283,29 +283,30 @@ amk.send_tip(string.format("группа: %s, смарт: %s, лока: %s",community,new_smart
 		end
 		local team = team_community[community]
 		-- зарегистрируем данные
-		local tbl = amk.read_stalker_params(sobj)
-		if tbl then
-			-- исправим смарт и логику
-			if new_smart then
-				tbl.custom = custom
-				tbl.smtrid = smart_go
-			end
-			-- сменим костюмчик: смена произойдет только в оффлайне!
-			if vis then
-				tbl.visual = vis
-			end
-			-- удалим рестрикторы
-			tbl.baseinr = ""
-			tbl.baseoutr = ""
-			-- поправим здоровье
-			tbl.health = 2
-			tbl.updhealth = 2
-			-- поправим team группировки
-			tbl.team = team
-			tbl.updteam = team
-			amk.write_stalker_params(tbl,sobj,true)
+		--
+		local pk = get_netpk( sobj )
+		ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+		local data = pk:get()
+		-- исправим смарт и логику
+		if new_smart then
+			data.custom_data:set( custom )
+			data.smart_terrain_id = smart_go
 		end
-
+		-- сменим костюмчик: смена произойдет только в оффлайне!
+		if vis then
+			data.visual_name = vis
+		end
+		-- удалим рестрикторы
+		data.dynamic_in_restrictions = {}
+		data.dynamic_out_restrictions = {}
+		-- поправим здоровье
+		data.health =  2
+		data.upd.health =  2
+		-- поправим team группировки
+		data.g_team = team
+		data.upd.g_team = team
+		pk:set( data )
+		--
 amk.add_spot_on_map(sobj.id,"alife_presentation_stalker",tostring(npc:character_name()))
 
 	end
@@ -336,13 +337,15 @@ function recovery_params(id,name,comm)
 			end
 		end
 		if team and comm_id then
-			local tbl = amk.read_stalker_params(sobj)
-			if tbl then
-				tbl.communityid = comm_id
-				tbl.team = team
-				tbl.updteam = team
-				amk.write_stalker_params(tbl,sobj,true)
-			end
+			--
+			local pk = get_netpk( sobj )
+			ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+			local data = pk:get()
+			data.community_index = comm_id
+			data.g_team = team
+			data.upd.g_team = team
+			pk:set( data )
+			--
 		end
 	end
 end

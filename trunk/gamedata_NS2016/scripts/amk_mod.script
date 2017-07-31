@@ -2592,7 +2592,11 @@ function spawn_unspawned_respawners_2() counterAdd("amk_mod.spawn_unspawned_resp
 				local xyzlg = Parse_StrToTbl(t.xyzlg,",")
 				local pos = vector():set(tonumber(xyzlg[1]),tonumber(xyzlg[2]),tonumber(xyzlg[3]))
 				local respawner = amk.spawn_item("respawn",pos,tonumber(xyzlg[5]),tonumber(xyzlg[4]))
-				local tbl = amk.get_spawner_data(respawner)
+				--
+				local pk = get_netpk( respawner, 1 )
+				ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", respawner:name() )
+				local data = pk:get()
+				--
 				t.xyzlg = nil
 				t.amk_name = v
 
@@ -2602,8 +2606,10 @@ function spawn_unspawned_respawners_2() counterAdd("amk_mod.spawn_unspawned_resp
 --					end
 --				end
 
-				tbl.custom = amk.gen_custom_data({respawn=t})
-				amk.set_spawner_data(tbl, respawner)
+				--
+				data.custom_data:set( {respawn = t} )
+				pk:set( data )
+				--
 				se_respawn.respawn_params(respawner)
 				--amk.add_spot_on_map(respawner.id,"red_location", v)
 --			end
@@ -2767,12 +2773,16 @@ function zomby_blow(obj) counterAdd("amk_mod.zomby_blow")
 		db.actor:hit(h)
 		end
 		local skel = amk.spawn_item("breakable_object",obj:position(),obj:game_vertex_id(),obj:level_vertex_id())
-		local t = amk.get_breakable_data(skel)
-		t.visual = zombi_skeletons[math_random(#zombi_skeletons)]
-		t.mass = 1.0
-		t.physic_type = 3
-		t.skeleton_flags = 1
-		amk.set_breakable_data(t,skel)
+		--
+		local pk = get_netpk( skel, 1 )
+		ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", skel:name() )
+		local data = pk:get()
+		data.visual_name = zombi_skeletons[math_random(#zombi_skeletons)]
+		data.mass = 1.0
+		data.physic_type = 3
+		data.skeleton_flags = 1
+		pk:set( data )
+		--
 		alife():release(alife():object(obj:id()))
 	end
 end

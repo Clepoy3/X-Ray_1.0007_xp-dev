@@ -1,0 +1,191 @@
+
+-- для получения флагов установленных аддонов
+-- комплектом
+function get_addon_flags( obj )
+  local pk = get_netpk( obj, 2 )
+  ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
+  local data = pk:get()
+  ASSERT( data.upd and data.upd.addon_flags, "addon_flags not found in [%s]", obj:name() )
+  return data.upd.addon_flags
+end
+-- прицел
+function get_scope_flag( obj )
+	return bit_and( get_addon_flags( obj ), addon_flags.scope ) ~= 0
+end
+-- подствольник
+function get_grenade_launcher_flag( obj )
+	return bit_and( get_addon_flags( obj ), addon_flags.launcher ) ~= 0
+end
+-- глушитель
+function get_silencer_flag(obj)
+	return bit_and( get_addon_flags( obj ), addon_flags.silencer) ~= 0
+end
+
+-- для получения режима подствольника
+function get_gl_mode( obj ) 
+	local pk = get_netpk( obj, 2 )
+	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
+	local data = pk:get()
+	ASSERT( data.upd and data.upd.grenade_mode, "[get_gl_mode] [%s] function is only applicable to objects of 'CWeaponMagazinedWGrenade' type!", obj:name() )
+	return data.upd.grenade_mode ~= 0
+end
+
+-- индекс типа патронов для неактивного типа зарядов
+--function get_hidden_ammo_type( obj ) 
+--	local pk = get_netpk( obj, 2 )
+--	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
+--	local data = pk:get()
+--end
+
+-- индекс типа патронов для текущего типа зарядов
+function get_active_ammo_type( obj ) 
+	local pk = get_netpk( obj, 2 )
+	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
+	local data = pk:get()
+	ASSERT( data.upd and data.upd.ammo_type, "ammo_type not found in [%s]", obj:name() )
+	return data.upd.ammo_type
+end
+
+--Получить кол-во патронов в пачке.
+--Надо потестить, говорят что глючно работает. Надо городить движковую функцию.
+function get_ammo_size( obj )
+	local pk = get_netpk( obj, 2 )
+	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
+	local data = pk:get()
+	ASSERT( data.upd and data.upd.ammo_left, "ammo_left not found in [%s]", obj:name() )
+	return data.upd.ammo_left
+end
+
+--dsh mod
+
+function clear_used_ai_locations( sobj )
+do return end --TODO: Исправить!
+  local pk = get_netpk( sobj, 1 )
+  ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+  local data = pk:get()
+  data.object_flags = bit_and(
+    data.object_flags, bit_not( object_flags.UsedAI_Locations )
+  ) -- снять флаг flUsedAI_Locations
+  pk:set( data )
+end
+
+--!!!Если выносить отсюда, надо учитывать что должна быть НЕ UTF кодировка скрипта!!!
+function remove_quotes( s ) --Вырезать все кавычки из строки
+  return s:gsub( "[«»\"\']", "" )
+end
+function strip_quotes( s ) --Срезать кавычки с начала и с конца строки
+  --return string.gsub( s, '^[«»\"\']*(.-)[«»\"\']*$', '%1') --Срезает ВСЕ кавычки слева и справа.
+  return s:gsub( '^[«»\"\'](.*)[«»\"\']$', '%1' ) --Срезает самую первую кавычку слева и самую последнюю кавычку справа.
+end
+
+if ogse_qt then
+
+class "timeout_timer" ( ogse_qt.quick_timer )
+function timeout_timer:__init( delay, fun, ... ) super( delay )
+  self.fun = fun
+  self.args = { ... }
+end
+function timeout_timer:taction()
+  self.fun( unpack( self.args ) )
+end
+function timeout( delay, fun, ... )
+  local tmout = timeout_timer( delay, fun, ... )
+  --
+  local d = debug.getinfo(2)
+  ASSERT(d, "")
+  tmout.script_name = d.short_src:gsub('^.-([^\\]+)%.[^.]+$', '%1')
+  tmout.line = d.linedefined
+  --
+  tmout:start()
+  return tmout
+end
+
+end
+--dsh mod - end
+
+--ogse
+
+-----------------------------------------------------------------------------------------------------------
+--Спавним предметы в инвентарь актора, НПС, монстров, ящиков (поддерживаются и клиентские, и серверные объекты)
+--ДЛЯ СПАВНА ПАТРОНОВ ИСПОЛЬЗОВАТЬ ОТДЕЛЬНУЮ ФУНКЦИЮ!!!
+function spawn_item_in_inv(section, npc, num)
+	local npc = npc or db.actor
+	local num = num or 1
+
+	local pos, lvi, gvi, pid, sobj
+	if type(npc.id) == "function" then
+		pos, lvi, gvi, pid = npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id()
+	else
+		pos, lvi, gvi, pid = npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id
+	end
+
+	local is_actor = pid == db.actor:id()
+	local game_obj = level.object_by_id(pid)
+	for i = 1, num do
+		sobj = alife():create(section, pos, lvi, gvi, pid)
+		if not is_actor and game_obj then
+			level.client_spawn_manager():add(sobj.id, -1, fix_spawn_item_in_inv, game_obj) --Фикс пропадания доспавненного предмета при сейв/лоаде
+		end
+	end
+	if num == 1 then
+		return alife():object(sobj.id)
+	end
+end
+
+--Спавним патроны в инвентарь актора, НПС, монстров, ящиков (поддерживаются и клиентские, и серверные объекты)
+function spawn_ammo_in_inv(section, num, npc)
+	if num < 1 then return end
+
+	local npc = npc or db.actor
+
+	local pos, lvi, gvi, pid
+	if type(npc.id) == "function" then
+		pos, lvi, gvi, pid = npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id()
+	else
+		pos, lvi, gvi, pid = npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id
+	end
+
+	local is_actor = pid == db.actor:id()
+	local game_obj = level.object_by_id(pid)
+	local num_in_box = get_u32(section, "box_size")
+	while num > num_in_box or num > 0 do
+		local sitem = alife():create_ammo(section, pos, lvi, gvi, pid, num_in_box)
+		if not is_actor and game_obj then
+			level.client_spawn_manager():add(sitem.id, -1, fix_spawn_item_in_inv, game_obj) --Фикс пропадания доспавненного предмета при сейв/лоаде
+		end
+		num = num - num_in_box
+	end
+end
+
+function fix_spawn_item_in_inv(obj, item_id, item_obj) --Фикс пропадания доспавненного предмета при сейв/лоаде
+    obj:transfer_item(item_obj, obj)
+end
+-----------------------------------------------------------------------------------------------------------
+
+-- Удаляем объект из игры
+function remove_item(item_to_remove)
+	if item_to_remove then
+		local sobj = alife():object(item_to_remove:id())
+		if sobj then
+			alife():release(sobj, true)
+			return true
+		end
+	end
+	return false
+end
+
+-- Удаляем предмет из инвентаря
+function remove_item_from_inventory(remove_item, npc)
+	npc = npc or db.actor
+	if remove_item then
+	    npc:mark_item_dropped(remove_item)
+		local sobj = alife():object(remove_item:id())
+		if sobj then
+			alife():release(sobj, true)
+			return true
+		end
+	end
+	return false
+end
+
+--ogse - end

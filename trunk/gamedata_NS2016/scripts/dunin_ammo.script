@@ -155,14 +155,5 @@ end
 -- вроде подходящих функций нет, пришлось делать через net_packet
 --------
 function get_ammo_size(obj)
-	local se_obj = alife():object(obj:id())
-	local packet = net_packet()
-	cse_alife_item_ammo.STATE_Write(se_obj, packet)
-	--packet:r_advance(18)
-	--packet:r_stringZ()
-	--packet:r_advance(8)
-	--packet:r_stringZ()
-	--packet:r_advance(5)
-	packet:r_seek(packet:w_tell() - 2)
-	return packet:r_u16()
+	return _krodin_utils.get_ammo_size(obj)
 end

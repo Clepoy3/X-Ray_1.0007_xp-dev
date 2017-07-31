@@ -1132,8 +1132,17 @@ function actor_binder:update(delta)
 								night_visor = "bast.ppe"
 							elseif IAmAWeaponFireOnly[item:clsid()] then
 								local scope_type = getIniValueFloatSimple(section, "scope_status", 0)
-								local t = scope_type == 2 and amk.get_weapon_data(alife():object(item_id))
-								scopeUsed = scope_type == 1 or (t and bit_and(t.addon_flags, 1) == 1)
+								local t
+								if scope_type == 2 then
+									--
+									local sobj = alife():object(item_id)
+									if sobj then
+										local pk = get_netpk( sobj, 2 )
+										ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+										t = pk:get()
+									end
+								end
+								scopeUsed = scope_type == 1 or ( t and bit_and(t.upd.addon_flags, 1) == 1 )
 							end
 						end
 						last_weapon_nv = night_visor
@@ -1168,8 +1177,8 @@ function actor_binder:update(delta)
 			if torch --[[and night_vision_outfit_current_id and night_vision_outfit_current_id == night_vision_outfit_id]] then
 				local sobj = alife():object(torch:id())
 				if sobj then
-					local data = m_netpk.net_cse_alife_item_torch(sobj)
-					data = data:get()
+					local pk = get_netpk(sobj, 2)
+					local data = pk:get()
 					local night_vision_real_new = bit_and(data.upd.torch_flags, 2) ~= 0 and nvSection and nvSection ~= "" and night_vision_outfit_current_id == night_vision_outfit_id
 					if not night_vision_on_take_item or not night_vision_real_new then
 						if night_vision_real and not night_vision_real_new then

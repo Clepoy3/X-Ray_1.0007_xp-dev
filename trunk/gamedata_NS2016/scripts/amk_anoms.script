@@ -222,17 +222,6 @@ function is_anomaly( cls_id )
 	return false
 end
 
-function spawn_anomaly( sect, pos, gv, lv, shape )
-	local sim = alife()
-	local sobj = sim:create( sect, pos, lv, gv )
-	if sobj then
-		local t = amk_netpk.get_anomaly_data( sobj )
-		t.shapes = shape
-		amk_netpk.set_anomaly_data( t, sobj )
-	end
-	return sobj
-end
-
 function anom_suffix( n )
 	if n == 1 then
 		return "_weak"
@@ -360,19 +349,26 @@ function spawn_rand_anom( pos, gv, lv )
 		shape1 = section[2]
 		section = anom_prefix .. section[1] .. suffix
 	end
-	shapes[1] = {}
-	shapes[1].shtype = shape1.shtype
-	if shape1.shtype == 0 then
-		shapes[1].radius = shape1.radius
-		shapes[1].center = vector():set( 0, 0, 0 )
-	else
-		shapes[1].v1 = vector():set( 1, 0, 0 )
-		shapes[1].v2 = vector():set( 0, 3, 0 )
-		shapes[1].v3 = vector():set( 0, 0, 1 )
-		shapes[1].offset = vector():set( 0, 0, 0 )
-	end
 
-	return spawn_anomaly( section, pos, gv, lv, shapes, "on" )
+	local sim = alife()
+	local sobj = sim:create( section, pos, lv, gv )
+	--
+	local pk = get_netpk( sobj, 1 )
+	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+	local data = pk:get()
+	if shape1.shtype == 0 then
+		data.shapes:addSphere(shape1.radius, vector():set( 0, 0, 0 ))
+	else
+		data.shapes:addBox(
+			vector():set( 1, 0, 0 ),
+			vector():set( 0, 3, 0 ),
+			vector():set( 0, 0, 1 ),
+			vector():set( 0, 0, 0 )
+		)
+	end
+	pk:set( data )
+	--
+	return sobj
 end
 
 
@@ -536,7 +532,7 @@ function bind(obj) obj:bind_object(anom_binder(obj))
 	if not object_binder.net_spawn( self,sobj ) then
 		return false
 	end
-	anom_list[sobj.id] = { ["pos"] = sobj.position, ["radius"] = sobj.radius or 0 }
+	anom_list[sobj.id] = { ["pos"] = sobj.position, ["radius"] = self.object:get_shape_radius() --[=[sobj.radius or 0--]=] }
 	return true
 end
 

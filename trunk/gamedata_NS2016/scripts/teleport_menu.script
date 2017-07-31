@@ -386,69 +386,23 @@ function wind_error:Btn()
 end
 
 function start_level_changer(p_dest_pos, p_dest_lv, p_dest_gv, p_dest_level)
-	local obj = alife():create("level_changer", db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id())
-	local packet = net_packet()
-	obj:STATE_Write(packet)
--- свойства cse_alife_object
-    local game_vertex_id     = packet:r_u16()
-    local distance           = packet:r_float()
-    local direct_control     = packet:r_u32()
-    local level_vertex_id    = packet:r_u32()
-    local object_flags       = packet:r_u32()
-    local custom_data        = packet:r_stringZ()
-    local story_id           = packet:r_u32()
-    local spawn_story_id     = packet:r_u32()
-
-    local shape_count = packet:r_u8()
-    for i=1,shape_count do
-        local shape_type = packet:r_u8()
-        if shape_type == 0 then
-
-            local center = packet:r_vec3()
-            local radius = packet:r_float()
-        else
-
-			local axis_x                = packet:r_vec3()
-			local axis_y                = packet:r_vec3()
-			local axis_z                = packet:r_vec3()
-			local offset                = packet:r_vec3()
-        end
-    end
-
-	local restrictor_type 			= packet:r_u8()
-
-	local dest_game_vertex_id		= packet:r_u16()  
-	local dest_level_vertex_id 		= packet:r_u32()  
-	local dest_position 			= packet:r_vec3()
-	local dest_direction 			= packet:r_vec3()
-	local dest_level_name 			= packet:r_stringZ()
-	local dest_graph_point 			= packet:r_stringZ()
-	local silent_mode 			    = packet:r_u8()
- 
-
-	packet:w_begin(game_vertex_id)
-	packet:w_float(distance)
-	packet:w_u32(direct_control) 
-	packet:w_u32(level_vertex_id)
-	packet:w_u32( bit_not(193) )
-	packet:w_stringZ(custom_data)
-    packet:w_u32(46489)
-	packet:w_u32(46489)
-    packet:w_u8(1)
-    packet:w_u8(0)
-    packet:w_vec3(vector():set(0, 0, 0))
-    packet:w_float(2)
-	packet:w_u8(3)
-	packet:w_u16(p_dest_gv)
-	packet:w_u32(p_dest_lv)	
-	packet:w_vec3(p_dest_pos)
-	packet:w_vec3(vector():set(0, 0, 0))
-	packet:w_stringZ(p_dest_level)
-	packet:w_stringZ("start_actor_99")
-	packet:w_u8(1)
- 
-	packet:r_seek(0)
-	obj:STATE_Read(packet, packet:w_tell())
+  local sobj = alife():create("level_changer", db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id())
+  ASSERT( sobj, "create_level_changer: failed to create level changer" )
+  --
+  local initial_packet = get_netpk( sobj, 1 )
+  local table_lc       = initial_packet:get()
+  table_lc.dest_position   = p_dest_pos
+  table_lc.dest_level_vertex_id = p_dest_lv
+  table_lc.dest_game_vertex_id  = p_dest_gv
+  table_lc.dest_direction  = vector():set(0, 0, 0)
+  table_lc.dest_level_name = p_dest_level
+  table_lc.silent_mode     = 1
+  table_lc.restrictor_type = 3
+  table_lc.object_flags = bit_not(193) --KRodin: А оно надо?
+  table_lc.story_id        = 46489
+  table_lc.shapes:addSphere(5)
+  --
+  initial_packet:set( table_lc )
 end
 
 function start_del()

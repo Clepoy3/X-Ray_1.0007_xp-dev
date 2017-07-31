@@ -288,24 +288,15 @@ function checkResetShowSpotNeeded()
 end
 
 -- получение визуала
-function getVisual(id, nameOnly)
+function getVisual(obj, nameOnly) --Первый аргумент теперь - ОБЯЗАТЕЛЬНО клиентский объект!!!
 	local result = ""
-	
-	if id then
-		local sobj = alife():object(id)
-		if sobj then
-			if IAmAStalker[sobj:clsid()] then
-				local t = amk.read_stalker_params(sobj)
-				result = t.visual
-				
-				if nameOnly then
-					result = Parse_StrToTbl(result,"\\")
-					result = Parse_StrToTbl(result[#result],".")
-					result = (result and result[1]) or "undefined"
-				end
-			end
+	if IAmAStalker[obj:clsid()] then
+		result = obj:get_visual_name()
+		if nameOnly then
+			result = Parse_StrToTbl(result,"\\")
+			result = Parse_StrToTbl(result[#result],".")
+			result = (result and result[1]) or "undefined"
 		end
 	end
-	
 	return result
 end

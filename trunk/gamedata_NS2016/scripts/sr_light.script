@@ -80,7 +80,7 @@ function check_light(stalker)
 		return
 	end
 	
-	--local visual = sol_utils.getVisual(id)
+	--local visual = sol_utils.getVisual(stalker)
 	-- если невидимка - фонарь не включает
 	--if noTorchByVisual[visual] then
 	if sstalker.torchDisabled then

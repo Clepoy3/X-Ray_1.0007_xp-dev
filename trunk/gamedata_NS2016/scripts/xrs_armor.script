@@ -136,13 +136,16 @@ function npc_update( binder )
 	end
 
 	t = t[i_vis]
-	local obj = alife():object( npc:id() )
-	local v = xrs_utils.read_stalker_params( obj )
-	v.visual = "actors\\" .. t[math_random( #t )]
+	local sobj = alife():object( npc:id() )
+	--
+	local pk = get_netpk( sobj, 1 )
+	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+	local data = pk:get()
+	data.visual_name = "actors\\" .. t[math_random( #t )]
+	pk:set( data )
+	--
 	r = ( r - 1 ) * 300 + math_random( 1, 50 )
-	xrs_utils.write_stalker_params( v, obj )
-
-	obj:set_rank( r )
+	sobj:set_rank( r )
 	alife():release( alife():object( item:id() ) )
 
 end
@@ -150,33 +153,34 @@ end
 
 local t_npc_vis_lv = {}
 
-function get_npc_current_visual_level( id )
-	local obj = alife():object( id )
-	if obj then
-		local sect, vis = _tbl_outfits.get_npc_outfit( obj )
+function get_npc_current_visual_level( obj ) --Клиентский объект!
+	local sect, vis = _tbl_outfits.get_npc_outfit( obj )
 
-		local lv = t_npc_vis_lv[ vis ]
-		if lv then return lv end
-		local sys_ini = system_ini()
-		if sect and sys_ini:section_exist( sect ) then
-			local v = string_match( ( sys_ini:r_string( sect, "visual" ) ), "[_.%-%w]*$" )
-			v = string_match( v, "[_%-%w]*" )
-			lv = t_armor_lv[v] or 0
-			t_npc_vis_lv[ v ] = lv
-			return lv
-		end			
-	end
+	local lv = t_npc_vis_lv[ vis ]
+	if lv then return lv end
+	local sys_ini = system_ini()
+	if sect and sys_ini:section_exist( sect ) then
+		local v = string_match( ( sys_ini:r_string( sect, "visual" ) ), "[_.%-%w]*$" )
+		v = string_match( v, "[_%-%w]*" )
+		lv = t_armor_lv[v] or 0
+		t_npc_vis_lv[ v ] = lv
+		return lv
+	end			
 	return 0
 end
 
 
 
 function change_vis( id, vis, lvl )
-	local obj = alife():object( id )
-	local t = xrs_utils.read_stalker_params( obj )
-	t.visual = vis
-	xrs_utils.write_stalker_params( t, obj )
-	obj:set_rank( upgrade_exp * lvl + math_random( 1, 50 ) )
+	local sobj = alife():object( id )
+	--
+	local pk = get_netpk( sobj, 1 )
+	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+	local data = pk:get()
+	data.visual_name = vis
+	pk:set( data )
+	--
+	sobj:set_rank( upgrade_exp * lvl + math_random( 1, 50 ) )
 end
 
 
@@ -191,7 +195,7 @@ function check_armor( npc, item, just_report )	-- не нужно
 		if t then
 			t = t[vis]
 			if t and #t ~= 0
-			  and get_npc_current_visual_level( npc:id() ) < t_armor_lv[vis] then
+			  and get_npc_current_visual_level( npc ) < t_armor_lv[vis] then
 				if just_report then return true end
 
 				if ( not db.actor:see( npc )

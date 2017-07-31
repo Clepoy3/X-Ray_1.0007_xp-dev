@@ -17,7 +17,6 @@ function remove_obj(obj)
 			amk.make_suicide(npc)
 		end
 	end
-	  -- amk.dump_table(amk.read_stalker_params(npc))
 	  -- убиваем зависшего
 	  -- switch_offline(obj)
 	  -- прибираем трупик

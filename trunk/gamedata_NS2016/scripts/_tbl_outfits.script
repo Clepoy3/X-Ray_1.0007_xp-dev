@@ -912,33 +912,12 @@ function get_vis_sect() return vis_sect end		-- секция костюма по визуалу
 function get_pers_outfit() return pers_outfit end	-- секции костюмов именных неписей
 
 
-function get_npc_outfit( obj )	-- возвращаем секцию костюма непися и его визуал, очищенный от мусора
-	local pk = net_packet()
-	obj:STATE_Write( pk )
-	pk:r_seek( 0 )
-	pk:r_s32()	-- money
-	pk:r_stringZ()	-- profile
-	pk:r_s32()	-- infammo
-	pk:r_stringZ()	-- class
-	pk:r_s32()	-- communityid
-	pk:r_s32()	-- rank
-	pk:r_s32()	-- reputation
-	pk:r_stringZ()	-- charname	
-	pk:r_u16()	-- gvid
-	pk:r_float()	-- obf32u1
-	pk:r_s32()	-- obs32u2
-	pk:r_s32()	-- lvid
-	pk:r_s32()	-- oflags
-	pk:r_stringZ()	-- custom
-	pk:r_s32()	-- sid
-	pk:r_s32()	-- obs32u3
-	local vis = pk:r_stringZ()
-	if vis then
-		vis = string_match( vis, "[_.%-%w]*$" )	-- удаляем путь
-		vis = string_match( vis, "[_%-%w]*" )	-- удаляем всякие ".ogf"
-		return ( vis_sect[vis] or vis_part18[string_sub( vis, 1, 18 )]
-			or vis_part10[string_sub( vis, 1, 10 )] or pers_outfit[obj:name()] ), vis
-	end
+-- возвращаем секцию костюма непися и его визуал, очищенный от мусора
+function get_npc_outfit( obj ) --Клиентский объект!
+	local vis = string_match( obj:get_visual_name(), "[_.%-%w]*$" )	-- удаляем путь
+	vis = string_match( vis, "[_%-%w]*" )	-- удаляем всякие ".ogf"
+	return ( vis_sect[vis] or vis_part18[string_sub( vis, 1, 18 )]
+		or vis_part10[string_sub( vis, 1, 10 )] or pers_outfit[obj:name()] ), vis
 end
 
 

@@ -383,11 +383,9 @@ function on_death(npc_id)
 	local npc_name = protected_items.get_obj_name(npc)
 	if grant_item and string_sub(npc:section(), 1, 5) ~= "arena" and community ~= "arena_enemy" and
 	  npc_name ~= "yan_specnaz_dead" and npc_name ~= "x16_stalker_ghost" then 
-		local t = amk.read_stalker_params(se_obj)
-		if t then
-			vis = t.visual
-			vis = Parse_StrToTbl(vis,"\\")
-			vis = vis[#vis]
+		vis = npc:get_visual_name()
+		vis = Parse_StrToTbl(vis,"\\")
+		vis = vis[#vis]
 		if vis then
 			sect = visuals[vis]
 			if not sect then
@@ -399,7 +397,7 @@ function on_death(npc_id)
 						elseif v.npc_names then
 							sect = v.npc_names[npc_name]
 							if sect then break end
-	end	end	end	end	end	end	end
+	end	end	end	end	end	end
 			
 	if sect and icnd.prob * item_dfcy.current > math_random() then
 		local obj = create_item(npc, sect)
@@ -484,9 +482,5 @@ end
 
 -- количество патронов в пачке, тоже уперто из того же dunin_ammo.script
 function get_ammo_size(obj)
-	local se_obj = alife():object(obj:id())
-	local packet = net_packet()
-	cse_alife_item_ammo.STATE_Write(se_obj, packet)
-	packet:r_seek(packet:w_tell() - 2)
-	return packet:r_u16()
+	return _krodin_utils.get_ammo_size(obj)
 end

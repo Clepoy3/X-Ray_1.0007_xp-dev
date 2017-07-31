@@ -855,7 +855,7 @@ function giveNpcDemoItems(npc) counterAdd("xr_kamp.giveNpcDemoItems")
 			end
 		end
 
-		local visual = sol_utils.getVisual(npcId, true)
+		local visual = sol_utils.getVisual(npc, true)
 		local isVisualWithHemlet = visualWithHemlet[visual]
 		
 		-- выдаём то, что выдавалось ранее
@@ -1476,7 +1476,7 @@ function CKampManager:checkNpcAbility(npc,st) counterAdd("xr_kamp.CKampManager:c
 	if npc:character_community() ~= "monolith" and
 	   npc:character_community() ~= "zombied"
 	then
-		local visual = sol_utils.getVisual(npc_id, true)
+		local visual = sol_utils.getVisual(npc, true)
 		local isVisualWithHemlet = visualWithHemlet[visual]
 		-- есть колбасу
 		if not isVisualWithHemlet and npc:object("kolbasa") then

@@ -269,169 +269,6 @@ function get_sound(snd) counterAdd("rx_utils.get_sound")
 	end
 end
 
---------------------------------------net------------------------------------------
-function get_weapon_data(sobj) counterAdd("rx_utils.get_weapon_data")
-	if not sobj then
-		return {}
-	end
-	local stpk = net_packet()
-	sobj:STATE_Write(stpk)
-	local size = stpk:w_tell()
-	stpk:r_seek(0)
-	local t = {}
-	parse_object_packet(t,stpk)
-	parse_visual_packet(t,stpk)
-	parse_item_packet(t,stpk)
-	parse_item_weapon_packet(t,stpk)
-	return t
-end
-
-function get_restrictor_data(sobj) counterAdd("rx_utils.get_restrictor_data")
-	local stpk = net_packet()
-	sobj:STATE_Write(stpk)
-	local size = stpk:w_tell()
-	stpk:r_seek(0)
-	local t = {}
-	parse_object_packet(t,stpk)
-	parse_shape_packet(t,stpk)	
-	t.restrictor_type = stpk:r_u8()
-	return t
-end
-
-function parse_object_packet(ret,stpk) counterAdd("rx_utils.parse_object_packet")
-	ret.gvid = stpk:r_u16()
-	ret.obf32u1 = stpk:r_float()
-	ret.obs32u2 = stpk:r_s32()
-	ret.lvid = stpk:r_s32()
-	ret.oflags = stpk:r_s32()
-	ret.custom = stpk:r_stringZ()
-	ret.sid = stpk:r_s32()
-	ret.obs32u3 = stpk:r_s32()
-	return ret
-end
-
-function parse_visual_packet(ret,stpk) counterAdd("rx_utils.parse_visual_packet")
-	ret.visual = stpk:r_stringZ()
-	ret.vsu8u1 = stpk:r_u8()
-	return ret
-end
-
-function parse_item_packet(ret,stpk) counterAdd("rx_utils.parse_item_packet")
-	ret.condition = stpk:r_float()
-	return ret
-end
-
-function parse_item_weapon_packet(ret,stpk) counterAdd("rx_utils.parse_item_weapon_packet")
-	ret.ammo_current = stpk:r_u16()
-	ret.ammo_elapsed = stpk:r_u16()
-	ret.weapon_state = stpk:r_u8()
-	ret.addon_flags = stpk:r_u8()
-	ret.ammo_type = stpk:r_u8()
-	return ret
-end
-
-function parse_shape_packet(t,stpk) counterAdd("rx_utils.parse_shape_packet")
-	local shape_count = stpk:r_u8()
-	t.shapes = {}
-	local shape_type
-	for i=1,shape_count do
-		shape_type = stpk:r_u8()
-		t.shapes[i] = {}
-		t.shapes[i].shtype = shape_type
-		if shape_type == 0 then
-			t.shapes[i].center = stpk:r_vec3()
-			t.shapes[i].radius = stpk:r_float()
-		else
-			t.shapes[i].v1 = stpk:r_vec3()
-			t.shapes[i].v2 = stpk:r_vec3()
-			t.shapes[i].v3 = stpk:r_vec3()
-			t.shapes[i].offset = stpk:r_vec3()
-		end
-	end
-end
-
-function readvu8uN(packet,n) counterAdd("rx_utils.readvu8uN")
-	local v = {}
-	for i=1,n do
-		table_insert(v,packet:r_u8())
-	end
-	return v
-end
-
-function set_weapon_data(t,sobj) counterAdd("rx_utils.set_weapon_data")
-	if sobj then
-		local stpk = net_packet()
-		fill_object_packet(t,stpk)
-		fill_visual_packet(t,stpk)
-		fill_item_packet(t,stpk)
-		fill_item_weapon_packet(t,stpk)	
-		local size = stpk:w_tell()
-		stpk:r_seek(0)
-		sobj:STATE_Read(stpk,size)
-	end
-end
-
-function set_restrictor_data(t,sobj) counterAdd("rx_utils.set_restrictor_data")
-	local stpk = net_packet()
-	fill_object_packet(t,stpk)
-	fill_shape_packet(t,stpk)
-	stpk:w_u8(t.restrictor_type)
-	local size = stpk:w_tell()
-	stpk:r_seek(0)
-	sobj:STATE_Read(stpk,size)
-end
-
-function fill_object_packet(ret,stpk) counterAdd("rx_utils.fill_object_packet")
-	stpk:w_u16(ret.gvid)
-	stpk:w_float(ret.obf32u1)
-	stpk:w_s32(ret.obs32u2)
-	stpk:w_s32(ret.lvid)
-	stpk:w_s32(ret.oflags)
-	stpk:w_stringZ(ret.custom)
-	stpk:w_s32(ret.sid)
-	stpk:w_s32(ret.obs32u3)
-end
-
-function fill_visual_packet(ret,stpk) counterAdd("rx_utils.fill_visual_packet")
-	stpk:w_stringZ(ret.visual)
-	stpk:w_u8(ret.vsu8u1)
-end
-
-function fill_item_packet(ret,stpk) counterAdd("rx_utils.fill_item_packet")
-	stpk:w_float(ret.condition)
-	return ret
-end
-
-function fill_item_weapon_packet(ret,stpk) counterAdd("rx_utils.fill_item_weapon_packet")
-	stpk:w_u16(ret.ammo_current)
-	stpk:w_u16(ret.ammo_elapsed)
-	stpk:w_u8(ret.weapon_state)
-	stpk:w_u8(ret.addon_flags)
-	stpk:w_u8(ret.ammo_type)
-	return ret
-end
-
-function fill_shape_packet(t,stpk) counterAdd("rx_utils.fill_shape_packet")
-	stpk:w_u8(#t.shapes)
-	for i=1,#t.shapes do
-		stpk:w_u8(t.shapes[i].shtype)
-		if t.shapes[i].shtype == 0 then
-			stpk:w_vec3(t.shapes[i].center)
-			stpk:w_float(t.shapes[i].radius)
-		else
-			stpk:w_vec3(t.shapes[i].v1)
-			stpk:w_vec3(t.shapes[i].v2)
-			stpk:w_vec3(t.shapes[i].v3)
-			stpk:w_vec3(t.shapes[i].offset)
-		end
-	end
-end
-
-function writevu8uN(pk,v) counterAdd("rx_utils.writevu8uN")
-	for i=1,#v do
-		pk:w_u8(v[i])
-	end
-end
 
 --------------------------------------addons---------------------------------------
 local adt = {}
@@ -457,7 +294,16 @@ function get_addon_flag(wpn,with_int) counterAdd("rx_utils.get_addon_flag")
 	if tg == rep_mem.tg and rep_mem.id == id and rep_mem.wi == with_int then
 		return rep_mem.fl
 	else
-		local flag = get_weapon_data(go and alife():object(id)).addon_flags or wpn.addon_flags or 0
+		local flag = wpn.addon_flags or 0
+		if go then
+			local sobj = alife():object(id)
+			if sobj then
+				local pk = get_netpk( sobj, 2 )
+				ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+				local data = pk:get()
+				flag = data.upd.addon_flags
+			end
+		end
 		if with_int then
 			if get_addon_status(wpn,"sc") == 1 then
 				flag = flag+1

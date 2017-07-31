@@ -148,10 +148,6 @@ end
 
 --' спавним телепорт на подстанции Затона
 function spawn_tele_z_podstan()
---    local se_obj = alife():create("m_teleport_tele_z_podstan",vector():set(-389.37646484375,0.80589032173157,-9.6717615127563),193156,3660)
---	  local t = amk.get_anomaly_data(se_obj) 
---        t.sid = 17067
---        amk.set_anomaly_data(t, se_obj)
 end
 
 --' музон у лифта

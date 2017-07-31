@@ -309,9 +309,9 @@ function generic_object_binder:extrapolate_callback() counterAdd("bind_monster.g
 	end 
 	
     --local cur_pt = self.object:get_current_point_index() 
-	if patrol(self.object:patrol()):flags(cur_pt):get() == 0 then
-		return true
-	end
+	--if patrol(self.object:patrol()):flags(cur_pt):get() == 0 then
+	--	return true
+	--end
 	return false
 end 
 
@@ -572,17 +572,22 @@ function generic_object_binder:net_destroy() counterAdd("bind_monster.generic_ob
 	end 
 	db.del_obj(self.object) 
 	db.storage[id] = nil 
-		 
-	-- АМК. Очистка рестрикторов
 
-	object_binder.net_destroy(self) 
+	object_binder.net_destroy(self)
+
+	-- АМК. Очистка рестрикторов
 	local sobj = alife():object(id)          
 	if sobj and IAmAMonster[sobj:clsid()] then 
-		local tbl = amk.read_monster_params(sobj) 
-		tbl.crvu32u16u2 = {}
-		amk.write_monster_params(tbl,sobj) 
-	else 
-		-- Выход из игры.
+		local pk = get_netpk( sobj, 1 )
+		if pk:isOk() then
+			local data = pk:get()
+			local has_restrs = #data.dynamic_in_restrictions > 0 or #data.dynamic_out_restrictions > 0
+			if has_restrs then
+				data.dynamic_in_restrictions = {}
+				data.dynamic_out_restrictions = {}
+				pk:set( data )
+			end
+		end
 	end 
 end 
 

@@ -106,11 +106,20 @@ end
 
 -- регистрация
 function se_monster:on_register()
-	cse_alife_monster_base.on_register(self)
 	-- Чистим рестрикторы
-	local tbl = amk.read_monster_params(self)
-	tbl.crvu32u16u2 = {}
-	amk.write_monster_params(tbl, self)
+	local pk = get_netpk( self, 1 )
+	if pk:isOk() then
+		local data = pk:get()
+		local has_restrs = #data.dynamic_in_restrictions > 0 or #data.dynamic_out_restrictions > 0
+		if has_restrs then
+			data.dynamic_in_restrictions = {}
+			data.dynamic_out_restrictions = {}
+			pk:set( data )
+		end
+	end
+
+	cse_alife_monster_base.on_register(self)
+
 	-- если регистрируемся при загрузке уровня
 	if not self.first_online and not db.actor then
 		self.first_online = true

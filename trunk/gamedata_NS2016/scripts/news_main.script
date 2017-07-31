@@ -454,11 +454,13 @@ function get_npc_name(obj)
 			if (ob and ob.character_name) then
 				m_s_name = ob:character_name()
 			else
-				if (amk and amk.read_stalker_params and IsNpcStalker(obj)) then
-					local tbl = amk.read_stalker_params(obj)
-					if(tbl and tbl.charname) then
-						m_s_name = tbl.charname
-					end
+				if IsNpcStalker(obj) then
+					--
+					local pk = get_netpk( obj, 1 )
+					ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
+					local data = pk:get()
+					--
+					m_s_name = data.character_name
 				end
 			end
 		end
@@ -2065,8 +2067,11 @@ function do_seen_monster()
 									end
 								end
 								if IAmAMonster[obj:clsid()] then
-									local tbl = amk.read_monster_params(obj)
-									local cd = amk.parse_custom_data(tbl.custom)
+									--
+									local pk = get_netpk( obj, 1 )
+									ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
+									local data = pk:get()
+									--
 									if not cd.smart_terrains then cd.smart_terrains={} end
 									cd.smart_terrains.none = "true"
 									-- Микроквест
@@ -2090,8 +2095,10 @@ function do_seen_monster()
 										s_from = string_gsub(s_author, " ", "_")
 										cd.microquest.reward_from = s_from
 									end
-									tbl.custom = amk.gen_custom_data(cd)
-									amk.write_monster_params(tbl, obj)
+									--
+									data.custom_data:set( cd )
+									pk:set( data )
+									--
 								end
 								b_ok = true
 							end
@@ -2588,8 +2595,12 @@ function on_miniquest_reward(trader)
 		if (story_id == 3) then
 			local obj = sim:story_object(3)
 			if (obj) then
-				local t = amk.get_trader_data(obj)
-				local cd = amk.parse_custom_data(t.custom)
+				--
+				local pk = get_netpk( obj, 1 )
+				ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
+				local data = pk:get()
+				local cd = data.custom_data:getTable()
+				--
 				if (cd.microquest and cd.microquest.reward_money and cd.microquest.reward_items) then
 					money = tonumber(cd.microquest.reward_money)
 					items = cd.microquest.reward_items
@@ -2606,15 +2617,21 @@ function on_miniquest_reward(trader)
 					cd.microquest = {}
 					cd.microquest.reward_money = 0
 					cd.microquest.reward_items = ""
-					t.custom = amk.gen_custom_data(cd)
-					amk.set_trader_data(t, obj)
+					--
+					data.custom_data:set( cd )
+					pk:set( data )
+					--
 				end
 			end
 		elseif (story_id == 500) then
-			local obj = sim:story_object(500)
-			if (obj) then
-				local t = amk.read_stalker_params(obj)
-				local cd = amk.parse_custom_data(t.custom)
+			local sobj = sim:story_object(500)
+			if (sobj) then
+				--
+				local pk = get_netpk( sobj, 1 )
+				ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+				local data = pk:get()
+				local cd = data.custom_data:getTable()
+				--
 				if (cd.microquest and cd.microquest.reward_money and cd.microquest.reward_items) then
 					money = tonumber(cd.microquest.reward_money)
 					items = cd.microquest.reward_items
@@ -2631,8 +2648,10 @@ function on_miniquest_reward(trader)
 					cd.microquest = {}
 					cd.microquest.reward_money = 0
 					cd.microquest.reward_items = ""
-					t.custom = amk.gen_custom_data(cd)
-					amk.write_stalker_params(t, obj, true)
+					--
+					data.custom_data:set( cd )
+					pk:set( data )
+					--
 				end
 			end		
 		else

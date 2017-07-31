@@ -525,7 +525,7 @@ function ggun_binder:track_thrown()
 						if string.find(sect,"explosive") then
 							obj:explode()
 						elseif string.find(sect,"af_") then
-							af_activate(sect,obj:position(),self.thrown)
+							--af_activate(sect,obj:position(),self.thrown) --Krodin: âûêëş÷åíî
 						end
 						self.thrown = nil
 						self.throw_time = nil
@@ -609,7 +609,7 @@ end
 
 ----------------------------- ÀÊÒÈÂÀÖÈß ÀĞÒÎÂ ÃĞÀÂÈ-ÏÓØÊÎÉ
 
-function af_activate(sect,pos,id)
+function af_activate(sect,pos,id) --Krodin: âûêëş÷åíî
 	--local ini = system_ini()
 	--if not ini:line_exist("wpn_gravigun", sect) then return end
 	local strng = getIniValueStringSimple("wpn_gravigun", sect)

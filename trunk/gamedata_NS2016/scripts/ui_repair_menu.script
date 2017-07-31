@@ -1015,12 +1015,16 @@ function repair:AmmoList()
 			t.type = ( isWeaponFireOnly( obj ) ) and aObjectTypes.weapon or aObjectTypes.outfit
 			t.slot = aSlotIndex
 			t.active = true
-			
-			local wData = xrs_utils.get_weapon_data( alife():object( obj_id ) )
-			t.scp = bit_and( wData.addon_flags, 1 ) == 1
-			t.grl = bit_and( wData.addon_flags, 2 ) == 2
-			t.sln = bit_and( wData.addon_flags, 4 ) >= 4
-			
+			--
+			local sobj = alife():object( obj_id )
+			local pk = get_netpk( sobj, 2 )
+			ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+			local data = pk:get()
+			--
+			t.scp = bit_and( data.upd.addon_flags, 1 ) == 1
+			t.grl = bit_and( data.upd.addon_flags, 2 ) == 2
+			t.sln = bit_and( data.upd.addon_flags, 4 ) >= 4
+
 			table.insert( aAmmoList,  t )
 			j = j + 1
 		end
@@ -1798,11 +1802,14 @@ end
 --///////////////////////////
 function release_addons( sobj, wpn, obj )
 	if sobj ~= nil then
-		local t = xrs_utils.get_weapon_data( sobj )
-		
-		t.scp = bit_and( t.addon_flags, 1 ) == 1
-		t.grl = bit_and( t.addon_flags, 2 ) == 2
-		t.sln = bit_and( t.addon_flags, 4 ) >= 4
+		--
+		local pk = get_netpk( sobj, 2 )
+		ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
+		local data = pk:get()
+		--		
+		local scp = bit_and( data.upd.addon_flags, 1 ) == 1
+		local grl = bit_and( data.upd.addon_flags, 2 ) == 2
+		local sln = bit_and( data.upd.addon_flags, 4 ) >= 4
 			
 		local h_scope = read_if_exist(system_ini(),wpn,"scope_status",nil)
 		local h_sil = read_if_exist(system_ini(),wpn,"silencer_status",nil)
@@ -1810,26 +1817,26 @@ function release_addons( sobj, wpn, obj )
 		
 		if h_scope == 2 then
 			h_scope = read_string_if_exist( system_ini(),wpn,"scope_name",nil )
-			if h_scope ~= nil and t.scp then
+			if h_scope ~= nil and scp then
 				h_scope = alife():create(h_scope, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),db.actor:id())
 			end
 		end
 		if h_sil == 2 then
 			h_sil = read_string_if_exist(system_ini(),wpn,"silencer_name",nil)
-			if h_sil ~= nil and t.sln then
+			if h_sil ~= nil and sln then
 				h_sil = alife():create(h_sil, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),db.actor:id())
 			end
 		end
 		if h_gren == 2 then
 			h_gren = read_string_if_exist(system_ini(),wpn,"grenade_launcher_name",nil)
-			if h_gren ~= nil and t.grl then
+			if h_gren ~= nil and grl then
 				h_gren = alife():create(h_gren, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),db.actor:id())
 			end
 		end
 		local ammo = obj:get_ammo_in_magazine()
 		if ammo >= 1 then
 			local name = obj:name()
-			local ammoT = t.ammo_type
+			local ammoT = data.upd.ammo_type
 			local section_ammo = current_ammo_section_in_weapon(obj:section(),ammoT)
 			if section_ammo ~= nil then
 				amk.spawn_ammo_in_inv(section_ammo, ammo, db.actor)

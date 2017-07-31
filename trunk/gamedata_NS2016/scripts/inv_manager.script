@@ -104,7 +104,7 @@ function on_item_moved(obj, on_take)
 		elseif boxes[section] then
 			repack_new = boxes[section].iname
 			if on_take then
-				amk.send_tip("O, "..repack_new.."...  Да еще и целых "..tonumber(boxes[section].size).."...  В рюкзак их !", "Меченый \(тихо сам с собою\)", 0, 35, "gen_info")
+				amk.send_tip("O, "..repack_new.."...  Да еще и целых "..tonumber(boxes[section].size).."...  В рюкзак их !", "Меченый \\(тихо сам с собою\\)", 0, 35, "gen_info")
 			end
 			items[repack_new].repack = items[repack_new].repack + 1
 			if repack_new ~= repack_current then repack_current = false end
@@ -220,7 +220,7 @@ function on_update()
 
 	-- Из рюкзака достаем ? Или всем спасибо, все - свободны ? Если минимум принудительно загнан в 0 - значит так надо.
 	if box.size and b_obj and i_count < box.min then
-		amk.send_tip("Все таки что-то у нас в рюкзаке лежит как-то не так... Точно - "..b_section, "Меченый \(тихо сам с собою\)", 0, 35, "gen_info")
+		amk.send_tip("Все таки что-то у нас в рюкзаке лежит как-то не так... Точно - "..b_section, "Меченый \\(тихо сам с собою\\)", 0, 35, "gen_info")
 		delete_item(b_obj)
 		for i=1,box.size do
 			create_item(i_section, item.class, item.size)
@@ -241,7 +241,7 @@ function create_item(section, i_class, size)
 	local i_section
 
 	if i_class == class_id.box then
-		amk.send_tip("Да что у меня там такое ? Надо-бы в рюкзак, что-ли, запихать...", "Меченый \(тихо сам с собою\)", 0, 35, "gen_info")
+		amk.send_tip("Да что у меня там такое ? Надо-бы в рюкзак, что-ли, запихать...", "Меченый \\(тихо сам с собою\\)", 0, 35, "gen_info")
 		i_section = boxes[section].iname
 		i_class = items[i_section].class
 	end
@@ -264,14 +264,5 @@ end
 
 -- количество патронов в пачке, тоже уперто из того же dunin_ammo.script
 function get_ammo_size(obj)
-	local se_obj = alife():object(obj:id())
-	local packet = net_packet()
-	cse_alife_item_ammo.STATE_Write(se_obj, packet)
-	--packet:r_advance(18)
-	--packet:r_stringZ()
-	--packet:r_advance(8)
-	--packet:r_stringZ()
-	--packet:r_advance(5)
-	packet:r_seek(packet:w_tell() - 2)
-	return packet:r_u16()
+	return _krodin_utils.get_ammo_size(obj)
 end

@@ -164,7 +164,7 @@ function motivator_binder:net_spawn(sobject) counterAdd("xr_motivator.motivator_
 
 		local rank = sol_utils.getRankById(npc_id)
 		sobj.night_minutes = math.min(math.floor(rank / 10), 59)
-		sobj.visual = sol_utils.getVisual(npc_id)
+		sobj.visual = sol_utils.getVisual(npc)
 		sobj.torchDisabled = sr_light.noTorchByVisual[visual]
 	end
 	
@@ -238,18 +238,23 @@ function motivator_binder:net_destroy() counterAdd("xr_motivator.motivator_binde
 		btrs_friends[self.object:id()] = nil
 	end
 
-	-- АМК. Очистка рестрикторов
-	local id=self.object:id()
-	object_binder.net_destroy(self)
-	local sobj=alife():object(id)
-	if sobj then
-		local tbl=amk.read_stalker_params(sobj)
-		tbl.crvu32u16u2={}
-		amk.write_stalker_params(tbl,sobj)
-	else
-		-- Выход из игры.
-	end
-	-- packet_table.clear_packet(self.object)
+  -- АМК. Очистка рестрикторов
+  local id   = self.object:id()
+  local sobj = alife():object( id )
+  if sobj then
+    local pk = get_netpk( sobj, 1 )
+    if pk:isOk() then
+      local data = pk:get()
+		local has_restrs = #data.dynamic_in_restrictions > 0 or #data.dynamic_out_restrictions > 0
+		if has_restrs then
+			data.dynamic_in_restrictions = {}
+			data.dynamic_out_restrictions = {}
+			pk:set( data )
+		end
+    end
+  end
+
+  -- packet_table.clear_packet(self.object)
 end
 
 function motivator_binder:clear_callbacks() counterAdd("xr_motivator.motivator_binder:clear_callbacks")

@@ -122,16 +122,10 @@ function is_friendly_turret(npc, turret, position)
 end
 
 function create_turret(turret_section_name, level_name, position, community, owner_gulag, search_dist, hunt_actor_prob, explode_dist, spawner)
-	local packet1 = utils2.packet_pool_get()
-	local packet2 = utils2.packet_pool_get()
-
 	local level_vertex_id, game_vertex_id = utils2.get_top_graph_ids(level_name)
+	--position = position:add(vector():set(0,1.05,0)) --В ОГСЕ так сделано, если что.
 	local se_obj = alife():create(turret_section_name, position, level_vertex_id, game_vertex_id)
-	if se_obj == nil then
-		abort("can't create '%s' at (%f,%f,%f)")
-	end
 
-	-- лучше через table.concat()
 	local custom_data = "[logic]\nactive = turret\n[turret]\n"
 	if community ~= nil then
 		custom_data = custom_data.."community = "..community.."\n"
@@ -158,100 +152,18 @@ function create_turret(turret_section_name, level_name, position, community, own
 		custom_data = custom_data.."[spawner]\ncond = "..spawner.."\n"
 	end
 
-	se_obj:STATE_Write(packet1)
-	local dead_space = packet2:w_tell()
-
-	-- cse_alife_dynamic_object
-	utils2.packet_copy(packet2, packet1, 18)
-	packet1:r_stringZ()
-	packet2:w_stringZ(custom_data)
-	utils2.packet_copy(packet2, packet1, 8)
-	-- cse_visual
-	packet2:w_stringZ(packet1:r_stringZ())
-	utils2.packet_copy(packet2, packet1, 1)
-	-- cse_motion
-	packet2:w_stringZ(packet1:r_stringZ())
-	-- cse_ph_skeleton
-	packet2:w_stringZ(packet1:r_stringZ())
-	utils2.packet_copy(packet2, packet1, 3)
-	-- cse_alife_helicopter
-	packet2:w_stringZ("idle")
-	packet2:w_stringZ("$no_sound")
-	-- se_turret_mgun
-	packet2:w_float(1.0)
-
-	se_obj:STATE_Read(packet2, packet2:w_tell() - dead_space)
-
-	utils2.packet_pool_put(packet1)
-	utils2.packet_pool_put(packet2)
+	local pk = get_netpk(se_obj, 1)
+	ASSERT( pk and pk:isOk(), "can't read netpacket of %s", se_obj:name() )
+	local data = pk:get()
+	data.startup_animation = 'idle'
+	data.engine_sound = '$no_sound'
+	data.custom_data:set(custom_data)
+	pk:set(data)
+	--
+	return se_obj
 end
 
-function create_dir_turret(turret_section_name, level_name, position, community, owner_gulag, search_dist, hunt_actor_prob, explode_dist, spawner)
-	local packet1 = utils2.packet_pool_get()
-	local packet2 = utils2.packet_pool_get()
-
-	local level_vertex_id, game_vertex_id = utils2.get_top_graph_ids(level_name)
-	local se_obj = alife():create(turret_section_name, position, level_vertex_id, game_vertex_id)
-
-	if se_obj == nil then
-		abort("can't create '%s' at (%f,%f,%f)")
-	end
-	-- лучше через table.concat()
-	local custom_data = "[logic]\nactive = turret\n[turret]\n"
-	if community ~= nil then
-		custom_data = custom_data.."community = "..community.."\n"
-	end
-	if owner_gulag ~= nil then
-		custom_data = custom_data.."owner_gulag = "..owner_gulag.."\n"
-	end
-	if hunt_actor_prob ~= nil then
-		custom_data = custom_data.."hunt_actor_prob = "..tostring(hunt_actor_prob).."\n"
-	else
-		custom_data = custom_data.."hunt_actor_prob = 50\n"
-	end
-	if search_dist ~= nil then
-		custom_data = custom_data.."search_dist = "..tostring(search_dist).."\n"
-	else
-		custom_data = custom_data.."search_dist = 90\n"
-	end
-	if explode_dist ~= nil then
-		custom_data = custom_data.."explode_dist = "..tostring(explode_dist).."\n"
-	else
-		custom_data = custom_data.."explode_dist = 3\n"
-	end
-	if spawner ~= nil then
-		custom_data = custom_data.."[spawner]\ncond = "..spawner.."\n"
-	end
-
-	se_obj:STATE_Write(packet1)
-
-	local dead_space = packet2:w_tell()
-
-	-- cse_alife_dynamic_object
-	utils2.packet_copy(packet2, packet1, 18)
-	packet1:r_stringZ()
-	packet2:w_stringZ(custom_data)
-	utils2.packet_copy(packet2, packet1, 8)
-	-- cse_visual
-	packet2:w_stringZ(packet1:r_stringZ())
-	utils2.packet_copy(packet2, packet1, 1)
-	-- cse_motion
-	packet2:w_stringZ(packet1:r_stringZ())
-	-- cse_ph_skeleton
-	packet2:w_stringZ(packet1:r_stringZ())
-	utils2.packet_copy(packet2, packet1, 3)
-	-- cse_alife_helicopter
-	packet2:w_stringZ("idle")
-	packet2:w_stringZ("$no_sound")
-	-- se_turret_mgun
-	packet2:w_float(1.0)
-
-	se_obj:STATE_Read(packet2, packet2:w_tell() - dead_space)
-
-	utils2.packet_pool_put(packet1)
-	utils2.packet_pool_put(packet2)
-
----------------direction
-	se_obj.direction = vector():set(-1, 0, 0)
----------------
+function create_dir_turret(...)
+	local se_obj = create_turret(...)
+	se_obj.direction = vector():set(-1, 0, 0) --А может, se_obj.setup_direction ?
 end
