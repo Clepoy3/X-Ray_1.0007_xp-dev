@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+superzhekan_est} sr_idle@time
+
+[sr_idle@time]
+on_timer = 16000 | sr_idle@nil %=arhara_dialog.forest_del_pistonu =arhara_dialog.forest_izom_est =arhara_dialog.psevdokristall_have =arhara_dialog.superzhekan_sms%
+single = true
+
+[sr_idle@nil]

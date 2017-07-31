@@ -1,0 +1,206 @@
+;Ручной трофейный немецкий пулемёт Maschinengewehr 42 (MG-42) 
+; Работа "Арсенал Мод"
+[wpn_mg42]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency 	= 
+$spawn                  = "weapons\mg42"					
+$npc			 		= on				
+$prefetch 		 		= 8
+scheduled               = off              
+cform                   = skeleton
+class                   = WP_LR300
+min_radius              = 0
+max_radius              = 50
+description				= enc_weapons1_wpn-mg42
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier	= 1.0		        
+holder_fov_modifier		= 0.7              
+
+weapon_class			= assault_rifle
+
+cost					= 15000
+
+ammo_limit		 		= 650
+ammo_current			= 50
+ammo_elapsed		 	= 50
+
+ammo_mag_size		 	= 50
+ammo_class		 		= ammo_7.62x51box
+fire_modes				= -1
+
+hand_dependence		 	= 1
+single_handed			= 0
+
+inv_name				= wpn-mg42
+inv_name_short			= wpn-mg42
+inv_weight				= 10.6
+
+inv_grid_width     = 5
+inv_grid_height    = 1
+inv_grid_x         = 12
+inv_grid_y         = 23
+
+kill_msg_x			= 72
+kill_msg_y			= 82
+kill_msg_width		= 56
+kill_msg_height		= 23
+
+slot 					= 2		
+animation_slot			= 2		
+
+;params of weapon recoil
+fire_dispersion_base			= 0.25		
+control_inertion_factor			= 1.95f
+
+;отдача
+cam_relax_speed         		= 8.25		
+cam_dispersion          		= 0.9		
+cam_dispersion_inc			= 0.15		
+cam_dispertion_frac			= 0.9		
+cam_max_angle				= 18	    	
+cam_max_angle_horz			= 20.5		
+cam_step_angle_horz			= 3.2		
+
+fire_dispersion_condition_factor 	= 3	    	 
+misfire_probability 		= 0.004	 
+misfire_condition_k			= 0.08
+condition_shot_dec 			= 0.0002	
+
+direction               = 0, 0, 1
+
+fire_point             	=  0.00, 0.05, 1.09
+flame_particles			= weapons\generic_weapon05
+smoke_particles         = weapons\generic_shoot_00
+shell_particles	 		= weapons\shells_r_ns_338
+
+shell_point		 		=  0.00, 0.11, 0.27	
+shell_dir		 		=  0.0, 0.0, 0.4
+
+rpm_empty_click 	 	= 200
+
+PDM_disp_base 			= 6.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power        	= 2.2
+hit_impulse		 	= 7
+hit_type 			= fire_wound
+
+fire_distance          	= 300
+bullet_speed			= 800 
+rpm                     = 1000
+
+weapon_min_queue_size_far = 1
+weapon_max_queue_size_far = 6
+weapon_min_queue_interval_far = 500
+weapon_max_queue_interval_far = 700
+
+weapon_min_queue_size_medium = 6
+weapon_max_queue_size_medium = 10
+weapon_min_queue_interval_medium = 400
+weapon_max_queue_interval_medium = 600
+
+weapon_min_queue_size_close = 20
+weapon_max_queue_size_close = 40
+weapon_min_queue_interval_close = 300
+weapon_max_queue_interval_close = 500
+
+use_aim_bullet				= true		
+time_to_aim					= 1.0
+
+hud                     = wpn_mg42_hud
+normal                  = 0, 1, 0
+position         	    = -0.002,-0.024,-0.15
+orientation             = 0, -0.5, 0 
+
+strap_position         		= -0.28,-0.11,0.09			
+strap_orientation      		= -15,-9,110				person view in degrees)
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo            = 1000
+visual                  = weapons\mg42\wpn_mg42.ogf
+
+
+ph_mass			 		= 36
+
+;addons
+scope_status			= 0
+silencer_status			= 0
+grenade_launcher_status	= 0
+
+scope_name 					= wpn_addon_scope			
+scope_x 					= 42						
+scope_y 					= 3
+
+silencer_name  				= wpn_addon_silencer
+silencer_name  				= wpn_addon_silencer
+silencer_x 					= 218
+silencer_y 					= 13
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 5
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.2
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+zoom_enabled			= true
+scope_zoom_factor	    = 50
+
+;звуки
+snd_draw			= weapons\mg42\mg42_draw
+snd_holster			= weapons\mg42\mg42_holster
+snd_shoot			= weapons\mg42\mg42_shoot
+snd_shoot1			= weapons\mg42\mg42_shoot1
+snd_shoot2			= weapons\mg42\mg42_shoot2
+snd_shoot3			= weapons\mg42\mg42_shoot3
+snd_empty			= weapons\mg42\mg42_empty
+snd_reload			= weapons\mg42\mg34_reload
+snd_silncer_shot	= weapons\mg42\mg42_shoot
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+snd_silncer_shot			= weapons\w_ak74_shot1 
+
+[wpn_mg42_hud]
+shell_point          	= 0.00, 0.00, -0.10
+shell_dir		 = 0.0, 0.0, 0.0
+
+fire_point              = 0.30, 0.00, 0.00
+fire_bone               = wpn_body
+orientation             = 0, 0, 0
+position                = 0, 0, 0
+visual                  = weapons\mg42\wpn_mg42_hud.ogf
+
+anim_idle			= idle
+anim_idle_aim		= idle_aim
+anim_reload			= reload
+anim_draw			= draw
+anim_holster		= holster
+anim_shoot			= shoot
+anim_idle_sprint	= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.099801,0.066401,-0.178000
+zoom_rotate_x		= 0.009901
+zoom_rotate_y		= 0.008801
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.6
+rotate_time			= 0.6

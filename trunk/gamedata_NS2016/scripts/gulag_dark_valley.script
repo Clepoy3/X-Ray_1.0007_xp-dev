@@ -1,0 +1,555 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+
+      -- Кровосос Сидора
+	if type == "val_smart_bloodsucker_lair_2" then
+		--' 1 работа
+		for t = 1, 1 do
+			t = {section = "logic@val_smart_bloodsucker_lair_2_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Снорки Бармена
+	if type == "val_snork_lair_1" then
+		--' 6 работ
+		for t = 1, 3 do
+			t = {section = "logic@val_snork_lair_1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_snork_lair_1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кабаны и свинки
+	if type == "val_boar_flesh" then
+		--' 7 работ
+		for t = 1, 2 do
+			t = {section = "logic@val_boar_flesh_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_boar_flesh_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@val_boar_flesh_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Химеры
+	if type == "val_chimera" then
+		--' 2 работы
+		for t = 1, 2 do
+			t = {section = "logic@val_chimera_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Слепыши
+	if type == "val_dog" then
+		--' 17 работ
+		for t = 1, 4 do
+			t = {section = "logic@val_dog_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_dog_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_dog_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 7 do
+			t = {section = "logic@val_dog_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Логово кровососов
+	if type == "val_bloodsucker" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@val_bloodsucker_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Зомби
+	if type == "val_zombie" then
+		--' 4 работы
+		for t = 1, 4 do
+			t = {section = "logic@val_zombie_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Тушканы
+	if type == "val_tushkano" then
+		--' 20 работ
+		for t = 1, 5 do
+			t = {section = "logic@val_tushkano_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@val_tushkano_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@val_tushkano_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@val_tushkano_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_tushkano_home5", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Псевдопсы
+	if type == "val_pseudodog" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@val_pseudodog_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Бандиты на ферме
+	if type == "val_bandit_ferma" then
+		--' 15 работ
+		for i = 1, 10 do
+			t = {section = "logic@val_bandit_ferma_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@val_bandit_ferma_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_bandit_ferma_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Бандиты на базе
+	if type == "val_lager_bandits" then
+		--' 32 работы
+		t = { section = "logic@val_lager_bandits_camper01", idle = 0, prior = 10, state = {0},
+            	in_rest = "", out_rest = ""
+        		}
+        		table.insert(sj, t)
+		t = { section = "logic@val_lager_bandits_camper02", idle = 0, prior = 10, state = {0},
+            	in_rest = "", out_rest = ""
+        		}
+        		table.insert(sj, t)
+		t = { section = "logic@val_lager_bandits_camper03", idle = 0, prior = 10, state = {0},
+            	in_rest = "", out_rest = ""
+        		}
+        		table.insert(sj, t)
+		for i = 1, 29 do
+			t = {section = "logic@val_lager_bandits_camper"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Бандиты на базе, постоянный гулаг
+	if type == "val_baza_bandits" then
+		--' 28 работ
+		for i = 1, 16 do
+			t = {section = "logic@val_baza_bandits_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_baza_bandits_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@val_baza_bandits_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_baza_bandits_kamp3", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@val_baza_bandits_kamp4", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@val_baza_bandits_sleeper"..i, idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Долговцы
+	if type == "val_dolg" then
+		--' 8 работ
+		for i = 1, 5 do
+			t = {section = "logic@val_dolg_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_dolg_kamp", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Наёмники Блэнда
+	if type == "val_bland_killer" then
+		--' 10 работ
+		for i = 1, 10 do
+			t = {section = "logic@val_bland_killer_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Снайпера на базе бандитов
+	if type == "val_lager_sniper" then
+		--' 6 работ
+		for i = 1, 6 do
+			t = {section = "logic@val_lager_sniper_camper"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+---'''' Гулаги с переменным состоянием ''''---
+	-- Рейд спецназа
+	if type == "val_raid_soldiers" then
+		--' 18 работ, сидим в оффлайне
+		for i = 1, 18 do
+			t = {section = "logic@val_raid_soldiers_camper"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = "",
+				online = false
+			}
+			table.insert(sj, t)
+		end
+	--' 1 состояние - 18 работ, работаем онлайн
+	for i = 1, 18 do
+			t = {section = "logic@val_raid_soldiers_camper"..i, idle = 0, prior = 6, state = {1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Рейд спецназа, на выходе на свалку
+	if type == "val_exit_raid_soldiers" then
+		--' 7 работ, сидим в оффлайне
+		for i = 1, 7 do
+			t = {section = "logic@val_exit_raid_soldiers_camper"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = "",
+				online = false
+			}
+			table.insert(sj, t)
+		end
+	--' 1 состояние - 7 работ, работаем онлайн
+	for i = 1, 7 do
+			t = {section = "logic@val_exit_raid_soldiers_camper"..i, idle = 0, prior = 6, state = {1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Бандиты на фабрике
+	if type == "val_bandit_fabrika" then
+		--' 13 работ, 1 состояние
+		for i = 1, 11 do
+			t = {section = "logic@val_bandit_fabrika_walker"..i, idle = 0, prior = 6, state = {1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@val_bandit_fabrika_kamp", idle = 0, prior = 2, state = {1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		--' 13 работ, 0 состояние
+		for i = 12, 16 do
+			t = {section = "logic@val_bandit_fabrika_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@val_bandit_fabrika_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@val_bandit_fabrika_kamp3", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 1 do
+			t = {section = "logic@val_bandit_fabrika_sleeper"..i, idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+end
+
+function load_states(gname,type)
+
+      if type == "val_smart_bloodsucker_lair_2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_snork_lair_1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_boar_flesh" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_chimera" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_dog" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_bloodsucker" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_zombie" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_tushkano" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_pseudodog" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_bandit_fabrika" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("bar_darklab_document_done") then
+				return 0 -- 0 состояние
+			end
+			return 1 -- 1 состояние
+		end
+	end
+	if type == "val_bandit_ferma" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_lager_bandits" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_baza_bandits" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_raid_soldiers" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("val_raid_start") then
+				return 1 -- работаем онлайн
+			end
+			return 0 -- сидим в оффлайне
+		end
+	end
+	if type == "val_exit_raid_soldiers" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("val_raid_start") then
+				return 1 -- работаем онлайн
+			end
+			return 0 -- сидим в оффлайне
+		end
+	end
+	if type == "val_dolg" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_bland_killer" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "val_lager_sniper" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+   end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	if gulag_type == "val_bandit_fabrika" then
+		return npc_community == "bandit"
+	end
+	if gulag_type == "val_bandit_ferma" then
+		return npc_community == "bandit"
+	end
+	if gulag_type == "val_lager_bandits" then
+		return npc_community == "bandit"
+	end
+	if gulag_type == "val_baza_bandits" then
+		return npc_community == "bandit"
+	end
+	if gulag_type == "val_raid_soldiers" then
+		return npc_community == "military"
+	end
+	if gulag_type == "val_exit_raid_soldiers" then
+		return npc_community == "military"
+	end
+	if gulag_type == "val_dolg" then
+		return npc_community == "dolg"
+	end
+	if gulag_type == "val_bland_killer" then
+		return npc_community == "killer"
+	end
+	if gulag_type == "val_lager_sniper" then
+		return npc_community == "sniper"
+	end
+
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+      if gulag_type == "val_smart_bloodsucker_lair_2" then
+		return npc_community == "bloodsucker"
+	end
+	if gulag_type == "val_snork_lair_1" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "val_boar_flesh" then
+		return npc_community == "boar" or npc_community == "flesh"
+	end
+	if gulag_type == "val_chimera" then
+		return npc_community == "chimera"
+	end
+	if gulag_type == "val_dog" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "val_bloodsucker" then
+		return npc_community == "bloodsucker"
+	end
+	if gulag_type == "val_zombie" then
+		return npc_community == "zombie"
+	end
+	if gulag_type == "val_tushkano" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "val_pseudodog" then
+		return npc_community == "pseudodog"
+	end
+
+	return false
+end

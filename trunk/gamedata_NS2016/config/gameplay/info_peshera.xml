@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+	<info_portion id="pes_start"></info_portion>
+	<info_portion id="pes_xabaruch_start"></info_portion>
+	<info_portion id="pes_xabaruch_done"></info_portion>
+	<info_portion id="pes_shahter_start">
+		<article>mutant_black_dog</article>
+		<article>mutant_bibliotekar</article>
+		<article>mutant_tarakan_general</article>
+		<article>mutant_zombie_babka</article>
+		<task>shax_konteyner</task>
+	</info_portion>
+	<info_portion id="pes_buddy_hit"></info_portion>
+
+<info_portion id="spawn_peshera_gulagi"></info_portion>
+<info_portion id="pes_snotvornoe_have"></info_portion>
+
+</game_information_portions>

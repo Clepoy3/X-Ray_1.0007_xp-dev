@@ -1,0 +1,15 @@
+[logic]
+active = sr_idle@one
+
+[sr_idle@one]
+on_info = {+xalyava_nebo_start} sr_idle@two
+
+[sr_idle@two]
+on_actor_inside =  sr_idle@tri %+xalyava_nebo_begin% 
+
+[sr_idle@tri]
+on_timer = 90000 | sr_idle@four %+xalyava_nebo_next% 
+
+[sr_idle@four] 
+on_timer = 10000 | nil 
+

@@ -1,0 +1,445 @@
+---- Rulix aka Bak --- 2.7.2009
+
+
+local table_insert = table.insert
+local table_remove = table.remove
+local table_sort = table.sort
+local math_random = math.random
+
+function read_from_ini(iniFileName,sec,val,def,typ)
+	--return rx_utils.read_from_ini(ini,sec,val,def,typ)
+	return rx_utils.read_from_ini_new(iniFileName,sec,val,def,typ)
+end
+
+local sc = clsid.wpn_scope_s
+local sl = clsid.wpn_silencer
+local gl = clsid.wpn_grenade_launcher
+local IAmAAddon = {
+	[sc] = true,
+	[sl] = true,
+	[gl] = true
+}
+
+local names_table = {[sc] = "scope",[sl] = "silencer",[gl] = "grenade_launcher"}
+local flags_vals = {[sc] = 1,[sl] = 4,[gl] = 2}
+local flags_table = {[sc] = {[1] = true,[3] = true,[5] = true,[7] = true},
+					[sl] = {[4] = true,[5] = true,[6] = true,[7] = true},
+					[gl] = {[2] = true,[3] = true,[6] = true,[7] = true}}
+
+local remt,ctmp,cont = {},{},{}
+
+local restore_offline_online = {}
+
+local iniFileName = "misc\\rx_addons.ltx"
+local ad_ini = g_ini_file(iniFileName)
+local addons_sets = {forbiddens = {addons = {},weapons = {},factions = {},npcs = {}},
+				check_prd = read_from_ini(iniFileName,"main","check_period",60000),
+				enabled = read_from_ini(iniFileName,"main","enabled",false,0),
+				maxw = read_from_ini(iniFileName,"main","max_upg_weapons",5)}
+
+function init() counterAdd("rx_addons.init")
+--	addons_sets.forbiddens.weapons = rx_utils.parse_list_new(iniFileName,"main","forbidden_weapons",true)
+	addons_sets.forbiddens.factions = rx_utils.parse_list_new(iniFileName,"main","forbidden_factions",true)
+	addons_sets.forbiddens.npcs = rx_utils.parse_list_new(iniFileName,"main","forbidden_npcs",true)
+	addons_sets.inited = true
+end
+
+function update(tg) counterAdd("rx_addons.update")
+	if addons_sets.enabled ~= true then
+		return
+	elseif addons_sets.inited ~= true then
+		init()
+	end
+	local sim = alife()
+	local obj
+	for i = 1, #remt do
+		obj = sim:object(remt[i])
+		if obj then
+			sim:release(obj, true)
+		end
+	end
+	remt = {}
+	local npc, sect, wpn, parent, npc_id, st, se_npc, aid
+	local level_object_by_id = level.object_by_id
+	for id,t in pairs(ctmp) do
+		npc = level_object_by_id(t[1])
+		sect = t[3]
+		if npc then
+			wpn = level_object_by_id(id)
+			if wpn then
+				if wpn:section() == sect then
+					parent = wpn:parent()
+					npc_id = npc:id()
+					if not parent then
+						parent = wpn
+					end
+					if parent:id() ~= npc_id then
+						parent:transfer_item(wpn,npc)
+					end
+					st = rx_ai.get_storage(npc_id)
+					if st and st.wm then
+						st.wm.period = tg+2000
+					end
+					table_insert(remt,t[4])
+					if t[5] then
+						for i = 1, #t[5] do
+							aid = t[5][i]
+							table_insert(remt,aid)
+						end
+					end
+				end
+				ctmp[id] = nil
+				if restore_offline_online[id] then
+					rx_utils.switch_online_offline(id)
+					restore_offline_online[id] = nil
+				end
+			elseif t[2] < tg then
+				table_insert(remt,id)
+				ctmp[id] = nil
+				if restore_offline_online[id] then
+					rx_utils.switch_online_offline(id)
+					restore_offline_online[id] = nil
+				end
+			else
+				rx_utils.switch_online(id)
+				restore_offline_online[id] = true
+			end
+		else
+			se_npc = sim:object(t[1])
+			if se_npc then
+				if t[2] >= tg then
+					rx_utils.switch_online(t[1])
+					restore_offline_online[t[1]] = true
+				else
+					table_insert(remt,id)
+					ctmp[id] = nil
+					if restore_offline_online[t[1]] then
+						rx_utils.switch_online_offline(t[1])
+						restore_offline_online[t[1]] = nil
+					end
+				end
+			else
+				table_insert(remt,id)
+				ctmp[id] = nil
+				if restore_offline_online[t[1]] then
+					rx_utils.switch_online_offline(t[1])
+					restore_offline_online[t[1]] = nil
+				end
+				if restore_offline_online[id] then
+					rx_utils.switch_online_offline(id)
+					restore_offline_online[id] = nil
+				end
+			end
+		end
+	end
+
+	if #cont ~= 0 then
+		table_sort(cont,function(a,b) return a.pid < b.pid end)
+		local t, cwpn
+		for i = 1, #cont do
+			t = cont[i]
+			cwpn = sim:create(t.sec,t.pos,t.lvid,t.gvid)
+			if cwpn then
+				rx_utils.set_weapon_data(t.data,cwpn)
+				ctmp[cwpn.id] = {t.npc,tg+8000,t.sec,t.pid,t.at}
+			end
+		end
+		cont = {}
+	end
+end
+
+function actor_save() counterAdd("rx_addons.actor_save")
+	local sim = alife()
+	local obj
+	for id,t in pairs(ctmp) do
+		obj = sim:object(id)
+		if obj then
+			sim:release(obj, true)
+		end		
+	end
+	ctmp = {}
+end
+
+function npc_switch_offline(npc) counterAdd("rx_addons.npc_switch_offline")
+	local sim = alife()
+	local npc_id = npc:id()
+	local obj
+	for id,t in pairs(ctmp) do
+		if t[1] == npc_id then
+			obj = sim:object(id)
+			if obj then
+				sim:release(obj, true)
+			end
+			ctmp[id] = nil
+		end
+	end
+end
+
+function npc_update(npc,st) counterAdd("rx_addons.npc_update")
+	if addons_sets.enabled ~= true then
+		return
+	end
+	local tg = time_global()
+	if not st.addons_time then
+		-- выполн€етс€ один раз
+		if addons_sets.forbiddens.factions[npc:character_community()] or addons_sets.forbiddens.npcs[npc:name()] or rx_utils.IsTrader(npc) then
+			st.addons_time = true
+		else
+			st.addons_time_delta = math_random(addons_sets.check_prd)
+			st.addons_time = tg + st.addons_time_delta
+		end
+	elseif st.addons_time ~= true and st.addons_time < tg then
+		if not (npc:best_enemy() or xr_wounded.is_wounded(npc) or npc:is_talking()) then
+			process(npc)
+		end
+		--st.addons_time = tg+math_random(addons_sets.check_prd,addons_sets.check_prd+addons_sets.check_prd*0.5)
+		st.addons_time = tg + addons_sets.check_prd + st.addons_time_delta
+	end
+end
+
+function process(npc) counterAdd("rx_addons.process")
+	local wmgr = rx_wmgr and rx_wmgr.wm_modes.enabled_ext
+	local wm
+	if wmgr == true then
+		wm = rx_wmgr.get_wm(npc)
+		if wm.disabled == true or wm.modes.process_mode == "0" then
+			-- почему закомментировано ???
+--			wmgr = nil
+		end
+	end
+	local weapons,wcnt = get_weapon_list(npc,wm)
+	if wcnt > 0 then
+		local addons,acnt = get_addon_list(npc,weapons)
+		if acnt > 0 then
+			local convert = {}
+			for i = 1, #weapons do
+				convert[weapons[i]["id"]] = 0
+			end
+			weapons = get_upd_weapons(npc,weapons,wmgr,wm)
+			if wmgr then
+				local fpt = {}
+				local sect, w
+				for i = 1, #weapons do
+					w = weapons[i]
+					if w.prm ~= 0 then
+						for c,f in pairs(flags_table) do
+							sect = w.ast[c]
+							if sect then
+								for ii = 1, #addons[c] do
+									if addons[c][ii].sec == sect then
+										fpt[w.id] = {t = w,adf = (fpt[w.id] and fpt[w.id].adf or 0)+flags_vals[c]}
+										break
+									end
+								end
+							end
+						end
+					end
+				end
+				local prm
+				local level_object_by_id = level.object_by_id
+				for id,w in pairs(fpt) do
+					prm = wm:get_weapon_prior(level_object_by_id(id),w.adf)+w.t.adf/10
+					w.t.prm = prm
+				end
+				table_sort(weapons,function(a,b) return a.prm > b.prm end)
+				while #weapons > addons_sets.maxw or weapons[#weapons].prm < weapons[1].prm/3 do
+					table_remove(weapons)
+				end
+			end
+			local saveb = {}
+			local attach, a, w
+			for c,t in pairs(addons) do
+				for i = 1, #t do
+					a = t[i]
+					attach = false
+					for ii = 1, #weapons do
+						w = weapons[ii]
+						if w.ast[c] and w.ast[c] == a.sec and not flags_table[c][convert[w.id]] then
+							convert[w.id] = convert[w.id]+flags_vals[c]
+							if not a.wpn then
+								if not saveb[w.id] then
+									saveb[w.id] = {}
+								end
+								table_insert(saveb[w.id],a.id)
+							end
+							attach = true
+							break
+						end
+					end
+					if a.wpn then
+						if not attach then
+							spawn_addon(npc,a.sec)
+						end
+					end
+				end
+			end
+			for id,f in pairs(convert) do
+				convert_weapon(npc,id,f,saveb[id])
+			end
+		end
+	end
+end
+
+-- получить список оружи€, на которое можно вешать обвесы
+function get_weapon_list(npc,wm) counterAdd("rx_addons.get_weapon_list")
+	local weapons = {[1] = {}}
+	local aws = {}
+	local cnt = wm and wm:update_weapon_list(true)
+	if cnt then
+		weapons = wm.weapons
+	else
+		cnt = 0
+		local function weapon_iterator(q,item)
+			if item and rx_utils.IAmAWeaponFA[item:clsid()] then
+				local id,sec = item:id(),item:section()
+				table_insert(weapons[1],{sec = sec,id = id,prm = 0,adf = rx_utils.get_addon_flag(item)})
+				cnt = cnt+1
+			end
+		end
+		npc:iterate_inventory(weapon_iterator)
+	end
+	if cnt > 0 then
+		local wt
+		local ast
+		local level_object_by_id = level.object_by_id
+		local w
+		local addon_present
+		for t,ws in pairs(weapons) do
+			if #ws > 0 then
+				for i = 1, #ws do
+					w = ws[i]
+					wt = {id = w.id,sec = w.sec,prm = w.prm,adf = rx_utils.get_addon_flag(level_object_by_id(w.id)),ast = {}}
+					ast = get_addons_status(wt.sec,wt.id)
+					addon_present = false
+					for c,s in pairs(ast) do
+						if s == true then
+							wt.ast[c] = get_addon_section(wt.sec,c)
+							addon_present = true
+						end
+					end
+					-- офигенна€ конструкци€ - как-бы если в wt.ast что-то есть, то добавить в таблицу  sapsan
+					--for c,s in pairs(wt.ast) do
+					--	table_insert(aws,wt)
+					--	break
+					--end
+					-- переделаем
+					-- если на оружие можно что-то нацепить
+					if addon_present then
+						table_insert(aws,wt)
+					end
+				end
+			end
+		end
+		if #aws > 0 then
+			table_sort(aws,function(a,b) return a.prm > b.prm end)
+		end
+	end
+	return aws,#aws
+end
+
+function get_addon_list(npc,weapons) counterAdd("rx_addons.get_addon_list")
+	local addons = {[sc] = {},[sl] = {},[gl] = {}}
+	local cnt = 0
+	local function addon_iterator(q,item)
+		local c = item:clsid()
+		if IAmAAddon[c] then
+			local id,sec = item:id(),item:section()
+			table_insert(addons[c],{id = id,sec = sec})
+			cnt = cnt+1
+		end
+	end
+	local w
+	for c,f in pairs(flags_table) do
+		for i = 1, #weapons do
+			w = weapons[i]
+			if w.adf ~= 0 and w.ast[c] then
+				if flags_table[c][w.adf] then
+					-- w.ast[c] уже содержит секцию
+					--local sec = get_addon_section(w.sec,c)
+					--if sec then
+						table_insert(addons[c],{id = w.id,sec = w.ast[c],wpn = true})
+						cnt = cnt+1
+					--end
+				end
+			end
+		end
+	end
+	npc:iterate_inventory(addon_iterator)
+	return addons,cnt
+end
+
+function get_upd_weapons(npc,weapons,wmgr,wm) counterAdd("rx_addons.get_upd_weapons")
+	if wmgr ~= true then
+		weapons = {}
+		local bwpn = npc:best_weapon()
+		if bwpn then
+			local id,sec = bwpn:id(),bwpn:section()
+			local addonf = rx_utils.get_addon_flag(bwpn)
+			local wt = {sec = sec,id = id,prm = 1,adf = addonf,ast = {}}
+			local ast = get_addons_status(sec,id)
+			for c,s in pairs(ast) do
+				if s == true then
+					wt.ast[c] = get_addon_section(sec,c)
+				end
+				table_insert(weapons,wt)
+			end
+		end
+	else
+		local wpn
+		local level_object_by_id = level.object_by_id
+		for i = 1, #weapons do
+			wpn = level_object_by_id(weapons[i]["id"])
+			if not wpn or rx_wmgr.wm_modes.forbiddens[weapons[i]["sec"]] ~= nil or wpn:condition() < rx_wmgr.wm_modes.min_cond or not wm:have_ammo(wpn) then
+				weapons[i]["prm"] = 0
+			end
+		end
+	end
+	return weapons
+end
+
+function spawn_addon(npc,sec) counterAdd("rx_addons.spawn_addon")
+	alife():create(sec,npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
+end
+
+-- добавить оружие в список на конвертацию если обвесы оружи€ не соответствуют переданным
+function convert_weapon(npc,id,flags,at) counterAdd("rx_addons.convert_weapon")
+	local wpn = alife():object(id)
+	if wpn then
+		local sect = wpn:section_name()
+		local data = rx_utils.get_weapon_data(wpn)
+		if data.addon_flags ~= flags then
+			local pos = level.vertex_position(npc:level_vertex_id())
+			pos.x = pos.x+1
+			data.addon_flags = flags
+			table_insert(cont,{pid = id,data = data,npc = npc:id(),sec = sect,pos = pos,lvid = npc:level_vertex_id(),gvid = npc:game_vertex_id(),at = at})
+		end
+	end	
+end
+
+--[[function item_is_addon(o,c)
+	if not c then
+		c = o and o:clsid()
+	end
+	if c == sc or c == sl or c == gl then
+		return true
+	end
+	return false	
+end]]
+
+-- какие обвесы (не интегрированные) можно вешать на оружие
+function get_addons_status(sec,id) counterAdd("rx_addons.get_addons_status")
+	local wpn = level.object_by_id(id)
+	local ast = {[sc] = "sc",[sl] = "sl",[gl] = "gl"}
+	if wpn then
+		for c,s in pairs(ast) do
+			ast[c] = (rx_utils.get_addon_status(wpn,s) == 2)
+		end
+	end
+	return ast
+end
+
+-- получить название обвеса дл€ оружи€ по его типу
+local cvt = {[sc] = "scope_name",[sl] = "silencer_name",[gl] = "grenade_launcher_name"}
+function get_addon_section(sec,c) counterAdd("rx_addons.get_addon_section")
+	return read_from_ini(nil,sec,cvt[c],nil,1)
+end

@@ -1,0 +1,74 @@
+[logic]
+active = {-stand_ap} walker, {+stand_ap -obmorok_sit} walker1, {-kit_antena_two_start +obmorok_sit}walker2, {+kit_antena_two_start -obmorok_go1}kamp, {+obmorok_go1 -obmorok_go2} walker3, {+obmorok_go2 -obmorok_go3} walker4, {+obmorok_go3 -obmorok_go4} walker5, {+obmorok_go4 -obmorok_go_stoyka} walker6, walker7
+danger = danger_ignore
+
+[walker]
+path_walk = zaton_obmorok1_walk
+path_look = zaton_obmorok1_look
+on_info = {+stand_ap} walker1
+meet = no_meet
+
+[walker1]
+path_walk = zaton_obmorok2_walk
+path_look = zaton_obmorok2_look
+def_state_standing = ward
+on_info = {+obmorok_sit} walker2
+meet = meet
+
+[walker2]
+path_walk = ztn_obmorok_sit_walk
+path_look = ztn_obmorok_sit_look
+on_info = {+kit_antena_two_start} kamp
+meet = meet 
+
+[kamp]
+center_point  = zaton_obmorok_camp_center
+path_walk = zaton_obmorok_center_task
+radius = 0.1
+on_info = {+obmor_bandos_tu_start}walker3
+meet = meet@1
+
+[walker3]
+path_walk = obmorok_go1_walk
+path_look = obmorok_go1_look
+on_info = {+obmorok_go2} walker4
+meet = no_meet
+
+[walker4]
+path_walk = obmorok_go2_walk
+path_look = obmorok_go2_look
+on_info = {+obmorok_go3} walker5
+meet = no_meet
+
+[walker5]
+path_walk = obmorok_go3_walk
+path_look = obmorok_go3_look
+on_info = {+obmorok_go4} walker6
+meet = no_meet
+
+[walker6]
+path_walk = obmorok_go4_walk
+path_look = obmorok_go4_look
+on_info = {+obmorok_go_stoyka} walker7
+meet = meet1
+
+[walker7]
+path_walk = zaton_obmorok_bar_walk
+path_look = zaton_obmorok_bar_look
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[meet1]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+victim = 10 | actor
+
+[meet@1]
+;meet_dialog = obmor_bandos_tu
+
+[danger_ignore]
+ignore_distance = 0

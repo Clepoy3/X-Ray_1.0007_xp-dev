@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding="UTF-8"?>
+
+<!-- AMK npc profile -->
+<xml>	
+	<character id="amk_vitek_voron">
+		<class>amk_vitek_voron</class>
+	</character>
+	<character id="amk_artem_kulinar">
+		<class>amk_artem_kulinar</class>
+	</character>
+      <character id="matvei_kulinar">
+		<class>matvei_kulinar</class>
+	</character>
+      <character id="kill_lukash1">
+		<class>kill_lukash1</class>
+	</character>
+      <character id="kill_lukash2">
+		<class>kill_lukash2</class>
+	</character>
+      <character id="kill_lukash3">
+		<class>kill_lukash3</class>
+	</character>
+      <character id="kill_barmen1">
+		<class>kill_barmen1</class>
+	</character>
+      <character id="kill_barmen2">
+		<class>kill_barmen2</class>
+	</character>
+      <character id="kill_barmen3">
+		<class>kill_barmen3</class>
+	</character>
+      <character id="kill_barmen4">
+		<class>kill_barmen4</class>
+	</character>
+      <character id="kill_barmen5">
+		<class>kill_barmen5</class>
+	</character>
+      <character id="kill_trader1">
+		<class>kill_trader1</class>
+	</character>
+      <character id="kill_trader2">
+		<class>kill_trader2</class>
+	</character>
+      <character id="kill_trader3">
+		<class>kill_trader3</class>
+	</character>
+      <character id="kill_trader4">
+		<class>kill_trader4</class>
+	</character>
+      <character id="kill_trader5">
+		<class>kill_trader5</class>
+	</character>
+      <character id="kill_petrenko">
+		<class>kill_petrenko</class>
+	</character>
+      <character id="kill_lisiy">
+		<class>kill_lisiy</class>
+	</character>
+      <character id="kill_mercenary">
+		<class>kill_mercenary</class>
+	</character>
+
+</xml>

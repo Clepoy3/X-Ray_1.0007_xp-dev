@@ -1,0 +1,459 @@
+	;---- *** Погода для Выброса *** ---- *** ex_all *** ----
+
+;--- ** базовые настройки ** ----------------------------------------------
+[blow_base]
+flares		= 	
+sky_rotation	=	0			
+clouds_texture	=	sky\sky_oblaka
+far_plane		=	314
+fog_distance	=	314
+fog_color		=	0,0,0
+fog_density		=	0
+rain_density	=	0
+rain_color		=	0,0,0
+bolt_duration	=	0.25f
+wind_direction	=	0.0
+lmap_color		=	1,1,1
+sun_dir		    =	-20.0, 180
+env_ambient		=	ambient_env_stancia1
+
+[iblow_base]
+flares		= 	
+sky_rotation	=	0			
+clouds_texture	=	sky\sky_oblaka
+far_plane		=	314
+fog_distance	=	314
+fog_color		=	0,0,0
+fog_density		=	0
+rain_density	=	0
+rain_color		=	0,0,0
+thunderbolt		=
+bolt_period		=	0
+bolt_duration	=	0
+wind_velocity	=	0
+wind_direction	=	0.0
+lmap_color		=	1,1,1
+sun_dir		    =	-0.1,0			
+
+[blow_sect_base]:blow_base
+sky_texture		=	sky\sky_9_cube
+thunderbolt		=	thunderbolt_collection_default
+bolt_period		=	3.f
+wind_velocity	=	150.0
+
+[iblow_sect_base_m]:iblow_base
+sky_color		=	0.45,0.45,0.45,0.5,0			
+clouds_color	=	0.3555,0.33,0.33,0.5,1
+ambient		=	0.01,0,0,0.6,0
+hemi_color		=	0.4,0.26,0.26,1,0
+sun_color		=	0.45,0.33,0.33,1,0
+
+[iblow_sect_base_d]:iblow_base
+sky_color		=	0.7,0.7,0.7,0.5,0			
+clouds_color	=	0.5255,0.5,0.5,0.5,1
+ambient		=	0.01,0,0,1,0
+hemi_color		=	0.6,0.4,0.4,1,0
+sun_color		=	0.7,0.5,0.5,1,0
+
+[iblow_sect_base_n]:iblow_base
+sky_color		=	0.2,0.2,0.2,0.5,0			
+clouds_color	=	0.1655,0.14,0.14,0.5,1
+ambient		=	0.01,0,0,0.1,0
+hemi_color		=	0.012,0.01,0.01,1,0
+sun_color		=	0.2,0.14,0.14,1,0
+
+[phase_base_00]:blow_base
+sky_texture		=	sky\sky_9_cube
+thunderbolt		=	thunderbolt_collection_default
+bolt_period		=	3.f
+wind_velocity	=	100.0
+
+[phase_base_01]:blow_base
+sky_texture		=	sky\sky_15_vibros_cube
+thunderbolt		=	thunderbolt_collection_default
+bolt_period		=	4.f
+wind_velocity	=	75.0
+
+[phase_base_02]:blow_base
+sky_texture		=	sky\sky_14_vibros_cube
+thunderbolt		=	thunderbolt_collection_stancia
+bolt_period		=	5.f
+wind_velocity	=	50.0
+
+[phase_base_03]:blow_base
+sky_texture		=	sky\sky_14_vibros_cube
+thunderbolt		=	thunderbolt_collection_stancia
+bolt_period		=	3.f
+wind_velocity	=	10.0
+
+[phase_base_04]:blow_base
+sky_texture		=	sky\sky_15_vibros_cube
+thunderbolt		=	thunderbolt_collection_default
+bolt_period		=	6.f
+wind_velocity	=	50.0
+
+[phase_base_05]:blow_base
+sky_texture		=	sky\sky_9_cube
+thunderbolt		=
+bolt_period		=	3.f
+wind_velocity	=	20.0
+;--- ** base setting ** ------------------------------------------- end ---
+
+;--- ** утро и вечер ** ---------------------------------------------------
+[sect_blow_m]
+00:00:00		=	blow_sm_00
+12:00:00		=	blow_sm_00
+
+[blow_sm_00]:blow_sect_base
+sky_color		=	0.45,0.45,0.45,0.5,0			
+clouds_color	=	0.33,0.33,0.33,0.5,1
+ambient		=	0.01,0,0,0.6,0
+hemi_color		=	0.26,0.26,0.26,1,0
+sun_color		=	0.33,0.33,0.33,1,0
+
+[blow_m_00]
+00:00:20		=	m_w_00
+00:01:30		=	m_w_01
+
+[blow_m_01]
+00:00:30		=	m_w_01
+00:04:30		=	m_w_02
+
+[blow_m_02]
+00:00:30		=	m_w_02
+00:04:30		=	m_w_03
+
+[blow_m_03]
+00:00:30		=	m_w_03
+00:05:30		=	m_w_02
+
+[blow_m_04]
+00:00:10		=	m_w_02
+00:01:30		=	m_w_04
+00:02:30		=	m_w_05
+
+[m_w_00]:phase_base_00
+sky_color		=	0.45,0.45,0.45,0.5,0			
+clouds_color	=	0.3555,0.33,0.33,0.5,1
+ambient		=	0.01,0,0,0.6,0
+hemi_color		=	0.4,0.26,0.26,1,0
+sun_color		=	0.45,0.33,0.33,1,0
+
+[m_w_01]:phase_base_01
+sky_color		=	0.45,0.45,0.45,0.5,0			
+clouds_color	=	0.3555,0.33,0.33,0.5,1
+ambient		=	0.01,0,0,0.6,0
+hemi_color		=	0.4,0.26,0.26,1,0
+sun_color		=	0.45,0.33,0.33,1,0
+
+[m_w_02]:phase_base_02
+sky_color		=	0.45,0.45,0.45,0.5,0			
+clouds_color	=	0.3555,0.33,0.33,0.5,1
+ambient		=	0.01,0,0,0.6,0
+hemi_color		=	0.4,0.26,0.26,1,0
+sun_color		=	0.45,0.33,0.33,1,0
+
+[m_w_03]:phase_base_03
+sky_color		=	0.53,0.45,0.45,0.5,0			
+clouds_color	=	0.3555,0.33,0.33,0.5,0.5
+ambient		=	0.01,0,0,0.6,0
+hemi_color		=	0.4,0.26,0.26,1,0
+sun_color		=	0.45,0.33,0.33,1,0
+
+[m_w_04]:phase_base_04
+sky_color		=	0.45,0.45,0.45,0.5,0			
+clouds_color	=	0.3555,0.33,0.33,0.5,1
+ambient		=	0.01,0,0,0.6,0
+hemi_color		=	0.4,0.26,0.26,1,0
+sun_color		=	0.45,0.33,0.33,1,0
+
+[m_w_05]:phase_base_05
+sky_color		=	0.45,0.45,0.45,0.5,0			
+clouds_color	=	0.3555,0.33,0.33,0.5,1
+ambient		=	0.01,0,0,0.6,0
+hemi_color		=	0.4,0.26,0.26,1,0
+sun_color		=	0.45,0.33,0.33,1,0
+;--- ** morning and evening ** ------------------------------------ end ---
+
+;--- ** день ** -----------------------------------------------------------
+[sect_blow_d]
+00:00:00		=	blow_sd_00
+12:00:00		=	blow_sd_00
+
+[blow_sd_00]:blow_sect_base
+sky_color		=	0.7,0.7,0.7,0.5,0			
+clouds_color	=	0.5,0.5,0.5,0.5,1
+ambient		=	0.01,0,0,1,0
+hemi_color		=	0.4,0.4,0.4,1,0
+sun_color		=	0.5,0.5,0.5,1,0
+
+[blow_d_00]
+00:00:20		=	d_w_00
+00:01:30		=	d_w_01
+
+[blow_d_01]
+00:00:30		=	d_w_01
+00:04:30		=	d_w_02
+
+[blow_d_02]
+00:00:30		=	d_w_02
+00:04:30		=	d_w_03
+
+[blow_d_03]
+00:00:30		=	d_w_03
+00:05:30		=	d_w_02
+
+[blow_d_04]
+00:00:10		=	d_w_02
+00:01:30		=	d_w_04
+00:02:30		=	d_w_05
+
+[d_w_00]:phase_base_00
+sky_color		=	0.7,0.7,0.7,0.5,0			
+clouds_color	=	0.5255,0.5,0.5,0.5,1
+ambient		=	0.01,0,0,1,0
+hemi_color		=	0.6,0.4,0.4,1,0
+sun_color		=	0.7,0.5,0.5,1,0
+
+[d_w_01]:phase_base_01
+sky_color		=	0.7,0.7,0.7,0.5,0			
+clouds_color	=	0.5255,0.5,0.5,0.5,1
+ambient		=	0.01,0,0,1,0
+hemi_color		=	0.6,0.4,0.4,1,0
+sun_color		=	0.7,0.5,0.5,1,0
+
+[d_w_02]:phase_base_02
+sky_color		=	0.7,0.7,0.7,0.5,0			
+clouds_color	=	0.5255,0.5,0.5,0.5,1
+ambient		=	0.01,0,0,1,0
+hemi_color		=	0.6,0.4,0.4,1,0
+sun_color		=	0.7,0.5,0.5,1,0
+
+[d_w_03]:phase_base_03
+sky_color		=	0.8,0.7,0.7,0.5,0			
+clouds_color	=	0.5255,0.5,0.5,0.5,0.5
+ambient		=	0.01,0,0,1,0
+hemi_color		=	0.6,0.4,0.4,1,0
+sun_color		=	0.7,0.5,0.5,1,0
+
+[d_w_04]:phase_base_04
+sky_color		=	0.7,0.7,0.7,0.5,0			
+clouds_color	=	0.5255,0.5,0.5,0.5,1
+ambient		=	0.01,0,0,1,0
+hemi_color		=	0.6,0.4,0.4,1,0
+sun_color		=	0.7,0.5,0.5,1,0
+
+[d_w_05]:phase_base_05
+sky_color		=	0.7,0.7,0.7,0.5,0			
+clouds_color	=	0.5255,0.5,0.5,0.5,1
+ambient		=	0.01,0,0,1,0
+hemi_color		=	0.6,0.4,0.4,1,0
+sun_color		=	0.7,0.5,0.5,1,0
+;--- ** day ** ---------------------------------------------------- end ---
+
+;--- ** ночь ** -----------------------------------------------------------
+[sect_blow_n]
+00:00:00		=	blow_sn_00
+12:00:00		=	blow_sn_00
+
+[blow_sn_00]:blow_sect_base
+sky_color		=	0.2,0.2,0.2,0.5,0			
+clouds_color	=	0.14,0.14,0.14,0.5,1
+ambient		=	0.01,0,0,0.1,0
+hemi_color		=	0.01,0.01,0.01,1,0
+sun_color		=	0.14,0.14,0.14,1,0
+
+[blow_n_00]
+00:00:20		=	n_w_00
+00:01:30		=	n_w_01
+
+[blow_n_01]
+00:00:30		=	n_w_01
+00:04:30		=	n_w_02
+
+[blow_n_02]
+00:00:30		=	n_w_02
+00:04:30		=	n_w_03
+
+[blow_n_03]
+00:00:30		=	n_w_03
+00:05:30		=	n_w_02
+
+[blow_n_04]
+00:00:10		=	n_w_02
+00:01:30		=	n_w_04
+00:02:30		=	n_w_05
+
+[n_w_00]:phase_base_00
+sky_color		=	0.2,0.2,0.2,0.5,0			
+clouds_color	=	0.1655,0.14,0.14,0.5,1
+ambient		=	0.01,0,0,0.1,0
+hemi_color		=	0.012,0.01,0.01,1,0
+sun_color		=	0.2,0.14,0.14,1,0
+
+[n_w_01]:phase_base_01
+sky_color		=	0.2,0.2,0.2,0.5,0			
+clouds_color	=	0.1655,0.14,0.14,0.5,1
+ambient		=	0.01,0,0,0.1,0
+hemi_color		=	0.012,0.01,0.01,1,0
+sun_color		=	0.2,0.14,0.14,1,0
+
+[n_w_02]:phase_base_02
+sky_color		=	0.2,0.2,0.2,0.5,0			
+clouds_color	=	0.1655,0.14,0.14,0.5,1
+ambient		=	0.01,0,0,0.1,0
+hemi_color		=	0.012,0.01,0.01,1,0
+sun_color		=	0.2,0.14,0.14,1,0
+
+[n_w_03]:phase_base_03
+sky_color		=	0.228,0.2,0.2,0.5,0			
+clouds_color	=	0.1655,0.14,0.14,0.5,0.5
+ambient		=	0.01,0,0,0.1,0
+hemi_color		=	0.012,0.01,0.01,1,0
+sun_color		=	0.2,0.14,0.14,1,0
+
+[n_w_04]:phase_base_04
+sky_color		=	0.2,0.2,0.2,0.5,0			
+clouds_color	=	0.1655,0.14,0.14,0.5,1
+ambient		=	0.01,0,0,0.1,0
+hemi_color		=	0.012,0.01,0.01,1,0
+sun_color		=	0.2,0.14,0.14,1,0
+
+[n_w_05]:phase_base_05
+sky_color		=	0.2,0.2,0.2,0.5,0			
+clouds_color	=	0.1655,0.14,0.14,0.5,1
+ambient		=	0.01,0,0,0.1,0
+hemi_color		=	0.012,0.01,0.01,1,0
+sun_color		=	0.2,0.14,0.14,1,0
+;--- ** night ** -------------------------------------------------- end ---
+
+;--- ** утро и вечер в подземке ** ----------------------------------------
+[iblow_m_00]
+00:00:20		=	m_iw_00
+00:01:30		=	m_iw_01
+
+[iblow_m_01]
+00:00:30		=	m_iw_01
+00:04:30		=	m_iw_02
+
+[iblow_m_02]
+00:00:30		=	m_iw_02
+00:04:30		=	m_iw_03
+
+[iblow_m_03]
+00:00:30		=	m_iw_03
+00:05:30		=	m_iw_02
+
+[iblow_m_04]
+00:00:10		=	m_iw_02
+00:01:30		=	m_iw_04
+00:02:30		=	m_iw_05
+
+[m_iw_00]:iblow_sect_base_m
+sky_texture		=	sky\sky_9_cube
+[m_iw_01]:iblow_sect_base_m
+sky_texture		=	sky\sky_15_vibros_cube
+[m_iw_02]:iblow_sect_base_m
+sky_texture		=	sky\sky_14_vibros_cube
+[m_iw_03]:iblow_sect_base_m
+sky_texture		=	sky\sky_14_vibros_cube
+[m_iw_04]:iblow_sect_base_m
+sky_texture		=	sky\sky_15_vibros_cube
+[m_iw_05]:iblow_sect_base_m
+sky_texture		=	sky\sky_9_cube
+;--- ** indoor morning and evening ** ----------------------------- end ---
+
+;--- ** день в подземке ** ------------------------------------------------
+[iblow_d_00]
+00:00:20		=	d_iw_00
+00:01:30		=	d_iw_01
+
+[iblow_d_01]
+00:00:30		=	d_iw_01
+00:04:30		=	d_iw_02
+
+[iblow_d_02]
+00:00:30		=	d_iw_02
+00:04:30		=	d_iw_03
+
+[iblow_d_03]
+00:00:30		=	d_iw_03
+00:05:30		=	d_iw_02
+
+[iblow_d_04]
+00:00:10		=	d_iw_02
+00:01:30		=	d_iw_01
+00:02:30		=	d_iw_00
+
+[d_iw_00]:iblow_sect_base_d
+sky_texture		=	sky\sky_9_cube
+[d_iw_01]:iblow_sect_base_d
+sky_texture		=	sky\sky_15_vibros_cube
+[d_iw_02]:iblow_sect_base_d
+sky_texture		=	sky\sky_14_vibros_cube
+[d_iw_03]:iblow_sect_base_d
+sky_texture		=	sky\sky_14_vibros_cube
+[d_iw_04]:iblow_sect_base_d
+sky_texture		=	sky\sky_15_vibros_cube
+[d_iw_05]:iblow_sect_base_d
+sky_texture		=	sky\sky_9_cube
+;--- ** indoor day ** --------------------------------------------- end ---
+
+;--- ** ночь в подземке ** ------------------------------------------------
+[iblow_n_00]
+00:00:20		=	n_iw_00
+00:01:30		=	n_iw_01
+
+[iblow_n_01]
+00:00:30		=	n_iw_01
+00:04:30		=	n_iw_02
+
+[iblow_n_02]
+00:00:30		=	n_iw_02
+00:04:30		=	n_iw_03
+
+[iblow_n_03]
+00:00:30		=	n_iw_03
+00:05:30		=	n_iw_02
+
+[iblow_n_04]
+00:00:10		=	n_iw_02
+00:01:30		=	n_iw_04
+00:02:30		=	n_iw_05
+
+[n_iw_00]:iblow_sect_base_n
+sky_texture		=	sky\sky_9_cube
+[n_iw_01]:iblow_sect_base_n
+sky_texture		=	sky\sky_15_vibros_cube
+[n_iw_02]:iblow_sect_base_n
+sky_texture		=	sky\sky_14_vibros_cube
+[n_iw_03]:iblow_sect_base_n
+sky_texture		=	sky\sky_14_vibros_cube
+[n_iw_04]:iblow_sect_base_n
+sky_texture		=	sky\sky_15_vibros_cube
+[n_iw_05]:iblow_sect_base_n
+sky_texture		=	sky\sky_9_cube
+;--- ** indoor night ** ------------------------------------------- end ---
+
+;--- ** ЧАЭС_1 ** ---------------------------------------------------------
+[sect_blow_aes_m]
+00:01:00 = m_w_01
+00:02:00 = m_w_02
+00:03:00 = m_w_03
+00:04:00 = m_w_02
+00:05:00 = m_w_01
+
+[sect_blow_aes_d]
+00:01:00 = d_w_01
+00:02:00 = d_w_02
+00:03:00 = d_w_03
+00:04:00 = d_w_02
+00:05:00 = d_w_01
+
+[sect_blow_aes_n]
+00:01:00 = n_w_01
+00:02:00 = n_w_02
+00:03:00 = n_w_03
+00:04:00 = n_w_02
+00:05:00 = n_w_01
+;--- ** stancia_1 ** ---------------------------------------------- end ---

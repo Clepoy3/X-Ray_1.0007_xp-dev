@@ -1,0 +1,232 @@
+;Французкая штурмовая винтовка "Фамас"
+
+[wpn_famas_p3_sk1]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency 	= 
+$spawn                  = "weapons\famas_p3_sk1"					
+$npc			 		= on				
+$prefetch 		 	= 8
+scheduled               = off              
+cform                   = skeleton
+class                   = WP_LR300
+min_radius              = 30
+max_radius              = 100
+description				= enc_arsenal_famas_p3
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier	= 1.0		        
+holder_fov_modifier		= 0.7              
+
+weapon_class			= assault_rifle
+
+cost					= 9000
+
+ammo_limit		 		= 210
+ammo_current			= 30
+ammo_elapsed		 	= 30
+
+ammo_mag_size		 	= 30
+ammo_class		 		= ammo_5.56x45_ss190, ammo_5.56x45_ap
+fire_modes				= 1, 3, -1
+
+hand_dependence		 	= 1
+single_handed			= 0
+
+inv_name				= ars-famas_p3
+inv_name_short			= ars-famas_p3
+inv_weight				= 3.5
+
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 6
+inv_grid_y         = 20
+
+kill_msg_x			= 72
+kill_msg_y			= 82
+kill_msg_width		= 56
+kill_msg_height		= 23
+
+slot 					= 2		
+animation_slot			= 8		
+
+;params of weapon recoil
+fire_dispersion_base			= 0.16		
+control_inertion_factor			= 1.25f
+
+;отдача
+cam_relax_speed         		= 5		
+cam_relax_speed_ai         		= 5.2
+cam_dispersion          		= 0.5		
+cam_dispersion_inc			= 0.18		
+cam_dispertion_frac			= 0.85
+cam_max_angle				= 14    	
+cam_max_angle_horz			= 18		
+cam_step_angle_horz			= 1.1
+
+fire_dispersion_condition_factor 	= 3	    	 
+misfire_probability 		= 0.0018	 
+misfire_condition_k			= 0.07
+condition_shot_dec 			= 0.00014	
+
+direction               = 0, 0, 1
+
+fire_point             	=  0.0,0.228,0.35
+flame_particles			= weapons\generic_weapon05
+shell_particles	 		= weapons\shells_r_ns_556
+
+shell_point		 		= 0.0,0.234,-0.154
+shell_dir		 		= 0.0, 1.0, 0.0
+
+rpm_empty_click 	 	= 200
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        		= 0.89
+hit_impulse		 	    = 4
+hit_type 			    = fire_wound
+hit_rate	            = 1.88
+fire_distance           = 225
+bullet_speed			= 960
+rpm                     = 900
+
+use_aim_bullet				= true		
+time_to_aim					= 1.0
+
+silencer_hit_power       	= 0.8
+silencer_hit_impulse	 	= 3
+silencer_fire_distance   	= 200
+silencer_bullet_speed	 	= 860
+
+hud                     = wpn_famas_p3_sk1_hud
+normal                  = 0, 1, 0
+position         	    = -0.026,-0.172,0
+orientation             = 0, 0, 0
+
+strap_position         		= -0.13,-0.42,0.25			
+strap_orientation      		= -10,-5,10					
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo            = 1000
+visual                  = weapons\famas\wpn_famas_p3_sk1.ogf
+
+
+ph_mass			 		= 5
+
+;addons
+scope_status			= 2
+silencer_status			= 2
+grenade_launcher_status	= 0
+
+scope_name 					= wpn_addon_acog			
+scope_x                     = 77
+scope_y                     = -20
+
+silencer_name  				= wpn_addon_sil_556_ar
+silencer_x                  = 165  ; offset in inventory icon
+silencer_y                  = 8
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 5
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.2
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+zoom_enabled			= true
+scope_zoom_factor	    = 75
+
+;звуки
+snd_draw			= weapons\generic_draw, 0.5
+snd_holster			= weapons\generic_holster, 0.5
+snd_shoot			= weapons\famas_shot
+snd_empty			= weapons\gen_empty, 0.5
+snd_reload			= weapons\famas_reload1, 0.5
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+snd_silncer_shot			= weapons\sg550_silent, 0.5
+
+[wpn_famas_p3_sk1_hud]
+shell_point          	= -0.32, 0.00, 0.00
+shell_dir		 = 0.0, 1.0, 0.0
+
+fire_point              = 0.0, 0.0, -0.06
+fire_bone               = wpn_body
+orientation             = 0, 0, 0
+position                = 0, 0, 0
+visual                  = weapons\famas\wpn_famas_p3_sk1_hud.ogf
+
+anim_idle			= idle
+anim_idle_aim		= idle_aim
+anim_reload			= reload
+anim_draw			= draw
+anim_holster		= holster
+anim_shoot			= shoot
+anim_idle_sprint	= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.1264,-0.0117,-0.275
+zoom_rotate_x		= -0.0
+zoom_rotate_y		= 0.0
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2
+
+;--апгрейды-----
+
+
+; Снижение отдачи
+[wpn_famas_p3_sk1_otdaca]:wpn_famas_p3_sk1
+$spawn             		     = "weapons\famas_p3_sk1\wpn_famas_p3_sk1_otdaca"
+fire_dispersion_base         = 0.08
+cam_relax_speed              = 2.5
+cam_dispersion          	= 0.25	
+cam_dispersion_inc	          = 0.09		
+cam_max_angle	               = 7		
+inv_name	        			= wpn-famas_p3_sk1_otdaca
+inv_name_short			     = wpn-famas_p3_sk1_otdaca
+description				= enc_otdaca_wpn_famas_p3_sk1
+inv_grid_width     = 5
+inv_grid_height    = 2
+cost				= 10200
+
+
+; Снижение веса
+[wpn_famas_p3_sk1_ves]:wpn_famas_p3_sk1
+$spawn             		     = "weapons\famas_p3_sk1\wpn_famas_p3_sk1_ves"
+inv_weight				= 2.6
+inv_name	        			= wpn-famas_p3_sk1_ves
+inv_name_short			     = wpn-famas_p3_sk1_ves
+description				= enc_ves_wpn_famas_p3_sk1
+inv_grid_width     = 5
+inv_grid_height    = 2
+cost				= 10000
+
+
+; Отдача и вес
+[wpn_famas_p3_sk1_otdaca_ves]:wpn_famas_p3_sk1_otdaca
+$spawn             		     = "weapons\famas_p3_sk1\wpn_famas_p3_sk1_otdaca_ves"
+inv_weight				= 2.6
+inv_name	        			= wpn-famas_p3_sk1_otdaca_ves
+inv_name_short			     = wpn-famas_p3_sk1_otdaca_ves
+description				= enc_otdaca_ves_wpn_famas_p3_sk1
+cost					     = 14200
+

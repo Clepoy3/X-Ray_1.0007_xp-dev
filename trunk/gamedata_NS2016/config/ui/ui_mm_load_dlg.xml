@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<window>
+
+	<background x="0" y="0" width="1024" height="768">
+		<texture x="0" y="0" width="1024" height="768">ui\ui_static_mm_back_04</texture>
+	</background>
+
+	<form x="300" y="250" width="560" height="560">
+		
+		<caption x="70" y="205" width="500" height="25" complex_mode="0">
+			<text font="graffiti22" r="224" g="215" b="144">ui_mm_load_game</text>
+		</caption>
+		
+		<picture x="64" y="71" width="128" height="128" clipper="1">
+			<texture>ui\ui_noise</texture>
+		</picture>
+		
+		<file_info	x="194" y="71" width="358" height="128" stretch="1">
+			<texture>ui_file_info_s</texture>
+		</file_info>
+		
+		<file_caption x="230" y="95" width="360" height="20" complex_mode="1">
+			<text font="letterica18" r="224" g="215" b="144"/>
+		</file_caption>
+		
+		<file_data x="230" y="115" width="360" height="50" complex_mode="1">
+			<text font="letterica18" r="224" g="215" b="144"/>
+		</file_data>
+		
+		<list_frame x="64" y="200" width="488" height="196">
+			<texture>ui_tablist_textboxs</texture>
+		</list_frame>
+		
+		<list x="74" y="231" width="476" height="162" item_height="18">
+			<font font="letterica16" r="224" g="215" b="144" />
+		</list>
+				
+		<btn_load x="178" y="398" width="123" height="26">
+			<texture>ui_button_s</texture>
+			<text font="graffiti22">ui_mm_load</text>
+			<text_color>
+				<e r="224" g="215" b="144"/> <t r="224" g="215" b="144"/> <d r="224" g="215" b="144"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</btn_load>
+		
+		<btn_delete x="303" y="398" width="123" height="26">
+			<texture>ui_button_s</texture>
+			<text font="graffiti22">ui_mm_delete</text>
+			<text_color>
+				<e r="224" g="215" b="144"/> <t r="224" g="215" b="144"/> <d r="224" g="215" b="144"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</btn_delete>
+		
+		<btn_cancel x="428" y="398" width="123" height="26">
+			<texture>ui_button_s</texture>			
+			<text font="graffiti22">ui_mm_cancel</text>
+			<text_color>
+				<e r="224" g="215" b="144"/> <t r="224" g="215" b="144"/> <d r="224" g="215" b="144"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</btn_cancel>		
+	</form>
+</window>

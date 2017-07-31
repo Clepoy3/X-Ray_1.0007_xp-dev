@@ -1,0 +1,169 @@
+function esc_pda_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("kostya_pda") ~= nil
+end
+return false
+end
+
+function esc_pda_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_pda", 1)
+end
+
+function esc_art_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("af_gold_fish") ~= nil
+end
+return false
+end
+
+function esc_art_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("af_gold_fish", 1)
+    sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+
+
+function esc_pda2_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("kostya_pda2") ~= nil
+end
+return false
+end
+
+function esc_pda2_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_pda2", 1)
+end
+
+
+function esc_pda3_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("kostya_pda3") ~= nil
+end
+return false
+end
+
+function esc_pda3_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_pda3", 1)
+end
+
+
+function esc_pda4_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("kostya_pda4") ~= nil
+end
+return false
+end
+
+function esc_pda4_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_pda4", 1)
+end
+
+
+function esc_pda5_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("kostya_pda5") ~= nil
+end
+return false
+end
+
+function esc_pda5_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_pda5", 1)
+end
+
+
+function esc_pda6_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("kostya_pda6") ~= nil
+end
+return false
+end
+
+function esc_pda6_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_pda6", 1)
+end
+
+
+function esc_pda7_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("kostya_pda7") ~= nil
+end
+return false
+end
+
+function esc_pda7_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_pda7", 1)
+end
+
+
+function esc_pda8_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("kostya_pda8") ~= nil
+end
+return false
+end
+
+function esc_pda8_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_pda8", 1)
+end
+
+
+function esc_pda9_have(task, objective)
+    return amk_utils.inventory_search("kostya_pda9",1)	
+end
+
+function esc_pda9_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_pda9", 1)
+    sol_utils.delete_item_count("kostya_documents", 1)
+end
+
+function urt_prototip_have(task, objective)
+    return amk_utils.inventory_search("hand_teleporter1",1)	
+end
+
+
+function sacharov_pda_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("pda_vasilyev") ~= nil
+end
+return false
+end
+
+function sacharov_pda_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("pda_vasilyev", 1)
+    news_manager.send_tip(db.actor, "Получена информация", nil, nil, 30000)
+end
+
+function kostya_art2_have(task, objective)
+if db.actor ~= nil then
+return db.actor:object("af_dummy_battery") ~= nil
+end
+return false
+end
+
+function kostya_art2_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("af_dummy_battery", 1)
+end
+
+function document_have(task, objective)
+    return amk_utils.inventory_search("kostya_documents",1)
+end
+
+function document_done(first_speaker, second_speaker)
+    sol_utils.delete_item_count("kostya_documents1", 1)
+	sol_utils.delete_item_count("hand_teleporter1", 1)
+	sol_utils.delete_item_count("urt_flash", 1)
+end
+
+
+function actor_has_money_100000()
+  return db.actor:money()>=100000
+end
+
+function give_money_100000(t1,t2)
+  local npc=t1
+  if npc:id()==db.actor:id() then
+    npc=t2
+  end
+  dialogs.relocate_money(npc,100000,"out")
+end
+
+

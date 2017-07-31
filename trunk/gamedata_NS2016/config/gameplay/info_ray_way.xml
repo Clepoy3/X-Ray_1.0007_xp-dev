@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding="windows-1251" ?>
+
+<game_information_portions>
+
+<!-- Новый апгрейд/ремонт -->
+
+	 <info_portion id="all_tabl_stvol"> 
+		<article>tabl_stvol</article> 
+	</info_portion> 
+
+	 <info_portion id="all_tabl_upgrade"> 
+		<article>tabl_upgrade</article> 
+	</info_portion> 
+
+	<info_portion id="price_upgrade_sidor">
+		<article>price_upgrade_sidor</article>
+	</info_portion>	
+	<info_portion id="price_upgrade_dolgovyazyj">
+		<article>price_upgrade_dolgovyazyj</article>
+	</info_portion>	
+	<info_portion id="price_upgrade_shurup">
+		<article>price_upgrade_shurup</article>
+	</info_portion>	
+	<info_portion id="price_upgrade_vasiliy">
+		<article>price_upgrade_vasiliy</article>
+	</info_portion>	
+	<info_portion id="price_upgrade_petr">
+		<article>price_upgrade_petr</article>
+	</info_portion>
+	<info_portion id="price_upgrade_jupiter_rem">
+		<article>price_upgrade_jupiter_rem</article>
+	</info_portion>
+
+
+	<info_portion id="sidor_repair_start"><disable>sidor_repair_end</disable></info_portion>
+	<info_portion id="sidor_repair_end"><disable>sidor_repair_start</disable></info_portion>
+
+	<info_portion id="dolgovyazyj_repair_start"><disable>dolgovyazyj_repair_end</disable></info_portion>
+	<info_portion id="dolgovyazyj_repair_end"><disable>dolgovyazyj_repair_start</disable></info_portion>
+
+	<info_portion id="shurup_repair_start"><disable>shurup_repair_end</disable></info_portion>
+	<info_portion id="shurup_repair_end"><disable>shurup_repair_start</disable></info_portion>
+
+	<info_portion id="vasiliy_repair_start"><disable>vasiliy_repair_end</disable></info_portion>
+	<info_portion id="vasiliy_repair_end"><disable>vasiliy_repair_start</disable></info_portion>
+
+	<info_portion id="petr_repair_start"><disable>petr_repair_end</disable></info_portion>
+	<info_portion id="petr_repair_end"><disable>petr_repair_start</disable></info_portion>
+
+	<info_portion id="jupiter_rem_repair_start"><disable>jupiter_rem_repair_end</disable></info_portion>
+	<info_portion id="jupiter_rem_repair_end"><disable>jupiter_rem_repair_start</disable></info_portion>
+
+
+
+
+ <!--Заказ у Седого -->
+
+ <info_portion id="zakaz_sedoy_agro_end"></info_portion>	<!-- Закончен разговор про заказ на Агро -->
+
+ <info_portion id="zakaz_sedoy_agro_sobiraem"></info_portion>	<!-- Отложили заказ - собираем деньги -->
+ <info_portion id="zakaz_sedoy_aek"></info_portion>		<!-- Заказан АЕК -->
+ <info_portion id="zakaz_sedoy_pernac"></info_portion>		<!-- Заказан Пернач -->
+ <info_portion id="zakaz_sedoy_atp_sobiraem"></info_portion>	<!-- Отложили получение ствола - собираем деньги -->
+ 
+ <info_portion id="zakaz_sedoy_atp_poluchil"></info_portion>		<!-- Закончен разговор про получение заказа на АТП -->
+ <info_portion id="zakaz_sedoy_kidalovo"></info_portion>	<!-- Кидалово -->
+ <info_portion id="zakaz_sedoy_atp_end"></info_portion>		<!-- Закончен разговор про заказ на АТП -->
+ <info_portion id="zakaz_sedoy_vint"></info_portion>		<!-- Заказан Винторез -->
+
+ <info_portion id="vint_u_shurupa"></info_portion>		<!-- Седой перевел стрелки на Шурупа -->
+
+ <info_portion id="zakaz_shurup_as_end"></info_portion>		<!-- Закончен первый разговор с Шурупом -->
+
+
+
+ <info_portion id="zakaz_shurup_kvest"></info_portion>		<!-- Взяли квест -->
+ <info_portion id="zakaz_shurup_skidka"></info_portion>		<!-- Получили скидку -->
+
+
+</game_information_portions>

@@ -1,0 +1,76 @@
+
+[logic]
+active = {-vor_one_dialog_start -vor_kvest_proval} kamp, {+vor_kvest_proval -vor_one_dialog_start} kamp1, {+vor_one_dialog_start} kamp2
+danger = danger_ignore
+
+[kamp]
+center_point = zat_skadovsk_kamp2
+path_walk = zat_skadovsk_kamp2_task
+radius = 2
+show_spot = false
+on_info = {+vor_go} walker
+
+[walker]
+path_walk = zat_vor_walk
+path_look = zat_vor_look
+on_signal = finish | walker1
+on_actor_dist_le_nvis = 30 | kamp1 %+vor_kvest_proval +amerika_done%
+show_spot = false
+meet = no_meet
+
+[walker1]
+path_walk = zat_vor1_walk
+path_look = zat_vor1_look
+on_signal = finish | walker2
+on_actor_dist_le_nvis = 30 | kamp1 %+vor_kvest_proval +amerika_done%
+show_spot = false
+meet = no_meet
+
+[walker2]
+path_walk = zat_vor2_walk
+path_look = zat_vor2_look
+on_signal = finish | walker3
+on_actor_dist_le_nvis = 30 | kamp1 %+vor_kvest_proval +amerika_done%
+show_spot = false
+meet = no_meet
+
+[walker3]
+path_walk = zat_vor3_walk
+path_look = zat_vor3_look
+on_signal = finish | walker4 %+vor_prishel%
+show_spot = false
+meet = no_meet
+
+[walker4]
+path_walk = zat_vor4_walk
+path_look = zat_vor4_look
+on_actor_dist_le_nvis = 40 | walker5
+meet = meet
+
+[walker5]
+path_walk = zat_vor5_walk
+path_look = zat_vor5_look
+on_info = {+vor_one_dialog_start} kamp2
+
+[kamp1]
+center_point = zat_skadovsk_kamp2
+path_walk = zat_skadovsk_kamp2_task
+radius = 2
+meet = no_meet
+
+[kamp2]
+center_point = zat_skadovsk_kamp2
+path_walk = zat_skadovsk_kamp2_task
+radius = 2
+
+
+[danger_ignore]
+ignore_distance = 0
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+

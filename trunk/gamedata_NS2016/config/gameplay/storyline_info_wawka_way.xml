@@ -1,0 +1,21 @@
+	<article article_type="journal" id="price_voron" name="Ворон предлагает" group="enc_price">
+        <text>price_voron_text</text>
+    </article>
+	<article article_type="journal" id="price_voron_mosin" name="Специальное предложение Ворона" group="enc_price">
+        <text>price_voron_mosin_text</text>
+    </article>
+	<article article_type="journal" id="price_dan" name="Дэн предлагает" group="enc_price">
+        <text>price_dan_text</text>
+    </article>
+	<article article_type="journal" id="price_dan_prinesi" name="Специальное предложение Дэна" group="enc_price">
+        <text>price_dan_prinesi_text</text>
+    </article>
+	<article article_type="journal" id="price_maks" name="Макс предлагает" group="enc_price">
+        <text>price_maks_text</text>
+    </article>
+	<article id="tex_tolik_pomer_resiver" name="Найти радиостанцию" article_type="task">
+	        <text>tex_tolik_pomer_resiver</text>
+    </article>
+	<article id="tex_max_pomer_teleport" name="Принести журналы Плэйбой" article_type="task">
+        <text>tex_max_pomer_teleport</text>
+    </article>

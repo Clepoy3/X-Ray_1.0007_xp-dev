@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='windows-1251'?>
+<game_information_portions>
+
+<!--EX_HOARD Info Portion-->
+	<info_portion id='ex_hoard_info1'><article>ex_hoard_journal1</article></info_portion>
+	<info_portion id='ex_hoard_info2'><article>ex_hoard_journal2</article></info_portion>
+	<info_portion id='ex_hoard_info3'><article>ex_hoard_journal3</article></info_portion>
+	<info_portion id='ex_hoard_info4'><article>ex_hoard_journal4</article></info_portion>
+	<info_portion id='ex_hoard_info5'><article>ex_hoard_journal5</article></info_portion>
+	<info_portion id='ex_hoard_info6'><article>ex_hoard_journal6</article></info_portion>
+	<info_portion id='ex_hoard_info7'><article>ex_hoard_journal7</article></info_portion>
+	<info_portion id='ex_hoard_info8'><article>ex_hoard_journal8</article></info_portion>
+	<info_portion id='ex_hoard_info9'><article>ex_hoard_journal9</article></info_portion>
+	<info_portion id='ex_hoard_info10'><article>ex_hoard_journal10</article></info_portion>
+	<info_portion id='ex_hoard_info11'><article>ex_hoard_journal11</article></info_portion>
+	<info_portion id='ex_hoard_info12'><article>ex_hoard_journal12</article></info_portion>
+	<info_portion id='ex_hoard_info_arts'></info_portion>
+	<info_portion id='ex_hoard_info_block_teleport'></info_portion>
+	<info_portion id='ex_hoard_info_done'></info_portion>
+	<info_portion id='ex_hoard_info_restrictor'></info_portion>
+	<info_portion id='ex_hoard_info_zukerman_art'></info_portion>
+	<info_portion id='ex_hoard_info_zukerman_first'></info_portion>
+<!--EX_HOARD Info Portion end-->
+
+</game_information_portions>

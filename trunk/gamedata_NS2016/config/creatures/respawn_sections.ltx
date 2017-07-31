@@ -1,0 +1,544 @@
+; --- Сталкеры группа локаций 1 ---
+[resp_gr1_stalker1]:stalker
+$spawn = "respawn\stalkers\resp_gr1_stalker1"
+character_profile = gr1_stalker_novice
+spec_rank = novice
+community = stalker
+
+[resp_gr1_stalker2]:stalker
+$spawn = "respawn\stalkers\resp_gr1_stalker2"
+character_profile = gr1_stalker_general
+spec_rank = experienced
+community = stalker
+
+[resp_gr2_stalker2]:stalker
+$spawn = "respawn\stalkers\resp_gr2_stalker2"
+character_profile = gr1_stalker_general
+spec_rank = experienced
+community = stalker
+
+; --- Солдаты группа локаций 1 ---
+[resp_gr1_soldier1]:stalker
+$spawn = "respawn\militarys\resp_gr1_soldier1"
+character_profile = gr1_soldier_novice
+spec_rank = novice
+community = military
+
+[resp_gr1_soldier2]:stalker
+$spawn = "respawn\militarys\resp_gr1_soldier2"
+character_profile = gr1_soldier_regular
+spec_rank = experienced
+community = military
+
+[resp_gr1_sergant_sniper]:stalker
+$spawn = "respawn\militarys\resp_gr1_sergant_sniper"
+character_profile = gr1_sergant_sniper
+spec_rank = veteran
+community = military
+
+[resp_gr1_soldier_beret]:stalker
+$spawn = "respawn\militarys\resp_gr1_soldier_beret"
+character_profile = gr1_soldier_beret
+spec_rank = master
+community = military
+
+; --- Ласдэй группа локаций 3 ---
+[resp_gr3_lastday1]:stalker
+$spawn = "respawn\zat_lastday_respawn_2"
+character_profile = gr3_lastday_veteran
+spec_rank = veteran
+community = lastday
+
+[resp_gr3_lastday2]:stalker
+$spawn = "respawn\zat_lastday_respawn_1"
+character_profile = gr3_lastday_master
+spec_rank = master
+community = lastday
+
+
+; --- КОРДОН ---
+; --- Бандиты на переходе на свалку ---
+[resp_esc_ambush1]:stalker
+$spawn = "respawn\bandits\resp_esc_ambush1"
+character_profile = esc_bandit_novice
+spec_rank = novice
+community = bandit
+custom_data = scripts\esc\esc_ambush.ltx
+
+[resp_esc_ambush2]:stalker
+$spawn = "respawn\bandits\resp_esc_ambush2"
+character_profile = gr1_bandit_novice
+spec_rank = novice
+community = bandit
+custom_data = scripts\esc\esc_ambush.ltx
+
+; --- Вояки под мостом ---
+[resp_esc_bridge1]:stalker
+$spawn = "respawn\militarys\resp_esc_bridge1"
+character_profile = esc_soldier_regular
+spec_rank = novice
+community = military
+custom_data = scripts\esc\esc_bridge.ltx
+
+[resp_esc_bridge2]:stalker
+$spawn = "respawn\militarys\resp_esc_bridge2"
+character_profile = esc_soldier_blokpost
+spec_rank = experienced
+community = military
+custom_data = scripts\esc\esc_bridge.ltx
+
+; --- Деревня новичков ---
+[resp_esc_lager]:stalker
+$spawn = "respawn\stalkers\resp_esc_lager"
+character_profile = esc_stalker_novice
+spec_rank = novice
+community = stalker
+custom_data = scripts\esc\esc_lager.ltx
+
+; --- Бандиты возле паровоза ---
+[resp_esc_parovoz1]:stalker
+$spawn = "respawn\bandits\resp_esc_parovoz1"
+character_profile = esc_bandit_novice
+spec_rank = novice
+community = bandit
+custom_data = scripts\esc\esc_bandit_parovoz.ltx
+
+[resp_esc_parovoz2]:stalker
+$spawn = "respawn\bandits\resp_esc_parovoz2"
+character_profile = gr1_bandit_novice
+spec_rank = novice
+community = bandit
+custom_data = scripts\esc\esc_bandit_parovoz.ltx
+
+; --- Гулаг собак около туннеля ---
+[resp_esc_dogs_lair]:dog_weak
+$spawn = "respawn\dogs\resp_esc_dogs_lair"
+custom_data = scripts\esc\esc2_dogs_lair.ltx
+
+; --- Гулаг собак около Акима ---
+[resp_esc_dogs_swarm]:dog_normal
+$spawn = "respawn\resp_esc_dogs_swarm"
+custom_data = scripts\esc\esc_dogs_swarm.ltx
+
+; --- Гулаг свиней на ферме ---
+[resp_esc_flesh_ferma]:flesh_normal
+$spawn = "respawn\fleshs\resp_esc_flesh_ferma"
+custom_data = scripts\esc\esc_flesh_ferma.ltx
+
+
+
+; --- Наёмники на Халяву ---
+[resp_mar_killer_xalyava]:stalker
+$spawn = "respawn\killers\resp_mar_killer_xalyava"
+character_profile = mil_killer_master
+spec_rank = master
+community = killer
+custom_data = scripts\marsh\mar_killer_xalyava.ltx
+
+; --- Восточная Припять ---
+; --- Долг в гастрономе ---
+[resp_opr_foodstore]:stalker
+$spawn = "respawn\dolgs\resp_opr_foodstore"
+character_profile	= bar_dolg_master
+spec_rank = master
+community = dolg
+custom_data = scripts\opr\opr_foodstore.ltx
+
+; --- Монолитовцы в Юбилейном ---
+[resp_opr_homemono1]:stalker
+$spawn = "respawn\monoliths\resp_opr_homemono1"
+character_profile	= sim_monolith_master
+spec_rank = master
+community = monolith
+custom_data = scripts\opr\opr_homemono1.ltx
+
+[resp_opr_homemono2]:stalker
+$spawn = "respawn\monoliths\resp_opr_homemono2"
+character_profile	= lim_mono_one_3
+spec_rank = master
+community = monolith
+custom_data = scripts\opr\opr_homemono1.ltx
+
+; --- Монолитовцы в Восточной Припяти ---
+[resp_opr_monolith]:stalker
+$spawn = "respawn\monoliths\resp_opr_monolith"
+character_profile	= sim_monolith_master
+spec_rank = master
+community = monolith
+
+[resp_opr_monolith2]:stalker
+$spawn = "respawn\monoliths\resp_opr_monolith2"
+character_profile	= lim_mono_one_3
+spec_rank = master
+community = monolith
+
+; --- Монолитовцы сниперы в Юбилейном ---
+[resp_opr_homesniper]:stalker
+$spawn = "respawn\monoliths\resp_opr_homesniper"
+character_profile	= rad_monolit_sniper
+spec_rank = veteran
+community = monolith
+custom_data = scripts\opr\opr_homesniper.ltx
+
+; --- Сталкер - зомби в Восточной Припяти ---
+[resp_opr_zombied]:stalker
+$spawn = "respawn\zombieds\resp_opr_zombied"
+character_profile	= rad_zombied
+spec_rank = experienced
+community = zombied
+
+[resp_opr_zombied2]:stalker
+$spawn = "respawn\zombieds\resp_opr_zombied2"
+character_profile	= rad_zombied_veteran
+spec_rank = master
+community = zombied
+
+; --- Долговцы в Юбилейном ---
+[resp_opr_homedolg1]:stalker
+$spawn = "respawn\dolgs\resp_opr_homedolg1"
+character_profile	= bar_dolg_veteran
+spec_rank = veteran
+community = dolg
+custom_data = scripts\opr\opr_homedolg.ltx
+
+[resp_opr_homedolg2]:stalker
+$spawn = "respawn\dolgs\resp_opr_homedolg2"
+character_profile	= bar_dolg_master
+spec_rank = master
+community = dolg
+custom_data = scripts\opr\opr_homedolg.ltx
+
+; --- Сталкеры в Восточной Припяти ---
+[resp_opr_stalker]:stalker
+$spawn = "respawn\stalkers\resp_opr_stalker"
+character_profile = sim_stalker_master
+spec_rank = master
+community = stalker
+
+[resp_opr_stalker2]:stalker
+$spawn = "respawn\stalkers\resp_opr_stalker2"
+character_profile = sim_stalker_veteran
+spec_rank = veteran
+community = stalker
+
+
+
+; --- Наёмники в х8 ---
+[resp_labx8_killer1]:stalker
+$spawn = "respawn\killers\resp_labx8_killer1"
+character_profile	= labx8_gavr_body
+spec_rank = veteran
+community = killer
+custom_data = scripts\labx8\labx8_killer.ltx
+
+[resp_labx8_killer2]:stalker
+$spawn = "respawn\killers\resp_labx8_killer2"
+character_profile	= sim_killer_master
+spec_rank = master
+community = killer
+custom_data = scripts\labx8\labx8_killer.ltx
+
+; --- Зомби х8 ---
+[resp_labx8_zombied1]:stalker_zombied
+$spawn = "respawn\resp_labx8_zombied1"
+character_profile	= sarc_niz_zomb_1
+spec_rank = master
+community = zombied
+
+[resp_labx8_zombied2]:stalker_zombied
+$spawn = "respawn\resp_labx8_zombied2"
+character_profile	= rad_zombied_veteran
+spec_rank = veteran
+community = zombied
+
+; --- Наёмники на Юпитере ---
+[resp_jup_killer1]:stalker
+$spawn = "respawn\killers\resp_jup_killer1"
+character_profile	= sim_killer_veteran
+spec_rank = veteran
+community = killer
+
+[resp_jup_killer2]:stalker
+$spawn = "respawn\killers\resp_jup_killer2"
+character_profile	= sim_killer_master
+spec_rank = master
+community = killer
+
+[resp_jup_killer3]:stalker
+$spawn = "respawn\killers\resp_jup_killer3"
+character_profile	= sim_killer_sniper
+spec_rank = veteran
+community = killer
+
+; --- Бандиты на Янове на Юпитере---
+
+[respawn_jup_bandit1]:stalker
+$spawn = "respawn\bandits\respawn_jup_bandit1"
+character_profile = respawn_atp_bandit3
+spec_rank = veteran
+community = bandit
+custom_data = scripts\jupiter\jup_bandit.ltx
+
+[respawn_jup_bandit2]:stalker
+$spawn = "respawn\bandits\respawn_jup_bandit2"
+character_profile = respawn_atp_bandit4
+spec_rank = master
+community = bandit
+custom_data = scripts\jupiter\jup_bandit.ltx
+
+[respawn_jup_bandit3]:stalker
+$spawn = "respawn\bandits\respawn_jup_bandit3"
+character_profile = respawn_atp_bandit2
+spec_rank = experienced
+community = bandit
+custom_data = scripts\jupiter\jup_bandit.ltx
+
+; --- Сниперы на Сепатора ---
+[resp_atp_sniper1]:stalker
+$spawn = "respawn\snipers\resp_atp_sniper1"
+character_profile	= boev_sniper1
+spec_rank = experienced
+community = sniper
+custom_data = scripts\atp\atp_sniper.ltx
+
+[resp_atp_sniper2]:stalker
+$spawn = "respawn\snipers\resp_atp_sniper2"
+character_profile	= boev_sniper2
+spec_rank = experienced
+community = sniper
+custom_data = scripts\atp\atp_sniper.ltx
+
+; --- бандиты возле диска ---
+[respawn_atp_disk_bandit1]:stalker
+$spawn = "respawn\bandits\respawn_atp_disk_bandit1"
+character_profile = respawn_atp_bandit3
+spec_rank = veteran
+community = bandit
+custom_data = scripts\atp\atp_disk_bandit.ltx
+
+[respawn_atp_disk_bandit2]:stalker
+$spawn = "respawn\bandits\respawn_atp_disk_bandit2"
+character_profile = respawn_atp_bandit4
+spec_rank = master
+community = bandit
+custom_data = scripts\atp\atp_disk_bandit.ltx
+
+; --- Вояки на Юпитере ---
+[resp_jup_military1]:stalker
+$spawn = "respawn\militarys\resp_jup_military1"
+character_profile	= sim_soldier_specnaz
+spec_rank = veteran
+community = military
+
+[resp_jup_military2]:stalker
+$spawn = "respawn\militarys\resp_jup_military2"
+character_profile	= sim_Soldier_master
+spec_rank = master
+community = military
+
+; --- рейд спецназа в ТД ---
+[respawn_val_raid_soldiers1]:stalker
+$spawn = "respawn\militarys\respawn_val_raid_soldiers1"
+character_profile = dark_sold_atak3
+spec_rank = experienced
+community = military
+custom_data = scripts\dark\val_raid_soldiers.ltx
+
+[respawn_val_raid_soldiers2]:stalker
+$spawn = "respawn\militarys\respawn_val_raid_soldiers2"
+character_profile = dark_sold_atak2
+spec_rank = veteran
+community = military
+custom_data = scripts\dark\val_raid_soldiers.ltx
+
+[respawn_val_raid_soldiers3]:stalker
+$spawn = "respawn\militarys\respawn_val_raid_soldiers3"
+character_profile = val_soldier_specnaz
+spec_rank = master
+community = military
+custom_data = scripts\dark\val_raid_soldiers.ltx
+
+; --- рейд спецназа в ТД на выходе на свалку ---
+[respawn_val_exit_raid_soldiers1]:stalker
+$spawn = "respawn\militarys\respawn_val_exit_raid_soldiers1"
+character_profile = dark_sold_atak3
+spec_rank = experienced
+community = military
+custom_data = scripts\dark\val_exit_raid_soldiers.ltx
+
+[respawn_val_exit_raid_soldiers2]:stalker
+$spawn = "respawn\militarys\respawn_val_exit_raid_soldiers2"
+character_profile = dark_sold_atak2
+spec_rank = veteran
+community = military
+custom_data = scripts\dark\val_exit_raid_soldiers.ltx
+
+; --- снайпера на базе бандитов ---
+[respawn_val_lager_sniper]:stalker
+$spawn = "respawn\snipers\respawn_val_lager_sniper"
+character_profile = boev_sniper_rad3
+spec_rank = master
+community = sniper
+custom_data = scripts\dark\val_lager_sniper.ltx
+
+; --- Наёмники Тамаза---
+[resp_del_killer1]:stalker
+$spawn = "respawn\killers\resp_del_killer1"
+character_profile	= labx8_gavr_body
+spec_rank = veteran
+community = killer
+custom_data = scripts\darkscape\del_killer.ltx
+
+[resp_del_killer2]:stalker
+$spawn = "respawn\killers\resp_del_killer2"
+character_profile	= sim_killer_master
+spec_rank = master
+community = killer
+custom_data = scripts\darkscape\del_killer.ltx
+
+; --- Гулаг контрош с безоаром на ЧАЭС2 ---
+[resp_controller_tubeman]:controller_tubeman
+$spawn = "respawn\resp_controller_tubeman"
+custom_data = scripts\chaes2\controller.ltx
+
+[resp_controller_mozg]:controller_mozg
+$spawn = "respawn\resp_controller_mozg"
+custom_data = scripts\chaes2\controller.ltx
+
+[resp_controller1_tubeman]:controller_tubeman
+$spawn = "respawn\resp_controller1_tubeman"
+custom_data = scripts\chaes2\controller1.ltx
+
+[resp_controller1_mozg]:controller_mozg
+$spawn = "respawn\resp_controller1_mozg"
+custom_data = scripts\chaes2\controller1.ltx
+
+; --- Гулаг чёрных тушканов на Затоне---
+[zat_tushkano3_respawn]:tushkano_big_strong
+$spawn = "respawn\zat_tushkano3_respawn"
+custom_data = scripts\zaton\zat_tushkano3.ltx
+
+; --- Наёмники на мосту в Красном лесу---
+[for_killer_most_respawn1]:stalker
+$spawn = "respawn\killers\for_killer_most_respawn1"
+character_profile	= sim_killer_veteran
+spec_rank = veteran
+community = killer
+custom_data = scripts\red_forest\for_killer_most.ltx
+
+[for_killer_most_respawn2]:stalker
+$spawn = "respawn\killers\for_killer_most_respawn2"
+character_profile	= sim_killer_master
+spec_rank = master
+community = killer
+custom_data = scripts\red_forest\for_killer_most.ltx
+
+; --- Бандиты на Удава на болотах---
+[mar_vert_bandit1]:stalker
+$spawn = "respawn\bandits\mar_vert_bandit1"
+character_profile = respawn_atp_bandit2
+spec_rank = experienced
+community = bandit
+custom_data = scripts\marsh\mar_vert_bandit.ltx
+
+[mar_vert_bandit2]:stalker
+$spawn = "respawn\bandits\mar_vert_bandit2"
+character_profile = respawn_atp_bandit3
+spec_rank = veteran
+community = bandit
+custom_data = scripts\marsh\mar_vert_bandit.ltx
+
+; --- Финальный бой ---
+[zat_final_lastday1]:stalker
+$spawn = "respawn\lastdays\zat_final_lastday1"
+character_profile = zat_lastday_master
+spec_rank = master
+community = lastday
+custom_data = scripts\zaton\zat_final_lastday.ltx
+
+[zat_final_lastday2]:stalker
+$spawn = "respawn\lastdays\zat_final_lastday2"
+character_profile = zat_lastday_veteran
+spec_rank = veteran
+community = lastday
+custom_data = scripts\zaton\zat_final_lastday.ltx
+
+; --- Монстры на спавн по пси антене на Кордоне---
+[esc_psy_resp1]:tushkano_normal
+$spawn = "respawn\esc_psy_resp1"
+custom_data = scripts\esc\esc_psi.ltx
+
+[esc_psy_resp2]:fracture_strong
+$spawn = "respawn\esc_psy_resp2"
+custom_data = scripts\esc\esc_psi.ltx
+
+[esc_psy_resp3]:chimera_normal
+$spawn = "respawn\esc_psy_resp3"
+custom_data = scripts\esc\esc_psi.ltx
+
+[esc_psy_resp4]:pseudodog_normal
+$spawn = "respawn\esc_psy_resp4"
+custom_data = scripts\esc\esc_psi.ltx
+
+[esc_psy_resp5]:snork_normal
+$spawn = "respawn\esc_psy_resp5"
+custom_data = scripts\esc\esc_psi.ltx
+
+[esc_psy_resp6]:boar_strong
+$spawn = "respawn\esc_psy_resp6"
+custom_data = scripts\esc\esc_psi.ltx
+
+[esc_psy_resp7]:bloodsucker_normal
+$spawn = "respawn\esc_psy_resp7"
+custom_data = scripts\esc\esc_psi.ltx
+
+[esc_psy_resp8]:zombie_strong
+$spawn = "respawn\esc_psy_resp8"
+custom_data = scripts\esc\esc_psi.ltx
+
+[esc_psy_resp9]:zombie_babka_strong
+$spawn = "respawn\esc_psy_resp9"
+custom_data = scripts\esc\esc_psi.ltx
+
+[esc_psy_resp10]:cat_strong
+$spawn = "respawn\esc_psy_resp10"
+custom_data = scripts\esc\esc_psi.ltx
+
+; --- Монолитовцы в БУМе---
+[resp_bum_monolit1]:stalker
+$spawn = "respawn\killers\resp_bum_monolit1"
+character_profile	= lim_sniper_ohr
+spec_rank = master
+community = monolith
+custom_data = scripts\bum\bum_monolit.ltx
+
+[resp_bum_monolit2]:stalker
+$spawn = "respawn\killers\resp_bum_monolit2"
+character_profile	= mil_Monolit_master
+spec_rank = master
+community = monolith
+custom_data = scripts\bum\bum_monolit.ltx
+
+[resp_bum_monolit3]:stalker
+$spawn = "respawn\killers\resp_bum_monolit3"
+character_profile	= sim_monolith_specnaz
+spec_rank = veteran
+community = monolith
+custom_data = scripts\bum\bum_monolit.ltx
+
+; --- Наёмники Блэнда---
+[resp_bland_killer1]:stalker
+$spawn = "respawn\killers\resp_bland_killer1"
+character_profile	= sim_killer_veteran
+spec_rank = veteran
+community = killer
+custom_data = scripts\dark\val_bland_killer.ltx
+
+[resp_bland_killer2]:stalker
+$spawn = "respawn\killers\resp_bland_killer2"
+character_profile	= sim_killer_master
+spec_rank = master
+community = killer
+custom_data = scripts\dark\val_bland_killer.ltx
+
+

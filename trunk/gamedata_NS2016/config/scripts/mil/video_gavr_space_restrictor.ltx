@@ -1,0 +1,28 @@
+[logic]
+active = sr_idle@ready
+
+[sr_idle@ready]
+on_info = {+info_gavr_predead} sr_idle@time %=arhara_dialog.disabl_weapon%
+
+[sr_idle@time]
+on_timer = 9000 | sr_idle@time1 %=arhara_dialog.gavr_shmon_sms%
+
+[sr_idle@time1]
+on_timer = 3000 | sr_idle@wait_dream %=x18_gluk =run_cam_effector(radar_stop:2506:false)% 
+
+[sr_idle@wait_dream]
+on_timer  = 9000 | sr_idle@wait_dream_1 %+x18_actor_fall =run_postprocess(agr_u_fade)%
+
+[sr_idle@wait_dream_1]
+on_timer = 3000 | sr_idle@dream %=stop_cam_effector(1974) =start_gavr_dream =arhara_dialog.release_actor_money =arhara_dialog.gavr_son_delet =arhara_dialog.del_gavr%
+
+[sr_idle@dream]
+on_info  = sr_idle@wait_stand %=arhara_dialog.delete_gavr_and_ko =arhara_dialog.tamaz_body2_out =run_cam_effector(prison_1:2506:false)%
+
+[sr_idle@wait_stand]
+on_timer = 3000 | sr_idle@last %+info_gavr_dead =arhara_dialog.enabl_weapon%
+
+[sr_idle@last]
+on_timer = 12000 | sr_idle@nil %=arhara_dialog.ograblen_sms%
+
+[sr_idle@nil]

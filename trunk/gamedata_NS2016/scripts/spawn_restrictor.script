@@ -1,0 +1,205 @@
+---------------------------------------
+-- функции для работы с нет-пакетами
+-- Создание рестрикторов
+---------------------------------------
+
+----------
+-- чтение формы из нет-пакета
+----------
+function r_shape(packet)
+	local s
+	local st = {}
+	st.count = packet:r_u8()
+	st.shapes = {}
+	for i=1, st.count do
+		s = {}
+		s.type = packet:r_u8()
+		if s.type == 0 then
+			s.center = packet:r_vec3()
+			s.radius = packet:r_float()
+		else
+			s.axis_x = packet:r_vec3()
+			s.axis_y = packet:r_vec3()
+			s.axis_z = packet:r_vec3()
+			s.offset = packet:r_vec3()
+		end
+		st.shapes[i] = s
+	end
+	return st
+end
+
+----------
+-- запись формы в нет-пакет
+----------
+function w_shape(packet, st)
+	local s
+	packet:w_u8(st.count)
+	for i=1, st.count do
+		s = st.shapes[i]
+		packet:w_u8(s.type)
+		if s.type == 0 then
+			packet:w_vec3(s.center)
+			packet:w_float(s.radius)
+		else
+			packet:w_vec3(s.axis_x)
+			packet:w_vec3(s.axis_y)
+			packet:w_vec3(s.axis_z)
+			packet:w_vec3(s.offset)
+		end
+	end
+end
+
+----------
+-- перепаковка нет-пакета созданного скриптом рестрикта
+----------
+function rewrite_restrictor(se_obj, custom, radius)
+	local packet = net_packet()
+	se_obj:STATE_Write(packet)
+	local game_vertex_id	= packet:r_u16()
+	local distance		= packet:r_float()
+	local direct_control	= packet:r_s32()
+	local level_vertex_id	= packet:r_s32()
+	local object_flags		= packet:r_s32()
+	local custom_data		= packet:r_stringZ()
+	local story_id		= packet:r_s32()
+	local spawn_story_id	= packet:r_s32()
+	local shape		= r_shape(packet)
+	local restrictor_type	= packet:r_u8()
+
+	custom_data = custom
+	shape = {}
+	shape.count = 1
+	shape.shapes = {}
+	shape.shapes[1] = {}
+	shape.shapes[1].type = 0
+	shape.shapes[1].center = vector():set(0,0,0)
+	shape.shapes[1].radius = radius
+
+	packet:w_u16(game_vertex_id)
+	packet:w_float(distance)
+	packet:w_s32(direct_control)
+	packet:w_s32(level_vertex_id)
+	packet:w_s32(object_flags)
+	packet:w_stringZ(custom_data)
+	packet:w_s32(story_id)
+	packet:w_s32(spawn_story_id)
+	w_shape(packet, shape)
+	packet:w_u8(restrictor_type)
+	se_obj:STATE_Read(packet, packet:w_tell() - packet:r_tell())
+end
+
+------------
+-- рестриктор в нычке Стрелка
+------------
+function create_sr1()
+local se_obj = alife():create("space_restrictor",vector():set(-79.746505737305,-5.0705714225769,-70.735511779785),2803,717)
+local custom = "[logic]\n"..
+"active = sr_idle\n"..
+"[sr_idle]\n"..
+"on_actor_inside = {+info_restriction} nil %=play_zvuk%"
+rewrite_restrictor(se_obj, custom, 2.0)
+end 
+
+------------------------------------------------------
+-- ОБРАБОТКА взятых предметов (создание рестрикторов): 
+------------------------------------------------------
+function checking_taken_item(obj)
+
+end
+
+-----
+function create_restrictor(custom, radius, pos, lv, gv)
+ local re_obj = alife():create("space_restrictor", pos, lv, gv)
+ if re_obj then
+  rewrite_restrictor(re_obj, custom, radius)
+  return re_obj:name()
+ end
+ return nil
+end
+-----
+
+--------------
+-- Рестриктор. Меченый ищет Призрака в подземке Агро
+--------------
+function create_sr_new01() 
+
+ --- temporatory (удалить после удаления из олспавна рестриктора podzemka_vstrecha_restrictor)
+ local re_obj = alife():object("podzemka_vstrecha_restrictor")
+ if re_obj then alife():release(re_obj, true) end
+ --- temporatory
+
+ local custom = 
+  "[logic]\n"..
+  "active = sr_idle\n"..
+  "[sr_idle]\n"..
+  "on_actor_inside = {+yakut_false_start} nil %+yakut_false_done =arhara1_dialog1.spawn_podzemka_vstrecha%"
+ create_restrictor(custom, 2.5, vector():set(-86.402099609375,-15.25078868866,-70.434158325195),2419,717)
+end
+--------------
+-- Рестриктор. Меченый провел Клыка и Муху и уходит ( облом, не ловит телепорт на другую локу:( )
+--------------
+function create_sr_new02() 
+ local custom = 
+  "[logic]\n"..
+  "active = sr_idle\n"..
+  "[sr_idle]\n"..
+  "on_actor_outside = nil %=arhara_dialog.muha_bazar_sms%"
+ if db.actor then 
+  create_restrictor(custom, 15, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id())
+ end
+end
+--------------
+-- Создание 4-х рестрикторов на пути Клыка-Мухи-Меченого на НЗ от пещеры до Зимовья
+--------------
+function create_aver_scene_sr() 
+ local re_obj
+ local custom
+
+-- aver_kluk1_put1_restrictor
+ re_obj = alife():create("space_restrictor", vector():set(-427.880065917969,59.7742767333984,312.567474365234), 132474, 2887)
+ if re_obj then
+  custom = 
+   "[logic]\n"..
+   "active = sr_idle\n"..
+   "[sr_idle]\n".."on_npc_in_zone = 9988 | "..
+   re_obj:name()..
+   " | nil %+kluk_na_2 =arhara_dialog.pant_proschay_sms1%"
+  spawn_restrictor.rewrite_restrictor(re_obj, custom, 3.5)
+ end
+
+-- aver_kluk2_put2_restrictor
+ re_obj = alife():create("space_restrictor", vector():set(-428.549224853516,43.3886260986328,216.925888061523), 131153, 2891)
+ if re_obj then
+  custom = 
+   "[logic]\n"..
+   "active = sr_idle\n"..
+   "[sr_idle]\n".."on_npc_in_zone = 9988 | "..
+   re_obj:name()..
+   " | nil %+kluk_na_3 =arhara_dialog.dell_pantera_vertuha_aver =arhara_dialog.pant_proschay_sms2%"
+  spawn_restrictor.rewrite_restrictor(re_obj, custom, 3.5)
+ end
+
+-- aver_kluk3_put3_restrictor
+ re_obj = alife():create("space_restrictor", vector():set(-429.93896484375,54.0200843811035,97.4408340454102), 128531, 2889)
+ if re_obj then
+  custom = 
+   "[logic]\n"..
+   "active = sr_idle\n"..
+   "[sr_idle]\n".."on_npc_in_zone = 9988 | "..
+   re_obj:name()..
+   " | nil %+kluk_posled =arhara_dialog.pant_proschay_sms3%"
+  spawn_restrictor.rewrite_restrictor(re_obj, custom, 4.0)
+ end
+
+-- aver_kluk4_put4_restrictor
+ re_obj = alife():create("space_restrictor", vector():set(-363.608306884766,-0.840093731880188,51.2304382324219), 243876, 2889)
+ if re_obj then
+  custom = 
+   "[logic]\n"..
+   "active = sr_idle\n"..
+   "[sr_idle]\n".."on_npc_in_zone = 9988 | "..
+   re_obj:name()..
+   " | nil %+kluk_na_walk =arhara_dialog.medik_sms4%"
+  spawn_restrictor.rewrite_restrictor(re_obj, custom, 3.2)
+ end
+end

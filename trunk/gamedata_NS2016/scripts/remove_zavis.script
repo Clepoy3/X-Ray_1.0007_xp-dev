@@ -1,0 +1,34 @@
+function remove_obj(obj)
+	local npc_id = obj:id()
+	if IAmAStalker[obj:clsid()] or IAmAMonster[obj:clsid()] then
+	  abort("xr_logic: ОБНАРУЖЕН ОБЪЕКТ С ПОВРЕЖДЕННЫМ PSTOR: '%s' БУДЕТ ПРОИЗВЕДЕНА ПОПЫТКА ВОССТАНОВЛЕНИЯ", tostring(obj:name()))      
+	  
+	local npc = level.object_by_id(npc_id)
+	if npc then
+		local h = hit()
+		h.power = 3
+		h.impulse = 3
+		h.draftsman = npc
+		h.direction = vector():set(0,0,0)
+		-- h:bone("bip01_spine")
+		h.type = hit.fire_wound
+		npc:hit(h)
+		if obj and IAmAStalker[obj:clsid()] then
+			amk.make_suicide(npc)
+		end
+	end
+	  -- amk.dump_table(amk.read_stalker_params(npc))
+	  -- убиваем зависшего
+	  -- switch_offline(obj)
+	  -- прибираем трупик
+	  if obj then
+		local npc_name = obj:name()
+		alife():release(obj,true)
+		if not obj then
+		  local text1 = "зависший "..npc_name.." id: "..npc_id.." удалён"
+		  get_console():execute("load ~#I#: pstor_load_all:"..string.format(text1))
+		end
+		-- return
+	  end
+    end
+end

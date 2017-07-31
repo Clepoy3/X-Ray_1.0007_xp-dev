@@ -1,0 +1,202 @@
+; ѕистолет "‘орт-12" украинского производства
+[wpn_fort]:identity_immunities
+GroupControlSection  = spawn_group
+discovery_dependency =
+
+$spawn    = "weapons\fort"
+$npc      = on
+$prefetch = 8
+scheduled = off
+cform     = skeleton
+class     = WP_PM
+
+min_radius = 0
+max_radius = 48
+
+description = enc_weapons1_wpn-fort
+
+script_binding = bind_wpn.init
+
+ef_weapon_type = 5
+
+holder_range_modifier = 1.0
+holder_fov_modifier   = 1.0
+
+cost = 150
+
+ammo_limit   = 120
+ammo_current = 96
+ammo_elapsed = 12
+
+f_mode = 1
+
+ammo_mag_size = 12
+ammo_class    = ammo_9x18_fmj, ammo_9x18_pmm
+
+hand_dependence = 1
+single_handed   = 1
+
+slot           = 1
+animation_slot = 1
+
+inv_name       = wpn-fort
+inv_name_short = wpn-fort
+inv_weight     = 0.83
+
+inv_grid_width  = 1
+inv_grid_height = 1
+inv_grid_x      = 12
+inv_grid_y      = 36
+
+kill_msg_x      = 104
+kill_msg_y      = 178
+kill_msg_width  = 28
+kill_msg_height = 21
+
+;базова€ дисперси€
+fire_dispersion_base = 0.28
+disp_rate            = 1.85
+
+;отдача
+cam_relax_speed     = 10
+cam_dispersion      = 0.35
+cam_dispersion_inc  = 0.0
+cam_dispertion_frac = 1.0
+cam_max_angle       = 20.0
+cam_max_angle_horz  = 10.0
+cam_step_angle_horz = 0.7
+
+fire_dispersion_condition_factor = 3
+misfire_probability              = 0.002
+misfire_condition_k              = 0.13
+condition_shot_dec               = 0.0002
+
+direction  = 0, 0, 1
+fire_point = 0.0,0.211,0.12
+
+flame_particles = weapons\generic_weapon03
+smoke_particles = weapons\generic_shoot_00
+
+shell_point     = 0.0,0.215,0.038
+shell_dir       = 0.0, 0.0, 0.4
+shell_particles = weapons\shells_r_ns_9mm
+
+PDM_disp_base         = 1.0
+PDM_disp_vel_factor   = 0.6
+PDM_disp_accel_factor = 0.6
+PDM_crouch            = 1.0
+PDM_crouch_no_acc     = 1.0
+
+hit_power       = 0.65
+hit_impulse     = 2
+hit_type        = fire_wound
+hit_rate        = 1.86
+fire_distance   = 52
+bullet_speed    = 315
+rpm             = 280
+rpm_empty_click = 200
+
+use_aim_bullet = true
+time_to_aim    = 1.0
+
+hud         = wpn_fort_hud
+normal      = 0, 1, 0
+position    = -0.026,-0.172,-0.007
+orientation = 0, 0, 0
+visual      = weapons\fort\wpn_fort.ogf
+
+light_color     = 0.6,0.5,0.3
+light_range     = 3.0
+light_var_color = 0.05
+light_var_range = 0.5
+light_time      = 0.2
+
+ph_mass = 1
+
+;addons
+scope_status            = 0
+silencer_status         = 2
+grenade_launcher_status = 0
+
+zoom_enabled        = true
+scope_zoom_factor   = 55
+
+silencer_name = wpn_addon_sil_9_p
+silencer_x    = 39
+silencer_y    = -18
+silencer_bone = wpn_sliencer
+
+silencer_hit_power     = 0.62
+silencer_hit_impulse   = 1
+silencer_fire_distance = 49
+silencer_bullet_speed  = 300
+
+silencer_smoke_particles = weapons\generic_shoot_00
+silencer_light_color     = 0.6,0.5,0.3
+silencer_light_range     = 2
+silencer_light_var_color = 0.05
+silencer_light_var_range = 0.5
+silencer_light_time      = 0.2
+
+;звуки
+snd_draw         = weapons\fort\fort_draw
+snd_holster      = weapons\pistol_holster
+snd_shoot        = weapons\fort\fort_shoot
+snd_shoot1       = weapons\fort\fort_shoot1
+snd_shoot2       = weapons\fort\fort_shoot2
+snd_shoot3       = weapons\fort\fort_shoot3        
+snd_empty        = weapons\fort\fort_empty
+snd_reload       = weapons\fort\fort_reload
+snd_close        = weapons\fort\fort_close
+snd_silncer_shot = weapons\fort\fort_shot_sil
+
+[wpn_fort_hud]
+shell_point = 0.0, 0.0, -0.4
+shell_dir   = 0.0, 1.0, 0.0
+fire_point  = 0.0, 0.02, -0.32
+fire_bone   = muzzle
+orientation = 3, 2, 0
+position    = 0.10,-0.05,0.2
+visual      = weapons\fort\wpn_fort_hud.ogf
+
+anim_holster      = holster
+anim_idle         = idle
+anim_empty        = empty
+anim_reload       = reload_full
+anim_reload_empty = reload
+anim_draw         = draw
+anim_draw_empty   = draw_empty
+anim_shoot        = shoot
+anim_shot_last    = shoot_last
+anim_close        = holster
+anim_idle_aim     = idle_aim
+anim_idle_sprint  = idle_sprint
+
+;смещени€ HUD дл€ режима приближени€
+zoom_offset   = -0.10995,0.055,0.0
+zoom_rotate_x = 0.031
+zoom_rotate_y = 0.05201
+
+;врем€ поворота HUD (сек)
+zoom_rotate_time = 0.2
+rotate_time      = 0.2
+
+;Ёкспериментальный Fort
+[wpn_fort_m1]:wpn_fort
+$spawn      = "weapons\uniq\wpn_fort_m1"
+description = enc_weapons1_wpn-fort_m1
+cost        = 200
+
+ammo_limit    = 154
+ammo_current  = 126
+ammo_elapsed  = 14
+ammo_mag_size = 14
+ammo_class    = ammo_9x18_pmm, ammo_9x18_fmj
+
+inv_weight      = 0.85
+inv_name        = wpn-fort_m
+inv_name_short  = wpn-fort_m
+inv_grid_width  = 1
+inv_grid_height = 1
+inv_grid_x      = 12
+inv_grid_y      = 37

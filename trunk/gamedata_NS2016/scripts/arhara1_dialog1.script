@@ -1,0 +1,629 @@
+--' метка злого кровососа
+function sos_zol_metka()
+end
+function dell_sos_zol_metka()
+end
+--' проверим наличие мозга
+function anarh_mozg_have()
+return sak.have_item_namber("mozg",2) ~= false
+  end 
+
+--' отдадим мозг Лукашу и получим награду 
+function anarh_mozg_done(first_speaker, second_speaker)
+sak.out_item_namber("mozg",2)
+dialogs.relocate_item_section(second_speaker, "af_kol_4","in")
+sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+
+--' отдаём МП5 Юрику в любом состоянии
+function give_gar_dram_novice_mp5_m1(first_speaker, second_speaker)
+sak.out_item_namber("wpn_mp5_m1",1)
+sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+
+--' спавним аптечку у трупа
+function tolik_medkit()
+local obj = alife():create("medkit",vector():set(-86.2782745361328,-4.92963171005249,-78.3331451416016),594270,0)
+end
+
+--' проверим наличие финансов
+function arhara_have_money_300000(actor,npc)
+    return actor:money() > 300000
+end
+
+--' отдадим их Лукашу
+function arhara_give_money_300000(actor, npc)    
+    dialogs.relocate_money(actor, 300000, "out")
+end
+
+--' заспавним листок Стрелка Саркофаге
+function sp_listok()
+local obj = alife():create("arhara_listok",vector():set(37.540,56.258,31.288),6321,2417)
+end
+
+--' заспавним микросхемы
+function microshema()
+local obj = alife():create("microshema",vector():set(-111.194,-29.847,-394.991),145881,22)
+local obj = alife():create("microshema",vector():set(-111.194,-29.847,-394.991),145881,22)
+local obj = alife():create("microshema",vector():set(-111.151,-29.880,-395.110),145881,22)
+local obj = alife():create("microshema",vector():set(-111.053,-29.826,-395.174),145881,22)
+local obj = alife():create("microshema",vector():set(-111.105,-29.848,-395.166),145881,22)
+local obj = alife():create("microshema",vector():set(-111.158,-29.863,-394.991),145881,22)
+local obj = alife():create("microshema",vector():set(-111.158,-29.863,-394.991),145881,22)
+local obj = alife():create("microshema",vector():set(-111.133,-29.803,-394.744),145881,22)
+local obj = alife():create("microshema",vector():set(-111.176,-29.858,-394.993),145881,22)
+local obj = alife():create("microshema",vector():set(-111.176,-29.858,-394.993),145881,22)
+local obj = alife():create("microshema",vector():set(-111.176,-29.858,-394.993),145881,22)
+local obj = alife():create("microshema",vector():set(-111.516,-29.804,-394.496),144941,22)
+local obj = alife():create("microshema",vector():set(-110.728,-29.803,-394.339),145881,22)
+end
+
+--' проверим наличие вывертов и микросхем
+function dolgovyzui_lentyi_have() 
+return new_dialog.item_much("af_vyvert",5) ~= false and
+new_dialog.item_much("microshema",10) ~= false
+end
+
+--' отдадим выверты
+function dolgovyzui_lentyi_done(first_speaker, second_speaker)
+ sak.out_item_namber("af_vyvert",5)
+sak.out_item_namber("microshema",10)
+end
+
+--' проверим наличие финансов для Долговязого
+function dolgovyzui_have_money_50000(actor,npc)
+    return actor:money() > 50000
+end
+
+--' отдадим деньги
+function dolgovyzui_give_money_50000(t1,t2) 
+local npc=t1
+if npc:id()==db.actor:id() then
+npc=t2
+end
+dialogs.relocate_money(npc,50000,"out")
+end
+
+--' проверим наличие финансов для Гарика
+function garik_money_20000(actor,npc)
+   return actor:money() > 20000
+end
+
+--' проверим наличие сигарет
+function garik_vopros_have() 
+return sak.have_item_namber("sigaret",10) ~= false
+ end
+
+--' отдадим деньги Гарику
+function garik_give_20000(t1,t2)
+local npc=t1
+if npc:id()==db.actor:id() then
+npc=t2
+end
+dialogs.relocate_money(npc,20000,"out")
+end
+
+--' отдадим сигареты Гарику
+function garik_vopros_done(first_speaker, second_speaker)
+ sak.out_item_namber("sigaret",10)
+end
+
+--' спавним большие термосы
+function termos_big_spawn()
+local obj = alife():create("m_inventory_box45",vector():set(-187.23,-14.16,370.91),137047,1859)
+end
+
+--' заспавним кондёры
+function spawn_kondery()
+local obj = alife():create("m_inventory_box87",vector():set(8.606,9.449,29.462),958182,3677)
+local obj = alife():create("af_545x39_izomorf",vector():set(-2.442,7.197,35.908),939818,3677)
+local obj = alife():create("ammo_5.45x39_izomorf",vector():set(-2.442,7.197,35.908),939818,3677)
+local obj = alife():create("wpn_groza_ves",vector():set(17.666,-0.540,40.161),979630,3677)
+end
+
+--' проверим кондёры
+function anten_sbor_have() 
+return new_dialog.item_much("kondensatory",1) ~= false and
+new_dialog.item_much("tranzistory",1) ~= false
+end
+
+--' отдадим кондёры
+function anten_sbor_done(first_speaker, second_speaker)
+sak.out_item_namber("kondensatory",1)
+sak.out_item_namber("tranzistory",1)
+end
+
+--' убираем рестриктор Бычка
+function dell_buchok_restriktors()
+local sim = alife()
+	local se_obj = sim:story_object(17066)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+end
+
+function bar_sharik()
+local obj = alife():create("sharik",vector():set(405.480,18.678,-243.951),95024,1287)
+end
+
+--' спавним телепорт на подстанции Затона
+function spawn_tele_z_podstan()
+--    local se_obj = alife():create("m_teleport_tele_z_podstan",vector():set(-389.37646484375,0.80589032173157,-9.6717615127563),193156,3660)
+--	  local t = amk.get_anomaly_data(se_obj) 
+--        t.sid = 17067
+--        amk.set_anomaly_data(t, se_obj)
+end
+
+--' музон у лифта
+function elza_podval()
+local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\elza_podval]])
+snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+
+--' музон после финального боя (фсё ! Солянка пройдена робяты !)
+function ronald_jenkees()
+local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\ronald_jenkees]])
+snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+
+--' имитаторы аномалий у лифта на Затоне
+function spawn_lift_imi()
+local obj = alife():create("imitator",vector():set(-404.133,0.409,25.831),172512,3660)
+local obj = alife():create("imitator_holodez",vector():set(-400.599,0.497,4.836),177734,3660)
+end
+
+--' имитаторы аномалий под куполом Путепровода 
+function spawn_puteprovod_imi()
+local obj = alife():create("imitator_holodez",vector():set(-1.371607542038,26.468648910522,-41.11572265625),12393,3797)
+local obj = alife():create("imitator_holodez",vector():set(0.93648940324783,26.463554382324,-40.425357818604),13577,3797)
+end
+
+--' убираем метку с трупа Ары
+function remove_ara_metka()
+	local sim = alife()
+	local obj = sim:story_object(719)
+	if obj then
+		level.map_remove_object_spot(obj.id,"blue_location")
+	end
+end
+
+--' товарищи встречающие в подз. Агры от Якута
+function spawn_podzemka_vstrecha()
+ alife():create("ghoul_strong",vector():set(-91.001075744629, -16.47087097168, -37.675346374512), 2151, 749)
+ alife():create("ghoul_strong",vector():set(-105.72037506104, -16.465713500977, -68.160820007324), 973, 751)
+ alife():create("ghoul_strong",vector():set(-106.17189025879, -16.467569351196, -76.671333312988), 871, 752)
+ alife():create("controller_strong",vector():set(-103.72854614258, -16.287508010864, -44.266269683838), 1242, 755)
+ --alife():create("ghoul_strong",vector():set(-98.055,-16.463,-23.287),1823,760)
+ --alife():create("ghoul_strong",vector():set(-98.824,-16.463,-12.123),1776,761)
+ --alife():create("ghoul_strong",vector():set(-102.915,-16.463,-32.681),1332,779)
+ local snd_obj = xr_sound.get_safe_sound_object([[monsters\controller\controller_script_attack_0]])
+ snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+-- news_manager.send_tip(db.actor, "%c[255,0,255,0]".."МЕЧЕНЫЙ:".."\\n".."%c[255,255,128,128]Ну, блин, послал меня брат Якут...".."".."\n", nil, nil, 20000)
+-- news_manager.send_tip(db.actor, "%c[255,0,255,0]".."отправитель неизвестен:".."\\n".."%c[255,255,128,128]Стрелок, не надо искать призраков там, где их нет. Мёртвый Лес на Радаре. Остальные подробности при встрече...".."".."\n", 4, nil, 20000)
+ 
+sol_utils.send_tip( "%c[255,160,160,160]".."МЕЧЕНЫЙ:".."\\n".."%c[255,255,128,128]Ну, блин, послал меня брат Якут...", nil, nil, 20000) 
+sol_utils.send_tip( "%c[255,160,160,160]".."отправитель неизвестен:".."\\n".."%c[255,255,128,128]Стрелок, не надо искать призраков там, где их нет. Мёртвый Лес на Радаре. Остальные подробности при встрече...", nil, nil, 20000) 
+ db.actor:give_info_portion("yakut_true_start")
+ end
+
+--' убираем самого Шустрого
+function dell_shystr1()
+local sim = alife()
+	local se_obj = sim:story_object(4)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+end
+
+--' убираем рестриктор спавна шустрого2
+function del_shustr2_restr()
+local sim = alife()
+	local se_obj = sim:story_object(17070)
+	if se_obj then
+		sim:release(se_obj, true)
+	end
+end
+
+--' удаляем рестрикторы ар. пили. приз. дока с финалки агры
+function del_restr_fin_com(story_id)
+local se_obj = alife():story_object(17071)
+if se_obj then
+alife():release(se_obj)
+end
+local se_obj = alife():story_object(17072)
+if se_obj then
+alife():release(se_obj)
+end
+local se_obj = alife():story_object(17073)
+if se_obj then
+alife():release(se_obj)
+end
+local se_obj = alife():story_object(17074)
+if se_obj then
+alife():release(se_obj)
+end
+end
+
+--' заспавним диких кровосов Эльзы
+function sp_krovo()
+alife():create("horror_bloodsucker_strong",vector():set(-419.311,-1.151,64.557),149555,3660)
+alife():create("horror_bloodsucker_strong",vector():set(-419.311,-1.151,64.557),149555,3660)
+alife():create("horror_bloodsucker_strong",vector():set(-419.311,-1.151,64.557),149555,3660)
+alife():create("horror_bloodsucker_strong",vector():set(-419.311,-1.151,64.557),149555,3660)
+alife():create("horror_bloodsucker_strong",vector():set(-423.259,-0.118,66.593),143603,3660)
+alife():create("horror_bloodsucker_strong",vector():set(-424.324,0.476,66.759),142597,3660)
+
+end
+
+--' удаляем килл рестрикторы эльзы
+function dell_kill_elza_restr(story_id)
+local se_obj = alife():story_object(17077)
+if se_obj then
+alife():release(se_obj)
+end
+local se_obj = alife():story_object(17078)
+if se_obj then
+alife():release(se_obj)
+end
+end
+
+--' карагёз дал мышей
+function dal_letumov(first_speaker, second_speaker)
+dialogs.relocate_item_section(second_speaker, "letun","in")
+dialogs.relocate_item_section(second_speaker, "letun","in")
+end
+
+--' убираем планер с Затона
+function dell_zaton_planer()
+local se_obj = alife():object("zaton_planer")
+  if se_obj then
+    alife():release(se_obj, true)
+  end
+end
+
+--' Наутилус
+function zvuk_amerika()
+local snd_obj = xr_sound.get_safe_sound_object([[music\amerika]])
+snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+
+--' спавним доки с планера
+function foto_planer_spawn()
+local obj = alife():create("fotoplaner",vector():set(-571.636962,9.2095794,-3.28733),2571,3660)
+local obj = alife():create("af_electra_flash",vector():set(-568.60919,8.55237,5.17233),3311,3660)
+end
+
+--' проверим наличие карты
+function planer_have() 
+return sak.have_item_namber("fotoplaner",1) ~= false
+ end
+
+--' отдадим карту Америке
+function planer_done(first_speaker, second_speaker)
+ sak.out_item_namber("fotoplaner",1)
+end
+
+--' проверим вспышку для негра
+function amerika_electra_flash() 
+return sak.have_item_namber("af_electra_flash",1) ~= false
+ end
+
+ --' проверим вспышку для негра
+function amerika_electra_flash1() 
+return sak.have_item_namber("af_electra_flash",1) ~= true
+ end
+ 
+--' отдадим вспышку
+function amerika_electra_take(first_speaker, second_speaker)
+ sak.out_item_namber("af_electra_flash",1)
+end
+
+--' газ66
+function zvuk_gaz66()
+local snd_obj = xr_sound.get_safe_sound_object([[music\gaz66]])
+snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+
+--' проверим мышей для Скарабея
+function mushi_est()
+return sak.have_item_namber("letun",2) ~= false
+end
+
+--' проверим отсутствие мышей для Скарабея
+function mushi_net()
+return sak.have_item_namber("letun",2) ~= true
+end
+
+--' отдадим летунов
+function letun_otdat_ohot(first_speaker, second_speaker)
+sak.out_item_namber("letun",2)
+end
+
+--' Дед дал рюкзак
+function ded_dal_ryukzak(first_speaker, second_speaker)
+dialogs.relocate_item_section(second_speaker, "ded_ryukzak","in")
+end
+
+--' проверим рюкзак для Бродвея
+function ded_ryukzak_est()
+return sak.have_item_namber("ded_ryukzak",1) ~= false
+end
+
+--' отдадим рюкзак и бабло и получим фото
+function ded_ryukzak_otdat(first_speaker, second_speaker)
+sak.out_item_namber("ded_ryukzak",1)
+dialogs.relocate_money(second_speaker, 5000, "out")
+dialogs.relocate_item_section(second_speaker, "foto_frits_ostrov","in")
+db.actor:give_info_portion("foto_frits_ostrov")
+end
+
+--' отдадим рюкзак без бабла и получим фото
+function ded1_ryukzak1_otdat(first_speaker, second_speaker)
+sak.out_item_namber("ded_ryukzak",1)
+dialogs.relocate_item_section(second_speaker, "foto_frits_ostrov","in")
+db.actor:give_info_portion("foto_frits_ostrov")
+end
+
+--' метка Бродвея
+function set_brodway()
+	local sim = alife()
+	local obj = sim:object("zaton_brodway")
+	if obj then
+		amk.add_spot_on_map(obj.id,"crlc_big","лагерь Бродвея")
+	end
+end
+function remove_set_brodway()
+	local sim = alife()
+	local obj = sim:object("zaton_brodway")
+	if obj then
+		level.map_remove_object_spot(obj.id,"crlc_big")
+	end
+end
+
+--' удаляем рестриктор Бродвея
+function dell_brod_restr(story_id)
+local se_obj = alife():story_object(17082)
+if se_obj then
+alife():release(se_obj)
+end
+end
+
+--' фотка с верта
+function baza_zaton_dal(first_speaker, second_speaker)
+dialogs.relocate_item_section(second_speaker, "baza_zaton","in")
+end
+
+--' проверим биодоки
+function sos_say_one_have()
+return sak.have_item_namber("biodoki",1) ~= false
+end
+
+--' проверим портатор
+function portator_est()
+return sak.have_item_namber("psewdoportator",1) ~= false
+end
+
+--' отдадим портатор
+function portator_otdal()
+sak.out_item_namber("psewdoportator",1)
+end
+
+--' проверим отсутствие биодоков
+function biodokov_net()
+return sak.have_item_namber("biodoki",1) ~= true
+end
+
+--' отдадим биодоки
+function biodoki_otdal(first_speaker, second_speaker)
+ sak.out_item_namber("biodoki",1)
+end
+
+local mesto = {
+    {position={x=-108.34,y=-3.66,z=203.93},gv=3675,lv=758088},
+    {position={x=-108.87,y=5.38,z=-213.23},gv=3681,lv=740290},
+    {position={x=84.05,y=40.97,z=-454.74},gv=3685,lv=1113593}
+}
+
+function drug_ryukzak_good(actor,npc)
+    local a = mesto[math.random(table.getn(mesto))]
+    local obj = alife():create("m_inventory_box86", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+end
+
+local mesto1 = {
+    {position={x=-108.34,y=-3.66,z=203.93},gv=3675,lv=758088},
+    {position={x=-108.87,y=5.38,z=-213.23},gv=3681,lv=740290},
+    {position={x=84.05,y=40.97,z=-454.74},gv=3685,lv=1113593}
+}
+function drug_ryukzak_xren(actor,npc)
+    local a = mesto1[math.random(table.getn(mesto1))]
+    local obj = alife():create("m_inventory_box86", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+end
+
+--' спавним ящик с обгор. блокнотом
+function box85_spawn()
+local obj = alife():create("m_inventory_box85",vector():set(135.634,37.412,-441.763),1198672,3685)
+end
+
+--' убираем нах рестрикторы Колмогора
+function dell_kolm_restriktors()
+local se_obj = alife():object("village_heli_attack_zone")
+  if se_obj then
+    alife():release(se_obj, true)
+  end
+local se_obj = alife():object("village_teleport_restrictor")
+  if se_obj then
+    alife():release(se_obj, true)
+  end
+local se_obj = alife():object("village_kolmogor_magazin")
+  if se_obj then
+    alife():release(se_obj, true)
+  end
+end
+
+--' метка Гульдена
+function ray_metka()
+	local sim = alife()
+	local obj = sim:object("gulden")
+	if obj then
+		amk.add_spot_on_map(obj.id,"crlc_big","Примерное местонахождение сталкера")
+	end
+end
+function remove_ray_metka()
+	local sim = alife()
+	local obj = sim:object("gulden")
+	if obj then
+		level.map_remove_object_spot(obj.id,"crlc_big")
+	end
+end
+
+--' звуки боя на базе ПД
+function gulden_boy_zvuk()
+local snd_obj = xr_sound.get_safe_sound_object([[weapons\boy\11]])
+snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+function gulden_boy_zvuk2()
+local snd_obj = xr_sound.get_safe_sound_object([[weapons\boy\22]])
+snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+function gulden_boy_zvuk3()
+local snd_obj = xr_sound.get_safe_sound_object([[weapons\boy\33]])
+snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+function gulden_boy_zvuk4()
+local snd_obj = xr_sound.get_safe_sound_object([[weapons\boy\44]])
+snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+
+--' удаляем рестриктор Гульдена
+function dell_iskra_restr(story_id)
+local se_obj = alife():story_object(17088)
+if se_obj then
+alife():release(se_obj)
+end
+end
+
+--' спавним ноут Злобного
+function notebook_zlo_spawn()
+local obj = alife():create("notebook_zlobnyi",vector():set(-112.837,8.660,46.546),229049,3622)
+end
+
+--' проверим нотбук Злобного
+function netbook_est() 
+return sak.have_item_namber("notebook_zlobnyi",1) ~= false
+ end
+
+--' отдадим нетбук Злобного
+function netbook_otdal(first_speaker, second_speaker)
+ sak.out_item_namber("notebook_zlobnyi",1)
+end
+
+--' получим ноутбук Злобного
+function netbook_vzyal(first_speaker, second_speaker)
+dialogs.relocate_item_section(second_speaker, "notebook_zlobnyi","in")
+end
+
+--' убираем рестриктор гигантища у дырки
+function dell_gigantische1_rest()
+local se_obj = alife():object("zat_gigantische_restrictor")
+  if se_obj then
+    alife():release(se_obj, true)
+  end
+end
+
+--' убираем рестриктор гигантища у теле
+function dell_gigantische2_rest()
+local se_obj = alife():object("zat_gigantische2_restrictor")
+  if se_obj then
+    alife():release(se_obj, true)
+  end
+end
+
+--' проверим пушку для Обморока
+function have_pushka_obmorok()
+	return have_GG_item("wpn_abakan") ~= false and have_GG_item("ammo_5.45x39_ap") ~= false
+end
+
+--' Отдадим пушку Обмороку
+function obmorok_stvol_out(speak,reply)
+	transfer_OUT_sect(speak,reply,"wpn_abakan")
+      transfer_OUT_sect(speak,reply,"ammo_5.45x39_ap")
+end
+
+--' проверим пушку для Кита
+function have_pushka_kit()
+	return have_GG_item("wpn_aks74m") ~= false and have_GG_item("ammo_5.45x39_ap") ~= false
+end
+
+--' Отдадим пушку Киту
+function kit_stvol_out(speak,reply)
+	transfer_OUT_sect(speak,reply,"wpn_aks74m")
+      transfer_OUT_sect(speak,reply,"ammo_5.45x39_ap")
+end
+
+--' спавним рюкзак Вазелина
+function rukzak_vazelin_spawn()
+local obj = alife():create("m_inventory_box92",vector():set(-443.79,12.25,11.36),122865,3663)
+end
+
+--' получим "Грави" от Юрика за лапу бюрера (Петрович)
+function gravi_vzyal(first_speaker, second_speaker)
+dialogs.relocate_item_section(second_speaker, "af_gravi","in")
+end
+
+--' спавним блокнот Доктора в Припяти после сцены в подземке Агро (Петрович)
+function note_doctor()
+local obj = alife():create("sak_book4",vector():set(-3.77,-4.25,191.19),97948,2195)
+end
+
+--' проверим алмазного колобка для Карагёза
+function have_kolobok_karagez()
+	return have_GG_item("af_kol_3") ~= false
+end
+
+--' Отдадим алмазного колобка Карагёзу
+function kolobok_karagez_out()
+	ex_all.out_GG_item("af_kol_3")
+end
+
+function zat_smsvor_gg()
+news_manager.send_tip(db.actor, "%c[255,0,255,0]".."СТРЕЛОК".."\\n".."%c[255,0,255,0]Ага, вот ты куда бегаешь. Осталось пойти туда за ним и всё выяснить.".."".."\n", nil, nil, 25000)
+end
+
+--' Спавним канистру с маслом
+function remont_maslo_spawn()
+local obj = alife():create("remont_maslo",vector():set(410.15,-3.18,232.39),122865,3663)
+end
+
+--' проверим масло для Сержа
+function maslo_est()
+	return have_GG_item("remont_maslo") ~= false
+end
+
+--' Отдадим масло Сержу
+function maslo_aut()
+	ex_all.out_GG_item("remont_maslo")
+end
+
+--- Вспомогательные функции ---
+function have_GG_item(thing)
+	return db.actor and db.actor:object(thing) ~= nil
+end
+
+function transfer_OUT_sect(speak,reply,thing,news)
+	local actor,npc = ex_all.actor_barter(speak,reply)
+	local item,sect
+	if type(thing) ~= 'table' then
+		thing = {thing}
+	end
+	for i = 1, #thing do
+		sect = thing[i]
+		item = actor:object(sect)
+		if item then
+			actor:transfer_item(item,npc)
+			if news then
+				ex_all.news_item_out(actor,sect,1)
+			end
+		end
+	end
+end
+--- Вспомогательные функции --- end ---

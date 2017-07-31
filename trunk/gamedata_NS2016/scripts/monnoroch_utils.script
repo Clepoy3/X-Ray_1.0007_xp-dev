@@ -1,0 +1,101 @@
+-------Вспомогательные------------------
+
+class "mon_weight"
+
+function mon_weight:on_take(obj)
+	local sect = obj:section()
+	if sect ~= "arc_ballast" then
+		self.inv_wg = self.inv_wg +  getIniValueFloatSimple(sect, "inv_weight", 0)
+	end
+end
+
+function mon_weight:on_drop(obj)
+	local sect = obj:section()
+	if sect ~= "arc_ballast" then
+		self.inv_wg = self.inv_wg -  getIniValueFloatSimple(sect, "inv_weight", 0)
+	end
+end
+
+function mon_weight:net_spawn()
+	self.inv_wg = 0
+	db.actor:iterate_inventory(
+		function (dummy, item)
+			local sect = item:section()
+			if sect ~= "arc_ballast" then
+				self.inv_wg = self.inv_wg + getIniValueFloatSimple(sect, "inv_weight", 0)
+			end
+		end,
+		db.actor)
+end
+
+function mon_weight:get_weight()
+	return self.inv_wg
+end
+
+
+
+class "mon_callback"
+
+function mon_callback:init()
+	self.ju_tm = 0
+	self.inf_tm = 0
+end
+
+function mon_callback:update()
+	monnoroch_thirst.mon_thirst:update()
+end
+
+function mon_callback:save(packet)
+	--monnoroch.save(packet)
+end
+
+function mon_callback:load(reader)
+	--monnoroch_thirst.thirst = load_variable("thirst",0)
+	--monnoroch.load(reader)
+end
+
+function mon_callback:on_item_take(obj)
+	mon_weight:on_take(obj)
+end
+
+function mon_callback:on_use_object(obj)
+	monnoroch_thirst.mon_thirst:on_use_object(obj)
+end
+
+function mon_callback:on_item_drop(obj)
+	mon_weight:on_drop(obj)
+end
+
+function mon_callback:net_spawn()
+	mon_weight:net_spawn()
+	monnoroch_thirst.mon_thirst:net_spawn()
+end
+
+--записываем переменную
+function save_variable(variable_name, value)
+  if value==nil then
+    del_variable(variable_name)
+  else
+    local vn=compress_name(variable_name)
+    xr_logic.pstor_store(db.actor, vn, value)
+  end
+end
+
+--загружаем переменную
+function load_variable(variable_name, value_if_not_found)
+  local vn=compress_name(variable_name)
+  return xr_logic.pstor_retrieve(db.actor, vn, value_if_not_found)
+end
+
+--удаляем переменную
+function del_variable(variable_name)
+  local vn=compress_name(variable_name)
+  if db.storage[db.actor:id()].pstor[vn] then
+    db.storage[db.actor:id()].pstor[vn] = nil
+  end
+end
+
+-- Преобразует имя переменной в короткое
+function compress_name(name)
+  return name
+end

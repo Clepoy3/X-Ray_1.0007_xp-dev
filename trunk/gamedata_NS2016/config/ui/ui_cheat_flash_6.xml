@@ -1,0 +1,52 @@
+	<?-- Vergas подписи кнопок выбора музыкального файла В слоте флешка 6--?>
+	<background_f6_t1 x="180" y="157" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >The Offspring: The Kids aren't Alright</text>
+	</background_f6_t1>
+	
+	<background_f6_t2 x="180" y="178" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Three Days Grace: Get Out Alive</text>
+	</background_f6_t2>
+	
+	<background_f6_t3 x="180" y="199" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Skillet: Rebirthing</text>
+	</background_f6_t3>
+	
+	<background_f6_t4 x="180" y="220" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Breaking Benjamin: Blow me away</text>
+	</background_f6_t4>
+	
+	<background_f6_t5 x="180" y="241" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Rob Zombie: Killer</text>
+	</background_f6_t5>
+	
+	<background_f6_t6 x="180" y="262" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Brazilian Girls: Noveau Americain</text>
+	</background_f6_t6>
+	
+	<background_f6_t7 x="180" y="283" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Motley Crue: Wild Side</text>
+	</background_f6_t7>
+	
+	<background_f6_t8 x="180" y="304" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Nightmare: Alumina</text>
+	</background_f6_t8>
+	
+	<background_f6_t9 x="180" y="325" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Rammstein: Ich Will</text>
+	</background_f6_t9>
+	
+	<background_f6_t10 x="180" y="346" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Linkin Park: Faint</text>
+	</background_f6_t10>
+	
+	<background_f6_t11 x="180" y="367" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Skillet: The Last Night</text>
+	</background_f6_t11>
+	
+	<background_f6_t12 x="180" y="388" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Rammstein: Eifersucht</text>
+	</background_f6_t12>
+	
+	<background_17 x="456" y="326" width="50" height="35">
+		<text font="letterica18"  r="238" g="154" b="0" a="255" align="l">от Сяка</text>
+	</background_17>

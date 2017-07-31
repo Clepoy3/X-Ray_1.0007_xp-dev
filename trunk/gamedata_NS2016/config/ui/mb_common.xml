@@ -1,0 +1,12 @@
+<ui_texture>
+    <file_name>ui\ui_messagebox</file_name>
+
+    <texture id="mb_frame_error" x="0" y="0" width="1024" height="768" />
+    <texture id="mb_frame_error_sign_alarm" x="0" y="916" width="96" height="108" />
+    <texture id="mb_frame_error_sign_red" x="98" y="916" width="96" height="108" />
+    <texture id="mb_frame_error_sign_info" x="196" y="916" width="96" height="108" />	
+	
+</ui_texture>
+
+
+

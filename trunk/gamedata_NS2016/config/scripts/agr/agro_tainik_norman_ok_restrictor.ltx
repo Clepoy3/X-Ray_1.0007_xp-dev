@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+perexody_otkryty} sr_idle@time %+agro_tainik_norman_done%
+
+[sr_idle@time]
+on_timer = 10000 | sr_idle@time1 %=arhara_dialog.sms_k_normany1 =arhara_dialog.spawn_yzik_3gulag%
+
+[sr_idle@time1]
+on_timer = 8000 | sr_idle@nil %=arhara_dialog.sms_k_normany2 =arhara_dialog.metka_city_parfumer%
+
+[sr_idle@nil]

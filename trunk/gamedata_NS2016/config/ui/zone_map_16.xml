@@ -1,0 +1,22 @@
+<window>
+	<minimap>
+		<level_frame x="43" y="28" width="206" height="150"/> <!-- Размер миникарты <level_frame x="25" y="30" width="190" height="176"/>-->
+		
+		<background x="0" y="0" width="291" height="241" stretch="1" a="100">  <!-- 240Размер рамки миникарты <background x="7" y="9" width="240" height="230" stretch="1">-->
+			<texture>ui_hud_map</texture>
+			
+			<dist_text x="45" y="163" width="125" height="20"> 	<!-- Дистанция до цели -->
+				<text align="l" font="letterica16" color="ui_clr_1"/>
+			</dist_text>
+		</background>
+		
+		<compass x="73" y="28" width="32" height="32" heading="1" stretch="1">  <!-- Компас -->
+			<texture>ui\ui_hud_map_arrow</texture>
+		</compass>
+		
+		<center width="4" height="4" alignment="c" stretch="1"> 
+			<texture>ui_minimap_point</texture>
+		</center>
+	
+	</minimap>
+</window>

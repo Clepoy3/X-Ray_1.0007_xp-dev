@@ -1,0 +1,489 @@
+local t = {}
+
+function load_job(sj, gname, type, squad, groups)
+
+	-- Сталкер - зомби на заводе
+	if type == "yan_zombied_1" then
+		--' 17 работ
+		for i = 1, 5 do
+			t = {section = "logic@yan_zombied_1_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_zombied_1_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_zombied_1_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_zombied_1_kamp3", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_zombied_1_kamp4", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Сталкер - зомби на болоте
+	if type == "yan_zombied_2" then
+		--' 9 работ
+		for i = 1, 4 do
+			t = {section = "logic@yan_zombied_2_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@yan_zombied_2_kamp", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Учёные
+	if type == "yan_scientist" then
+		t = { section = "logic@scientist_offline",
+			idle = 0,
+            online = false,
+			prior = 9, state = {0,1,2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 900
+						 end
+        }
+		table.insert(sj, t)	
+		t = { section = "logic@scientist_offline",
+			idle = 0,
+            online = false,
+			prior = 9, state = {3,4,5}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 905
+						 end
+        }
+		table.insert(sj, t)	
+        t = { section = "logic@scientist_out_rest",
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 905
+						 end
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@scientist_not_in_rest",
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[2],
+		    online = true,
+			in_rest = "yantar_bunker_space_restrictor", out_rest = "",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 905
+						 end
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@scientist_return_out_rest",
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 905
+						 end
+		}
+		table.insert(sj, t)
+        t = { section = "logic@scientist_out_rest",
+			idle = 0,
+			prior = 5, state = {3}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 900
+						 end
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@scientist_not_in_rest",
+			idle = 0,
+			prior = 5, state = {4}, squad = squad, group = groups[2],
+		    online = true,
+			in_rest = "yantar_bunker_space_restrictor", out_rest = "",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 900
+						 end
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@scientist_return_out_rest",
+			idle = 0,
+			prior = 5, state = {5}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "yantar_bunker_space_restrictor",
+            predicate = function(obj_info) 
+                       			return obj_info.story_id == 900
+						 end
+		}
+		table.insert(sj, t)
+	end
+
+	-- Снорки на заводе
+	if type == "yan_snork_2" then
+		--' 10 работ
+		for t = 1, 3 do
+			t = {section = "logic@yan_snork_2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@yan_snork_2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@yan_snork_2_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_snork_2_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Снорки на болоте
+	if type == "yan_snork_1" then
+		--' 10 работ
+		for t = 1, 4 do
+			t = {section = "logic@yan_snork_1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_snork_1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_snork_1_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Химеры
+	if type == "yan_chimera" then
+		--' 2 работы
+		for t = 1, 1 do
+			t = {section = "logic@yan_chimera_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 1 do
+			t = {section = "logic@yan_chimera_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Слепыши
+	if type == "yan_dog" then
+		--' 7 работ
+		for t = 1, 3 do
+			t = {section = "logic@yan_dog_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@yan_dog_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Контроллёр
+	if type == "yan_controller" then
+		--' 1 работа
+		for t = 1, 1 do
+			t = {section = "logic@controller1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Бюреры в туннелях
+	if type == "yan_burer" then
+		--' 3 работы
+		t = { section = "logic@burer1", idle = 0, prior = 7, state = {0},
+		  in_rest = "", out_rest = ""
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@burer2", idle = 0, prior = 7, state = {0},
+		  in_rest = "", out_rest = ""
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@burer2", idle = 0, prior = 7, state = {0},
+		  in_rest = "", out_rest = ""
+		} 
+		table.insert(sj, t)
+	end
+
+	-- Крысы
+	if type == "yan_rat" then
+		--' 15 работ
+		for t = 1, 4 do
+			t = {section = "logic@yan_rat_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@yan_rat_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_rat_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@yan_rat_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Сталкеры
+	if type == "yan_st_stalker2" then
+		--' 8 работ
+		for i = 1, 4 do
+			t = {section = "logic@yan_st_stalker2_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@yan_st_stalker2_kamp", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Долг
+	if type == "yan_st_stalker3" then
+		--' 6 работ
+		for i = 1, 3 do
+			t = {section = "logic@yan_st_stalker3_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_st_stalker3_kamp", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Тушканы
+	if type == "yan_tushkano" then
+		--' 7 работ
+		for t = 1, 4 do
+			t = {section = "logic@yan_tushkano_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@yan_tushkano_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+---'''' Гулаги с переменным состоянием ''''---
+
+end
+
+function load_states(gname, type)
+
+    if type == "yan_zombied_1" then
+		return function(gulag)
+			return 0
+		end
+    end
+
+    if type == "yan_zombied_2" then
+		return function(gulag)
+			return 0
+		end
+    end
+
+    if type == "yan_scientist" then
+		return function(gulag)
+			local t
+
+			if 	has_alife_info("bar_heli_scene_professor_die") then
+				t = 0
+			else
+				t = 3
+			end
+
+			if has_alife_info("yan_scientist_gulag_state_2") then 
+				return t+1
+			end
+			if has_alife_info("yan_scientist_gulag_state_3") then 
+				return t+2
+			end
+			
+			return t
+		end
+    end
+
+	if type == "yan_chimera" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "yan_dog" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "yan_controller" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "yan_burer" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "yan_rat" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "yan_st_stalker2" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "yan_st_stalker3" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "yan_snork_1" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "yan_snork_2" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "yan_tushkano" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+end
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	return nil
+end
+
+function checkStalker(npc_community, gulag_type)
+
+	if gulag_type == "yan_zombied_1" then
+		return npc_community == "zombied"
+	end
+	if gulag_type == "yan_zombied_2" then
+		return npc_community == "zombied"
+	end
+	if gulag_type == "yan_scientist" then
+		return npc_community == "ecolog"
+	end
+	if gulag_type == "yan_st_stalker2" then
+		return npc_community == "stalker"
+	end
+	if gulag_type == "yan_st_stalker3" then
+		return npc_community == "dolg"
+	end
+
+	return false
+end
+
+
+function checkMonster(npc_community, gulag_type)
+
+	if gulag_type == "yan_chimera" then
+		return npc_community == "chimera"
+	end
+	if gulag_type == "yan_dog" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "yan_controller" then
+		return npc_community == "controller"
+	end
+	if gulag_type == "yan_burer" then
+		return npc_community == "burer"
+	end
+	if gulag_type == "yan_rat" then
+		return npc_community == "rat"
+	end
+	if gulag_type == "yan_snork_1" then 
+		return npc_community == "snork"
+	end
+	if gulag_type == "yan_snork_2" then 
+		return npc_community == "snork"
+	end
+	if gulag_type == "yan_tushkano" then 
+		return npc_community == "tushkano"
+	end
+
+	return false
+end

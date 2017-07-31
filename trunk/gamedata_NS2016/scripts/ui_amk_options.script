@@ -1,0 +1,284 @@
+--/amk_rel_1/
+-- инициализация
+
+class "amk_options" (CUIScriptWnd)
+
+function amk_options:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function amk_options:__finalize() end
+	
+function amk_options:InitControls()
+	self:Init(0,0,1024,768)
+
+	self.message_box = CUIMessageBoxEx()
+	self.message_box:SetAutoDelete(true)
+	self:Register(self.message_box,"message_box")
+
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_amk_options_wnd.xml")
+
+	xml:InitStatic("background", self)	
+	
+	self.form_dlg = xml:InitStatic("form_for_opt:form_dlg", self)
+	
+	local btn
+	btn = xml:Init3tButton("form_for_opt:btn_okay", self.form_dlg)
+	self:Register(btn, "btn_okay")
+	btn = xml:Init3tButton("form_for_opt:btn_quit", self.form_dlg)
+	self:Register(btn, "btn_quit")
+	self.tab = xml:InitTab("form_for_opt:tab", self.form_dlg)
+	self:Register(self.tab, "tab")
+
+	self.form_dlg1 = xml:InitStatic("form_for_opt1:form_dlg1", self)
+
+	self.form_dlg2 = xml:InitStatic("form_for_opt2:form_dlg2", self)
+	self.form_dlg2:Show(false)
+	
+	xml:InitStatic("form_for_opt2:text_static",				self.form_dlg2)
+	
+	local check_hud = xml:InitCheck("form_for_opt1:check_amk_hud", self.form_dlg1)
+	self:Register(check_hud, "check_amk_hud")	
+	self.check_hud = check_hud
+	check_hud:SetCheck(amk.load_variable("option_hud", game_options.suithud_enable))
+	
+	local check_hud_blurs = xml:InitCheck("form_for_opt1:check_amk_hud_blurs", self.form_dlg1)
+	self:Register(check_hud_blurs, "check_amk_hud_blurs")	
+	self.check_hud_blurs = check_hud_blurs
+	check_hud_blurs:SetCheck(amk.load_variable("option_hud_blurs", game_options.suithud_blurs_enable))
+	self.check_hud_blurs:Enable(self.check_hud:GetCheck())
+	
+	local check_blood = xml:InitCheck("form_for_opt1:check_blood", self.form_dlg1)
+	self:Register(check_blood, "check_blood")	
+	self.check_blood = check_blood
+	check_blood:SetCheck(amk.load_variable("option_blood", game_options.blood))
+	
+	local check_bleed = xml:InitCheck("form_for_opt1:check_bleed", self.form_dlg1)
+	self:Register(check_bleed, "check_bleed")	
+	self.check_bleed = check_bleed
+	check_bleed:SetCheck(amk.load_variable("option_bleed", game_options.bleed))
+	
+	local check_mus = xml:InitCheck("form_for_opt1:check_amk_mus", self.form_dlg1)
+	self:Register(check_mus, "check_amk_mus")	
+	self.check_mus = check_mus
+	check_mus:SetCheck(amk.load_variable("option_mus", game_options.interative_music))
+	
+	local check_rad = xml:InitCheck("form_for_opt1:check_amk_rad", self.form_dlg1)
+	self:Register(check_rad, "check_amk_rad")	
+	self.check_rad = check_rad
+	check_rad:SetCheck(amk.load_variable("option_rad", game_options.shkala_rad))
+	
+	local check_zombie_checkup = xml:InitCheck("form_for_opt1:check_zombie_checkup", self.form_dlg1)
+	self:Register(check_zombie_checkup, "check_zombie_checkup")	
+	self.check_zombie_checkup = check_zombie_checkup
+	check_zombie_checkup:SetCheck(amk.load_variable("zombie_checkup", game_options.zombie_checkup))
+	
+	local check_kostri = xml:InitCheck("form_for_opt1:check_kostri", self.form_dlg1)
+	self:Register(check_kostri, "check_kostri")
+	self.check_kostri = check_kostri
+	check_kostri:SetCheck(amk.load_variable("kostri", game_options.kostri))
+	
+	local check_money = xml:InitCheck("form_for_opt1:check_money", self.form_dlg1)
+	self:Register(check_money, "check_money")
+	self.check_money = check_money
+	check_money:SetCheck(amk.load_variable("money", game_options.money))
+	
+	local check_gg_kick = xml:InitCheck("form_for_opt1:check_gg_kick", self.form_dlg1)
+	self:Register(check_gg_kick, "check_gg_kick")
+	self.check_gg_kick = check_gg_kick
+	check_gg_kick:SetCheck(amk.load_variable("gg_kick", game_options.gg_kick))
+	
+	local check_thirst_enable = xml:InitCheck("form_for_opt1:check_thirst_enable", self.form_dlg1)
+	self:Register(check_thirst_enable, "check_thirst_enable")
+	self.check_thirst_enable = check_thirst_enable
+	check_thirst_enable:SetCheck(amk.load_variable("thirst_enable", game_options.thirst_enable))
+	
+	local check_death_stat = xml:InitCheck("form_for_opt1:check_death_stat", self.form_dlg1)
+	self:Register(check_death_stat, "check_death_stat")
+	self.check_death_stat = check_death_stat
+	check_death_stat:SetCheck(amk.load_variable("death_stat", game_options.death_stat))
+
+	local check_game_pause = xml:InitCheck("form_for_opt1:check_game_pause", self.form_dlg1)
+	self:Register(check_game_pause, "check_game_pause")
+	self.check_game_pause = check_game_pause
+	check_game_pause:SetCheck(amk.load_variable("game_pause", game_options.game_pause))
+	
+	local check_zombie_team = xml:InitCheck("form_for_opt1:check_zombie_team", self.form_dlg1)
+	self:Register(check_zombie_team, "check_zombie_team")
+	self.check_zombie_team = check_zombie_team
+	check_zombie_team:SetCheck(amk.load_variable("zombie_team", game_options.zombie_team))
+	
+	local check_psy_sounds = xml:InitCheck("form_for_opt1:check_psy_sounds", self.form_dlg1)
+	self:Register(check_psy_sounds, "check_psy_sounds")
+	self.check_psy_sounds = check_psy_sounds
+	check_psy_sounds:SetCheck(amk.load_variable("psy_sounds", game_options.psy_sounds))
+	
+	local check_sms_sound = xml:InitCheck("form_for_opt1:check_sms_sound", self.form_dlg1)
+	self:Register(check_sms_sound, "check_sms_sound")
+	self.check_sms_sound = check_sms_sound
+	check_sms_sound:SetCheck(amk.load_variable("sms_sound", game_options.sms_sound))
+	
+	local check_respawn_frequent = xml:InitCheck("form_for_opt1:check_respawn_frequent", self.form_dlg1)
+	self:Register(check_respawn_frequent, "check_respawn_frequent")
+	self.check_respawn_frequent = check_respawn_frequent
+	check_respawn_frequent:SetCheck(amk.load_variable("respawn_frequent", game_options.respawn_frequent))
+	
+	local check_run_horror_effect = xml:InitCheck("form_for_opt1:check_run_horror_effect", self.form_dlg1)
+	self:Register(check_run_horror_effect, "check_run_horror_effect")
+	self.check_run_horror_effect = check_run_horror_effect
+	check_run_horror_effect:SetCheck(amk.load_variable("run_horror_effect", game_options.run_horror_effect))
+	
+	local check_del_horror_mops = xml:InitCheck("form_for_opt1:check_del_horror_mops", self.form_dlg1)
+	self:Register(check_del_horror_mops, "check_del_horror_mops")
+	self.check_del_horror_mops = check_del_horror_mops
+	check_del_horror_mops:SetCheck(amk.load_variable("del_horror_mops", game_options.del_horror_mops))
+	self.check_del_horror_mops:Enable(self.check_run_horror_effect:GetCheck())
+	
+	local check_no_anoms_respawn = xml:InitCheck("form_for_opt1:check_no_anoms_respawn", self.form_dlg1)
+	self:Register(check_no_anoms_respawn, "check_no_anoms_respawn")
+	self.check_no_anoms_respawn = check_no_anoms_respawn
+	check_no_anoms_respawn:SetCheck(amk.load_variable("no_anoms_respawn", game_options.no_anoms_respawn))
+
+	xml:InitStatic("form_for_opt1:cap_blow_time_basis", self.form_dlg1)
+	local deth_stat_up_now = xml:InitStatic("form_for_opt1:blow_time_basis_now", self.form_dlg1)
+	deth_stat_up_now:SetText("["..tostring(amk.load_variable("blow_time_basis", game_options.blow_time_basis)).."]")
+	
+	local spin_blow_time_basis = xml:InitSpinNum("form_for_opt1:spin_blow_time_basis", self.form_dlg1)
+	self:Register(spin_blow_time_basis, "spin_blow_time_basis")
+	self.spin_blow_time_basis = spin_blow_time_basis
+	
+	xml:InitStatic("form_for_opt1:cap_amk_treasure", self.form_dlg1)
+	local radio_treasure = xml:InitTab("form_for_opt1:radio_amk_treasure", self.form_dlg1)
+	self:Register(radio_treasure, "radio_amk_treasure")	
+	self.radio_treasure = radio_treasure
+	radio_treasure:SetNewActiveTab(amk.load_variable("option_treasure",0))
+	
+end
+
+function amk_options:InitCallBacks()
+	self:AddCallback("tab", ui_events.TAB_CHANGED, self.OnTabChange, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
+	self:AddCallback("btn_okay", ui_events.BUTTON_CLICKED, self.on_okay, self)
+	self:AddCallback("check_amk_hud", ui_events.BUTTON_CLICKED, self.OnHudChange, self)
+	self:AddCallback("check_run_horror_effect", ui_events.BUTTON_CLICKED, self.OnHorrorChange, self)
+end
+
+function amk_options:OnHudChange()
+	self.check_hud_blurs:Enable(self.check_hud:GetCheck())
+end
+
+function amk_options:OnHorrorChange()
+	self.check_del_horror_mops:Enable(self.check_run_horror_effect:GetCheck())
+end
+
+function amk_options:OnTabChange()
+	self.form_dlg1:Show		(false)
+	self.form_dlg2:Show		(false)
+	
+	local i = self.tab:GetActiveIndex()
+	if i == 0 then
+		self.form_dlg1:Show(true)		
+	elseif i == 1 then
+		self.form_dlg2:Show(true)
+	end
+end
+
+function amk_options:on_okay()
+
+	local blow_time_basis = tonumber(self.spin_blow_time_basis:GetText())
+	if blow_time_basis ~= 0 and (blow_time_basis < 30 or blow_time_basis > 120) then
+		self.message_box:Init("message_box_invalid_blow_time_basis")
+		self:GetHolder():start_stop_menu(self.message_box,true)
+		return
+	end
+	
+	game_options.interative_music = self.check_mus:GetCheck()
+	amk.save_variable("option_mus", game_options.interative_music)
+	
+	game_options.suithud_enable = self.check_hud:GetCheck()
+	amk.save_variable("option_hud", game_options.suithud_enable)
+	
+	game_options.suithud_blurs_enable = self.check_hud_blurs:GetCheck()
+	amk.save_variable("option_hud_blurs", game_options.suithud_blurs_enable)
+	
+	game_options.blood = self.check_blood:GetCheck()
+	amk.save_variable("option_blood", game_options.blood)
+	
+	game_options.bleed = self.check_bleed:GetCheck()
+	amk.save_variable("option_bleed", game_options.bleed)
+	
+	game_options.shkala_rad = self.check_rad:GetCheck()
+	amk.save_variable("option_rad", game_options.shkala_rad)
+	
+	game_options.zombie_checkup = self.check_zombie_checkup:GetCheck()
+	amk.save_variable("zombie_checkup", game_options.zombie_checkup)
+	
+	game_options.kostri = self.check_kostri:GetCheck()
+	amk.save_variable("kostri", game_options.kostri)
+	
+	game_options.money = self.check_money:GetCheck()
+	amk.save_variable("money", game_options.money)
+	
+	game_options.gg_kick = self.check_gg_kick:GetCheck()
+	amk.save_variable("gg_kick", game_options.gg_kick)
+	
+	game_options.thirst_enable = self.check_thirst_enable:GetCheck()
+	amk.save_variable("thirst_enable", game_options.thirst_enable)
+	
+	game_options.death_stat = self.check_death_stat:GetCheck()
+	amk.save_variable("death_stat", game_options.death_stat)
+	
+	game_options.game_pause = self.check_game_pause:GetCheck()
+	amk.save_variable("game_pause", game_options.game_pause)
+	
+	game_options.zombie_team = self.check_zombie_team:GetCheck()
+	amk.save_variable("zombie_team", game_options.zombie_team)
+	
+	game_options.psy_sounds = self.check_psy_sounds:GetCheck()
+	amk.save_variable("psy_sounds", game_options.psy_sounds)
+	
+	game_options.sms_sound = self.check_sms_sound:GetCheck()
+	amk.save_variable("sms_sound", game_options.sms_sound)
+	
+	game_options.respawn_frequent = self.check_respawn_frequent:GetCheck()
+	amk.save_variable("respawn_frequent", game_options.respawn_frequent)
+	
+	game_options.run_horror_effect = self.check_run_horror_effect:GetCheck()
+	amk.save_variable("run_horror_effect", game_options.run_horror_effect)
+	
+	game_options.del_horror_mops = self.check_del_horror_mops:GetCheck()
+	amk.save_variable("del_horror_mops", game_options.del_horror_mops)
+	
+	game_options.no_anoms_respawn = self.check_no_anoms_respawn:GetCheck()
+	amk.save_variable("no_anoms_respawn", game_options.no_anoms_respawn)
+	
+	game_options.blow_time_basis = ((blow_time_basis >= 30 and blow_time_basis <= 120 and blow_time_basis) or game_options.blow_time_basis)
+	amk.save_variable("blow_time_basis", game_options.blow_time_basis)
+	
+	amk.save_variable("option_treasure", self.radio_treasure:GetActiveIndex() )
+	
+	self:on_quit()
+end
+
+function amk_options:on_quit()
+	self:GetHolder():start_stop_menu(self.owner, true)
+	self:GetHolder():start_stop_menu(self,true)
+	self.owner:Show(true)
+end
+
+function amk_options:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+-- на выход повесим Esc
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:on_quit()
+		end
+		if dik == DIK_keys.DIK_RETURN then
+			self:on_okay()
+		end
+	end
+	return true
+end

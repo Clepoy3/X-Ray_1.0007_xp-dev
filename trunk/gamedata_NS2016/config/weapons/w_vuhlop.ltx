@@ -1,0 +1,223 @@
+; работа Nomadec
+
+[wpn_vuhlop]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency 		= 
+$spawn 				= "weapons\vuhlop"
+$npc				     = on			
+$prefetch 			= 8
+scheduled 			= off 		
+cform 				= skeleton
+class 				= WP_SVD
+min_radius 			= 5
+max_radius 			= 200
+description			= enc_wpn-vuhlop
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		= 3
+ef_weapon_type			= 8
+
+holder_range_modifier	= 2.15                
+holder_fov_modifier		= 0.3              
+
+cost				     = 40000
+weapon_class			= sniper_rifle
+
+ammo_limit			= 60
+ammo_current			= 60
+ammo_elapsed			= 10
+ammo_mag_size			= 5
+                       	
+ammo_class			= ammo_12.7x108
+
+fire_modes			= 1
+
+hand_dependence 		= 1
+single_handed			= 0
+
+slot 				= 2
+animation_slot			= 8			
+
+inv_name			     = wpn-vuhlop
+inv_name_short			= wpn-vuhlop
+inv_weight			= 7.0
+
+inv_grid_width     = 5
+inv_grid_height    = 2
+inv_grid_x         = 31
+inv_grid_y         = 36
+
+auto_spawn_ammo			= false
+
+sprint_allowed			= true
+
+;базова€ дисперси€
+fire_dispersion_base		= 0.05 		
+control_inertion_factor		= 1.6f
+
+;отдача
+cam_relax_speed 		= 4.25			
+cam_relax_speed_ai 		= 120.75		
+cam_dispersion 		= 0.5			
+cam_dispersion_inc		= 0.2			
+cam_dispertion_frac		= 1.0			
+cam_max_angle			= 3.0			
+cam_max_angle_horz		= 1.0			 
+cam_step_angle_horz		= 1.8			
+
+fire_dispersion_condition_factor = 3			 
+misfire_probability 	= 0.005			 
+misfire_condition_k		= 0.05
+condition_shot_dec 		= 0.0005	 	
+
+direction 			= 0, 0, 1
+fire_point              = 0.0, 0.22, 0.61
+fire_point2             = 0.0, 0.128, 0.522
+
+smoke_particles		= weapons\generic_shoot_00
+
+shell_point		 	= 0.0, 0.23, 0.0
+shell_dir		 	     = 0.0, 0.0, 0.4
+shell_particles	 		= weapons\shells_r_ns_338
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 	= 1.7
+PDM_disp_accel_factor 	= 1.8
+PDM_crouch	 		= 0.9
+PDM_crouch_no_acc 		= 0.8
+
+; ttc
+hit_power               = 10
+hit_impulse		 	= 5
+hit_type 			     = fire_wound
+hit_rate	               = 2.0
+
+fire_distance           = 500
+bullet_speed		 	= 600
+rpm                     = 60
+
+use_aim_bullet			= true			
+time_to_aim			= 1.0	
+
+hud 				= wpn_vihlop_hud
+normal 			= 0, 1, 0
+position 			= -0.024, -0.164, 0.0
+orientation 		= 0, 3.5, 0
+
+;под мышкой
+strap_position 		= -0.32,-0.11,0.25	
+strap_orientation 		= -15,-9,110		
+strap_bone0			= bip01_spine2
+strap_bone1			= bip01_spine1
+
+visual 				= weapons\vihlop\wpn_vihlop_new.ogf
+
+light_disabled			= true
+
+ph_mass			 	= 5
+
+;addons
+scope_status			     = 1
+silencer_status			= 1
+grenade_launcher_status		= 0
+
+zoom_enabled			= true
+scope_zoom_factor		= 18
+scope_texture			= wpn\crosshairs\b94
+
+silencer_name  			= wpn_addon_sil_762_ar
+silencer_x                  = 220		
+silencer_y                  = 9
+
+;звуки
+snd_draw					= weapons\vintorez\vintorez_draw
+snd_holster				= weapons\rifle_holster
+snd_shoot					= weapons\vintorez\vintorez_shoot 
+snd_empty					= weapons\ak_empty, 0.5
+snd_reload				= weapons\vintorez\vintorez_reload, 1.0, 0.5
+snd_close				     = weapons\generic_close
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+silencer_hit_power 		     =  5
+silencer_hit_impulse	 	= 5
+silencer_fire_distance 		= 600
+silencer_bullet_speed	 	= 300
+
+snd_silncer_shot		= weapons\lr300\lr300_shot_sil
+
+silencer_light_color		= 0.6, 0.5, 0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+hit_probability_gd_novice	= 0.80
+hit_probability_gd_stalker	= 0.85
+hit_probability_gd_veteran	= 0.90
+hit_probability_gd_master	= 0.95
+
+[wpn_vihlop_hud]
+shell_point			= -0.410000,0.000000,0.000000
+shell_dir		 	     = 0.0, 1.0, 0.0
+
+fire_point			= -0.063,0.0,0.0 
+fire_bone 			= wpn_body
+orientation 			= 0, 1, 0
+position 			     = 0.01, -0.02, 0
+visual 				= weapons\vihlop\wpn_vihlop_new_hud.ogf
+
+anim_holster			= holster
+anim_idle			     = idle
+anim_idle_aim			= idle
+anim_reload			= reload
+anim_draw			     = draw
+anim_shoot			= shoot
+anim_idle_sprint	     = idle_sprint
+
+;смещени€ HUD дл€ режима приближени€
+zoom_offset			= -0.121,0.04,-0.15 
+zoom_rotate_x		     =0.01732
+zoom_rotate_y		     = 0.0
+
+;пр€чем перекрестие прицела в зуме
+zoom_hide_crosshair		= true
+
+;врем€ поворота HUD (сек)
+zoom_rotate_time		= 0.3
+rotate_time			= 0.3
+
+;----апгрейды
+
+; ѕовышение кратности прицела
+[wpn_vuhlop_pricel]:wpn_vuhlop
+$spawn             		     = "weapons\w_vuhlop\wpn_vuhlop_pricel"
+inv_weight				= 7.1
+inv_name	        			= wpn-vuhlop_pricel
+inv_name_short			     = wpn-vuhlop_pricel
+description				= enc_pricel_wpn_vuhlop
+inv_grid_width               = 6
+inv_grid_height              = 2
+cost				= 45000
+scope_zoom_factor	= 13
+
+;снижение веса
+[wpn_vuhlop_ves]:wpn_vuhlop
+$spawn             		     = "weapons\w_vuhlop\wpn_vuhlop_ves"
+inv_weight                   = 5.6
+inv_name	        			= wpn-vuhlop_ves
+inv_name_short			     = wpn-vuhlop_ves
+description				= enc_ves_wpn_vuhlop
+inv_grid_width               = 6
+inv_grid_height              = 2
+cost					     = 44000
+
+; ѕрицел и вес
+[wpn_vuhlop_pricel_ves]:wpn_vuhlop_pricel
+$spawn             		     = "weapons\w_vuhlop\wpn_vuhlop_pricel_ves"
+inv_weight                   = 5.7
+inv_name	        			= wpn-vuhlop_pricel_ves 
+inv_name_short			     = wpn-vuhlop_pricel_ves
+description				= enc_pricel_ves_wpn_vuhlop
+cost					     = 50000

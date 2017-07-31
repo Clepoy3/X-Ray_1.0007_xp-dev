@@ -1,0 +1,49 @@
+--\\*Модуль.."Артефакт для костюма , и респавн артов после выброса"..Меченый(Стрелок)..
+--\--нафиг все переписано кроме невидимости by Monnoroch
+
+local last_time
+local full_charge = 24 * 60 -- игровые сутки в минутах
+local last_charge
+
+local t_upd = 0
+local t_upd_delta = 333333
+
+function on_actor_update()
+	if t_upd > time_global() then return end --самая многоотсекающая проверка
+
+	t_upd = time_global() + t_upd_delta
+	local outfit = db.actor:item_in_slot(6)
+	local art = db.actor:object("af_acumm")
+	if not outfit or not meceniy_outfit.outfit_sections[outfit:section()] or not art then
+		last_time = nil -- если не сделать, то при взятии в одевании костюма время использования арта-аккумулятора будет считаться с момента его прошлого использования
+		return
+	end
+
+	if not last_time then --только-только одновременно имеется арт-аккумулятор и одет костюм
+		last_time = amk.game_minutes()
+		last_charge = amk.load_variable("outfit_charge", full_charge)
+		return
+	end
+	
+	local tm_diff = amk.game_minutes() - last_time
+	if tm_diff > 0 then
+		last_time = amk.game_minutes()
+		useEnergy(tm_diff)
+		if last_charge <= 0 then
+			last_charge = full_charge
+			amk.save_variable("outfit_charge", last_charge)
+			local se_art = alife():object(art:id())
+			if se_art then
+				alife():release(se_art, true)
+			end
+		end
+	end
+end
+
+function useEnergy(delta)
+	if not last_charge then
+		last_charge = amk.load_variable("outfit_charge", full_charge)
+	end
+	last_charge = last_charge - delta
+	amk.save_variable("outfit_charge", last_charge)
+end

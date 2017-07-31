@@ -1,0 +1,15 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+radist_pogib} sr_idle@time
+
+[sr_idle@time]
+on_timer = 10000 | sr_idle@time1 %+spawn_radist2_prip =arhara_dialog.ozhivil2_radista2_sms%
+single = true
+
+[sr_idle@time1]
+on_timer = 8000 | sr_idle@nil %=arhara_dialog.ozhivil2_radista2_sms1%
+single = true
+
+[sr_idle@nil]

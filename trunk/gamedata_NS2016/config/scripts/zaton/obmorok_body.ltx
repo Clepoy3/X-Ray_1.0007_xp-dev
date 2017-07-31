@@ -1,0 +1,57 @@
+[logic]
+active = {-kit_antena_two_start} walker, {+kit_antena_two_start -sos_say_one_done} walker4, kamp
+meet = meet@body
+danger = danger_ignore@body
+on_death = death
+
+[walker]
+path_walk = zaton_obmorok_body1_walk
+path_look = zaton_obmorok_body1_look
+on_info = {+stand_ap} walker1
+meet = no_meet
+
+[walker1]
+path_walk = zaton_obmorok_body2_walk
+path_look = zaton_obmorok_body2_look
+def_state_standing = ward
+on_info = {+obmorok_sit} walker2 %+kit_saund_end%
+meet = no_meet
+
+[walker2]
+path_walk = zaton_obmorok_body3_walk
+path_look = zaton_obmorok_body3_look
+on_info = {+kit_antena_start} walker3
+
+
+[walker3]
+path_walk = zaton_obmorok_body4_walk
+path_look = zaton_obmorok_body4_look
+on_signal = finish | remark@anim 
+meet = no_meet
+
+[remark@anim]
+anim = dynamite
+combat_ignore_cond = always
+on_signal = anim_end | walker4
+meet = no_meet
+
+[walker4]
+path_walk = zaton_obmorok_body5_walk
+path_look = zaton_obmorok_body5_look
+
+[kamp]
+center_point  = zat_gosti_kamp
+path_walk = zat_gosti_kamp_task
+radius = 2
+
+[meet@body]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[death]
+on_info = %+obmorok_body_dead%
+
+[danger_ignore@body]
+ignore_distance = 0
+

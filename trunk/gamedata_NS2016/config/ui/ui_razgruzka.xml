@@ -1,0 +1,19 @@
+<ui_texture>
+    <file_name>ui\ui_razgruzka</file_name>
+	
+    <texture id="ui_razgruzka_back" x="0" y="0" width="304" height="196" />
+    <texture id="ui_razgruzka_btn_e" x="304" y="0" width="87" height="23" />
+    <texture id="ui_razgruzka_btn_t" x="304" y="23" width="87" height="23" />
+    <texture id="ui_razgruzka_btn_h" x="304" y="46" width="87" height="23" />
+    <texture id="ui_timer_back" x="0" y="196" width="327" height="456" />   	<!--Фоновая картинка-->
+    <texture id="ui_timer_back2" x="0" y="652" width="347" height="206" />   	<!--Фоновая картинка2-->
+    <texture id="ui_timer_btn_e" x="304" y="69" width="25" height="25" />  	<!--Кнопка стандарт-->
+    <texture id="ui_timer_btn_t" x="329" y="69" width="25" height="25" />  	<!--Кнопка наведенная-->
+    <texture id="ui_timer_btn_h" x="354" y="69" width="25" height="25" /> 	<!--Кнопка нажатая-->
+    <texture id="ui_timer_btn2_e" x="304" y="94" width="17" height="17" />  	<!--Кнопка2 стандарт-->
+    <texture id="ui_timer_btn2_t" x="321" y="94" width="17" height="17" />  	<!--Кнопка2 наведенная-->
+    <texture id="ui_timer_btn2_h" x="338" y="94" width="17" height="17" /> 	<!--Кнопка2 нажатая-->
+    <texture id="ui_timer_btn3_e" x="304" y="111" width="40" height="17" />  	<!--Кнопка3 стандарт-->
+    <texture id="ui_timer_btn3_t" x="344" y="111" width="40" height="17" />  	<!--Кнопка3 наведенная-->
+    <texture id="ui_timer_btn3_h" x="384" y="111" width="40" height="17" /> 	<!--Кнопка3 нажатая-->
+</ui_texture>

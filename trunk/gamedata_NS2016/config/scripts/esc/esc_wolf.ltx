@@ -1,0 +1,90 @@
+[logic]
+active = {-esc_kill_bandits_quest_done -agroprom_military_case_have} walker1, {+esc_kill_bandits_quest_done -agroprom_military_case_have} walker4, nil
+on_death = death
+[walker1]
+path_walk = esc_wolf_walk
+path_look = esc_wolf_look
+danger = danger_condition
+on_actor_dist_le = 23| {+tutorial_wounded_start -esc_kill_bandits_quest_have} remark1
+on_actor_dist_le_nvis = 5| {-esc_petruha_report} walker2
+on_info = {+esc_petruha_report} walker3
+on_info2 = {+esc_lager_alarm} walker5
+[remark1]
+anim = hello_wpn
+danger = danger_condition
+snd = esc_wolf_say_thanks
+target = actor
+on_signal = sound_end| walker2
+on_actor_dist_le_nvis = 5| walker2
+[walker2]
+path_walk = esc_wolf_walk
+path_look = esc_wolf_look
+danger = danger_condition
+on_actor_dist_ge_nvis = 23| {-esc_kill_bandits_quest_have} walker1
+on_info = {+esc_kill_bandits_quest_have} remark2
+on_info2 = {+esc_lager_alarm} walker5
+[remark2]
+anim = guard_rac
+danger = danger_condition
+meet = no_meet
+snd = esc_wolf_radio
+target = actor
+on_info = {+esc_petruha_report} walker3
+on_signal = sound_end| remark3 %=play_snd_from_radio%
+[remark3]
+anim = guard_rac
+danger = danger_condition
+meet = no_meet
+target = actor
+on_info = {+esc_petruha_report} walker3
+on_timer = 5000 | walker3 %+esc_petruha_report%
+[walker3]
+path_walk = esc_wolf_walk
+path_look = esc_wolf_look
+danger = danger_condition
+on_info = {+esc_kill_bandits_quest_done} walker4
+on_info2 = {+esc_lager_alarm} walker5
+[walker4]
+path_walk = esc_wolf_walk
+path_look = esc_wolf_look
+danger = danger_condition
+meet = meet
+on_info = {=is_night} kamp1
+on_info2 = {+esc_lager_alarm} walker5
+[kamp1]
+center_point = esc_lager_kamp1
+path_walk = esc_lager_kamp1_task
+meet = meet
+on_info = {!is_night} walker4
+on_info2 = {+esc_lager_alarm} walker5
+[walker5]
+path_walk = esc_fanat_walk
+path_look = esc_fanat_look
+danger = danger_condition@alarm
+meet = meet
+on_info = {-esc_lager_alarm} walker6
+[walker6]
+path_walk = esc_wolf_walk
+path_look = esc_wolf_look
+danger = danger_condition
+meet = meet
+on_info = {-esc_kill_bandits_quest_have} walker1
+on_info2 = {-esc_kill_bandits_quest_done +esc_petruha_report} walker3
+on_info3 = {+esc_kill_bandits_quest_done} walker4
+[danger_condition]
+ignore_distance = 75
+ignore_distance_grenade = 40
+ignore_distance_corpse = 0
+ignore_distance_sound = 10
+[danger_condition@alarm]
+ignore_distance = 25
+ignore_distance_grenade = 40
+ignore_distance_corpse = 0
+ignore_distance_sound = 5
+[death]
+on_info = %+esc_wolf_dead%
+[death@alarm]
+on_info = %+esc_open_lager_fire +esc_wolf_dead%
+[meet]
+use = true
+use_wpn = true

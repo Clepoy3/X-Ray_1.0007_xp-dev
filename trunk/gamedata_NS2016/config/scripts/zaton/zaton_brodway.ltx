@@ -1,0 +1,58 @@
+[logic]
+active = walker
+meet = meet
+combat_ignore = combat_ignore
+on_hit = hit
+on_death = death
+
+[walker]
+path_walk = brodway_walk
+path_look = brodway_look
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+on_info = {+brodway_say_one_start} walker1
+
+[walker1]
+path_walk = brodway1_walk
+path_look = brodway1_look
+on_info = {+vert_small_poshel} walker2 %=arhara1_dialog1.dell_brod_restr%
+;on_timer = 25000 | walker2 %=arhara_dialog.sms_frits3%
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+
+[walker2]
+path_walk = brodway2_walk
+path_look = brodway2_look
+on_info = {+vetr_vernulsy} walker3
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+
+[walker3]
+path_walk = brodway1_walk
+path_look = brodway1_look
+on_timer = 10000 | walker4
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+
+[walker4]
+path_walk = brodway3_walk
+path_look = brodway3_look
+def_state_standing = ward
+on_info = {+brodway_say_tri_start} kamp
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+
+[kamp]
+center_point = brodway_bandit_camp_center
+path_walk = brodway_bandit_camp_center_task
+radius = 2.3
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[combat_ignore]
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+
+[hit]
+on_info = {=hit_by_actor} %+brodway_fire%
+
+[death]
+on_info = {=killed_by_actor} %=set_gulag_enemy_actor(zat_brodway) =arhara1_dialog1.dell_brod_restr%

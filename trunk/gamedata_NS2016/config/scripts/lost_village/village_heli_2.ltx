@@ -1,0 +1,65 @@
+[logic]
+active = heli_move@idle
+
+[heli_move@idle]
+path_move = village_heli2_idle_move
+;path_move = village_heli2_1_idle_move
+engine_sound = false
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+on_info = {+village_heli_go} heli_move@fly1
+
+[heli_move@fly1]
+path_move = village_heli2_1_idle_move
+default_velocity = 30
+engine_sound = true
+combat_enemy = actor ;nil
+combat_use_rocket = false
+combat_use_mgun = true
+rocket_delay = 6000
+combat_safe_altitude = 60
+invulnerable = true
+on_timer = 40000 | heli_move@fly2
+
+[heli_move@fly2]
+path_move = village_heli2_predesant_move
+engine_sound = true
+default_velocity = 10
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+invulnerable = true
+combat_safe_altitude = 80
+on_timer = 22000 | heli_move@fly3
+
+[heli_move@fly3]
+path_move = village_heli2_desant_move
+engine_sound = true
+default_velocity = 5
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+rocket_delay = 6000
+combat_safe_altitude = 65
+velocity = 0
+invulnerable = true
+on_timer = 20000 | heli_move@fly4 %+big_desant_spawn =play_snd(characters_voice\scenario\aes\aes_desant_proceed2)%
+
+
+[heli_move@fly4]
+path_move = village_heli2_otlet_move
+engine_sound = true
+default_velocity = 15
+combat_enemy = actor
+combat_use_rocket = false
+combat_use_mgun = true
+rocket_delay = 6000
+combat_safe_altitude = 120
+invulnerable = false
+on_timer = 30000 | heli_move@stop    
+
+[heli_move@stop]
+path_move = esc_heli_blockpost_idle_move
+engine_sound = false
+on_timer = 40000| nil %=arhara_dialog.dell_village_heli2%

@@ -1,0 +1,521 @@
+ 
+;;;;;;; Штурмовая винтовка Г36  ;;;
+[wpn_g36]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn              		= "weapons\g36"		
+$npc						= on				
+$prefetch 					= 8
+scheduled					= off				
+cform               		= skeleton
+class               		= WP_AK74
+min_radius          		= 30
+max_radius          		= 100
+description			= enc_weapons1_wpn-g36
+
+script_binding  = bind_wpn.init
+
+launch_speed				= 0
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+holder_range_modifier		= 1.85             
+holder_fov_modifier			= 0.3              
+
+cost						= 15000
+weapon_class				= assault_rifle	
+	
+ammo_limit					= 210
+ammo_current				= 180
+ammo_elapsed				= 30
+	
+ammo_mag_size				= 30
+ammo_class			= ammo_5.56x45_ss190, ammo_5.56x45_ap
+grenade_class				= ammo_m209
+fire_modes					= 1, 3, -1
+f_mode				= 2
+
+hand_dependence				= 1
+single_handed				= 0
+
+slot 						= 2
+animation_slot				= 2
+
+inv_name	        		= wpn-g36
+inv_name_short				= wpn-g36
+inv_weight					= 3.6
+
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 31
+inv_grid_y         = 39
+
+kill_msg_x					= 157
+kill_msg_y					= 29
+kill_msg_width				= 78
+kill_msg_height				= 31
+
+;базовая дисперсия
+fire_dispersion_base			= 0.16
+control_inertion_factor			= 1.15f
+disp_rate = 1.88
+
+;отдача
+cam_relax_speed				= 5.5
+cam_dispersion				= 0.45
+cam_dispersion_inc			= 0.12
+cam_dispertion_frac			= 0.7
+cam_max_angle				= 10
+cam_max_angle_horz			= 15
+cam_step_angle_horz			= 0.8
+
+fire_dispersion_condition_factor = 3
+misfire_probability 			= 0.0018 
+misfire_condition_k				= 0.08
+condition_shot_dec 				= 0.000115
+
+direction              		=  0, 0, 1
+fire_point             		=  0.0, 0.21, 0.58
+fire_point2            		=  0.0, 0.21, 0.71
+
+flame_particles				= weapons\generic_weapon05
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles		= weapons\generic_weapon01
+	
+shell_point		 			= 0.0, 0.21, 0.13
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles	 			= weapons\shells_l_ns_556
+
+rpm_empty_click 	 		= 200
+
+PDM_disp_base 			= 5.0
+PDM_disp_vel_factor 		= 1.4
+PDM_disp_accel_factor 		= 1.3
+PDM_crouch	 				= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        			= 0.85
+hit_impulse		 			= 4
+hit_type 					= fire_wound
+hit_rate	                = 1.85
+fire_distance           	= 225
+bullet_speed				= 920
+rpm                     	= 750
+
+use_aim_bullet				= false
+time_to_aim					= 1.0	
+
+;настройки для глушителя;;;;;;;;;;;AMK
+silencer_hit_power       	= 0.76
+silencer_hit_impulse	 	= 3
+silencer_fire_distance   	= 200
+silencer_bullet_speed	 	= 820
+
+hud                      	= wpn_g36_hud
+normal                   	= 0, 1, 0
+
+position         	        = -0.026, -0.132, 0.0
+orientation      	        = 0, 0, 0
+
+;под мишкой
+;strap_position         		= -0.26,-0.11,0.25
+;strap_orientation      		= -15,-9,110
+strap_position         		= -0.16,-0.36,0.15			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -10,-5,10					; (3rd person view in degrees)
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo   		        = 90
+visual         		        = weapons\g36\wpn_g36.ogf
+	
+
+ph_mass						= 4
+
+;addons
+scope_status				= 1
+silencer_status				= 2
+grenade_launcher_status		= 2
+
+zoom_enabled				= true
+scope_zoom_factor	    	= 17.142857		;G-36 Standart 3,5X
+scope_texture				= wpn\crosshairs\g36
+
+silencer_name  				= wpn_addon_sil_556_ar
+
+silencer_x                  = 174  ; offset in inventory icon
+silencer_y                  = 16
+grenade_launcher_name 		= wpn_addon_grenade_launcher_m203
+grenade_launcher_x          = 99
+grenade_launcher_y          = 31
+
+;звуки
+snd_draw					= weapons\g36\g36_draw
+snd_holster					= weapons\rifle_holster
+snd_shoot					= weapons\g36\g36_shoot
+snd_shoot1					= weapons\g36\g36_shoot1 
+snd_shoot2					= weapons\g36\g36_shoot2 
+snd_shoot3					= weapons\g36\g36_shoot3       
+snd_empty					= weapons\g36\g36_empty, 0.8
+snd_reload					= weapons\g36\g36_reload, 0.7, 0.35
+snd_shoot_grenade				= weapons\m203\M203_grenshoot
+snd_reload_grenade				= weapons\ag36\ag36_grenload, 1.0, 0.3
+snd_switch					= weapons\m203\M203_switch, 1.0, 0.5
+snd_silncer_shot				= weapons\g36\g36_shot_sil 
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+light_color					= 0.6,0.5,0.3
+light_range					= 5
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.2
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+ 
+[wpn_g36_hud]
+shell_point     	   	 	= 0.15, 0.0, -0.05
+shell_dir			     	= 0.0, 1.0, 0.0
+
+fire_point					= 0.060000,0.083000,0.134000
+fire_point2              	= 0.30, 0.00, 0.05
+fire_bone               	= wpn_body
+orientation             	= 0, 0, 0
+position                	= 0, 0, 0
+visual                  	= weapons\g36\wpn_g36_hud.ogf
+
+grenade_bone            	= grenade
+
+anim_idle					= idle
+anim_idle_aim				= idle
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= shoot
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+			
+;анимации с подключенным подствольником
+;(режим стрельбы из подствольника)
+anim_idle_g					= idle_grenade
+anim_idle_g_aim				= idle_grenade
+anim_reload_g				= reload_grenade
+anim_shoot_g				= shoot_grenade
+anim_switch_grenade_on		= switch_on
+anim_switch_grenade_off		= switch_off
+anim_draw_g					= switch_on
+anim_holster_g				= switch_off
+;(режим обычной стрельбы)			  
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_w_gl
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+
+;смещения HUD для режима приближения 
+zoom_offset = -0.135500,-0.006000,0.000000 
+zoom_rotate_x = -0.015900 
+zoom_rotate_y = 0.000200 
+
+;прячем перекрестие прицела в зуме 
+zoom_hide_crosshair = true 
+
+;тоже самое, но для прицепленого подствольника 
+;режим подствольника 
+grenade_zoom_offset = -0.142900,-0.234600,0.000000 
+grenade_zoom_rotate_x = -0.266700 
+grenade_zoom_rotate_y = 0.002000 
+grenade_normal_zoom_offset = -0.135500,-0.006000,0.000000 
+grenade_normal_zoom_rotate_x = -0.015900 
+grenade_normal_zoom_rotate_y = 0.000200 
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.3
+rotate_time			= 0.3
+
+;--уники
+
+;;Адаптпция Антон (fokstar)
+;;штурмовая винтовка Heckler-Koch HK G36K "Смерч" (анимации подствола:автор PRO) 
+	
+[wpn_g36_m1]:identity_immunities
+
+$spawn                  = "wpn_g36_m1"		; option for Level Editor
+
+
+scheduled               = off              ; option for ALife Simulator
+cform                   = skeleton
+class                   = WP_AK74
+min_radius              = 0
+max_radius              = 50
+description				= enc_weapons1_wpn-g36_m1
+                                             
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+;-----------------------------------------------------------------------------------
+holder_range_modifier	= 1.0		       ; во сколько раз увеличивается eye_range 
+holder_fov_modifier		= 0.7              ; во сколько раз увеличивается eye_fov
+;-----------------------------------------------------------------------------------
+
+
+weapon_class			= assault_rifle
+
+cost					= 20000
+
+ammo_limit		 		= 210
+ammo_current			= 30
+ammo_elapsed		 	= 30
+
+ammo_mag_size    = 30
+ammo_class		 			= ammo_5.56x45_ap, ammo_5.56x45_ss190
+grenade_class				= ammo_m209
+fire_modes					= 1, -1
+launch_speed = 0
+
+hand_dependence		 	= 1
+single_handed			= 0
+
+inv_name				= wpn-g36_m1
+inv_name_short			= wpn-g36_m1
+inv_weight				= 3.3
+
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 33
+inv_grid_y         = 26
+
+kill_msg_x			= 72
+kill_msg_y			= 82
+kill_msg_width		= 56
+kill_msg_height		= 23
+
+slot 					= 2		; // secondary
+animation_slot			= 2		; type of the animation that will be used
+
+;-----------------------------------------------------------------------------------
+;params of weapon recoil
+fire_dispersion_base			= 0.0085		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.25f
+
+;отдача
+cam_relax_speed         		= 4		;скорость возврата в исходное положение
+cam_relax_speed_ai         	= 120.75
+cam_dispersion          		= 0.35		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.1		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.6		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle				= 10.0	    	;максимальный угол отдачи
+cam_max_angle_horz			= 20.0		;(degree) maximum shot horizontal degree 
+cam_step_angle_horz			= 1.1;1		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor 	= 5	    	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+misfire_condition_k			= 0.05
+condition_shot_dec 			= 0.0001	;увеличение износа при каждом выстреле
+;-----------------------------------------------------------------------------------
+
+direction               = 0, 0, 1
+
+fire_point             	= 0.0, 0.241, 0.569
+flame_particles			= weapons\generic_weapon05
+shell_particles	 		= weapons\arsenal_shells1
+grenade_flame_particles		= weapons\generic_weapon01
+
+shell_point		 		= 0.0, 0.242, 0.098
+shell_dir		 		= 0.0, 1.0, 0.0
+
+rpm_empty_click 	 	= 200
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2011
+; ttc
+hit_power        	= 0.9
+hit_impulse		 	= 5
+hit_type 			= fire_wound
+
+fire_distance          	= 225
+bullet_speed			= 980 ;начальная скорость пули
+rpm                     = 750
+; end ttc
+
+use_aim_bullet				= true		;Поддерживается ли первая суппер пуля
+time_to_aim					= 1.0
+
+silencer_hit_power       	= 0.81
+silencer_hit_impulse	 	= 3
+silencer_fire_distance   	= 200
+silencer_bullet_speed	 	= 880
+
+hud                     = wpn_g36k_sk1_hud
+normal                  = 0, 1, 0
+position         	    = -0.026,-0.172,0
+orientation             = 0, 0, 0
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+strap_position         		= -0.16,-0.36,0.15			; position (offset) and orientation of the weapon when it is strapped
+strap_orientation      		= -10,-5,10					; (3rd person view in degrees)
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo            = 1000
+visual         		        = weapons\g36\wpn_g36k_sk1.ogf
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 5
+light_var_color		 	= 0.05
+light_var_range		 	= 0.1
+light_time 		 		= 0.2
+
+ph_mass			 		= 5
+
+;addons
+scope_status			= 2
+silencer_status			= 2
+grenade_launcher_status	= 2
+
+scope_name 					= wpn_addon_acog			; section name for the attachable scope
+scope_x 					= 59						; offset in inventory icon
+scope_y 					= -16
+
+silencer_name  				= wpn_addon_sil_556_ar
+silencer_x 					= 170
+silencer_y 					= 9
+
+grenade_launcher_name 		= wpn_addon_grenade_launcher_m203
+grenade_launcher_x 			= 104
+grenade_launcher_y 			= 28
+
+;silencer_flame_particles 	= weapons\generic_weapon01
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+silencer_light_color		= 1.0, 0.1, 0.0
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+zoom_enabled			= true
+scope_zoom_factor	    = 75
+
+;звуки
+snd_draw			= weapons\generic_draw, 0.5
+snd_holster			= weapons\generic_holster, 0.5
+snd_shoot			= weapons\g36_shot
+snd_empty			= weapons\gen_empty, 0.5
+snd_reload			= weapons\g36_reload, 0.5
+snd_shoot_grenade			= weapons\m203_shot
+snd_reload_grenade			= weapons\m203_reload
+snd_switch					= weapons\groza_switch, 1.0, 0.5
+
+;params when silencer is attached 
+;similar to corresponding params without prefix silencer_
+
+;silencer_flame_particles 	= weapons\generic_weapon01
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+snd_silncer_shot			= weapons\g36_silent, 0.5
+
+[wpn_g36k_sk1_hud]
+shell_point          	= 0.00, 0.00, 0.00
+shell_dir		 		= 0.0, 0.0, 0.0
+
+fire_point              = 0.136,0.0,0.02
+fire_bone               = wpn_body
+orientation             = 0, 0, 0
+position                = 0, 0, 0
+visual                  = weapons\g36\wpn_g36k_sk1_hud.ogf
+
+grenade_bone            	= grenka1	; name of the bone in the model for grenade launcher
+
+anim_idle			= idle
+anim_idle_aim		= idle_aim
+anim_reload			= reload
+anim_draw			= draw
+anim_holster		= holster
+anim_shoot			= shoot
+anim_idle_sprint	= idle_sprint
+
+; animation names
+; attached grenade launcher [GRENADE fire mode]
+anim_idle_g					= idle_g
+anim_idle_g_aim				= idle_g_aim
+anim_reload_g				= reload_g
+anim_shoot_g				= shoot_g
+anim_switch_grenade_on		= g_on
+anim_switch_grenade_off		= g_off
+anim_draw_g					= draw_g
+anim_holster_g				= holster_g
+
+; attached grenade launcher [NORMAL fire mode]
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_w_gl_aim
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.1261,0.0057,-0.156
+zoom_rotate_x		= -0.0
+zoom_rotate_y		= 0.0
+
+grenade_normal_zoom_offset			= -0.1253,0.0057,-0.156
+grenade_normal_zoom_rotate_x		= -0.0
+grenade_normal_zoom_rotate_y		= 0.0
+
+grenade_zoom_offset			= -0.1264,0.0057,-0.156
+grenade_zoom_rotate_x		= 0.0
+grenade_zoom_rotate_y		= -0.0	
+
+
+	
+
+
+;---апгрейд----
+
+
+; Снижение отдачи
+[wpn_g36_otdaca]:wpn_g36
+$spawn             		     = "weapons\g36\wpn_g36_otdaca"
+fire_dispersion_base         = 0.08
+cam_relax_speed              = 2.75
+cam_dispersion          	= 0.225		
+cam_dispersion_inc	          = 0.06		
+cam_max_angle	               = 5		
+inv_name	        			= wpn-g36_otdaca
+inv_name_short			     = wpn-g36_otdaca
+description				= enc_otdaca_wpn_g36
+inv_grid_width     = 5
+inv_grid_height    = 2
+cost				= 19000
+
+
+; Снижение веса
+[wpn_g36_ves]:wpn_g36
+$spawn             		     = "weapons\g36\wpn_g36_ves"
+inv_weight				= 2.7
+inv_name	        			= wpn-g36_ves
+inv_name_short			     = wpn-g36_ves
+description				= enc_ves_wpn_g36
+inv_grid_width     = 5
+inv_grid_height    = 2
+cost				= 18500
+
+; Отдача и вес
+[wpn_g36_otdaca_ves]:wpn_g36_otdaca
+$spawn             		     = "weapons\g36\wpn_g36_otdaca_ves"
+inv_weight				= 2.7
+inv_name	        			= wpn-g36_otdaca_ves
+inv_name_short			     = wpn-g36_otdaca_ves
+description				= enc_otdaca_ves_wpn_g36
+cost						= 22000
+

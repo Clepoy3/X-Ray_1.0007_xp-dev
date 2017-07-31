@@ -1,0 +1,587 @@
+-- file:		UI_MM_OPT_MAIN.script
+-- created:		01.07.2005
+-- description:	options dialog
+-- author:		Serge Vynnychenko
+--
+
+class "options_dialog" (CUIScriptWnd)
+
+local ActiveTab = 0
+local fFull = "_options.sol"
+local tCopyFiles ={}
+local tcFiles ={
+	"config\\misc\\ui_rad.ltx",
+	"config\\ui\\maingame.xml",
+	"config\\ui\\maingame_16.xml",
+	"config\\ui\\motion_icon.xml",
+	"config\\ui\\motion_icon_16.xml",
+	"config\\ui\\ui_custom_msgs.xml",
+	"config\\ui\\ui_custom_msgs_16.xml",
+	"config\\ui\\zone_map.xml",
+	"config\\ui\\zone_map_16.xml",
+	"config\\ui\\actor_statistic.xml",
+	"config\\ui\\amk_ui_base.xml",
+	"config\\ui\\carbody_item.xml",
+	"config\\ui\\carbody_item_16.xml",
+	"config\\ui\\carbody_new.xml",
+	"config\\ui\\carbody_new_16.xml",
+	"config\\ui\\encyclopedia.xml",
+	"config\\ui\\encyclopedia_item.xml",
+	"config\\ui\\events_new.xml",
+	"config\\ui\\inventory_item.xml",
+	"config\\ui\\inventory_item_16.xml",
+	"config\\ui\\inventory_new.xml",
+	"config\\ui\\inventory_new_16.xml",
+	"config\\ui\\news.xml",
+	"config\\ui\\pda.xml",
+	"config\\ui\\pda_contacts_new.xml",
+	"config\\ui\\pda_events.xml",
+	"config\\ui\\pda_map.xml",
+	"config\\ui\\stalkers_ranking.xml",
+	"config\\ui\\talk.xml",
+	"config\\ui\\talk_16.xml",
+	"config\\ui\\trade.xml",
+	"config\\ui\\trade_16.xml",
+	"config\\ui\\trade_character.xml",
+	"config\\ui\\trade_character_16.xml",
+	"config\\ui\\trade_item.xml",
+	"config\\ui\\trade_item_16.xml",
+	"config\\ui\\ui_pda.xml",
+	"scripts\\ui_rad.script",
+	"textures\\wpn\\crosshairs\\1p21.dds",
+	"textures\\wpn\\crosshairs\\4dot.dds",
+	"textures\\wpn\\crosshairs\\acog.dds",
+	"textures\\wpn\\crosshairs\\arbalet.dds",
+	"textures\\wpn\\crosshairs\\b94.dds",
+	"textures\\wpn\\crosshairs\\eagle.dds",
+	"textures\\wpn\\crosshairs\\fn2000.dds",
+	"textures\\wpn\\crosshairs\\fn2000p.dds",
+	"textures\\wpn\\crosshairs\\g36.dds",
+	"textures\\wpn\\crosshairs\\gauss.dds",
+	"textures\\wpn\\crosshairs\\hakko15.dds",
+	"textures\\wpn\\crosshairs\\hk417.dds",
+	"textures\\wpn\\crosshairs\\iglomet.dds",
+	"textures\\wpn\\crosshairs\\l85.dds",
+	"textures\\wpn\\crosshairs\\m16a2.dds",
+	"textures\\wpn\\crosshairs\\norman.dds",
+	"textures\\wpn\\crosshairs\\oc14.dds",
+	"textures\\wpn\\crosshairs\\pka.dds",
+	"textures\\wpn\\crosshairs\\pso1.dds",
+	"textures\\wpn\\crosshairs\\pso1m1t.dds",
+	"textures\\wpn\\crosshairs\\pso1m1z.dds",
+	"textures\\wpn\\crosshairs\\rpg.dds",
+	"textures\\wpn\\crosshairs\\susat.dds",
+	"textures\\wpn\\crosshairs\\toz34.dds",
+	"textures\\ui\\ui_pda.dds"
+}
+
+function options_dialog:__init() super()
+   self:SetFont(GetFontMedium()) --set base font for dialog.
+
+	self.m_preconditions	= {}
+   
+    self:InitControls()
+    self:InitCallBacks()
+end
+
+function options_dialog:__finalize()
+
+end
+
+function options_dialog:InitControls()	
+	self:Init(0,0,1024,768)
+	self:Enable(true)
+	
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_mm_opt.xml")
+	
+
+	--xml:InitStatic("back_video", self)
+	xml:InitStatic("background", self)
+	--xml:InitStatic("rug_video", self)
+	self.dialog = xml:InitStatic("main_dialog:dialog", self)
+	
+	xml:InitStatic("main_dialog:cap_options", self.dialog)
+		
+	self.dlg_video = ui_mm_opt_video.opt_video()
+	self.dlg_video:InitControls(55,74, xml, self)
+	self.dialog:AttachChild(self.dlg_video)
+
+	self.dlg_sound = ui_mm_opt_sound.opt_sound()
+	self.dlg_sound:InitControls(55,74, xml, self)
+	self.dlg_sound:Show(false)
+	self.dialog:AttachChild(self.dlg_sound)
+	
+	self.dlg_gameplay = ui_mm_opt_gameplay.opt_gameplay()
+	self.dlg_gameplay:InitControls(55,74, xml, self)
+	self.dlg_gameplay:Show(false)
+	self.dialog:AttachChild(self.dlg_gameplay)
+	
+	self.dlg_controls = ui_mm_opt_controls.opt_controls()
+	self.dlg_controls:InitControls(55,74, xml, self)
+	self.dlg_controls:Show(false)
+	self.dialog:AttachChild(self.dlg_controls)
+
+	self.dlg_video_adv = ui_mm_opt_video_adv.opt_video_adv()
+	self.dlg_video_adv:InitControls(55,74, xml, self)
+	self.dlg_video_adv:Show(false)
+	self.dialog:AttachChild(self.dlg_video_adv)
+	
+	self.dlg_sol_adv = ui_mm_opt_sol_adv.opt_sol_adv()
+	self.dlg_sol_adv:InitControls(55,74, xml, self)
+	self.dlg_sol_adv:Show(false)
+	self.dialog:AttachChild(self.dlg_sol_adv)
+	
+	local btn
+	btn = xml:Init3tButton("main_dialog:btn_accept", self.dialog)
+	self:Register(btn, "btn_accept")
+	btn = xml:Init3tButton("main_dialog:btn_cancel", self.dialog)
+	self:Register(btn, "btn_cancel")
+	
+	self.tab = xml:InitTab("main_dialog:tab", self.dialog)
+	self:Register(self.tab, "tab")
+	
+	self.message_box = CUIMessageBoxEx()
+	
+	self.b_r2_restart_shown		= false
+	
+	self.cap_download				= xml:InitStatic		("download_static",self)
+	self.text_download				= xml:InitStatic		("download_text",self)
+	self.download_progress			= xml:InitProgressBar	("progress_download", self)
+	self.btn_cancel_download		= xml:Init3tButton		("btn_cancel_download", self)
+	self:Register					(self.btn_cancel_download, "btn_cancel_download")
+	
+end
+
+function options_dialog:UpdateControls()
+	local opt = COptionsManager()
+
+	opt:SetCurrentValues("mm_opt_video_preset")
+	opt:SaveBackupValues("mm_opt_video_preset")
+
+	opt:SetCurrentValues("mm_opt_video")
+	opt:SaveBackupValues("mm_opt_video")
+	
+	opt:SetCurrentValues("mm_opt_video_adv")
+	opt:SaveBackupValues("mm_opt_video_adv")
+
+	opt:SetCurrentValues("mm_opt_gameplay")
+	opt:SaveBackupValues("mm_opt_gameplay")
+
+	opt:SetCurrentValues("mm_opt_sound")
+	opt:SaveBackupValues("mm_opt_sound")
+
+	opt:SetCurrentValues("mm_opt_controls")
+
+	opt:SetCurrentValues("key_binding")
+
+	if not xrRender_test_r2_hw() then
+		self.combo_r2:SetCurrentID		(0)
+		self.combo_r2:Enable			(false)
+	end
+	
+	self:UpdateDependControls()
+end
+
+function options_dialog:UpdateDependControls()
+	
+	local _current_id	= self.combo_r2:CurrentID()
+
+	for i,j in pairs(self.m_preconditions) do
+		j				(i, _current_id)
+	end
+--[[	
+	if self.combo_r2:CurrentID()==1 then
+		self.ch_r2_sun:Enable			(true)
+		self.ch_r2_sun_det:Enable		(true)
+	else
+		self.ch_r2_sun:Enable			(false)
+		self.ch_r2_sun_det:Enable		(false)
+	end
+]]
+end
+
+function options_dialog:InitCallBacks()
+	self:AddCallback("tab",					ui_events.TAB_CHANGED,		self.OnTabChange,			self)
+	self:AddCallback("btn_advanced_graphic",ui_events.BUTTON_CLICKED,	self.OnBtnAdvGraphic,		self)
+	self:AddCallback("btn_accept",			ui_events.BUTTON_CLICKED,	self.OnBtnAccept,			self)
+	self:AddCallback("btn_cancel",			ui_events.BUTTON_CLICKED,	self.OnBtnCancel,			self)
+	self:AddCallback("btn_default_graphic",	ui_events.BUTTON_CLICKED,	self.OnBtnDefGraph,			self)	
+	self:AddCallback("btn_default_sound",	ui_events.BUTTON_CLICKED,	self.OnBtnDefSound,			self)	
+	self:AddCallback("combo_r2",			ui_events.LIST_ITEM_SELECT,	self.OnR2changed,			self)	
+	self:AddCallback("combo_preset",		ui_events.LIST_ITEM_SELECT,	self.OnPresetChanged,		self)	
+	self:AddCallback("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic,		self)	
+	self:AddCallback("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnDefault,			self)
+	self:AddCallback("btn_check_updates",	ui_events.BUTTON_CLICKED,	self.OnBtnCheckUpdates,		self)
+	self:AddCallback("radio_HUDChange", 	ui_events.TAB_CHANGED, 		self.OnHUDChange, 			self)
+	self:AddCallback("radio_ScopeChange", 	ui_events.TAB_CHANGED, 		self.OnScopeChange, 		self)
+	self:AddCallback("radio_InvChange", 	ui_events.TAB_CHANGED, 		self.OnInvChange, 			self)
+
+	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
+	
+end
+
+
+--------------------------------------------------- Дополнительные настройки солянки ON ---------------------------------------------------------------
+
+
+function options_dialog:OnHUDChange()
+	ActiveTab = self.radio_HUD:GetActiveIndex()
+	
+	local picture = self:GetStatic("screen_pict")	
+	if ActiveTab == 0 then 
+		picture:Init("sol_mods\\ui_sol_options_pic0",170,10,300,200)
+	elseif ActiveTab == 1 then 
+		picture:Init("sol_mods\\ui_sol_options_pic1",170,10,300,200)
+	elseif ActiveTab == 2 then 
+		picture:Init("sol_mods\\ui_sol_options_pic2",170,10,300,200)
+	elseif ActiveTab == 3 then 
+		picture:Init("sol_mods\\ui_sol_options_pic3",170,10,300,200)
+	elseif ActiveTab == 4 then 
+		picture:Init("sol_mods\\ui_sol_options_pic4",170,10,300,200)
+	end
+end
+
+function options_dialog:OnInvChange()
+	ActiveTab = self.radio_inv:GetActiveIndex()
+	
+	local picture = self:GetStatic("screen_pict")	
+	if ActiveTab == 0 then 
+		picture:Init("sol_mods\\ui_sol_options_inv_org",170,10,300,200)
+	elseif ActiveTab == 1 then 
+		picture:Init("sol_mods\\ui_sol_options_inv_pda",170,10,300,200)
+	end
+end
+
+function options_dialog:OnScopeChange()
+	ActiveTab = self.radio_scope:GetActiveIndex()
+	
+	local picture = self:GetStatic("screen_pict")	
+	if ActiveTab == 0 then 
+		picture:Init("sol_mods\\ui_sol_options_orig",170,10,300,200)
+	elseif ActiveTab == 1 then 
+		picture:Init("sol_mods\\ui_sol_options_wide",170,10,300,200)
+	elseif ActiveTab == 2 then 
+		picture:Init("sol_mods\\ui_sol_options_wide2",170,10,300,200)
+	end
+end
+
+function options_dialog:OnHUDAccept()
+	ActiveTab = self.radio_HUD:GetActiveIndex()
+
+	if ActiveTab == 0 then 
+		solCopyFile("hud_org")
+	elseif ActiveTab == 1 then 
+		solCopyFile("hud_num")
+	elseif ActiveTab == 2 then 
+		solCopyFile("hud_gsc")
+	elseif ActiveTab == 3 then 
+		solCopyFile("hud_min")
+	elseif ActiveTab == 4 then 
+		solCopyFile("hud_s12")
+	end
+	
+	solSaveVar("hud", ActiveTab)
+end
+
+function options_dialog:OnInvAccept()
+	ActiveTab = self.radio_inv:GetActiveIndex()
+
+	if ActiveTab == 0 then 
+		solCopyFile("org_style")
+	elseif ActiveTab == 1 then 
+		solCopyFile("pda_style")
+	end
+	
+	solSaveVar("inv", ActiveTab)
+end
+
+function options_dialog:OnScopeAccept()
+	ActiveTab = self.radio_scope:GetActiveIndex()
+	
+	if ActiveTab == 0 then 
+		solCopyFile("scope_orig")
+	elseif ActiveTab == 1 then 
+		solCopyFile("scope_wide")
+	elseif ActiveTab == 2 then 
+		solCopyFile("scope_wide2")
+	end
+	
+	solSaveVar("sco", ActiveTab)
+end
+
+function solCopyFile(SourcePath)
+	local uFileSystem = getFS()
+	if next(tCopyFiles)== nil then
+		for k, v in pairs (tcFiles) do 
+		local CopyPath = tcFiles[k]
+		local CFile = uFileSystem:update_path("$game_data$", CopyPath)
+		local SFile = uFileSystem:update_path("$game_textures$", "sol_mods\\"..SourcePath.."\\"..CopyPath)
+			if uFileSystem:exist(SFile) then
+				uFileSystem:file_copy(SFile, CFile)
+			end
+		end
+	end 
+end 
+
+function pFullName()
+	local uFileSystem = getFS()
+	local flist = getFS():file_list_open_ex("$game_saves$", FS.FS_ListFiles, "*_options.sol")
+	local f_cnt = flist:Size()
+	flist:Sort(FS.FS_sort_by_modif_down)
+	if f_cnt > 0 then
+		local file = flist:GetAt(0)
+		fFull = file:NameFull()
+	else
+		local dFile = uFileSystem:update_path("$game_saves$","_options.sol")
+		local sFile = uFileSystem:update_path("$game_textures$","sol_mods\\options.dds")
+		uFileSystem:file_copy(sFile, dFile)
+	end
+	return fFull
+end
+
+
+function solReadVar(solVarName)
+	fFull = pFullName()
+	local VarData = "0"
+	local tblParams = {}
+	local fShort = string.sub(fFull, 0, (string.len(fFull) - 12))
+	for v in string.gmatch(fShort, "%s*([^z@]+)%s*") do
+	table.insert(tblParams, v)
+	local eIndex = string.match(v, "()%'")
+	local NameParams = string.sub(v, 0, eIndex - 1)
+	local DataParams = string.sub(v, eIndex + 1)
+		if NameParams == solVarName then
+			VarData = DataParams
+		end
+	end
+	return VarData
+end
+
+function solSaveVar(solVarName, newData)
+	fFull = pFullName()
+	local tblParams = {}
+	local uFileSystem = getFS()
+	if (uFileSystem:exist("$game_saves$", fFull)) then
+		local fShort = string.sub(fFull, 0, (string.len(fFull) - 12))
+		for v in string.gmatch(fShort, "%s*([^z@]+)%s*") do
+			table.insert(tblParams, v)
+		end
+		for k, v in ipairs(tblParams) do 
+			local eIndex = string.match(v, "()%'")
+			local NameParams = string.sub(v, 0, eIndex - 1)
+				if NameParams == solVarName then
+					table.remove(tblParams, k)
+				end
+		end
+	end
+	table.insert(tblParams, solVarName.."'"..newData)
+	local tblSave = table.concat(tblParams, "@")
+	
+    local oFName = uFileSystem:update_path("$game_saves$", fFull)
+	local newFName = uFileSystem:update_path("$game_saves$", tblSave.."_options.sol")
+	if uFileSystem:exist(oFName) then
+		uFileSystem:file_rename(oFName, newFName, true)
+	end
+end
+
+function solQSVar(solQVN)
+	fFull = pFullName()
+	local tblParams = {}
+	local uFileSystem = getFS()
+	if (uFileSystem:exist("$game_saves$", fFull)) then
+		local fShort = string.sub(fFull, 0, (string.len(fFull) - 12))
+		for v in string.gmatch(fShort, "%s*([^z@]+)%s*") do
+			table.insert(tblParams, v)
+		end
+		for k, v in ipairs(tblParams) do 
+			local eIndex = string.match(v, "()%'")
+			local NameParams = string.sub(v, 0, eIndex - 1)
+				if NameParams == solQVN then
+					table.remove(tblParams, k)
+				end
+		end
+	end
+	local tblSave = table.concat(tblParams, "@")
+	
+    local oFName = uFileSystem:update_path("$game_saves$", fFull)
+	local newFName = uFileSystem:update_path("$game_saves$", tblSave.."_options.sol")
+	if uFileSystem:exist(oFName) then
+		uFileSystem:file_rename(oFName, newFName, true)
+	end
+end
+--------------------------------------------------- Дополнительные настройки солянки OFF ---------------------------------------------------------------
+
+
+function options_dialog:OnBtnCheckUpdates()
+	local console			= get_console()
+	console:execute			("check_for_updates 1")
+end
+
+function options_dialog:OnBtnDefault()
+	local console			= get_console()
+--	console:execute			("cfg_load default_controls")
+	console:execute			("unbindall")
+
+	local opt				= COptionsManager()
+	opt:SetCurrentValues	("mm_opt_controls")
+	opt:SetCurrentValues	("key_binding")
+end
+
+function options_dialog:OnPresetChanged()	
+	local opt					= COptionsManager()
+	opt:SetCurrentValues		("mm_opt_video")
+	opt:SetCurrentValues		("mm_opt_video_adv")
+end
+
+function options_dialog:OnR2changed()	
+
+	self:UpdateDependControls				()
+	
+	if false==self.b_r2_restart_shown then
+		self.b_r2_restart_shown			 = true
+		self.message_box:Init			("message_box_restart_game")
+		self:GetHolder():start_stop_menu(self.message_box,true)
+	end
+	
+end
+
+function options_dialog:OnBtnDefGraph()
+	local opt = COptionsManager()
+	opt:SendMessage2Group("mm_opt_video","set_default_value")
+end
+
+function options_dialog:OnBtnDefSound()	
+	local opt = COptionsManager()
+	opt:SendMessage2Group("mm_opt_sound","set_default_value")
+end
+
+function options_dialog:OnBtnAccept()
+	
+	local opt = COptionsManager()
+	local console = get_console()
+	
+	opt:SaveValues("mm_opt_video_preset")
+	opt:SaveValues("key_binding")
+	opt:SaveValues("mm_opt_video")
+	opt:SaveValues("mm_opt_video_adv")
+	opt:SaveValues("mm_opt_gameplay")
+	opt:SaveValues("mm_opt_sound")	
+	opt:SaveValues("mm_opt_controls")
+	opt:OptionsPostAccept()	
+	
+	console:execute("cfg_save user.ltx")
+	if amk.check_game() then
+		sol_utils.minimapSpotReset()
+	end
+
+	self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
+	self:GetHolder():start_stop_menu	(self,true)
+	self.owner:Show						(true)
+
+	local i = self.tab:GetActiveIndex()
+	if i == 4 then
+		self:OnHUDAccept()
+		self:OnInvAccept()
+		self:OnScopeAccept()
+	end	
+end
+
+function options_dialog:OnBtnCancel()
+	local opt = COptionsManager()
+	opt:UndoGroup("mm_opt_video_preset")
+	opt:UndoGroup("mm_opt_video")
+	opt:UndoGroup("mm_opt_video_adv")
+	opt:UndoGroup("mm_opt_sound")
+	opt:OptionsPostAccept()
+	
+	self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
+	self:GetHolder():start_stop_menu	(self,true)
+	self.owner:Show						(true)
+end
+
+function options_dialog:OnTabChange()
+	self.dlg_video:Show		(false)
+	self.dlg_sound:Show		(false)
+	self.dlg_gameplay:Show	(false)
+	self.dlg_controls:Show	(false)
+	self.dlg_video_adv:Show	(false)
+	self.dlg_sol_adv:Show	(false)
+	
+	local i = self.tab:GetActiveIndex()
+	if i == 0 then
+		self.dlg_video:Show(true)		
+	elseif i == 1 then
+		self.dlg_sound:Show(true)
+	elseif i == 2 then
+		self.dlg_gameplay:Show(true)
+	elseif i == 3 then
+		self.dlg_controls:Show(true)
+	elseif i == 4 then
+		self.dlg_sol_adv:Show(true)
+	end
+end
+
+function options_dialog:OnBtnAdvGraphic()
+	self.dlg_video:Show		(false)
+	self.dlg_video_adv:Show	(true)
+end
+
+function options_dialog:OnSimplyGraphic()
+	self.dlg_video:Show		(true)
+	self.dlg_video_adv:Show	(false)
+end
+
+function options_dialog:OnKeyboard(dik, keyboard_action)
+	local res = CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	
+	if res==false then
+	
+		local bind = dik_to_bind(dik)
+		
+		if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+			if dik == DIK_keys.DIK_ESCAPE then
+				if self.dlg_video_adv:IsShown() then
+					self.dlg_video_adv:Show	(false)
+					self.dlg_video:Show		(true)
+				else
+					self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
+					self:GetHolder():start_stop_menu	(self,true)
+					self.owner:Show						(true)
+				end
+			end	
+		
+		end
+	end
+	   
+	return res
+end
+
+function options_dialog:Update()
+	CUIScriptWnd.Update(self)
+	
+	local mm = main_menu.get_main_menu()
+	local sss = mm:GetPatchProgress()
+	
+	if sss:GetInProgress() then
+		self.text_download:Show					(true)
+		self.cap_download:Show					(true)
+		self.download_progress:Show				(true)
+		local _progr							= sss:GetProgress()
+		self.download_progress:SetProgressPos	(_progr)
+		local str								= string.format("%.0f%%(%s)",_progr,sss:GetFlieName())
+		self.text_download:SetText				(str)
+		self.btn_cancel_download:Show			(true)
+	else
+		self.text_download:Show					(false)
+		self.cap_download:Show					(false)
+		self.download_progress:Show				(false)
+		self.btn_cancel_download:Show			(false)
+	end
+end
+
+function options_dialog:OnBtn_CancelDownload()
+	local mm = main_menu.get_main_menu()
+	mm:CancelDownload()
+end
+

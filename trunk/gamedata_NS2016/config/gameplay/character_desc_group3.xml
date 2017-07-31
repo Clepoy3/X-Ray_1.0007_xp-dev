@@ -1,0 +1,364 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<xml>
+
+<!-- GROUP3 PROFILES -->
+
+<!-- LASTDAY -->
+<!-- Lastday veteran -->
+<specific_character id="gr3_lastday_veteran01" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_wayt_maska</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_veteran</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>601</rank>
+	<reputation>0</reputation>
+	<money min="60" max="600" infinitive="0"></money>
+
+	<visual>new\lastday_wayt_maska</visual>
+	<snd_config>characters_voice\human_01\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_sig220 \n
+		ammo_11.43x23_fmj \n
+		wpn_sg552_sk1 \n
+		ammo_5.56x45_ss190 \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+<specific_character id="gr3_lastday_veteran02" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_wayt_polumaska</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_veteran</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>601</rank>
+	<reputation>0</reputation>
+	<money min="60" max="600" infinitive="0"></money>
+
+	<visual>new\lastday_wayt_polumaska</visual>
+	<snd_config>characters_voice\human_02\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_sig220 \n
+		ammo_11.43x23_fmj \n
+		wpn_sg552_sk1 \n
+		ammo_5.56x45_ss190 \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+<specific_character id="gr3_lastday_veteran03" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_wayt_maska</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_veteran</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>601</rank>
+	<reputation>0</reputation>
+	<money min="60" max="600" infinitive="0"></money>
+
+	<visual>new\lastday_wayt_maska</visual>
+	<snd_config>characters_voice\human_01\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_usp \n
+		ammo_11.43x23_fmj \n
+		wpn_famas_p3_sk1 \n
+		ammo_5.56x45_ss190 \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+<specific_character id="gr3_lastday_veteran04" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_wayt_polumaska</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_veteran</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>601</rank>
+	<reputation>0</reputation>
+	<money min="60" max="600" infinitive="0"></money>
+
+	<visual>new\lastday_wayt_polumaska</visual>
+	<snd_config>characters_voice\human_02\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_usp \n
+		ammo_11.43x23_fmj \n
+		wpn_famas_p3_sk1 \n
+		ammo_5.56x45_ss190 \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+
+<!-- Lastday specnaz -->
+<specific_character id="gr3_lastday_specnaz01" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_wayt_polumaska</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_specnaz</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>601</rank>
+	<reputation>0</reputation>
+	<money min="50" max="500" infinitive="0"></money>
+
+	<visual>actors\lastday\stalker_ld_mask</visual>
+	<snd_config>characters_voice\human_01\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_p90 \n
+		ammo_5.7x28_ss190 \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+<specific_character id="gr3_lastday_specnaz02" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_wayt_polumaska</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_specnaz</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>601</rank>
+	<reputation>0</reputation>
+	<money min="50" max="500" infinitive="0"></money>
+
+	<visual>actors\lastday\stalker_ld_mask</visual>
+	<snd_config>characters_voice\human_02\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_colt1911 \n
+		ammo_11.43x23_fmj \n
+		wpn_m4 \n
+		ammo_5.56x45_ss190 \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+<specific_character id="gr3_lastday_specnaz03" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_wayt_polumaska</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_specnaz</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>601</rank>
+	<reputation>0</reputation>
+	<money min="50" max="500" infinitive="0"></money>
+
+	<visual>actors\lastday\stalker_ld_mask</visual>
+	<snd_config>characters_voice\human_03\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_colt1911 \n
+		ammo_11.43x23_fmj \n
+		wpn_m4 \n
+		ammo_5.56x45_ss190 \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+
+<!-- Lastday master -->
+<specific_character id="gr3_lastday_master01" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_helmet</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_master</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>0</reputation>
+	<money min="150" max="700" infinitive="0"></money>
+
+	<visual>new\ekzo_and_helmet</visual>
+	<snd_config>characters_voice\human_01\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_usp \n
+		ammo_11.43x23_fmj \n
+		wpn_xm8_para_sk2 \n
+		ammo_5.56x45_ap \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+<specific_character id="gr3_lastday_master02" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_helmet</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_master</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>0</reputation>
+	<money min="150" max="700" infinitive="0"></money>
+
+	<visual>new\ekzo_and_helmet</visual>
+	<snd_config>characters_voice\human_02\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_sig220 \n
+		ammo_11.43x23_fmj \n
+		wpn_spas12 \n
+		ammo_12x70_buck \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+<specific_character id="gr3_lastday_master03" team_default="1">
+	<name>GENERATE_NAME_stalker</name>
+	<icon>ui_npc_lastday_helmet</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>rad_monolith_specnaz_bio</bio>
+
+	<class>gr3_lastday_master</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>0</reputation>
+	<money min="150" max="700" infinitive="0"></money>
+
+	<visual>new\ekzo_and_helmet</visual>
+	<snd_config>characters_voice\human_03\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_colt1911 \n
+		ammo_11.43x23_fmj \n
+		wpn_lr300 \n
+		ammo_5.56x45_ss190 \n
+		device_torch \n
+#include "gameplay\character_drugs.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+</specific_character>
+
+</xml>

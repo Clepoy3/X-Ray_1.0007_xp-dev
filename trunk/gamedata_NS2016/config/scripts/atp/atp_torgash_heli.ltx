@@ -1,0 +1,147 @@
+[logic]
+active = heli_move@hide
+on_hit = hit
+
+[hit]
+on_info = {-atp_sedoy_heli_hit} %+atp_sedoy_heli_hit =arhara_dialog.tu_sdurel_sms%
+
+[heli_move@hide]
+path_move = atp_torgash_heli_hide_move
+combat_enemy = nil
+combat_ignore = true
+default_velocity = 1
+engine_sound = false
+invulnerable = true
+immortal = true
+mute = true
+on_info = {+sedoy_vert_poletel} heli_move@start
+
+[heli_move@start]
+path_move = atp_torgash_heli_start_move
+path_look = atp_torgash_heli_start_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 45
+default_velocity = 6
+engine_sound = false
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@arrive %-sedoy_vert_poletel%
+
+[heli_move@arrive]
+path_move = atp_torgash_heli_arrive_move
+path_look = atp_torgash_heli_arrive_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 34
+default_velocity = 20
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@desant
+
+[heli_move@desant]
+path_move = atp_torgash_heli_desant_move
+path_look = atp_torgash_heli_desant_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 1
+default_velocity = 5
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@stop
+
+[heli_move@stop]
+path_move = atp_torgash_heli_stop_move
+path_look = atp_torgash_heli_stop_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 0
+default_velocity = 1
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@park1 %+atp_torgovetz_spawn%
+
+[heli_move@park1]
+path_move = atp_torgash_heli_park_move
+path_look = atp_torgash_heli_park_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 0
+default_velocity = 1
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true 
+on_info = {+atp_vert_vzlet} heli_move@park2
+
+[heli_move@park2]
+path_move = atp_torgash_heli_park_move
+path_look = atp_torgash_heli_park_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 0
+default_velocity = 1
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true 
+on_info = {-atp_torgovetz_done} heli_move@rise1, heli_move@rise2
+
+[heli_move@rise1]
+path_move = atp_torgash_heli_rise_move
+path_look = atp_torgash_heli_rise_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 1
+default_velocity = 2
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@away %-atp_vert_vzlet =arhara_dialog.sedoy_sms_poka%
+
+[heli_move@rise2]
+path_move = atp_torgash_heli_rise_move
+path_look = atp_torgash_heli_rise_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 1
+default_velocity = 2
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@away %-atp_vert_vzlet -atp_torgovetz_done%
+
+[heli_move@away]
+path_move = atp_torgash_heli_away_move
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 45
+default_velocity = 10
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@home
+
+[heli_move@home]
+path_move = atp_torgash_heli_hide_move
+combat_enemy = nil
+combat_safe_altitude = 75
+combat_ignore = true
+default_velocity = 40
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_timer = 25000 | nil %=arhara_dialog.atp_sedoy_heli_dell =arhara_dialog.atp_sedoy_dell%
+;;;;; Вариант без удаления ;;;;;
+;on_timer = 25000 | heli_move@hide

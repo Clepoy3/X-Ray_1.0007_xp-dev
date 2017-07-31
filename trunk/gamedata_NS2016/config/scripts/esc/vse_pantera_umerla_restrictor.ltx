@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_npc_in_zone = 19032 |vse_pantera_umerla_restrictor| sr_idle@time
+
+[sr_idle@time]
+on_timer = 1100 | sr_idle@time1 %=arhara_dialog.pantera_dinamit_nevid%
+
+[sr_idle@time1]
+on_timer = 1200 | sr_idle@nil %+pantera_umerla =arhara_dialog.dell_esc_pantera%
+
+[sr_idle@nil]

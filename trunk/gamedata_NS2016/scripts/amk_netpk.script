@@ -1,0 +1,1855 @@
+-- Работа с нетпакетами, вынесено из amk.script
+
+function abort( ... ) _util.abort( "amk_netpk", ... ) end
+
+local force_offline = _G.force_offline or {}
+
+--- read (получение информации из пакета, предварительно серверу дается команда ЗАПИСИ, а потом читаем) ---
+
+function readvu32u8( pk )
+	local t = {}
+	for i = 1, pk:r_s32() do t[i] = pk:r_u8() end
+	return t
+end
+
+
+function readvu32u16( pk )
+	local t = {}
+	for i = 1, pk:r_s32() do t[i] = pk:r_u16() end
+	return t
+end
+
+
+function readvu8u8( pk )
+	return { pk:r_u8(), pk:r_u8(), pk:r_u8(), pk:r_u8(),
+		 pk:r_u8(), pk:r_u8(), pk:r_u8(), pk:r_u8() }
+end
+
+
+function readvu8uN( pk, n )
+	local t = {}
+	for i = 1, n do t[i] = pk:r_u8() end
+	return t
+end
+
+
+function parse_object_packet( t, stpk )
+	t.gvid		= stpk:r_u16()
+	t.obf32u1	= stpk:r_float()
+	t.obs32u2	= stpk:r_s32()
+	t.lvid		= stpk:r_s32()
+	t.oflags	= stpk:r_s32()
+	t.custom	= stpk:r_stringZ()
+	t.sid		= stpk:r_s32()
+	t.obs32u3	= stpk:r_s32()
+	return t
+end
+
+
+function parse_visual_packet( t, stpk )
+	t.visual = stpk:r_stringZ()
+	t.vsu8u1 = stpk:r_u8()		-- флаги
+	return t
+end
+
+
+function parse_dynamic_object_visual( t, stpk )
+	-- parse_object_packet( t, stpk )
+	t.gvid		= stpk:r_u16()
+	t.obf32u1	= stpk:r_float()	-- дистанция ( ??? )
+	t.obs32u2	= stpk:r_s32()		-- направление ( ??? )
+	t.lvid		= stpk:r_s32()
+	t.oflags	= stpk:r_s32()
+	t.custom	= stpk:r_stringZ()
+	t.sid		= stpk:r_s32()
+	t.obs32u3	= stpk:r_s32()		-- spawn ID
+
+	-- parse_visual_packet( t, stpk )
+	t.visual = stpk:r_stringZ()
+	t.vsu8u1 = stpk:r_u8()			-- флаги
+	return t
+end
+
+
+function parse_creature_packet( t, stpk, uppk )
+	-- parse_dynamic_object_visual( t, stpk )
+	t.gvid		= stpk:r_u16()		-- parse_object_packet( t, stpk )
+	t.obf32u1	= stpk:r_float()
+	t.obs32u2	= stpk:r_s32()
+	t.lvid		= stpk:r_s32()
+	t.oflags	= stpk:r_s32()
+	t.custom	= stpk:r_stringZ()
+	t.sid		= stpk:r_s32()
+	t.obs32u3	= stpk:r_s32()
+	t.visual	= stpk:r_stringZ()	-- parse_visual_packet( t, stpk )
+	t.vsu8u1	= stpk:r_u8()
+
+	t.team		= stpk:r_u8()
+	t.squad		= stpk:r_u8()
+	t.group		= stpk:r_u8()
+	t.health	= stpk:r_float()
+	t.crvu32u16u1	= readvu32u16( stpk )	-- out restrictors
+	t.crvu32u16u2	= readvu32u16( stpk )	-- in restrictors
+	t.killerid	= stpk:r_u16()
+	t.game_death_time = readvu8u8( stpk )
+
+	t.updhealth	= uppk:r_float()
+	t.upds32u1	= uppk:r_s32()
+	t.updu8u2	= uppk:r_u8()
+	t.updpos	= { ["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() }	-- или поставить вектор? ладно потом
+	t.updmodel	= uppk:r_float()
+	t.upddir	= { ["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() }
+	t.updteam	= uppk:r_u8()
+	t.updsquad	= uppk:r_u8()
+	t.updgroup	= uppk:r_u8()  
+	return t
+end
+
+
+function parse_monster_packet( t, stpk, uppk )
+	parse_creature_packet( t, stpk, uppk)
+	t.baseoutr	= stpk:r_stringZ()
+	t.baseinr	= stpk:r_stringZ()
+	t.smtrid	= stpk:r_u16()
+	t.smtrtaskactive= stpk:r_u8()
+
+	t.updu16u1	= uppk:r_u16()
+	t.updu16u2	= uppk:r_u16()
+	t.upds32u3	= uppk:r_s32()
+	t.upds32u4	= uppk:r_s32()
+	return t
+end
+
+
+function parse_trader_packet( t, stpk )
+	t.money		= stpk:r_s32()
+	t.profile	= stpk:r_stringZ()
+	t.infammo	= stpk:r_s32()
+	t.class		= stpk:r_stringZ()
+	t.communityid	= stpk:r_s32()
+	t.rank		= stpk:r_s32()
+	t.reputation	= stpk:r_s32()
+	t.charname	= stpk:r_stringZ()  
+	return t
+end
+
+
+
+function parse_human_packet( t, stpk, uppk )
+	-- parse_trader_packet( t, stpk )
+	t.money		= stpk:r_s32()
+	t.profile	= stpk:r_stringZ()
+	t.infammo	= stpk:r_s32()
+	t.class		= stpk:r_stringZ()
+	t.communityid	= stpk:r_s32()
+	t.rank		= stpk:r_s32()
+	t.reputation	= stpk:r_s32()
+	t.charname	= stpk:r_stringZ()  
+
+	-- parse_monster_packet( t, stpk, uppk )
+	parse_creature_packet( t, stpk, uppk)
+	t.baseoutr	= stpk:r_stringZ()
+	t.baseinr	= stpk:r_stringZ()
+	t.smtrid	= stpk:r_u16()
+	t.smtrtaskactive= stpk:r_u8()
+	t.updu16u1	= uppk:r_u16()
+	t.updu16u2	= uppk:r_u16()
+	t.upds32u3	= uppk:r_s32()
+	t.upds32u4	= uppk:r_s32()
+
+	t.huvu32u8u1 = readvu32u8( stpk )
+	t.huvu32u8u2 = readvu32u8( stpk )
+	return t
+end
+
+
+function parse_skeleton_packet( t, stpk )
+	t.skeleton	= stpk:r_stringZ()
+	t.skeleton_flags= stpk:r_u8()
+	t.source_id	= stpk:r_u16()
+	return t
+end
+
+
+function parse_stalker_packet( t, stpk, uppk, sz )
+	parse_human_packet( t, stpk, uppk )
+
+	t.skeleton	= stpk:r_stringZ()	-- parse_skeleton_packet( t, stpk, uppk )
+	t.skeleton_flags= stpk:r_u8()
+	t.source_id	= stpk:r_u16()
+	t.hellodlg	= uppk:r_stringZ()
+
+	local stunk1, n = {}, 0
+	for i = stpk:r_tell(), sz - 1 do
+		n = n + 1
+		stunk1[n] = stpk:r_u8()
+	end
+	t.stunk1 = stunk1
+	return t
+end
+
+
+function read_stalker_params( obj )	-- серверный объект на входе
+	local stpk = net_packet()
+	local uppk = net_packet()
+	obj:STATE_Write( stpk )
+	obj:UPDATE_Write( uppk )
+	local size = stpk:w_tell()
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	local t = {	-- parse_stalker_packet( t, stpk, uppk, size )
+							-- parse_human_packet( t, stpk, uppk )
+		["money"]	= stpk:r_s32(),			-- parse_trader_packet( t, stpk )
+		["profile"]	= stpk:r_stringZ(),
+		["infammo"]	= stpk:r_s32(),
+		["class"]	= stpk:r_stringZ(),
+		["communityid"] = stpk:r_s32(),
+		["rank"]	= stpk:r_s32(),
+		["reputation"]	= stpk:r_s32(),
+		["charname"]	= stpk:r_stringZ(),  		-- / parse_trader_packet( t, stpk )
+								-- parse_monster_packet( t, stpk, uppk )
+									-- parse_creature_packet( t, stpk, uppk)
+		["gvid"]	= stpk:r_u16(),					-- parse_object_packet( t, stpk )
+		["obf32u1"]	= stpk:r_float(),
+		["obs32u2"]	= stpk:r_s32(),
+		["lvid"]	= stpk:r_s32(),
+		["oflags"]	= stpk:r_s32(),
+		["custom"]	= stpk:r_stringZ(),
+		["sid"]		= stpk:r_s32(),
+		["obs32u3"]	= stpk:r_s32(),					-- / parse_object_packet( t, stpk )
+		["visual"]	= stpk:r_stringZ(),				-- parse_visual_packet( t, stpk )
+		["vsu8u1"]	= stpk:r_u8(),					-- / parse_visual_packet( t, stpk )
+
+		["team"]	= stpk:r_u8(),
+		["squad"]	= stpk:r_u8(),
+		["group"]	= stpk:r_u8(),
+		["health"]	= stpk:r_float(),
+		["crvu32u16u1"]= readvu32u16( stpk ),
+		["crvu32u16u2"]= readvu32u16( stpk ),
+		["killerid"]	= stpk:r_u16(),
+		["game_death_time"] = readvu8u8( stpk ),
+
+		["updhealth"]	= uppk:r_float(),
+		["upds32u1"]	= uppk:r_s32(),
+		["updu8u2"]	= uppk:r_u8(),
+		["updpos"]	= { ["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() },	-- или поставить вектор? ладно потом
+		["updmodel"]	= uppk:r_float(),
+		["upddir"]	= { ["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() },
+		["updteam"]	= uppk:r_u8(),
+		["updsquad"]	= uppk:r_u8(),
+		["updgroup"]	= uppk:r_u8(),				-- / parse_creature_packet( t, stpk, uppk)
+
+		["baseoutr"]	= stpk:r_stringZ(),
+		["baseinr"]	= stpk:r_stringZ(),
+		["smtrid"]	= stpk:r_u16(),
+		["smtrtaskactive"] = stpk:r_u8(),
+		["updu16u1"]	= uppk:r_u16(),
+		["updu16u2"]	= uppk:r_u16(),
+		["upds32u3"]	= uppk:r_s32(),
+		["upds32u4"]	= uppk:r_s32(),			-- / parse_monster_packet( t, stpk, uppk )
+
+		["huvu32u8u1"] = readvu32u8( stpk ),
+		["huvu32u8u2"] = readvu32u8( stpk ),	-- / parse_human_packet( t, stpk, uppk )
+
+		["skeleton"]	= stpk:r_stringZ(),	-- parse_skeleton_packet( t, stpk )
+		["skeleton_flags"]= stpk:r_u8(),
+		["source_id"]	= stpk:r_u16(),		-- / parse_skeleton_packet( t, stpk )
+		["hellodlg"]	= uppk:r_stringZ() }
+
+	local stunk1, n = {}, 0
+	for i = stpk:r_tell(), size - 1 do
+		n = n + 1
+		stunk1[n] = stpk:r_u8()
+	end
+	t.stunk1 = stunk1
+	return t
+end
+
+
+function parse_se_monster_packet( t, stpk, uppk, sz )
+	parse_creature_packet( t, stpk, uppk)	-- parse_monster_packet( t, stpk, uppk )
+	t.baseoutr	= stpk:r_stringZ()
+	t.baseinr	= stpk:r_stringZ()
+	t.smtrid	= stpk:r_u16()
+	t.smtrtaskactive= stpk:r_u8()
+
+	t.updu16u1	= uppk:r_u16()
+	t.updu16u2	= uppk:r_u16()
+	t.upds32u3	= uppk:r_s32()
+	t.upds32u4	= uppk:r_s32()		-- / parse_monster_packet( t, stpk, uppk )
+
+	t.skeleton	= stpk:r_stringZ()	parse_skeleton_packet( t, stpk )
+	t.skeleton_flags= stpk:r_u8()
+	t.source_id	= stpk:r_u16()		-- /parse_skeleton_packet( t, stpk )
+
+	t.spec_obj_id = stpk:r_u16()
+
+	local n = stpk:r_u8()
+	if n >= 4 then t.state, n = true, n - 4
+	else t.state = false
+	end
+	t.job_online = n
+	if n == 3 then t.job_online_condlist = stpk:r_stringZ() end
+
+	t.was_in_smtr = stpk:r_u8()
+	local stunk1 = {}
+	n = 0
+	for i = stpk:r_tell(), sz - 1 do n = n + 1; stunk1[n] = stpk:r_u8() end
+	t.stunk1 = stunk1
+	return t
+end
+
+
+function read_monster_params( obj )
+	local stpk = net_packet()
+	local uppk = net_packet()
+	obj:STATE_Write( stpk )
+	obj:UPDATE_Write( uppk )
+	local size = stpk:w_tell()
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	local t = {	-- parse_se_monster_packet( {}, stpk, uppk, size )
+								-- parse_creature_packet( t, stpk, uppk)
+		["gvid"]	= stpk:r_u16(),				-- parse_object_packet( t, stpk )
+		["obf32u1"]	= stpk:r_float(),
+		["obs32u2"]	= stpk:r_s32(),
+		["lvid"]	= stpk:r_s32(),
+		["oflags"]	= stpk:r_s32(),
+		["custom"]	= stpk:r_stringZ(),
+		["sid"]	= stpk:r_s32(),
+		["obs32u3"]	= stpk:r_s32(),				-- / parse_object_packet( t, stpk )
+		["visual"] = stpk:r_stringZ(),				-- parse_visual_packet( t, stpk )
+		["vsu8u1"] = stpk:r_u8(),				-- / parse_visual_packet( t, stpk )
+
+		["team"]	= stpk:r_u8(),
+		["squad"]	= stpk:r_u8(),
+		["group"]	= stpk:r_u8(),
+		["health"]	= stpk:r_float(),
+		["crvu32u16u1"]= readvu32u16( stpk ),
+		["crvu32u16u2"]= readvu32u16( stpk ),
+		["killerid"]	= stpk:r_u16(),
+		["game_death_time"] = readvu8u8( stpk ),
+
+		["updhealth"]	= uppk:r_float(),
+		["upds32u1"]	= uppk:r_s32(),
+		["updu8u2"]	= uppk:r_u8(),
+		["updpos"]	= { ["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() },	-- или поставить вектор? ладно потом
+		["updmodel"]	= uppk:r_float(),
+		["upddir"]	= { ["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() },
+		["updteam"]	= uppk:r_u8(),
+		["updsquad"]	= uppk:r_u8(),
+		["updgroup"]	= uppk:r_u8(),			-- / parse_creature_packet( t, stpk, uppk)
+
+		["baseoutr"]	= stpk:r_stringZ(),
+		["baseinr"]	= stpk:r_stringZ(),
+		["smtrid"]	= stpk:r_u16(),
+		["smtrtaskactive"] = stpk:r_u8(),
+
+		["updu16u1"]	= uppk:r_u16(),
+		["updu16u2"]	= uppk:r_u16(),
+		["upds32u3"]	= uppk:r_s32(),
+		["upds32u4"]	= uppk:r_s32(),		-- / parse_monster_packet( t, stpk, uppk )
+
+		["skeleton"]	= stpk:r_stringZ(),	-- parse_skeleton_packet( t, stpk )
+		["skeleton_flags"]= stpk:r_u8(),
+		["source_id"]	= stpk:r_u16(),		-- /parse_skeleton_packet( t, stpk )
+
+		["spec_obj_id"] = stpk:r_u16() }
+
+	local n = stpk:r_u8()
+	if n >= 4 then
+		t.state = true
+		n = n - 4
+	else t.state = false
+	end
+	t.job_online = n
+
+	if n == 3 then t.job_online_condlist = stpk:r_stringZ() end
+
+	t.was_in_smtr = stpk:r_u8()
+	local stunk1 = {}
+	n = 0
+	for i = stpk:r_tell(), size - 1 do
+		n = n + 1
+		stunk1[n] = stpk:r_u8()
+	end
+	t.stunk1 = stunk1	-- / parse_monster_packet( t, stpk, uppk )
+	return t
+end
+
+
+function get_trader_data( obj )
+	local stpk = net_packet()
+	obj:STATE_Write( stpk )
+	stpk:r_seek( 0 )
+	return {
+		["gvid"]	= stpk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= stpk:r_float(),
+		["obs32u2"]	= stpk:r_s32(),
+		["lvid"]	= stpk:r_s32(),
+		["oflags"]	= stpk:r_s32(),
+		["custom"]	= stpk:r_stringZ(),
+		["sid"]		= stpk:r_s32(),
+		["obs32u3"]	= stpk:r_s32(),		-- / parse_object_packet( t, stpk )
+
+		["visual"]	= stpk:r_stringZ(),	-- parse_visual_packet( t, stpk )
+		["vsu8u1"]	= stpk:r_u8(),		-- / parse_visual_packet( t, stpk )
+
+		["money"]	= stpk:r_s32(),		-- parse_trader_packet( t, stpk )
+		["profile"]	= stpk:r_stringZ(),
+		["infammo"]	= stpk:r_s32(),
+		["class"]	= stpk:r_stringZ(),
+		["communityid"]= stpk:r_s32(),
+		["rank"]	= stpk:r_s32(),
+		["reputation"]	= stpk:r_s32(),
+		["charname"]	= stpk:r_stringZ() }	-- / parse_trader_packet( t, stpk )
+end
+
+
+function parse_shape_packet( t, stpk )
+	local sh = {}
+	local shape_type
+	for i = 1, stpk:r_u8() do
+		shape_type = stpk:r_u8()
+		if shape_type == 0 then		-- sphere
+			sh[i] = { ["shtype"] = shape_type,
+				["center"] = stpk:r_vec3(), ["radius"] = stpk:r_float() }
+		else				-- box
+			sh[i] = { ["shtype"] = shape_type,
+				["v1"] = stpk:r_vec3(), ["v2"] = stpk:r_vec3(), ["v3"] = stpk:r_vec3(),
+				["offset"] = stpk:r_vec3() }
+		end
+	end
+	t.shapes = sh
+end
+
+
+function get_anomaly_data( obj )
+	local stpk = net_packet()
+	local uppk = net_packet()
+	obj:STATE_Write( stpk )
+	obj:UPDATE_Write( uppk )
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	local t = {
+		["gvid"]	= stpk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= stpk:r_float(),
+		["obs32u2"]	= stpk:r_s32(),
+		["lvid"]	= stpk:r_s32(),
+		["oflags"]	= stpk:r_s32(),
+		["custom"]	= stpk:r_stringZ(),
+		["sid"]		= stpk:r_s32(),
+		["obs32u3"]	= stpk:r_s32() }	-- / parse_object_packet( t, stpk )
+
+	local sh = {}		-- parse_shape_packet( t, stpk )
+	local shape_type
+	for i = 1, stpk:r_u8() do
+		shape_type = stpk:r_u8()
+		if shape_type == 0 then		-- sphere
+			sh[i] = { ["shtype"] = shape_type,
+				["center"] = stpk:r_vec3(), ["radius"] = stpk:r_float() }
+		else				-- box
+			sh[i] = { ["shtype"] = shape_type,
+				["v1"] = stpk:r_vec3(), ["v2"] = stpk:r_vec3(), ["v3"] = stpk:r_vec3(),
+				["offset"] = stpk:r_vec3() }
+		end
+	end
+	t.shapes = sh	-- / parse_shape_packet( t, stpk )
+
+	t.restrictor_type	= stpk:r_u8()
+	t.max_power		= stpk:r_float()
+	t.owner_id		= stpk:r_s32()
+	t.enabled_time		= stpk:r_s32()
+	t.disabled_time		= stpk:r_s32()
+	t.start_time_shift	= stpk:r_s32()
+	t.offline_interactive_radius	= stpk:r_float()
+	t.artefact_spawn_count		= stpk:r_u16()
+	t.artefact_position_offset	= stpk:r_s32()
+	t.last_spawn_time_present	= stpk:r_u8()
+	return t
+end
+
+
+function get_lc_data( obj )
+	local stpk = net_packet()
+	obj:STATE_Write( stpk )
+	local t = {
+		["game_vertex_id"]	= stpk:r_u16(),
+		["distance"]		= stpk:r_float(),
+		["direct_control"]	= stpk:r_s32(),
+		["level_vertex_id"]	= stpk:r_s32(),
+		["object_flags"]	= stpk:r_s32(),
+		["custom_data"]		= stpk:r_stringZ(),
+		["story_id"]		= stpk:r_s32(),
+		["spawn_story_id"]	= stpk:r_s32() }
+	
+	local sh = {}	-- parse_shape_packet( t, stpk )
+	local shape_type
+	for i = 1, stpk:r_u8() do
+		shape_type = stpk:r_u8()
+		if shape_type == 0 then		-- sphere
+			sh[i] = { ["shtype"] = shape_type,
+				["center"] = stpk:r_vec3(), ["radius"] = stpk:r_float() }
+		else				-- box
+			sh[i] = { ["shtype"] = shape_type,
+				["v1"] = stpk:r_vec3(), ["v2"] = stpk:r_vec3(), ["v3"] = stpk:r_vec3(),
+				["offset"] = stpk:r_vec3() }
+		end
+	end
+	t.shapes = sh	-- / parse_shape_packet( t, stpk )
+
+	t.restrictor_type	= stpk:r_u8()
+	t.dest_game_vertex_id	= stpk:r_u16()
+	t.dest_level_vertex_id	= stpk:r_s32()
+	t.dest_position		= stpk:r_vec3()
+	t.dest_direction	= stpk:r_vec3()
+	t.dest_level_name	= stpk:r_stringZ()
+	t.dest_graph_point	= stpk:r_stringZ()
+	t.silent_mode		= stpk:r_u8()
+
+	if stpk:r_elapsed() ~= 0 then abort( "get_lc_data, left = %d", stpk:r_elapsed() ) end
+	return t
+end
+
+
+function parse_object_physic_packet( t, stpk )
+	t.physic_type	= stpk:r_s32()
+	t.mass		= stpk:r_float()
+	t.fixed_bones	= stpk:r_stringZ()
+	return t
+end
+
+
+function get_spawner_data( obj )
+	local pk = net_packet()
+	obj:STATE_Write( pk )
+	pk:r_seek( 0 )
+	local t = {
+		["gvid"]	= pk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= pk:r_float(),
+		["obs32u2"]	= pk:r_s32(),
+		["lvid"]	= pk:r_s32(),
+		["oflags"]	= pk:r_s32(),
+		["custom"]	= pk:r_stringZ(),
+		["sid"]		= pk:r_s32(),
+		["obs32u3"]	= pk:r_s32() }		-- / parse_object_packet( t, stpk )
+
+	local sh = {}	-- parse_shape_packet( t, stpk )
+	for i = 1, pk:r_u8() do
+		local shape_type = pk:r_u8()
+		if shape_type == 0 then		-- sphere
+			sh[i] = { ["shtype"] = shape_type,
+				["center"] = pk:r_vec3(), ["radius"] = pk:r_float() }
+		else				-- box
+			sh[i] = { ["shtype"] = shape_type,
+				["v1"] = pk:r_vec3(), ["v2"] = pk:r_vec3(), ["v3"] = pk:r_vec3(),
+				["offset"] = pk:r_vec3() }
+		end
+	end
+	t.shapes = sh	-- / parse_shape_packet( t, stpk )
+
+	t.restrictor_type = pk:r_u8()
+	t.spawned_obj_count = pk:r_u8()
+	return t
+end
+
+
+function get_restrictor_data( obj )
+	local stpk = net_packet()
+	obj:STATE_Write( stpk )
+	stpk:r_seek( 0 )
+	local t = {
+		["gvid"]	= stpk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= stpk:r_float(),
+		["obs32u2"]	= stpk:r_s32(),
+		["lvid"]	= stpk:r_s32(),
+		["oflags"]	= stpk:r_s32(),
+		["custom"]	= stpk:r_stringZ(),
+		["sid"]		= stpk:r_s32(),
+		["obs32u3"]	= stpk:r_s32() }	-- / parse_object_packet( t, stpk )
+
+	local n = stpk:r_u8()	-- parse_shape_packet( t, stpk )
+	local sh = {}
+	for i = 1, n do
+		local shape_type = stpk:r_u8()
+		if shape_type == 0 then		-- sphere
+			sh[i] = { ["shtype"] = shape_type,
+				["center"] = stpk:r_vec3(), ["radius"] = stpk:r_float() }
+		else				-- box
+			sh[i] = { ["shtype"] = shape_type,
+				["v1"] = stpk:r_vec3(), ["v2"] = stpk:r_vec3(), ["v3"] = stpk:r_vec3(),
+				["offset"] = stpk:r_vec3() }
+		end
+	end
+	t.shapes = sh	-- / parse_shape_packet( t, stpk )
+
+	t.restrictor_type = stpk:r_u8()
+	return t
+end
+
+
+function get_breakable_data( obj )
+	local pk = net_packet()
+	obj:STATE_Write( pk )
+	pk:r_seek( 0 )
+	return {
+		["gvid"]	= pk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= pk:r_float(),
+		["obs32u2"]	= pk:r_s32(),
+		["lvid"]	= pk:r_s32(),
+		["oflags"]	= pk:r_s32(),
+		["custom"]	= pk:r_stringZ(),
+		["sid"]		= pk:r_s32(),
+		["obs32u3"]	= pk:r_s32(),		-- / parse_object_packet( t, stpk )
+
+		["visual"]	= pk:r_stringZ(),	-- parse_visual_packet( t, stpk )
+		["vsu8u1"]	= pk:r_u8(),		-- / parse_visual_packet( t, stpk )
+
+		["physic_type"]	= pk:r_s32(),		-- parse_object_physic_packet( t, stpk )
+		["mass"]	= pk:r_float(),
+		["fixed_bones"]	= pk:r_stringZ() }	-- / parse_object_physic_packet( t, stpk )
+end
+
+
+function get_destroyable_data( obj )
+	local pk=net_packet()
+	obj:STATE_Write( pk )
+	pk:r_seek( 0 )
+	return {
+		["gvid"]	= pk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= pk:r_float(),
+		["obs32u2"]	= pk:r_s32(),
+		["lvid"]	= pk:r_s32(),
+		["oflags"]	= pk:r_s32(),
+		["custom"]	= pk:r_stringZ(),
+		["sid"]		= pk:r_s32(),
+		["obs32u3"]	= pk:r_s32(),		-- / parse_object_packet( t, stpk )
+
+		["visual"]	= pk:r_stringZ(),	-- parse_visual_packet( t, stpk )
+		["vsu8u1"]	= pk:r_u8(),		-- / parse_visual_packet( t, stpk )
+
+		["skeleton"]	= pk:r_stringZ(),	-- parse_skeleton_packet( t, stpk )
+		["skeleton_flags"] = pk:r_u8(),
+		["source_id"]	= pk:r_u16(),		-- /parse_skeleton_packet( t, stpk )
+
+		["physic_type"]	= pk:r_s32(),		-- parse_object_physic_packet( t, stpk )
+		["mass"]	= pk:r_float(),
+		["fixed_bones"]	= pk:r_stringZ() }	-- / parse_object_physic_packet( t, stpk )
+end
+
+
+function get_invbox_data( obj )
+	local stpk = net_packet()
+	obj:STATE_Write( stpk )
+	stpk:r_seek( 0 )
+	return {
+		["gvid"]	= stpk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= stpk:r_float(),
+		["obs32u2"]	= stpk:r_s32(),
+		["lvid"]	= stpk:r_s32(),
+		["oflags"]	= stpk:r_s32(),
+		["custom"]	= stpk:r_stringZ(),
+		["sid"]		= stpk:r_s32(),
+		["obs32u3"]	= stpk:r_s32(),		-- / parse_object_packet( t, stpk )
+
+		["visual"]	= stpk:r_stringZ(),	-- parse_visual_packet( t, stpk )
+		["vsu8u1"]	= stpk:r_u8() }		-- / parse_visual_packet( t, stpk )
+end
+
+
+function parse_item_packet( t, stpk, uppk )
+	t.condition = stpk:r_float()
+	t.updnum_items = uppk:r_u8()
+	t.updpos = {	-- или поставить вектор? ладно потом
+		["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() }
+	t.updcse_alife_item__unk1_q8v4 = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8(), uppk:r_u8() }
+	t.updcse_alife_item__unk2_q8v3 = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8() }
+	t.updcse_alife_item__unk3_q8v3 = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8() }
+	return t
+end
+
+
+function get_item_data( obj )
+	local stpk = net_packet()
+	local uppk = net_packet()
+	obj:STATE_Write( stpk )
+	obj:UPDATE_Write( uppk )
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	return {
+		["gvid"]	= stpk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= stpk:r_float(),
+		["obs32u2"]	= stpk:r_s32(),
+		["lvid"]	= stpk:r_s32(),
+		["oflags"]	= stpk:r_s32(),
+		["custom"]	= stpk:r_stringZ(),
+		["sid"]		= stpk:r_s32(),
+		["obs32u3"]	= stpk:r_s32(),		-- / parse_object_packet( t, stpk )
+
+		["visual"]	= stpk:r_stringZ(),	-- parse_visual_packet( t, stpk )
+		["vsu8u1"]	= stpk:r_u8(),		-- / parse_visual_packet( t, stpk )
+		["condition"] = stpk:r_float(),		-- parse_item_packet( t, stpk, uppk )
+		["updnum_items"] = uppk:r_u8(),
+		["updpos"] = {	-- или поставить вектор? ладно потом
+			["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() },
+		["updcse_alife_item__unk1_q8v4"] = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8(), uppk:r_u8() },
+		["updcse_alife_item__unk2_q8v3"] = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8() },
+		["updcse_alife_item__unk3_q8v3"] = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8() } }	-- / parse_item_packet( t, stpk, uppk )
+end
+
+
+function parse_item_ammo_packet( t, stpk, uppk )
+	t.ammo_left = stpk:r_u16()
+	t.updammo_left = uppk:r_u16()
+	return t
+end
+
+
+function get_ammo_params( obj )
+	local stpk = net_packet()
+	local uppk = net_packet()
+	obj:STATE_Write( stpk )
+	obj:UPDATE_Write( uppk )
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	return {
+		["gvid"]	= stpk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= stpk:r_float(),
+		["obs32u2"]	= stpk:r_s32(),
+		["lvid"]	= stpk:r_s32(),
+		["oflags"]	= stpk:r_s32(),
+		["custom"]	= stpk:r_stringZ(),
+		["sid"]		= stpk:r_s32(),
+		["obs32u3"]	= stpk:r_s32(),		-- / parse_object_packet( t, stpk )
+
+		["visual"]	= stpk:r_stringZ(),	-- parse_visual_packet( t, stpk )
+		["vsu8u1"]	= stpk:r_u8(),		-- / parse_visual_packet( t, stpk )
+
+		["condition"] = stpk:r_float(),		-- parse_item_packet( t, stpk, uppk )
+		["updnum_items"] = uppk:r_u8(),
+		["updpos"] = {	-- или поставить вектор? ладно потом
+			["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() },
+		["updcse_alife_item__unk1_q8v4"] = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8(), uppk:r_u8() },
+		["updcse_alife_item__unk2_q8v3"] = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8() },
+		["updcse_alife_item__unk3_q8v3"] = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8() },	-- / parse_item_packet( t, stpk, uppk )
+		["ammo_left"]	= stpk:r_u16(),		-- parse_item_ammo_packet( t, stpk, uppk )
+		["updammo_left"]= uppk:r_u16() }	-- / parse_item_ammo_packet( t, stpk, uppk )
+end
+
+
+function parse_item_weapon_packet( t, stpk, uppk )
+	t.ammo_current	= stpk:r_u16()
+	t.ammo_elapsed	= stpk:r_u16()
+	t.weapon_state	= stpk:r_u8()
+	t.addon_flags	= stpk:r_u8()
+	t.ammo_type	= stpk:r_u8()
+
+	t.updcondition		= uppk:r_u8()
+	t.updweapon_flags	= uppk:r_u8()
+	t.updammo_elapsed	= uppk:r_u16()
+	t.updaddon_flags	= uppk:r_u8()
+	t.updammo_type		= uppk:r_u8()
+	t.updweapon_state	= uppk:r_u8()
+	t.updweapon_zoom	= uppk:r_u8()
+	t.updcurrent_fire_mode	= uppk:r_u8()
+	return ret
+end
+
+
+function get_weapon_data( obj )
+	local stpk = net_packet()
+	local uppk = net_packet()
+	obj:STATE_Write( stpk )
+	obj:UPDATE_Write( uppk )
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	return {
+		["gvid"]	= stpk:r_u16(),		-- parse_object_packet( t, stpk )
+		["obf32u1"]	= stpk:r_float(),
+		["obs32u2"]	= stpk:r_s32(),
+		["lvid"]	= stpk:r_s32(),
+		["oflags"]	= stpk:r_s32(),
+		["custom"]	= stpk:r_stringZ(),
+		["sid"]		= stpk:r_s32(),
+		["obs32u3"]	= stpk:r_s32(),		-- / parse_object_packet( t, stpk )
+
+		["visual"]	= stpk:r_stringZ(),	-- parse_visual_packet( t, stpk )
+		["vsu8u1"]	= stpk:r_u8(),		-- / parse_visual_packet( t, stpk )
+
+		["condition"] = stpk:r_float(),		-- parse_item_packet( t, stpk, uppk )
+		["updnum_items"] = uppk:r_u8(),
+		["updpos"] = {	-- или поставить вектор? ладно потом
+			["x"] = uppk:r_float(), ["y"] = uppk:r_float(), ["z"] = uppk:r_float() },
+		["updcse_alife_item__unk1_q8v4"] = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8(), uppk:r_u8() },
+		["updcse_alife_item__unk2_q8v3"] = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8() },
+		["updcse_alife_item__unk3_q8v3"] = { uppk:r_u8(), uppk:r_u8(), uppk:r_u8() },	-- / parse_item_packet( t, stpk, uppk )
+
+		["ammo_current"]	= stpk:r_u16(),		-- parse_item_weapon_packet( t, stpk, uppk )
+		["ammo_elapsed"]	= stpk:r_u16(),
+		["weapon_state"]	= stpk:r_u8(),
+		["addon_flags"]		= stpk:r_u8(),
+		["ammo_type"]		= stpk:r_u8(),
+
+		["updcondition"]	= uppk:r_u8(),
+		["updweapon_flags"]	= uppk:r_u8(),
+		["updammo_elapsed"]	= uppk:r_u16(),
+		["updaddon_flags"]	= uppk:r_u8(),
+		["updammo_type"]	= uppk:r_u8(),
+		["updweapon_state"]	= uppk:r_u8(),
+		["updweapon_zoom"]	= uppk:r_u8(),
+		["updcurrent_fire_mode"]= uppk:r_u8() }		-- / parse_item_weapon_packet( t, stpk, uppk )
+end
+
+
+function get_ammo_size( obj )
+	local t = net_packet()
+	cse_alife_item_ammo.STATE_Write( obj, t )
+	t:r_seek( t:w_tell() - 2 )
+	return t:r_u16()
+end
+
+
+--- write (запись в пакет и команда на ЧТЕНИЕ из него для сервера) ---
+
+function writevu32u8( pk, v )
+	local n = #v
+	pk:w_s32( n )
+	for i = 1, n do pk:w_u8( v[i] ) end
+end
+
+function writevu32u16( pk, v )
+	local n = #v
+	pk:w_s32( n )
+	for i = 1, n do pk:w_u16( v[i] ) end
+end
+
+function writevu8u8( pk, v )
+	pk:w_u8( v[1] ); pk:w_u8( v[2] ); pk:w_u8( v[3] ); pk:w_u8( v[4] )
+	pk:w_u8( v[5] ); pk:w_u8( v[6] ); pk:w_u8( v[7] ); pk:w_u8( v[8] )
+end
+
+function writevu8uN( pk, v )
+	for i = 1, #v do pk:w_u8( v[i] ) end
+end
+
+
+function fill_object_packet( t, stpk )
+	stpk:w_u16( t.gvid )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )
+end
+
+
+function fill_visual_packet( t, stpk )
+	stpk:w_stringZ( t.visual )
+	stpk:w_u8( t.vsu8u1 )
+end
+
+
+function fill_dynamic_object_visual( t, stpk )
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+end
+
+
+function fill_trader_packet( t, stpk )
+	stpk:w_s32( t.money )
+	stpk:w_stringZ( t.profile )
+	stpk:w_s32( t.infammo )
+	stpk:w_stringZ( t.class )
+	stpk:w_s32( t.communityid )
+	stpk:w_s32( t.rank )
+	stpk:w_s32( t.reputation )
+	stpk:w_stringZ( t.charname )
+end
+
+
+function set_trader_data( t, obj )
+	local stpk = net_packet()
+
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )
+
+	stpk:w_s32( t.money )		-- fill_trader_packet( t, stpk )
+	stpk:w_stringZ( t.profile )
+	stpk:w_s32( t.infammo )
+	stpk:w_stringZ( t.class )
+	stpk:w_s32( t.communityid )
+	stpk:w_s32( t.rank )
+	stpk:w_s32( t.reputation )
+	stpk:w_stringZ( t.charname )	--
+
+	stpk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+end
+
+
+function fill_creature_packet( t, stpk, uppk )
+
+	-- fill_dynamic_object_visual( t, stpk )
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+	-- /
+
+	stpk:w_u8( t.team )
+	stpk:w_u8( t.squad )
+	stpk:w_u8( t.group )
+	stpk:w_float( t.health )
+
+	local v = t.crvu32u16u1		-- writevu32u16( stpk, t.crvu32u16u1 )
+	local n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	v = t.crvu32u16u2		-- writevu32u16( stpk, t.crvu32u16u2 )
+	n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	stpk:w_u16( t.killerid )
+
+	v = t.game_death_time		-- writevu8u8( stpk, t.game_death_time )
+	stpk:w_u8( v[1] ); stpk:w_u8( v[2] ); stpk:w_u8( v[3] ); stpk:w_u8( v[4] )
+	stpk:w_u8( v[5] ); stpk:w_u8( v[6] ); stpk:w_u8( v[7] ); stpk:w_u8( v[8] )
+
+	uppk:w_float( t.updhealth )
+	uppk:w_s32( t.upds32u1 )
+	uppk:w_u8( t.updu8u2 )
+	uppk:w_float( t.updpos.x )
+	uppk:w_float( t.updpos.y )
+	uppk:w_float( t.updpos.z )
+	uppk:w_float( t.updmodel )
+	uppk:w_float( t.upddir.x )
+	uppk:w_float( t.upddir.y )
+	uppk:w_float( t.upddir.z )
+	uppk:w_u8( t.updteam )
+	uppk:w_u8( t.updsquad )
+	uppk:w_u8( t.updgroup )
+end
+
+
+function fill_monster_packet( t, stpk, uppk )
+
+	-- fill_creature_packet( t, stpk, uppk )
+					-- fill_dynamic_object_visual( t, stpk )
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+					-- /
+	stpk:w_u8( t.team )
+	stpk:w_u8( t.squad )
+	stpk:w_u8( t.group )
+	stpk:w_float( t.health )
+
+	local v = t.crvu32u16u1		-- writevu32u16( stpk, t.crvu32u16u1 )
+	local n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	v = t.crvu32u16u2		-- writevu32u16( stpk, t.crvu32u16u2 )
+	n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	stpk:w_u16( t.killerid )
+	v = t.game_death_time		-- writevu8u8( stpk, t.game_death_time )
+	stpk:w_u8( v[1] ); stpk:w_u8( v[2] ); stpk:w_u8( v[3] ); stpk:w_u8( v[4] )
+	stpk:w_u8( v[5] ); stpk:w_u8( v[6] ); stpk:w_u8( v[7] ); stpk:w_u8( v[8] )
+
+	uppk:w_float( t.updhealth )
+	uppk:w_s32( t.upds32u1 )
+	uppk:w_u8( t.updu8u2 )
+	uppk:w_float( t.updpos.x )
+	uppk:w_float( t.updpos.y )
+	uppk:w_float( t.updpos.z )
+	uppk:w_float( t.updmodel )
+	uppk:w_float( t.upddir.x )
+	uppk:w_float( t.upddir.y )
+	uppk:w_float( t.upddir.z )
+	uppk:w_u8( t.updteam )
+	uppk:w_u8( t.updsquad )
+	uppk:w_u8( t.updgroup )
+	-- / fill_creature_packet( t, stpk, uppk )
+
+	stpk:w_stringZ( t.baseoutr )
+	stpk:w_stringZ( t.baseinr )
+	stpk:w_u16( t.smtrid )
+	stpk:w_u8( t.smtrtaskactive )
+
+	uppk:w_u16( t.updu16u1 )
+	uppk:w_u16( t.updu16u2 )
+	uppk:w_s32( t.upds32u3 )
+	uppk:w_s32( t.upds32u4 )
+end
+
+
+function fill_skeleton_packet( t, stpk )
+	stpk:w_stringZ( t.skeleton )
+	stpk:w_u8( t.skeleton_flags )
+	stpk:w_u16( t.source_id )
+end
+
+
+function fill_se_monster_packet( t, stpk, uppk )
+
+	-- fill_monster_packet( t, stpk, uppk )
+					-- fill_creature_packet( t, stpk, uppk )
+					-- fill_dynamic_object_visual( t, stpk )
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+					-- /
+	stpk:w_u8( t.team )
+	stpk:w_u8( t.squad )
+	stpk:w_u8( t.group )
+	stpk:w_float( t.health )
+
+	local v = t.crvu32u16u1		-- writevu32u16( stpk, t.crvu32u16u1 )
+	local n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	v = t.crvu32u16u2		-- writevu32u16( stpk, t.crvu32u16u2 )
+	n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	stpk:w_u16( t.killerid )
+	v = t.game_death_time		-- writevu8u8( stpk, t.game_death_time )
+	stpk:w_u8( v[1] ); stpk:w_u8( v[2] ); stpk:w_u8( v[3] ); stpk:w_u8( v[4] )
+	stpk:w_u8( v[5] ); stpk:w_u8( v[6] ); stpk:w_u8( v[7] ); stpk:w_u8( v[8] )
+
+	uppk:w_float( t.updhealth )
+	uppk:w_s32( t.upds32u1 )
+	uppk:w_u8( t.updu8u2 )
+	uppk:w_float( t.updpos.x )
+	uppk:w_float( t.updpos.y )
+	uppk:w_float( t.updpos.z )
+	uppk:w_float( t.updmodel )
+	uppk:w_float( t.upddir.x )
+	uppk:w_float( t.upddir.y )
+	uppk:w_float( t.upddir.z )
+	uppk:w_u8( t.updteam )
+	uppk:w_u8( t.updsquad )
+	uppk:w_u8( t.updgroup )		-- / fill_creature_packet( t, stpk, uppk )
+
+	stpk:w_stringZ( t.baseoutr )
+	stpk:w_stringZ( t.baseinr )
+	stpk:w_u16( t.smtrid )
+	stpk:w_u8( t.smtrtaskactive )
+
+	uppk:w_u16( t.updu16u1 )
+	uppk:w_u16( t.updu16u2 )
+	uppk:w_s32( t.upds32u3 )
+	uppk:w_s32( t.upds32u4 )
+	-- / fill_monster_packet( t, stpk, uppk )
+
+	stpk:w_stringZ( t.skeleton )	-- fill_skeleton_packet( t, stpk )
+	stpk:w_u8( t.skeleton_flags )
+	stpk:w_u16( t.source_id )	-- / fill_skeleton_packet( t, stpk )
+
+	stpk:w_u16( t.spec_obj_id )
+	v = t.job_online	-- variable re-use; v объявлена выше
+	if t.state then stpk:w_u8( v + 4 )
+	else stpk:w_u8( v )
+	end
+
+	if v == 3 then stpk:w_stringZ( t.job_online_condlist ) end
+	stpk:w_u8( t.was_in_smtr )
+	for i, v in ipairs( t.stunk1 ) do stpk:w_u8( v ) end
+end
+
+
+function write_monster_params( t, obj )
+	local stpk = net_packet()
+	local uppk = net_packet()
+	-- fill_se_monster_packet( t, stpk, uppk )
+
+					-- fill_monster_packet( t, stpk, uppk )
+					-- fill_creature_packet( t, stpk, uppk )
+					-- fill_dynamic_object_visual( t, stpk )
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+					-- /
+	stpk:w_u8( t.team )
+	stpk:w_u8( t.squad )
+	stpk:w_u8( t.group )
+	stpk:w_float( t.health )
+
+	local v = t.crvu32u16u1		-- writevu32u16( stpk, t.crvu32u16u1 )
+	local n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	v = t.crvu32u16u2		-- writevu32u16( stpk, t.crvu32u16u2 )
+	n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	stpk:w_u16( t.killerid )
+	v = t.game_death_time		-- writevu8u8( stpk, t.game_death_time )
+	stpk:w_u8( v[1] ); stpk:w_u8( v[2] ); stpk:w_u8( v[3] ); stpk:w_u8( v[4] )
+	stpk:w_u8( v[5] ); stpk:w_u8( v[6] ); stpk:w_u8( v[7] ); stpk:w_u8( v[8] )
+
+	uppk:w_float( t.updhealth )
+	uppk:w_s32( t.upds32u1 )
+	uppk:w_u8( t.updu8u2 )
+	uppk:w_float( t.updpos.x )
+	uppk:w_float( t.updpos.y )
+	uppk:w_float( t.updpos.z )
+	uppk:w_float( t.updmodel )
+	uppk:w_float( t.upddir.x )
+	uppk:w_float( t.upddir.y )
+	uppk:w_float( t.upddir.z )
+	uppk:w_u8( t.updteam )
+	uppk:w_u8( t.updsquad )
+	uppk:w_u8( t.updgroup )		-- / fill_creature_packet( t, stpk, uppk )
+
+	stpk:w_stringZ( t.baseoutr )
+	stpk:w_stringZ( t.baseinr )
+	stpk:w_u16( t.smtrid )
+	stpk:w_u8( t.smtrtaskactive )
+
+	uppk:w_u16( t.updu16u1 )
+	uppk:w_u16( t.updu16u2 )
+	uppk:w_s32( t.upds32u3 )
+	uppk:w_s32( t.upds32u4 )
+					-- / fill_monster_packet( t, stpk, uppk )
+
+	stpk:w_stringZ( t.skeleton )	-- fill_skeleton_packet( t, stpk )
+	stpk:w_u8( t.skeleton_flags )
+	stpk:w_u16( t.source_id )	-- / fill_skeleton_packet( t, stpk )
+
+	stpk:w_u16( t.spec_obj_id )
+	v = t.job_online	-- variable re-use; v объявлена выше
+	if t.state then stpk:w_u8( v + 4 )
+	else stpk:w_u8( v )
+	end
+
+	if v == 3 then stpk:w_stringZ( t.job_online_condlist ) end
+	stpk:w_u8( t.was_in_smtr )
+	for i, v in ipairs( t.stunk1 ) do stpk:w_u8( v ) end
+	-- / fill_se_monster_packet( t, stpk, uppk )
+
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function fill_human_packet( t, stpk, uppk )
+
+	stpk:w_s32( t.money )		-- fill_trader_packet( t, stpk )
+	stpk:w_stringZ( t.profile )
+	stpk:w_s32( t.infammo )
+	stpk:w_stringZ( t.class )
+	stpk:w_s32( t.communityid )
+	stpk:w_s32( t.rank )
+	stpk:w_s32( t.reputation )
+	stpk:w_stringZ( t.charname )	-- /
+
+					-- fill_monster_packet( t, stpk, uppk )
+					-- fill_creature_packet( t, stpk, uppk )
+					-- fill_dynamic_object_visual( t, stpk )
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+					-- / fill_dynamic_object_visual( t, stpk )
+	stpk:w_u8( t.team )
+	stpk:w_u8( t.squad )
+	stpk:w_u8( t.group )
+	stpk:w_float( t.health )
+
+	local v = t.crvu32u16u1		-- writevu32u16( stpk, t.crvu32u16u1 )
+	local n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	v = t.crvu32u16u2		-- writevu32u16( stpk, t.crvu32u16u2 )
+	n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	stpk:w_u16( t.killerid )
+	v = t.game_death_time		-- writevu8u8( stpk, t.game_death_time )
+	stpk:w_u8( v[1] ); stpk:w_u8( v[2] ); stpk:w_u8( v[3] ); stpk:w_u8( v[4] )
+	stpk:w_u8( v[5] ); stpk:w_u8( v[6] ); stpk:w_u8( v[7] ); stpk:w_u8( v[8] )
+
+	uppk:w_float( t.updhealth )
+	uppk:w_s32( t.upds32u1 )
+	uppk:w_u8( t.updu8u2 )
+	uppk:w_float( t.updpos.x )
+	uppk:w_float( t.updpos.y )
+	uppk:w_float( t.updpos.z )
+	uppk:w_float( t.updmodel )
+	uppk:w_float( t.upddir.x )
+	uppk:w_float( t.upddir.y )
+	uppk:w_float( t.upddir.z )
+	uppk:w_u8( t.updteam )
+	uppk:w_u8( t.updsquad )
+	uppk:w_u8( t.updgroup )		-- / fill_creature_packet( t, stpk, uppk )
+					
+	stpk:w_stringZ( t.baseoutr )
+	stpk:w_stringZ( t.baseinr )
+	stpk:w_u16( t.smtrid )
+	stpk:w_u8( t.smtrtaskactive )
+
+	uppk:w_u16( t.updu16u1 )
+	uppk:w_u16( t.updu16u2 )
+	uppk:w_s32( t.upds32u3 )
+	uppk:w_s32( t.upds32u4 )	-- / fill_monster_packet( t, stpk, uppk )
+
+	writevu32u8( stpk, t.huvu32u8u1 )
+	writevu32u8( stpk, t.huvu32u8u2 )
+end
+
+
+function fill_stalker_packet( t, stpk, uppk )
+	fill_human_packet( t, stpk, uppk )
+
+	stpk:w_stringZ( t.skeleton )	-- fill_skeleton_packet( t, stpk )
+	stpk:w_u8( t.skeleton_flags )
+	stpk:w_u16( t.source_id )	-- /
+
+	uppk:w_stringZ( t.hellodlg )
+	for i, v in ipairs( t.stunk1 ) do stpk:w_u8( v ) end
+end
+
+
+function write_stalker_params( t, obj, online )
+	local stpk = net_packet()
+	local uppk = net_packet()
+
+	-- fill_stalker_packet( t, stpk, uppk )
+
+					-- fill_human_packet( t, stpk, uppk )
+	stpk:w_s32( t.money )		-- fill_trader_packet( t, stpk )
+	stpk:w_stringZ( t.profile )
+	stpk:w_s32( t.infammo )
+	stpk:w_stringZ( t.class )
+	stpk:w_s32( t.communityid )
+	stpk:w_s32( t.rank )
+	stpk:w_s32( t.reputation )
+	stpk:w_stringZ( t.charname )	-- / fill_trader_packet( t, stpk )
+
+					-- fill_monster_packet( t, stpk, uppk )
+					-- fill_creature_packet( t, stpk, uppk )
+					-- fill_dynamic_object_visual( t, stpk )
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+					-- / fill_dynamic_object_visual( t, stpk )
+	stpk:w_u8( t.team )
+	stpk:w_u8( t.squad )
+	stpk:w_u8( t.group )
+	stpk:w_float( t.health )
+
+	local v = t.crvu32u16u1		-- writevu32u16( stpk, t.crvu32u16u1 )
+	local n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	v = t.crvu32u16u2		-- writevu32u16( stpk, t.crvu32u16u2 )
+	n = #v
+	stpk:w_s32( n )
+	for i = 1, n do stpk:w_u16( v[i] ) end
+
+	stpk:w_u16( t.killerid )
+	v = t.game_death_time		-- writevu8u8( stpk, t.game_death_time )
+	stpk:w_u8( v[1] ); stpk:w_u8( v[2] ); stpk:w_u8( v[3] ); stpk:w_u8( v[4] )
+	stpk:w_u8( v[5] ); stpk:w_u8( v[6] ); stpk:w_u8( v[7] ); stpk:w_u8( v[8] )
+
+	uppk:w_float( t.updhealth )
+	uppk:w_s32( t.upds32u1 )
+	uppk:w_u8( t.updu8u2 )
+	uppk:w_float( t.updpos.x )
+	uppk:w_float( t.updpos.y )
+	uppk:w_float( t.updpos.z )
+	uppk:w_float( t.updmodel )
+	uppk:w_float( t.upddir.x )
+	uppk:w_float( t.upddir.y )
+	uppk:w_float( t.upddir.z )
+	uppk:w_u8( t.updteam )
+	uppk:w_u8( t.updsquad )
+	uppk:w_u8( t.updgroup )		-- / fill_creature_packet( t, stpk, uppk )
+					
+	stpk:w_stringZ( t.baseoutr )
+	stpk:w_stringZ( t.baseinr )
+	stpk:w_u16( t.smtrid )
+	stpk:w_u8( t.smtrtaskactive )
+
+	uppk:w_u16( t.updu16u1 )
+	uppk:w_u16( t.updu16u2 )
+	uppk:w_s32( t.upds32u3 )
+	uppk:w_s32( t.upds32u4 )	-- / fill_monster_packet( t, stpk, uppk )
+
+	writevu32u8( stpk, t.huvu32u8u1 )
+	writevu32u8( stpk, t.huvu32u8u2 )
+					-- / fill_human_packet( t, stpk, uppk )
+
+	stpk:w_stringZ( t.skeleton )	-- fill_skeleton_packet( t, stpk )
+	stpk:w_u8( t.skeleton_flags )
+	stpk:w_u16( t.source_id )	-- / fill_skeleton_packet( t, stpk )
+
+	uppk:w_stringZ( t.hellodlg )
+	for i, v in ipairs( t.stunk1 ) do stpk:w_u8( v ) end
+	-- / fill_stalker_packet( t, stpk, uppk )
+
+	if not online then	-- запрещено уходить в офлайн
+		local sim = alife()
+		if sim then
+			v = level.object_by_id( obj.id )
+			if v then
+				n = obj.id
+				v:stop_talk()
+				force_offline[ n ] = 1
+				sim:set_switch_online( n, false )
+				sim:set_switch_offline( n, true )
+	end	end	end
+
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function fill_shape_packet( t, stpk )
+	local v = t.shapes
+	local n = #v
+	stpk:w_u8( n )
+	local vv
+	for i = 1, n do
+		vv = v[i]
+		if vv.shtype == 0 then
+			stpk:w_u8( 0 ); stpk:w_vec3( vv.center ); stpk:w_float( vv.radius )
+		else
+			stpk:w_u8( vv.shtype )
+			stpk:w_vec3( vv.v1 ); stpk:w_vec3( vv.v2 ); stpk:w_vec3( vv.v3 )
+			stpk:w_vec3( vv.offset )
+	end	end
+end
+
+
+function set_anomaly_data( t, obj )
+	local stpk = net_packet()
+	-- local uppk = net_packet()
+
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--	
+
+	local v = t.shapes		-- fill_shape_packet( t, stpk )
+	local n = #v
+	stpk:w_u8( n )
+	local vv
+	for i = 1, n do
+		vv = v[i]
+		if vv.shtype == 0 then
+			stpk:w_u8( 0 ); stpk:w_vec3( vv.center ); stpk:w_float( vv.radius )
+		else
+			stpk:w_u8( vv.shtype )
+			stpk:w_vec3( vv.v1 ); stpk:w_vec3( vv.v2 ); stpk:w_vec3( vv.v3 )
+			stpk:w_vec3( vv.offset )
+	end	end			--
+
+	stpk:w_u8( t.restrictor_type )
+	stpk:w_float( t.max_power )
+	stpk:w_s32( t.owner_id )
+	stpk:w_s32( t.enabled_time )
+	stpk:w_s32( t.disabled_time )
+	stpk:w_s32( t.start_time_shift )
+	stpk:w_float( t.offline_interactive_radius )
+	stpk:w_u16( t.artefact_spawn_count )
+	stpk:w_s32( t.artefact_position_offset )
+	stpk:w_u8( t.last_spawn_time_present )
+
+	stpk:r_seek( 0 )
+	-- uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	-- obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function set_lc_data( t, obj )
+	local pk = net_packet()
+	obj:STATE_Write( pk )
+	pk:w_begin( t.game_vertex_id )
+	pk:w_float( t.distance )
+	pk:w_s32( t.direct_control )
+	pk:w_s32( t.level_vertex_id )
+	pk:w_s32( t.object_flags )
+	pk:w_stringZ( t.custom_data )
+	pk:w_s32( t.story_id )
+	pk:w_s32( t.spawn_story_id )
+
+	local v = t.shapes	-- fill_shape_packet( t, stpk )
+	local n = #v
+	pk:w_u8( n )
+	local vv
+	for i = 1, n do
+		vv = v[i]
+		if vv.shtype == 0 then
+			pk:w_u8( 0 ); pk:w_vec3( vv.center ); pk:w_float( vv.radius )
+		else
+			pk:w_u8( vv.shtype )
+			pk:w_vec3( vv.v1 ); pk:w_vec3( vv.v2 ); pk:w_vec3( vv.v3 )
+			pk:w_vec3( vv.offset )
+	end	end		--
+
+	pk:w_u8( t.restrictor_type )
+	pk:w_u16( t.dest_game_vertex_id )
+	pk:w_s32( t.dest_level_vertex_id )
+	pk:w_vec3( t.dest_position )
+	pk:w_vec3( t.dest_direction )
+	pk:w_stringZ( t.dest_level_name )
+	pk:w_stringZ( t.dest_graph_point )
+	pk:w_u8( t.silent_mode )
+	pk:r_seek( 0 )
+	obj:STATE_Read( pk, pk:w_tell() )
+end
+
+
+function set_spawner_data( t, obj )
+	local stpk = net_packet()
+	-- local uppk = net_packet()
+
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	local v = t.shapes		-- fill_shape_packet( t, stpk )
+	local n = #v
+	stpk:w_u8( n )
+	local vv
+	for i = 1, n do
+		vv = v[i]
+		if vv.shtype == 0 then
+			stpk:w_u8( 0 ); stpk:w_vec3( vv.center ); stpk:w_float( vv.radius )
+		else
+			stpk:w_u8( vv.shtype )
+			stpk:w_vec3( vv.v1 ); stpk:w_vec3( vv.v2 ); stpk:w_vec3( vv.v3 )
+			stpk:w_vec3( vv.offset )
+	end	end			--
+
+	stpk:w_u8( t.restrictor_type )
+	stpk:w_u8( t.spawned_obj_count )
+
+	stpk:r_seek( 0 )
+	-- uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	-- obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function set_restrictor_data( t, obj )
+	local stpk = net_packet()
+	-- local uppk = net_packet()
+
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	local v = t.shapes		-- fill_shape_packet( t, stpk )
+	local n = #v
+	stpk:w_u8( n )
+	local vv
+	for i = 1, n do
+		vv = v[i]
+		if vv.shtype == 0 then
+			stpk:w_u8( 0 ); stpk:w_vec3( vv.center ); stpk:w_float( vv.radius )
+		else
+			stpk:w_u8( vv.shtype )
+			stpk:w_vec3( vv.v1 ); stpk:w_vec3( vv.v2 ); stpk:w_vec3( vv.v3 )
+			stpk:w_vec3( vv.offset )
+	end	end			--
+
+	stpk:w_u8( t.restrictor_type )
+
+	stpk:r_seek( 0 )
+	-- uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	-- obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function fill_object_physic_packet( t, stpk )
+	stpk:w_s32( t.physic_type )
+	stpk:w_float( t.mass )
+	stpk:w_stringZ( t.fixed_bones )
+end
+
+
+function set_breakable_data( t, obj )
+	local stpk = net_packet()
+	-- local uppk = net_packet()
+
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+
+	stpk:w_s32( t.physic_type )	-- fill_object_physic_packet( t, stpk )
+	stpk:w_float( t.mass )
+	stpk:w_stringZ( t.fixed_bones )	--
+
+	stpk:r_seek( 0 )
+	-- uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	-- obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function set_destroyable_data( t, obj )
+	local stpk = net_packet()
+	-- local uppk = net_packet()
+	
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+
+	stpk:w_stringZ( t.skeleton )	-- fill_skeleton_packet( t, stpk )
+	stpk:w_u8( t.skeleton_flags )
+	stpk:w_u16( t.source_id )	-- / fill_skeleton_packet( t, stpk )
+
+	stpk:w_s32( t.physic_type )	-- fill_object_physic_packet( t, stpk )
+	stpk:w_float( t.mass )
+	stpk:w_stringZ( t.fixed_bones )	--
+
+	stpk:r_seek( 0 )
+	-- uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	-- obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function set_invbox_data( t, obj )
+	local stpk = net_packet()
+	-- local uppk = net_packet()
+	
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+
+	stpk:r_seek( 0 )
+	-- uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	-- obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function fill_item_packet( t, stpk, uppk )
+	stpk:w_float( t.condition )
+	uppk:w_u8( t.updnum_items )
+	local p = t.updpos
+	uppk:w_float( p.x )
+	uppk:w_float( p.y )
+	uppk:w_float( p.z )
+	local v = t.updcse_alife_item__unk1_q8v4-- writevu8uN( uppk, t.updcse_alife_item__unk1_q8v4 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+	v = t.updcse_alife_item__unk2_q8v3	-- writevu8uN( uppk, t.updcse_alife_item__unk2_q8v3 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+	v = t.updcse_alife_item__unk3_q8v3	-- writevu8uN( uppk, t.updcse_alife_item__unk3_q8v3 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+end
+
+
+function set_item_data( t, obj )
+	local stpk=net_packet()
+	local uppk=net_packet()
+
+
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+
+	stpk:w_float( t.condition )	-- fill_item_packet( t, stpk, uppk )
+	uppk:w_u8( t.updnum_items )
+	local p = t.updpos
+	uppk:w_float( p.x )
+	uppk:w_float( p.y )
+	uppk:w_float( p.z )
+	local v = t.updcse_alife_item__unk1_q8v4-- writevu8uN( uppk, t.updcse_alife_item__unk1_q8v4 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+	v = t.updcse_alife_item__unk2_q8v3	-- writevu8uN( uppk, t.updcse_alife_item__unk2_q8v3 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+	v = t.updcse_alife_item__unk3_q8v3	-- writevu8uN( uppk, t.updcse_alife_item__unk3_q8v3 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+					-- /fill_item_packet( t, stpk, uppk )
+	stpk:r_seek(0)
+	uppk:r_seek(0)
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function fill_item_ammo_packet( t, stpk, uppk )
+	stpk:w_u16( t.ammo_left )
+	uppk:w_u16( t.updammo_left )
+end
+
+
+function set_ammo_data( t, obj )
+	local stpk = net_packet()
+	local uppk = net_packet()
+
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk )
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+
+	stpk:w_float( t.condition )	-- fill_item_packet( t, stpk, uppk )
+	uppk:w_u8( t.updnum_items )
+	local v = t.updpos
+	uppk:w_float( v.x )
+	uppk:w_float( v.y )
+	uppk:w_float( v.z )
+	v = t.updcse_alife_item__unk1_q8v4	-- writevu8uN( uppk, t.updcse_alife_item__unk1_q8v4 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+	v = t.updcse_alife_item__unk2_q8v3	-- writevu8uN( uppk, t.updcse_alife_item__unk2_q8v3 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+	v = t.updcse_alife_item__unk3_q8v3	-- writevu8uN( uppk, t.updcse_alife_item__unk3_q8v3 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+
+	stpk:w_u16( t.ammo_left )	-- fill_item_ammo_packet( t, stpk, uppk )
+	uppk:w_u16( t.updammo_left )	--
+
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+function fill_item_weapon_packet( t, stpk, uppk )
+	stpk:w_u16( t.ammo_current )
+	stpk:w_u16( t.ammo_elapsed )
+	stpk:w_u8( t.weapon_state )
+	stpk:w_u8( t.addon_flags )
+	stpk:w_u8( t.ammo_type )
+
+	uppk:w_u8( t.updcondition )
+	uppk:w_u8( t.updweapon_flags )
+	uppk:w_u16( t.updammo_elapsed )
+	uppk:w_u8( t.updaddon_flags )
+	uppk:w_u8( t.updammo_type )
+	uppk:w_u8( t.updweapon_state )
+	uppk:w_u8( t.updweapon_zoom )
+	uppk:w_u8( t.updcurrent_fire_mode )
+end
+
+
+function set_weapon_data( t, obj )
+	local stpk = net_packet()
+	local uppk = net_packet()
+	
+	stpk:w_u16( t.gvid )		-- fill_object_packet( t, stpk)
+	stpk:w_float( t.obf32u1 )
+	stpk:w_s32( t.obs32u2 )
+	stpk:w_s32( t.lvid )
+	stpk:w_s32( t.oflags )
+	stpk:w_stringZ( t.custom )
+	stpk:w_s32( t.sid )
+	stpk:w_s32( t.obs32u3 )		--
+
+	stpk:w_stringZ( t.visual )	-- fill_visual_packet( t, stpk )
+	stpk:w_u8( t.vsu8u1 )		--
+
+	stpk:w_float( t.condition )		-- fill_item_packet( t, stpk, uppk )
+	uppk:w_u8( t.updnum_items )
+	local v = t.updpos
+	uppk:w_float( v.x )
+	uppk:w_float( v.y )
+	uppk:w_float( v.z )
+	local v = t.updcse_alife_item__unk1_q8v4-- writevu8uN( uppk, t.updcse_alife_item__unk1_q8v4 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+	v = t.updcse_alife_item__unk2_q8v3	-- writevu8uN( uppk, t.updcse_alife_item__unk2_q8v3 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end
+	v = t.updcse_alife_item__unk3_q8v3	-- writevu8uN( uppk, t.updcse_alife_item__unk3_q8v3 )
+	for i = 1, #v do uppk:w_u8( v[i] ) end	-- / fill_item_packet( t, stpk, uppk )
+
+	stpk:w_u16( t.ammo_current )		-- fill_item_weapon_packet( t, stpk, uppk )
+	stpk:w_u16( t.ammo_elapsed )
+	stpk:w_u8( t.weapon_state )
+	stpk:w_u8( t.addon_flags )
+	stpk:w_u8( t.ammo_type )
+
+	uppk:w_u8( t.updcondition )
+	uppk:w_u8( t.updweapon_flags )
+	uppk:w_u16( t.updammo_elapsed )
+	uppk:w_u8( t.updaddon_flags )
+	uppk:w_u8( t.updammo_type )
+	uppk:w_u8( t.updweapon_state )
+	uppk:w_u8( t.updweapon_zoom )
+	uppk:w_u8( t.updcurrent_fire_mode )	-- / fill_item_weapon_packet( t, stpk, uppk )
+
+	stpk:r_seek( 0 )
+	uppk:r_seek( 0 )
+	obj:STATE_Read( stpk, stpk:w_tell() )
+	obj:UPDATE_Read( uppk, uppk:w_tell() )
+end
+
+
+
+local string_gfind, string_find, string_match = string.gfind, string.find, string.match
+
+-- комментарии в профилях и cd не использовать ! Сохраняются в cd как есть !
+function parse_custom_data( str )
+	local t = {}
+	if str then
+		local ts
+		for sect, data in string_gfind( str, "%s*%[([^%]]*)%]%s*([^%[%z]*)%s*" ) do
+			ts = {}
+			t[sect] = ts
+			for s in string_gfind( data or "", "([^\n]*)\n*" ) do
+				if string_find( s, "=" ) then
+					for k, v in string_gfind( s, "([^=]-)%s*=%s*(.*)" ) do
+						if v then
+							k = string_match( k, "^%s*(.*%S)" )
+							if k and k ~= "" then
+								ts[k] = string_match( v, "^%s*(.*%S)" )
+					end	end	end
+				else
+					local k = string_match( s, "^%s*(.*%S)" )
+					if k and k ~= "" then ts[k] = "<<no_value>>" end
+	end	end	end	end
+	return t
+end
+
+
+function gen_custom_data( t )	-- как и выше - для "мало-ли кого". Копировать из отдельного скрипта локально.
+	local s = ""
+	for k, v in pairs( t ) do
+		s = s .. "[" .. k .. "]\n"
+		for kk, vv in pairs( v ) do
+			if vv ~= "<<no_value>>" then s = s .. kk .. " = " .. vv .. "\n"
+			else s = s .. kk .. "\n"
+	end	end	end
+	return s
+end
+
+
+function init()
+	return true
+end

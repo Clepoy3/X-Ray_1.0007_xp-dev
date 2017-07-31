@@ -1,0 +1,133 @@
+function EnableDevice(iowner)
+	if oDevice or db.actor==nil or db.actor:alive()~=true then return end
+	amkCreateItemActor("zloi_admin")
+	oDevice = sAdminBook(iowner)
+	level.start_stop_menu(oDevice, true)	
+end
+
+function DisableDevice()
+	oDevice	= nil
+end
+
+function UseAdminBook(oItem)
+	if oItem:section() == "zloi_admin" then		
+		amk.start_timer("UseAdminBook", 0.5, oItem:id())
+	end
+end
+
+class "sAdminBook" (CUIScriptWnd)
+
+local pageNMB = 0
+local uFileSystem = getFS()
+local page_FList = uFileSystem:file_list_open("$game_textures$","sysadmin\\page\\",FS.FS_ListFiles)
+
+function sAdminBook:__init(iowner) super()	
+	self.iowner = iowner
+	self:InitInterface()	
+end
+
+function sAdminBook:__finalize() 
+end
+
+function sAdminBook:InitInterface()	
+
+	self:Init(0,0,1024,768)
+	
+	self.screen    = {x = 0, y = 0, width = 1024, height = 768}
+	self.main_rect = {x = 0, y = 0,
+					  width  = 768,
+					  height = 768}
+	self.main_rect.x = (self.screen.width  - self.main_rect.width )/2
+	self.main_rect.y = (self.screen.height - self.main_rect.height)/2
+	
+	self.main_frame = CUIStatic()
+	self.main_frame:SetAutoDelete(true)
+	self.main_frame:SetWindowName("aBook_main")
+	self.main_frame:InitTexture("sysadmin\\AdminB")
+	self.main_frame:SetStretchTexture(true)
+	self.main_frame:SetTextureOffset(self.main_rect.x,self.main_rect.y)
+	self.main_frame:Init(0, 
+						 0, 
+						 self.main_rect.width, 
+						 self.main_rect.height)
+
+	self:AttachChild(self.main_frame)
+	
+	self.btn_next = CUI3tButton()
+	self.btn_next:SetAutoDelete(true) 
+	self.btn_next:SetWindowName("next_page")
+	self.btn_next:Init("sysadmin\\btn\\next_btn",self.main_rect.width-100,self.main_rect.height-80,64,32)
+	self.btn_next:SetFont(GetFontLetterica25())
+	self.btn_next:SetTextAlign(CGameFont.alLeft)
+	self.btn_next:SetTextColor(238,0,0,0)  
+	self.btn_next:SetTextY(1)
+	self.btn_next:SetTextX(-7)
+	self:AttachChild(self.btn_next)
+	self:AddCallback("next_page", ui_events.BUTTON_CLICKED, self.OnButton_next_clicked, self)
+
+	self.btn_back = CUI3tButton()
+	self.btn_back:SetAutoDelete(true) 
+	self.btn_back:SetWindowName("back_page")
+	self.btn_back:Init("sysadmin\\btn\\back_btn",self.main_rect.width-170,self.main_rect.height-80,64,32)
+	self:AttachChild(self.btn_back)
+	self:AddCallback("back_page", ui_events.BUTTON_CLICKED, self.OnButton_back_clicked, self)
+	
+	self.btn_close = CUI3tButton()
+	self.btn_close:SetAutoDelete(true) 
+	self.btn_close:SetWindowName("close_book")
+	self.btn_close:Init("sysadmin\\btn\\close_btn",self.main_rect.width-20,self.main_rect.height-80,64,32)
+	self:AttachChild(self.btn_close)
+	self:AddCallback("close_book", ui_events.BUTTON_CLICKED, self.OnButton_close_clicked, self)
+
+	local pageNMB = page_FList:Size()
+    if pageNMB > 0 then
+		pageNMB = pageNMB - (pageNMB - 1)
+	end	
+	
+end
+
+function sAdminBook:OnButton_next_clicked()
+	local f_cnt = page_FList:Size()
+	pageNMB = pageNMB + 1
+	if pageNMB > f_cnt then 
+		pageNMB = pageNMB - f_cnt
+	end
+	self.main_frame:InitTexture("sysadmin\\page\\page_"..pageNMB..".dds")
+	self.btn_next:SetText(pageNMB)
+end
+
+function sAdminBook:OnButton_back_clicked()
+	local f_cnt = page_FList:Size()
+	pageNMB = pageNMB - 1
+	if pageNMB < 1 then 
+		pageNMB = f_cnt
+	end
+	self.main_frame:InitTexture("sysadmin\\page\\page_"..pageNMB..".dds")
+	self.btn_next:SetText(pageNMB)
+end
+
+function sAdminBook:OnButton_close_clicked()
+	self:Quit()
+end
+
+function sAdminBook:OnKeyboard(DIK, KeyboardAction)
+	CUIScriptWnd.OnKeyboard(self, DIK, KeyboardAction)
+	if KeyboardAction == ui_events.WINDOW_KEY_PRESSED then
+		if DIK == DIK_keys.DIK_ESCAPE then
+			self:Quit()
+		end
+	end
+	return true
+end
+
+function sAdminBook:Quit()
+	DisableDevice()
+	self:GetHolder():start_stop_menu(self,true)
+	pageNMB = 0
+end
+
+function amkCreateItemActor(sItemSection)
+	if alife() and sItemSection then		
+		return alife():create(sItemSection, db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id(),db.actor:id())
+	end
+end

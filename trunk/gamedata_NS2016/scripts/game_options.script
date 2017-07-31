@@ -1,0 +1,65 @@
+--[[-------------------------- опции ----------------------------]]
+del_horror_mops			= true		-- удаление оставшихся монстров после ЧУ
+no_anoms_respawn		= true		-- отключить переспавн аномалий при загрузке игры
+psy_sounds				= true		-- пси-звук при выбросе (нудный звук как в саркафаге)
+run_blowout_pp			= true			-- принудительное отключение и включение выбросов в игре (в меню настроек не вынесено (sapsan))
+run_horror_effect		= true		-- включение ЧУ в игре
+sms_sound				= true		-- включить голосовое сопровождение SMS-ок
+gg_kick					= true		-- включить выбивание предметов из рук ГГ
+respawn_frequent		= false		-- включить частый респавн
+zombie_team				= true		-- включить превращение мёртвых сталкеров в зомби после выброса
+game_pause				= true		-- включить паузу после старта
+death_stat				= true		-- изменение сложности игры в зависимости от статистики смертей ГГ
+death_stat_down			= 13		-- количество смертей за календарный игровой день перед понижением сложности
+death_stat_up			= 1			-- максимальное количество смертей за день для повышения сложности
+thirst_enable			= true		-- включить жажду
+kostri					= true		-- затухание костров без сталкеров
+zombie_checkup			= false		-- хит при обыске зомбированных сталкеров
+off_corpses_debug		= 0			-- включение отладки уборщика (1 - только трупы, 2 - трупы и предметы, 3 - трупы, предметы и оружие)
+interative_music		= false		-- музыка во время активных действий
+suithud_enable			= false		-- худ костюма
+suithud_blurs_enable	= true		-- эффект запотевания стекла в костюме
+blood					= true		-- эффект ранения
+bleed					= true		-- эффект кровотечения
+shkala_rad				= true		-- показывать шкалу радиации
+money					= true		-- выпадение денег с нпс
+money_real				= true		-- Денег рандомно и мало
+blow_time_basis			= 60		-- время между выбросами, часы +- 15 %
+autosave				= false		-- Автосохранение по событиям (временами глючит)
+health_panic	 		= false		-- здоровье непися влияет на их порог паники
+hear_and_panic			= false		-- услышанное неписями влияет на их мораль
+hear_and_panic_statistic = false		-- статистика предыдущего
+minimapSpots_showEnemyLiveOnNovice = true	-- отображение врагов на миникарте красными точками на сложности "новичёк"
+minimapSpots_hideEnemyDeathOnMaster = true	-- не отображать трупы врагов на миникарте серыми точками на сложности "мастер"
+
+function init()
+	interative_music = amk.load_variable("option_mus", interative_music)
+	suithud_enable = amk.load_variable("option_hud", suithud_enable)
+	suithud_blurs_enable = amk.load_variable("option_hud_blurs", suithud_blurs_enable)
+	blood = amk.load_variable("option_blood", blood)
+	bleed = amk.load_variable("option_bleed", bleed)
+	shkala_rad = amk.load_variable("option_rad", shkala_rad)
+	money = amk.load_variable("money", money)
+	money_real = amk.load_variable("money_real", money_real)
+	zombie_checkup = amk.load_variable("zombie_checkup", zombie_checkup)
+	kostri = amk.load_variable("kostri", kostri)
+	thirst_enable = amk.load_variable("thirst_enable", thirst_enable)
+	game_pause = amk.load_variable("game_pause", game_pause)
+	death_stat = amk.load_variable("death_stat", death_stat)
+	death_stat_down = amk.load_variable("death_stat_down", death_stat_down)
+	death_stat_up = amk.load_variable("death_stat_up", death_stat_up)
+	if death_stat_up >= death_stat_down then
+		death_stat_down = death_stat_up + 1
+		amk.save_variable("death_stat_down", death_stat_down)
+	end
+	zombie_team = amk.load_variable("zombie_team", zombie_team)
+	psy_sounds = amk.load_variable("psy_sounds", psy_sounds)
+	sms_sound = amk.load_variable("sms_sound", sms_sound)
+	gg_kick = amk.load_variable("gg_kick", gg_kick)
+	respawn_frequent = amk.load_variable("respawn_frequent", respawn_frequent)
+	run_horror_effect = amk.load_variable("run_horror_effect", run_horror_effect)
+	no_anoms_respawn = amk.load_variable("no_anoms_respawn", no_anoms_respawn)
+	del_horror_mops = amk.load_variable("del_horror_mops", del_horror_mops)
+	--autosave = amk.load_variable("autosave", autosave)
+	blow_time_basis = amk.load_variable("blow_time_basis", blow_time_basis)
+end

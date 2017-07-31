@@ -1,0 +1,290 @@
+---' revision and adaptation for NS_2013 lsclon 22.01.13 '---
+
+--[[
+Изменения script_version:
+  3 - сохранение поля job_online
+  6 - сохранение поля death_droped
+]]
+
+local no_ranking = {
+["arena_enemy"] = true,
+["monolith"] = true,
+["sniper"] = true,
+["stranger"] = true,
+["trader"] = true,
+["zombied"] = true
+}
+
+---' ---------------------------------------------
+class "se_stalker" (cse_alife_human_stalker)
+---' ---------------------------------------------
+--' Конструктор:
+function se_stalker:__init(section) super(section)
+	self.ini = nil
+	self.init_params = false
+	self.smart_terrain_conditions = nil
+	self.smart_terrain_conditions_initialized = false
+	-- этот флаг берётся из работы смарта
+	-- true     = всегда в онлайне
+	-- false    = всегда в офлайне
+	-- condlist = условие, которое отпределяет true или false
+	-- nil      = смарту всё равно
+	self.job_online = nil
+	self.job_online_condlist = nil
+	self.death_droped = false       --' Генерил ли персонаж выпадаемые предметы или нет.
+	self.torch_clon_added = false
+	self.torch_on = false
+end
+
+--' Сохранение
+function se_stalker:STATE_Write (packet)
+	cse_alife_human_stalker.STATE_Write (self, packet)
+
+	if self.job_online == true then
+		packet:w_u8(0)
+	elseif self.job_online == false then
+		packet:w_u8(1)
+	elseif self.job_online == nil then
+		packet:w_u8(2)
+	else
+		packet:w_u8(3)
+		packet:w_stringZ(self.job_online_condlist)
+	end
+
+	local flags = 0
+	if self.was_in_smart_terrain then flags = bit_or(flags, 1) end
+	if self.torch_on then flags = bit_or(flags, 2) end	-- Запишем состояние фонарика. (sapsan)
+	if self.cut_part then flags = bit_or(flags, 4) end
+	packet:w_u8(flags)
+	--packet:w_bool(self.was_in_smart_terrain)
+
+	flags = 0
+	-- Выдан ли лут ?
+	--[[if self.death_droped then
+		flags = 1
+	end
+	-- Запишем состояние раненности.
+	if self.wounded and not self.death_droped then
+		flags = 2
+	end]]
+	if self.death_droped then flags = bit_or(flags, 1) end		-- Выдан ли лут ?
+ 	if self.wounded then flags = bit_or(flags, 2) end		-- Запишем состояние раненности.
+	if self.treasure_processed then flags = bit_or(flags, 4) end	-- Запишем состояние выданного тайника.
+	if self.torch_clon_added then flags = bit_or(flags, 8) end	-- Запишем состояние выданного клона фонарика. (sapsan)
+	
+	-- epic fail (sapsan)
+	--if self.torch_on then flags = bit_or(flags, 16) end	-- Запишем состояние фонарика. (sapsan)
+	packet:w_u8(flags)
+end
+
+--' Востоновление
+function se_stalker:STATE_Read (packet, size)
+	cse_alife_human_stalker.STATE_Read (self, packet, size)
+
+	local t = packet:r_u8()
+	t = bit_and(t,3)
+	if t == 0 then
+		self.job_online = true
+	elseif t == 1 then
+		self.job_online = false
+	elseif t == 2 then
+		self.job_online = nil
+	else
+		self.job_online_condlist = packet:r_stringZ()
+		self.job_online = xr_logic.parse_condlist( self.job_online_condlist, nil, "se_stalker:STATE_Read", "job_online" )
+	end
+
+	local flags = packet:r_u8()
+	self.was_in_smart_terrain = bit_and(flags, 1) ~= 0
+	self.torch_on = bit_and(flags, 2) ~= 0-- Прочитаем состояние фонарика. (sapsan)
+	self.cut_part = bit_and(flags, 4) ~= 0
+	--self.was_in_smart_terrain = packet:r_bool()
+
+	flags = packet:r_u8()
+	--[[if flags and tonumber(flags) == 1 then
+		self.death_droped = true
+		self.torch_clon_added = bit_and(flags, 8) ~= 0-- Прочитаем состояние выданного клона фонарика. (sapsan)
+		self.torch_on = bit_and(flags, 16) ~= 0-- Прочитаем состояние фонарика. (sapsan)
+	end
+	if not self.death_droped and tonumber(flags) == 2 then
+		self.wounded = true
+	end]]
+	self.death_droped = bit_and(flags, 1) ~= 0
+	self.wounded = bit_and(flags, 2) ~= 0		-- Прочитаем состояние раненности.
+	self.treasure_processed = bit_and(flags, 4) ~= 0-- Прочитаем состояние выданного тайника.
+	self.torch_clon_added = bit_and(flags, 8) ~= 0-- Прочитаем состояние выданного клона фонарика. (sapsan)
+	
+	-- epic fail (sapsan)
+	--self.torch_on = bit_and(flags, 16) ~= 0-- Прочитаем состояние фонарика. (sapsan)
+end
+
+--' Первичная инициализация
+function se_stalker:on_before_register()
+	self:fill_exclusives()
+end
+
+--' Повысим счетчик эксклюзивности смарта
+function se_stalker:fill_exclusives()
+	self:get_ini()
+	self.smart_terrain_conditions = smart_terrain.read_smart_terrain_conditions(self)
+	if self.smart_terrain_conditions then
+		for name, condlist in pairs(self.smart_terrain_conditions) do
+			smart_terrain.exclusives[name] = (smart_terrain.exclusives[name] or 0) + 1
+		end
+	end
+end
+
+--' Считаем параметры спавна
+function se_stalker:get_ini()
+	if not self.init_params then
+		self.ini = self:spawn_ini()
+		if self.ini:section_exist("spawner") then
+			self.spawner = xr_logic.parse_condlist( self.ini:r_string("spawner","cond"), db.actor, "spawner","cond" )
+		end
+		self.init_params = true
+	end
+end
+
+--' Регистрация
+function se_stalker:on_register()
+	-- Чистим рестрикторы
+	local tbl = amk.read_stalker_params(self)
+	tbl.crvu32u16u2 = {}
+		if self:smart_terrain_id() ~= 65535 then
+			tbl.baseoutr = ""
+			tbl.baseinr = ""
+		end
+	amk.write_stalker_params(tbl,self)
+	cse_alife_human_stalker.on_register(self)
+	
+	if self:alive() then
+		-- регистрация в таблице рангов
+		if actor_stats.add_to_ranking and not no_ranking[self:community()] and self:rank() >= 900 then
+			actor_stats.add_to_ranking(self.id)
+		end
+		-- регистрация в таскменеджере
+		task_manager.get_random_task():register_target(self)
+		if self:smart_terrain_id() == 65535 then
+			self:brain():update()
+		end
+	end
+end
+
+function se_stalker:on_spawn()
+	cse_alife_human_stalker.on_spawn(self)
+end
+
+function se_stalker:can_switch_offline()
+	-- проверим очередь на выход в онлайн
+	if amk.convert_npc[self.id] then
+		return true
+	end
+	-- преоритет гулагу
+	if self.job_online_condlist then
+		return xr_logic.pick_section_from_condlist(db.actor_proxy,self,self.job_online) ~= true
+	elseif self.job_online ~= nil then
+		return not self.job_online
+	end
+	return cse_alife_human_stalker.can_switch_offline(self)
+end
+
+function se_stalker:can_switch_online()
+	-- проверим очередь на выход в онлайн
+	if amk.convert_npc[self.id] then
+		return false
+	end
+	-- преоритет гулагу
+	if self.job_online_condlist then
+		return xr_logic.pick_section_from_condlist(db.actor_proxy,self,self.job_online) ~= nil
+	elseif self.job_online ~= nil then
+		return self.job_online
+	end
+
+	if self.ini == nil or self.spawner == nil then
+		return cse_alife_human_stalker.can_switch_online(self)
+	end
+    
+	if db.actor ~= nil and db.actor:alive () == false then return self.online end    
+    
+	if self.online == false then
+		return (xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil) and cse_alife_human_stalker.can_switch_online(self)
+	elseif xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil then 
+		return true
+	end
+	return false
+end
+
+function se_stalker:on_unregister()
+	cse_alife_human_stalker.on_unregister(self)
+	-- разрегистрация в смарте
+	if self:alive() then
+		local strn_id = self:smart_terrain_id()
+		local strn = strn_id and strn_id ~= 65535 and alife():object(strn_id)
+		if strn then
+			strn:unregister_npc(self)
+		end
+	end
+	-- разрегистрация в таскменеджере
+	task_manager.get_random_task():unregister_target(self)
+	-- удалим из таблицы рангов
+	if actor_stats.remove_from_ranking and not no_ranking[self:community()] and self:rank() >= 900 then
+		actor_stats.remove_from_ranking(self.id)
+	end
+end
+
+function se_stalker:on_death(killer)
+	cse_alife_human_stalker.on_death(self, killer)
+	-- разрегистрация в смарте
+	local strn_id = self:smart_terrain_id()
+	local strn = strn_id and strn_id ~= 65535 and alife():object(strn_id)
+	if strn then
+		strn.gulag:clear_dead(self.id)
+--		strn:unregister_npc(self)
+	end
+	-- удалим из таблицы рангов
+	if actor_stats.remove_from_ranking and not no_ranking[self:community()] and self:rank() >= 900 then
+		actor_stats.remove_from_ranking(self.id)
+	end
+	-- удаляем из таблиц вылеченных
+	local tbl = amk.load_table('wound_enemy',nil)
+	if tbl then
+		for k, v in pairs(tbl) do
+			if k == self.id then
+				tbl[k] = nil
+			end
+		end
+		amk.save_table('wound_enemy',tbl)
+	end
+end
+
+
+--'Торговец
+class "se_trader" (cse_alife_trader)
+
+function se_trader:__init (section) super (section)
+	self.ini = nil
+	self.init_params = false
+	self.spawner = false
+end
+
+function se_trader:on_register()
+	cse_alife_trader.on_register(self)
+	if not self.init_params then
+		self.ini = self:spawn_ini()
+		if self.ini and self.ini:section_exist("spawner") then
+			self.spawner = xr_logic.parse_condlist( self.ini:r_string("spawner","cond"), db.actor, "spawner", "cond" )
+		end
+		self.init_params = true
+	end
+end
+
+function se_trader:can_switch_online()
+	if self.ini and self.spawner then
+		return xr_logic.pick_section_from_condlist(db.actor,self,self.spawner) ~= nil
+	end
+	return cse_alife_trader.can_switch_online(self)
+end
+
+function se_trader:keep_saved_data_anyway()
+	return true
+end

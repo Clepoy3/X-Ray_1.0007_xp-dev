@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding="windows-1251" ?>
+
+<game_information_portions>
+	<info_portion id="price_voron">
+		<article>price_voron</article>
+	</info_portion>
+	<info_portion id="price_voron_mosin">
+		<article>price_voron_mosin</article>
+	</info_portion>
+		<info_portion id="price_dan">
+		<article>price_dan</article>
+	</info_portion>
+		<info_portion id="price_dan_prinesi">
+		<article>price_dan_prinesi</article>
+	</info_portion>
+	<info_portion id="price_maks">
+		<article>price_maks</article>
+	</info_portion>
+
+	<info_portion id="sms_volk">
+		<article>sms_volk</article>
+	</info_portion>
+
+	<info_portion id="krysyk_pomer_start">
+	</info_portion>
+	<info_portion id="krysyk_pomer_have_good">
+	</info_portion>
+	<info_portion id="krysyk_pomer_give_pda">
+	</info_portion>
+	<info_portion id="krysyk_pomer_11_pda">
+	</info_portion>
+	<info_portion id="krysyk_pomer_12_pda">
+	</info_portion>
+	<info_portion id="krysyk_pomer_bar_pda">
+	</info_portion>
+
+	<info_portion id="tolik_pomer_resiver_start">
+		<task>tolik_pomer_resiver</task>
+	</info_portion>
+	<info_portion id="max_pomer_teleport_start">
+		<task>max_pomer_teleport</task>
+	</info_portion>
+
+	<info_portion id="bandit_krisyk_newsinfo"></info_portion>
+	<info_portion id="mil_volk_resiver_newsinfo"></info_portion>
+	<info_portion id="mil_max_teleport_08_newsinfo"></info_portion>
+	<info_portion id="mil_freedom_member0002_umer"></info_portion>
+
+</game_information_portions>

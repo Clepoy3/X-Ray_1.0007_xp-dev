@@ -1,0 +1,23 @@
+[logic]
+active = walker
+
+[walker]
+path_walk = pripyt_kluk_walk
+path_look = pripyt_kluk_look
+danger = danger_ignore
+meet = meet
+on_info = {+put_kluk_sadik2} walker1
+
+[walker1]
+path_walk = kluk_after_seyf_walk
+path_look = kluk_after_seyf_look
+danger = danger_ignore
+meet = meet
+
+[danger_ignore]
+ignore_distance = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true

@@ -1,0 +1,83 @@
+function fake_weapon_effect(section)
+	local length = string.len(section)
+	local real_weapon = string.sub(section, -(length - 5))
+	local slot0 = db.actor:item_in_slot(0)
+	if slot0 ~= nil then
+		local sect0 = slot0:section()
+		local cond0 = slot0:condition()
+		alife():release(alife():object(slot0:id()), true)
+		alife():create("fake_"..sect0, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(), db.actor:id())
+	end
+	alife():create(real_weapon, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(), db.actor:id())
+end
+
+function fake_weapon (st)
+  -- для совместимости оставлен старый способ с распаковкой
+  local arr
+  if type(st) == "table" then
+    arr = st
+  else
+    arr = amk.unpack_array_from_string(st)
+  end
+
+	local oid = arr[1]
+	local sect = arr[2]
+	if alife():object(oid)==nil then
+		fake_weapon_effect(sect)
+	end
+end
+
+function upd_time(time)
+--if monnoroch_options.kostri == 1 then
+--kostri_update()
+--xr_kamp.update(time)
+--end
+end
+
+--[[function kostri_update()
+	if scan_flag == nil then
+		scan_flag = 1
+		local lvl = level.name()
+		local exc_tbl = {
+			["zone_flame_small_0002"] = {"l05_bar"},
+			["lights_camp_fire_omni_r1_r2_0002"] = {"l05_bar"},
+			["lights_camp_fire_omni_r1_r2_0031"] = {"l08_yantar"},
+			["zone_flame_small_0012"] = {"l11_pripyat"},
+			["zone_flame_small_0013"] = {"l11_pripyat"},
+			["zone_flame_small_0024"] = {"l11_pripyat"},
+			["zone_flame_small_0025"] = {"l11_pripyat"},
+			["lights_camp_fire_omni_r1_r2_0011"] = {"l11_pripyat"},
+			["lights_camp_fire_omni_r1_r2_0012"] = {"l11_pripyat"}
+		}
+		for id=1, 65535 do
+			local obj = level.object_by_id(id)
+			if obj then
+				local name = obj:name()
+				local exc_obj = exc_tbl[name]
+				if exc_obj and string.find(exc_obj[1], lvl) then
+				else
+					if obj:section() == "zone_flame_small" then
+						table.insert(xr_kamp.lvl_objs, obj)
+						obj:disable_anomaly()
+					elseif string.find(name, "r1_r2") then
+						table.insert(xr_kamp.lvl_objs, obj)
+						obj:get_hanging_lamp():turn_off()
+					end
+				end
+			end
+		end
+	end
+end]]
+
+--[[function save(packet)
+    if cnt ~= nil  then   
+        monnoroch_utils.save_variable("cnt_var", cnt)
+    end
+end
+
+function load(reader)
+    local mon = monnoroch_utils.load_variable("cnt_var", nil)
+    if mon ~= nil then
+        cnt = mon
+    end
+end]]

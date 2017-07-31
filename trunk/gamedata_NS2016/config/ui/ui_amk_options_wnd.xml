@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+
+<window>
+
+	<background x="0" y="0" width="1024" height="768">
+		<texture x="0" y="0" width="1024" height="768">ui\ui_static_mm_back_07</texture>
+	</background>
+
+
+		
+	<form_for_opt>
+	
+		<form_dlg x="361" y="317" width="494" height="360">
+			<texture></texture>
+		</form_dlg>
+		
+		<btn_okay x="248" y="330" width="123" height="26">
+			<texture>ui_button_s</texture>
+			<text font="graffiti19">ui_inv_ok</text>
+			<text_color>
+				<e r="154" g="218" b="74"/> <t r="154" g="218" b="74"/> <d r="154" g="218" b="74"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</btn_okay>
+		
+		<btn_quit x="370" y="330" width="123" height="26">
+			<texture>ui_button_s</texture>
+			<text font="graffiti19">ui_inv_cancel</text>
+			<text_color>
+				<e r="154" g="218" b="74"/> <t r="154" g="218" b="74"/> <d r="154" g="218" b="74"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</btn_quit>
+		
+		<tab x="1" y="330" width="494" height="26">
+			<button x="0" y="0" width="123" height="26">
+				<texture>ui_button_s</texture>
+				<text font="graffiti19" align="c">ui_mm_opt_game</text>
+				<text_color>
+					<e r="154" g="218" b="74"/> <t r="154" g="218" b="74"/> <h r="154" g="218" b="74"/>
+				</text_color>
+			</button>
+		
+			<button x="123" y="0" width="123" height="26">
+				<texture>ui_button_s</texture>
+				<text font="graffiti19" align="c">РЕЗЕРВ</text>
+				<text_color>
+					<e r="154" g="218" b="74"/> <t r="154" g="218" b="74"/> <h r="154" g="218" b="74"/>
+				</text_color>
+			</button>
+		</tab>
+		
+	</form_for_opt>
+		
+	<form_for_opt1>
+	
+		<form_dlg1 x="361" y="317" width="494" height="330">
+			<texture></texture>
+		</form_dlg1>
+		
+		<check_amk_mus x="10" y="5" width="143" height="20">
+			<options_item entry="amk_mus" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_mus_enabled</text>
+		</check_amk_mus>
+		
+		<check_kostri x="10" y="30" width="143" height="20">
+			<options_item entry="kostri" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">kostri</text>
+		</check_kostri>
+		
+		<check_zombie_checkup x="10" y="55" width="143" height="20">
+			<options_item entry="zombie_checkup" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">zombie_checkup</text>
+		</check_zombie_checkup>
+		
+		<check_money x="10" y="80" width="143" height="20">
+			<options_item entry="money" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">money</text>
+		</check_money>
+		
+		<check_gg_kick x="10" y="105" width="143" height="20">
+			<options_item entry="gg_kick" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">gg_kick</text>
+		</check_gg_kick>
+		
+		<cap_blow_time_basis x="10" y="130" width="73" height="20">
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">blow_time_basis</text>
+		</cap_blow_time_basis>
+		
+		<blow_time_basis_now x="190" y="127" width="20" height="20">
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">blow_time_basis_now</text>
+		</blow_time_basis_now>
+		
+		<spin_blow_time_basis x="220" y="127" width="30" height="20">
+			<options_item entry="blow_time_basis" group="amk_opt_controls"/>
+		</spin_blow_time_basis>
+		
+		<check_death_stat x="10" y="155" width="143" height="20">
+			<options_item entry="death_stat" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">death_stat</text>
+		</check_death_stat>
+		
+		<check_zombie_team x="10" y="180" width="143" height="20">
+			<options_item entry="zombie_team" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">zombie_team</text>
+		</check_zombie_team>
+		
+		<check_run_horror_effect x="10" y="205" width="143" height="20">
+			<options_item entry="run_horror_effect" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">run_horror_effect</text>
+		</check_run_horror_effect>
+		
+		<check_del_horror_mops x="30" y="230" width="143" height="20">
+			<options_item entry="del_horror_mops" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">del_horror_mops</text>
+		</check_del_horror_mops>
+
+		<check_no_anoms_respawn x="10" y="255" width="143" height="20">
+			<options_item entry="no_anoms_respawn" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">no_anoms_respawn</text>
+		</check_no_anoms_respawn>
+
+		<check_amk_hud x="10" y="280" width="143" height="20">
+			<options_item entry="amk_hud" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_hud_enabled</text>
+		</check_amk_hud>
+		
+		<check_amk_hud_blurs x="30" y="305" width="143" height="20">
+			<options_item entry="amk_hud_blurs" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_hud_and_steam_enabled</text>
+		</check_amk_hud_blurs>
+		
+		
+		
+
+		<check_blood x="260" y="5" width="143" height="20">
+			<options_item entry="blood" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">blood</text>
+		</check_blood>
+
+		<check_bleed x="260" y="30" width="143" height="20">
+			<options_item entry="bleed" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">bleed</text>
+		</check_bleed>
+		
+		<check_amk_rad x="260" y="55" width="143" height="20">
+			<options_item entry="amk_rad" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_rad_enabled</text>
+		</check_amk_rad>
+	
+		<check_game_pause x="260" y="80" width="143" height="20">
+			<options_item entry="game_pause" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">game_pause</text>
+		</check_game_pause>
+		
+		<check_psy_sounds x="260" y="105" width="143" height="20">
+			<options_item entry="psy_sounds" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">psy_sounds</text>
+		</check_psy_sounds>
+		
+		<check_sms_sound x="260" y="130" width="143" height="20">
+			<options_item entry="sms_sound" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">sms_sound</text>
+		</check_sms_sound>
+		
+		<check_respawn_frequent x="260" y="155" width="143" height="20">
+			<options_item entry="respawn_frequent" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">respawn_frequent</text>
+		</check_respawn_frequent>
+		
+		<check_thirst_enable x="260" y="180" width="143" height="20">
+			<options_item entry="thirst_enable" group="amk_opt_controls"/>
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">thirst_enable</text>
+		</check_thirst_enable>
+		
+		<cap_amk_treasure x="260" y="207" width="73" height="20">
+			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_treasure</text>
+		</cap_amk_treasure>
+		
+        <radio_amk_treasure x="280" y="231" width="400" height="80" radio="1">
+		    <button x="0" y="0" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_treasure_old</text>
+			</button>
+		    <button x="0" y="25" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_treasure_new</text>
+			</button>
+		    <button x="0" y="50" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_treasure_rare</text>
+			</button>
+		</radio_amk_treasure>
+	
+	</form_for_opt1>
+
+	<form_for_opt2>
+
+		<form_dlg2 x="361" y="317" width="494" height="330">
+			<texture></texture>
+		</form_dlg2>
+		
+		<text_static x="100" y="150" width="300" height="330" complex_mode="1" stretch="1">
+			<text x="0" y="0" align="c" font="graffiti22" r="140" g="11" b="10">Пустая вкладка под дополнительные настройки!</text>
+		</text_static>
+		
+	</form_for_opt2>	
+
+</window>

@@ -1,0 +1,70 @@
+-- Распарсивание и хранение настроек смарт террейнов. Чугай Александр
+
+local string_gmatch = string.gmatch
+
+function abort( ... ) _util.abort( "smart_terrain_params", ... ) end
+
+local ini = ini_file( "misc\\smart_terrain_presets.ltx" )
+
+local t_ranks = {}
+local get_ranks = ranks.get_rank_interval
+
+local stay_times	-- если не опредено - надо читать из конфига
+local presets = {}
+
+
+function load_params()	-- загрузка общих для всех смартов настроек
+	stay_times = {}
+	local r, id, v, t, n
+	local sys_ini = system_ini()
+	for i = 0, sys_ini:line_count( "smart_terrain_stay_time" ) - 1 do
+		r, id, v = sys_ini:r_line( "smart_terrain_stay_time", i, "", "" )
+		-- stay_times[id] = parse_nums( v )
+
+		t, n = {}, 0
+		for s in string_gmatch( v, "([%d%.]+)" ) do n = n + 1; t[n] = s + 0 end
+		stay_times[id] = t
+	end
+end
+
+
+function get_stay_time_interval( name )
+	if not stay_times then load_params() end
+	local t = stay_times[name] or abort( "unknown stay_time interval: %s", name )
+	return t[1], t[2]
+end
+
+
+function read_preset( preset_name )
+	if ini:section_exist( preset_name ) then
+		local preset = {}
+		local r, id, v, tt
+		local rank_min, rank_max
+
+		for i = 0, ini:line_count( preset_name ) - 1 do
+			r, id, v = ini:r_line( preset_name, i, "", "" )
+			rank_min, rank_max = 10000, 0
+			for s in string_gmatch( v, "([^%s%,]+)" ) do
+				tt = t_ranks[s]
+				if not tt then tt = get_ranks( s ); t_ranks[s] = tt end
+				if tt[1] < rank_min then rank_min = tt[1] end
+				if rank_max < tt[2] then rank_max = tt[2] end
+			end
+			preset[id] = { rank_min, rank_max }
+		end
+		presets[preset_name] = preset
+		return preset
+	end
+	presets[preset_name] = false
+	return false
+end
+
+
+function get_preset( preset_name )
+	local p = presets[preset_name]
+	if p or p == false then return p end
+
+	p = read_preset( preset_name )
+	presets[preset_name] = p
+	return p
+end

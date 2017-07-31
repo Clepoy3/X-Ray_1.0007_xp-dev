@@ -1,0 +1,1137 @@
+;--'Робинзон и КО
+
+[logic@zat_robinzon_walker1]
+active = walker1@zat_robinzon
+
+[walker1@zat_robinzon]
+path_walk = walk1
+path_look = look1
+def_state_standing = assault
+def_state_moving = assault
+on_info = {+robinzon_say_one_start} walker12@zat_robinzon
+
+[walker12@zat_robinzon]
+path_walk = walk12
+path_look = look12
+
+[logic@zat_robinzon_walker2]
+active = walker2@zat_robinzon
+
+[walker2@zat_robinzon]
+path_walk = walk2
+path_look = look2
+on_info = {+robinzon_say_one_start} kamp@zat_robinzon
+
+[logic@zat_robinzon_walker3]
+active = walker3@zat_robinzon
+
+[walker3@zat_robinzon]
+path_walk = walk3
+path_look = look3
+on_info = {+robinzon_say_one_start} kamp@zat_robinzon
+
+[kamp@zat_robinzon]
+center_point  = kamp
+path_walk = kamp_task
+radius = 2
+
+;--'Собаки
+[logic@zat_dog1_home]
+active = mob_home@zat_dog1
+
+[mob_home@zat_dog1]
+path_home = home
+home_min_radius = 40
+home_max_radius = 50
+
+[logic@zat_dog2_home]
+active = mob_home@zat_dog2
+
+[mob_home@zat_dog2]
+path_home = home
+home_min_radius = 30
+home_max_radius = 70
+
+;--'Кровососы у баржи
+[logic@zat_bloodsucker1_home1]
+active = mob_home1@zat_bloodsucker1
+
+[mob_home1@zat_bloodsucker1]
+path_home = home1
+home_min_radius = 30
+home_max_radius = 45
+
+[logic@zat_bloodsucker1_home2]
+active = mob_home2@zat_bloodsucker1
+
+[mob_home2@zat_bloodsucker1]
+path_home = home2
+home_min_radius = 40
+home_max_radius = 50
+
+;--'Минигулаг Скарабея
+[logic@zat_ohotnik_kamp]
+active = kamp@zat_ohotnik
+
+[kamp@zat_ohotnik]
+center_point  = kamp
+path_walk = kamp_task
+
+;--'Вазелин и КО
+[logic@zat_vazelin_lider_walker]
+active = walker@zat_vazelin_lider_walker
+
+[walker@zat_vazelin_lider_walker]
+path_walk = walk4
+path_look = look4
+
+[logic@zat_vazelin_walker1]
+active = walker1@zat_vazelin
+
+[walker1@zat_vazelin]
+path_walk = walk1
+path_look = look1
+
+[logic@zat_vazelin_walker2]
+active = walker2@zat_vazelin
+
+[walker2@zat_vazelin]
+path_walk = walk2
+path_look = look2
+
+[logic@zat_vazelin_walker3]
+active = walker3@zat_vazelin
+
+[walker3@zat_vazelin]
+path_walk = walk3
+path_look = look3
+
+[logic@zat_vazelin_kamp]
+active = kamp@zat_vazelin
+
+[kamp@zat_vazelin]
+center_point  = kamp
+path_walk = kamp_task
+
+;--'Борода и КО
+[logic@zat_boroda_walker1]
+active = walker1@zat_boroda
+
+[walker1@zat_boroda]
+path_walk = walk1
+path_look = look1
+
+[logic@zat_boroda_walker2]
+active = walker2@zat_boroda
+
+[walker2@zat_boroda]
+path_walk = walk2
+path_look = look2
+
+[logic@zat_boroda_walker3]
+active = walker3@zat_boroda
+
+[walker3@zat_boroda]
+path_walk = walk3
+path_look = look3
+
+[logic@zat_boroda_walker4]
+active = walker4@zat_boroda
+
+[walker4@zat_boroda]
+path_walk = walk4
+
+[logic@zat_boroda_walker5]
+active = walker5@zat_boroda
+
+[walker5@zat_boroda]
+path_walk = walk5
+path_look = look5
+
+[logic@zat_boroda_walker6]
+active = walker6@zat_boroda
+
+[walker6@zat_boroda]
+path_walk = walk6
+path_look = look6
+
+[logic@zat_boroda_walker7]
+active = walker7@zat_boroda
+
+[walker7@zat_boroda]
+path_walk = walk7
+path_look = look7
+
+[logic@zat_boroda_kamp]
+active = kamp@zat_boroda
+
+[kamp@zat_boroda]
+center_point  = kamp
+path_walk = kamp_task
+
+;--'Скадовск
+[logic@zat_skadovsk_walker1]
+active = walker1@zat_skadovsk
+
+[walker1@zat_skadovsk]
+path_walk = walk1
+path_look = look1
+
+[logic@zat_skadovsk_walker2]
+active = walker2@zat_skadovsk
+
+[walker2@zat_skadovsk]
+path_walk = walk2
+path_look = look2
+
+[logic@zat_skadovsk_walker3]
+active = walker3@zat_skadovsk
+
+[walker3@zat_skadovsk]
+path_walk = walk3
+path_look = look3
+
+[logic@zat_skadovsk_walker4]
+active = walker4@zat_skadovsk
+
+[walker4@zat_skadovsk]
+path_walk = walk4
+path_look = look4
+
+[logic@zat_skadovsk_walker5]
+active = walker5@zat_skadovsk
+
+[walker5@zat_skadovsk]
+path_walk = walk5
+path_look = look5
+
+[logic@zat_skadovsk_walker6]
+active = walker6@zat_skadovsk
+
+[walker6@zat_skadovsk]
+path_walk = walk6
+path_look = look6
+
+[logic@zat_skadovsk_walker7]
+active = walker7@zat_skadovsk
+
+[walker7@zat_skadovsk]
+path_walk = walk7
+path_look = look7
+
+[logic@zat_skadovsk_walker8]
+active = walker8@zat_skadovsk
+
+[walker8@zat_skadovsk]
+path_walk = walk8
+path_look = look8
+
+[logic@zat_skadovsk_walker9]
+active = walker9@zat_skadovsk
+
+[walker9@zat_skadovsk]
+path_walk = walk9
+path_look = look9
+
+[logic@zat_skadovsk_walker10]
+active = walker10@zat_skadovsk
+
+[walker10@zat_skadovsk]
+path_walk = walk10
+path_look = look10
+
+[logic@zat_skadovsk_kamp1]
+active = kamp1@zat_skadovsk
+
+[kamp1@zat_skadovsk]
+center_point  = kamp1
+path_walk = kamp1_task
+
+[logic@zat_skadovsk_kamp2]
+active = kamp2@zat_skadovsk
+
+[kamp2@zat_skadovsk]
+center_point  = kamp2
+path_walk = kamp2_task
+
+[logic@zat_skadovsk_sleeper1]
+active = sleeper1@zat_skadovsk
+
+[sleeper1@zat_skadovsk]
+path_main = sleep1
+wakeable = false
+
+[logic@zat_skadovsk_sleeper2]
+active = sleeper2@zat_skadovsk
+
+[sleeper2@zat_skadovsk]
+path_main = sleep2
+wakeable = false
+
+;--'Последний день на заправке
+[logic@zat_zapravka_walker1]
+active = walker1@zat_zapravka
+
+[walker1@zat_zapravka]
+path_walk = walk1
+path_look = look1
+
+[logic@zat_zapravka_walker2]
+active = walker2@zat_zapravka
+
+[walker2@zat_zapravka]
+path_walk = walk2
+path_look = look2
+
+[logic@zat_zapravka_walker3]
+active = walker3@zat_zapravka
+
+[walker3@zat_zapravka]
+path_walk = walk3
+path_look = look3
+
+[logic@zat_zapravka_walker4]
+active = walker4@zat_zapravka
+
+[walker4@zat_zapravka]
+path_walk = walk4
+
+[logic@zat_zapravka_walker5]
+active = walker5@zat_zapravka
+
+[walker5@zat_zapravka]
+path_walk = walk5
+
+;--'Бродвей и КО
+[logic@zat_brodway_walker1]
+active = walker1@zat_brodway
+combat_ignore = combat_ignore
+on_hit = hit@brodway
+
+[walker1@zat_brodway]
+path_walk = walk1
+path_look = look1  
+on_info = {+spawn_brodway -brodway_fire} walker11@zat_brodway
+
+[walker11@zat_brodway]
+path_walk = walk1
+path_look = look1 
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+on_info = {+brodway_fire} walker1@zat_brodway
+
+[logic@zat_brodway_walker2]
+active = walker2@zat_brodway
+combat_ignore = combat_ignore
+on_hit = hit@brodway
+
+[walker2@zat_brodway]
+path_walk = walk2
+path_look = look2  
+on_info = {+spawn_brodway -brodway_fire} walker22@zat_brodway
+
+[walker22@zat_brodway]
+path_walk = walk2
+path_look = look2 
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+on_info = {+brodway_fire} walker2@zat_brodway
+
+[logic@zat_brodway_walker3]
+active = walker3@zat_brodway
+combat_ignore = combat_ignore
+on_hit = hit@brodway
+
+[walker3@zat_brodway]
+path_walk = walk3
+path_look = look3  
+on_info = {+spawn_brodway -brodway_fire} walker33@zat_brodway
+
+[walker33@zat_brodway]
+path_walk = walk3
+path_look = look3 
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+on_info = {+brodway_fire} walker3@zat_brodway
+
+[logic@zat_brodway_walker4]
+active = walker4@zat_brodway
+combat_ignore = combat_ignore
+on_hit = hit@brodway
+
+[walker4@zat_brodway]
+path_walk = walk4
+path_look = look4  
+on_info = {+spawn_brodway -brodway_fire} walker44@zat_brodway
+
+[walker44@zat_brodway]
+path_walk = walk4
+path_look = look4 
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+on_info = {+brodway_fire} walker4@zat_brodway
+
+[logic@zat_brodway_walker5]
+active = walker5@zat_brodway
+combat_ignore = combat_ignore
+on_hit = hit@brodway
+
+[walker5@zat_brodway]
+path_walk = walk5
+path_look = look5  
+on_info = {+spawn_brodway -brodway_fire} walker55@zat_brodway
+
+[walker55@zat_brodway]
+path_walk = walk5
+path_look = look5
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+on_info = {+brodway_fire} walker5@zat_brodway
+
+[logic@zat_brodway_walker6]
+active = walker6@zat_brodway
+combat_ignore = combat_ignore
+on_hit = hit@brodway
+
+[walker6@zat_brodway]
+path_walk = walk6
+path_look = look6  
+on_info = {+spawn_brodway -brodway_fire} walker66@zat_brodway
+
+[walker66@zat_brodway]
+path_walk = walk6
+path_look = look6 
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+on_info = {+brodway_fire} walker6@zat_brodway
+
+[logic@zat_brodway_kamp]
+active = kamp@zat_brodway
+combat_ignore = combat_ignore
+on_hit = hit@brodway
+
+[kamp@zat_brodway]
+center_point  = kamp
+path_walk = kamp_task
+on_info = {+spawn_brodway -brodway_fire} kamp11@zat_brodway
+
+[kamp11@zat_brodway]
+center_point  = kamp
+path_walk = kamp_task
+combat_ignore_cond = {-brodway_fire =fighting_actor}
+on_info = {+brodway_fire} kamp@zat_brodway
+
+[hit@brodway]
+on_info = {+spawn_brodway -brodway_fire =hit_by_actor} %+brodway_fire%
+
+;--'Бандиты на подстанции Затона
+[logic@zat_podstanzia_walker1]
+active = walker1@zat_podstanzia
+
+[walker1@zat_podstanzia]
+path_walk = walk1
+path_look = look1
+
+[logic@zat_podstanzia_walker2]
+active = walker2@zat_podstanzia
+
+[walker2@zat_podstanzia]
+path_walk = walk2
+path_look = look2
+
+[logic@zat_podstanzia_walker3]
+active = walker3@zat_podstanzia
+
+[walker3@zat_podstanzia]
+path_walk = walk3
+path_look = look3
+
+[logic@zat_podstanzia_walker4]
+active = walker4@zat_podstanzia
+
+[walker4@zat_podstanzia]
+path_walk = walk4
+path_look = look4
+
+[logic@zat_podstanzia_walker5]
+active = walker5@zat_podstanzia
+
+[walker5@zat_podstanzia]
+path_walk = walk5
+path_look = look5
+
+[logic@zat_podstanzia_walker6]
+active = walker6@zat_podstanzia
+
+[walker6@zat_podstanzia]
+path_walk = walk6
+path_look = look6
+
+[logic@zat_podstanzia_walker7]
+active = walker7@zat_podstanzia
+
+[walker7@zat_podstanzia]
+path_walk = walk7
+path_look = look7
+
+[logic@zat_podstanzia_walker8]
+active = walker8@zat_podstanzia
+
+[walker8@zat_podstanzia]
+path_walk = walk8
+path_look = look8
+
+[logic@zat_podstanzia_walker9]
+active = walker9@zat_podstanzia
+
+[walker9@zat_podstanzia]
+path_walk = walk9
+path_look = look9
+
+;--'Кабаны
+[logic@zat_boar_home1]
+active = mob_home1@zat_boar
+
+[mob_home1@zat_boar]
+path_home = home1
+home_min_radius = 30
+home_max_radius = 50
+
+[logic@zat_boar_home2]
+active = mob_home2@zat_boar
+
+[mob_home2@zat_boar]
+path_home = home2
+home_min_radius = 30
+home_max_radius = 50
+
+[logic@zat_boar_small_home]
+active = mob_home@zat_boar_small
+
+[mob_home@zat_boar_small]
+path_home = home
+home_min_radius = 30
+home_max_radius = 60
+
+;--'Снорки
+[logic@zat_snork1_home1]
+active = mob_home1@zat_snork1
+
+[mob_home1@zat_snork1]
+path_home = home1
+home_min_radius = 30
+home_max_radius = 60
+
+[logic@zat_snork1_home2]
+active = mob_home2@zat_snork1
+
+[mob_home2@zat_snork1]
+path_home = home2
+home_min_radius = 30
+home_max_radius = 60
+
+[logic@zat_snork2_home1]
+active = mob_home1@zat_snork2
+
+[mob_home1@zat_snork2]
+path_home = home1
+home_min_radius = 30
+home_max_radius = 60
+
+[logic@zat_snork2_home2]
+active = mob_home2@zat_snork2
+
+[mob_home2@zat_snork2]
+path_home = home2
+home_min_radius = 30
+home_max_radius = 60
+
+[logic@zat_snork2_home3]
+active = mob_home3@zat_snork2
+
+[mob_home3@zat_snork2]
+path_home = home3
+home_min_radius = 30
+home_max_radius = 60
+
+;--'Свинки
+[logic@zat_flesh1_home]
+active = mob_home@zat_flesh1
+
+[mob_home@zat_flesh1]
+path_home = home
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@zat_flesh2_home]
+active = mob_home@zat_flesh2
+
+[mob_home@zat_flesh2]
+path_home = home
+home_min_radius = 30
+home_max_radius = 60
+
+[logic@zat_flesh3_home]
+active = mob_home@zat_flesh3
+
+[mob_home@zat_flesh3]
+path_home = home
+home_min_radius = 30
+home_max_radius = 60
+
+;--'Химеры
+[logic@zat_chimera_home]
+active = mob_home@zat_chimera
+
+[mob_home@zat_chimera]
+path_home = home
+home_min_radius = 30
+home_max_radius = 70
+
+;--'Библиотекарь
+[logic@zat_bibliotekar_home]
+active = mob_home@zat_bibliotekar
+
+[mob_home@zat_bibliotekar]
+path_home = home
+home_min_radius = 30
+home_max_radius = 70
+
+;--'Тушканы
+[logic@zat_tushkano_home]
+active = mob_home@zat_tushkano
+
+[mob_home@zat_tushkano]
+path_home = home
+home_min_radius = 30
+home_max_radius = 60
+
+[logic@zat_tushkano2_home]
+active = mob_home@zat_tushkano2
+
+[mob_home@zat_tushkano2]
+path_home = home
+home_min_radius = 30
+home_max_radius = 60
+
+[logic@zat_tushkano3_home]
+active = mob_home@zat_tushkano3
+
+[mob_home@zat_tushkano3]
+path_home = home
+home_min_radius = 20
+home_max_radius = 50
+
+;--' Псевдособаки 
+[logic@zat_pseudodog_home]
+active = mob_home@zat_pseudodog
+
+[mob_home@zat_pseudodog]
+path_home = home
+home_min_radius = 30
+home_max_radius = 50
+
+;--' Псевдогиганты 
+[logic@zat_pseudo_gigant_home1]
+active = mob_home1@zat_pseudo_gigant
+
+[mob_home1@zat_pseudo_gigant]
+path_home = home1
+home_min_radius = 30
+home_max_radius = 70
+
+[logic@zat_pseudo_gigant_home2]
+active = mob_home2@zat_pseudo_gigant
+
+[mob_home2@zat_pseudo_gigant]
+path_home = home2
+home_min_radius = 30
+home_max_radius = 70
+
+;--' Ластоноги 
+[logic@zat_rotan1_home1]
+active = mob_home1@zat_rotan1
+
+[mob_home1@zat_rotan1]
+path_home = home1
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@zat_rotan1_home2]
+active = mob_home2@zat_rotan1
+
+[mob_home2@zat_rotan1]
+path_home = home2
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@zat_rotan1_home3]
+active = mob_home3@zat_rotan1
+
+[mob_home3@zat_rotan1]
+path_home = home3
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@zat_rotan2_home1]
+active = mob_home1@zat_rotan2
+
+[mob_home1@zat_rotan2]
+path_home = home1
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@zat_rotan2_home2]
+active = mob_home2@zat_rotan2
+
+[mob_home2@zat_rotan2]
+path_home = home2
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@zat_rotan2_home3]
+active = mob_home3@zat_rotan2
+
+[mob_home3@zat_rotan2]
+path_home = home3
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@zat_rotan3_home1]
+active = mob_home1@zat_rotan3
+
+[mob_home1@zat_rotan3]
+path_home = home1
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@zat_rotan3_home2]
+active = mob_home2@zat_rotan3
+
+[mob_home2@zat_rotan3]
+path_home = home2
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@zat_rotan3_home3]
+active = mob_home3@zat_rotan3
+
+[mob_home3@zat_rotan3]
+path_home = home3
+home_min_radius = 20
+home_max_radius = 50
+
+;--' Элтуши 
+[logic@zat_eltush_home]
+active = mob_home@zat_eltush
+
+[mob_home@zat_eltush]
+path_home = home
+home_min_radius = 20
+home_max_radius = 50
+
+;--' Медведи 
+[logic@zat_medwed_home1]
+active = mob_home1@zat_medwed
+
+[mob_home1@zat_medwed]
+path_home = home1
+home_min_radius = 30
+home_max_radius = 60
+
+[logic@zat_medwed_home2]
+active = mob_home2@zat_medwed
+
+[mob_home2@zat_medwed]
+path_home = home2
+home_min_radius = 30
+home_max_radius = 60
+
+[logic@zat_medwed_home3]
+active = mob_home3@zat_medwed
+
+[mob_home3@zat_medwed]
+path_home = home3
+home_min_radius = 30
+home_max_radius = 60
+
+;--' Крысоволки 
+[logic@zat_ratlike_home]
+active = mob_home@zat_ratlike
+
+[mob_home@zat_ratlike]
+path_home = home
+home_min_radius = 20
+home_max_radius = 50
+
+;--'Последний день
+[logic@zat_lastday_walker1]
+active = walker1@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker1@zat_lastday]
+path_walk = walk1
+path_look = look1
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker11@zat_lastday
+
+[walker11@zat_lastday]
+path_walk = walk1
+path_look = look1 
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker1@zat_lastday
+
+[logic@zat_lastday_walker2]
+active = walker2@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker2@zat_lastday]
+path_walk = walk2
+path_look = look2
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker22@zat_lastday
+
+[walker22@zat_lastday]
+path_walk = walk2
+path_look = look2 
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker2@zat_lastday
+
+[logic@zat_lastday_walker3]
+active = walker3@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker3@zat_lastday]
+path_walk = walk3
+path_look = look3
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker33@zat_lastday
+
+[walker33@zat_lastday]
+path_walk = walk3
+path_look = look3 
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker3@zat_lastday
+
+[logic@zat_lastday_walker4]
+active = walker4@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker4@zat_lastday]
+path_walk = walk4
+path_look = look4
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker44@zat_lastday
+
+[walker44@zat_lastday]
+path_walk = walk4
+path_look = look4 
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker4@zat_lastday
+
+[logic@zat_lastday_walker5]
+active = walker5@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker5@zat_lastday]
+path_walk = walk5
+path_look = look5
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker55@zat_lastday
+
+[walker55@zat_lastday]
+path_walk = walk5
+path_look = look5 
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker5@zat_lastday
+
+[logic@zat_lastday_walker6]
+active = walker6@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker6@zat_lastday]
+path_walk = walk6
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker66@zat_lastday
+
+[walker66@zat_lastday]
+path_walk = walk6
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker6@zat_lastday
+
+[logic@zat_lastday_walker7]
+active = walker7@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker7@zat_lastday]
+path_walk = walk7
+path_look = look7
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker77@zat_lastday
+
+[walker77@zat_lastday]
+path_walk = walk7
+path_look = look7 
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker7@zat_lastday
+
+[logic@zat_lastday_walker8]
+active = walker8@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker8@zat_lastday]
+path_walk = walk8
+path_look = look8
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker88@zat_lastday
+
+[walker88@zat_lastday]
+path_walk = walk8
+path_look = look8 
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker8@zat_lastday
+
+[logic@zat_lastday_walker9]
+active = walker9@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker9@zat_lastday]
+path_walk = walk9
+path_look = look9
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker99@zat_lastday
+
+[walker99@zat_lastday]
+path_walk = walk9
+path_look = look9 
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker9@zat_lastday
+
+[logic@zat_lastday_walker10]
+active = walker10@zat_lastday
+combat_ignore = combat_ignore
+on_hit = hit@zat_lastday
+
+[walker10@zat_lastday]
+path_walk = walk10
+combat_ignore_cond = {+gulden_say_one_start =check_fighting(17086:17087:3514)}
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire} walker101@zat_lastday
+
+[walker101@zat_lastday]
+path_walk = walk10
+combat_ignore_cond = {-zlobnuy_fire =fighting_actor}
+on_info = {+zlobnuy_fire} walker10@zat_lastday
+
+[hit@zat_lastday]
+on_info = {+spawn_zaton_zlobnuy -zlobnuy_fire =hit_by_actor} %+zlobnuy_fire%
+
+;--'Последний день2
+[logic@zat_lastday2_walker1]
+active = walker1@zat_lastday2
+
+[walker1@zat_lastday2]
+path_walk = walk1
+path_look = look1
+
+[logic@zat_lastday2_walker2]
+active = walker2@zat_lastday2
+
+[walker2@zat_lastday2]
+path_walk = walk2
+path_look = look2
+
+[logic@zat_lastday2_walker3]
+active = walker3@zat_lastday2
+
+[walker3@zat_lastday2]
+path_walk = walk3
+path_look = look3
+
+[logic@zat_lastday2_walker4]
+active = walker4@zat_lastday2
+
+[walker4@zat_lastday2]
+path_walk = walk4
+path_look = look4
+
+[logic@zat_lastday2_walker5]
+active = walker5@zat_lastday2
+
+[walker5@zat_lastday2]
+path_walk = walk5
+path_look = look5
+
+[logic@zat_lastday2_walker6]
+active = walker6@zat_lastday2
+
+[walker6@zat_lastday2]
+path_walk = walk6
+
+[logic@zat_lastday2_walker7]
+active = walker7@zat_lastday2
+
+[walker7@zat_lastday2]
+path_walk = walk7
+path_look = look7
+
+[logic@zat_lastday2_walker8]
+active = walker8@zat_lastday2
+
+[walker8@zat_lastday2]
+path_walk = walk8
+path_look = look8
+
+[logic@zat_lastday2_walker9]
+active = walker9@zat_lastday2
+
+[walker9@zat_lastday2]
+path_walk = walk9
+path_look = look9
+
+[logic@zat_lastday2_walker10]
+active = walker10@zat_lastday2
+
+[walker10@zat_lastday2]
+path_walk = walk10
+path_look = look10
+
+[logic@zat_lastday2_walker11]
+active = walker11@zat_lastday2
+
+[walker11@zat_lastday2]
+path_walk = walk11
+path_look = look11
+
+[logic@zat_lastday2_walker12]
+active = walker12@zat_lastday2
+
+[walker12@zat_lastday2]
+path_walk = walk12
+path_look = look12
+
+[logic@zat_lastday2_walker13]
+active = walker13@zat_lastday2
+
+[walker13@zat_lastday2]
+path_walk = walk13
+path_look = look13
+
+[logic@zat_lastday2_walker14]
+active = walker14@zat_lastday2
+
+[walker14@zat_lastday2]
+path_walk = walk14
+path_look = look14
+
+[logic@zat_lastday2_walker15]
+active = walker15@zat_lastday2
+
+[walker15@zat_lastday2]
+path_walk = walk15
+path_look = look15
+
+[logic@zat_lastday2_walker16]
+active = walker16@zat_lastday2
+
+[walker16@zat_lastday2]
+path_walk = walk16
+
+[logic@zat_lastday2_walker17]
+active = walker17@zat_lastday2
+
+[walker17@zat_lastday2]
+path_walk = walk17
+path_look = look17
+
+[logic@zat_lastday2_walker18]
+active = walker18@zat_lastday2
+
+[walker18@zat_lastday2]
+path_walk = walk18
+path_look = look18
+
+[logic@zat_lastday2_walker19]
+active = walker19@zat_lastday2
+
+[walker19@zat_lastday2]
+path_walk = walk19
+path_look = look19
+
+[logic@zat_lastday2_walker20]
+active = walker20@zat_lastday2
+
+[walker20@zat_lastday2]
+path_walk = walk20
+
+[logic@zat_lastday2_walker21]
+active = walker21@zat_lastday2
+
+[walker21@zat_lastday2]
+path_walk = walk21
+
+[logic@zat_lastday2_kamp]
+active = kamp@zat_lastday2
+
+[kamp@zat_lastday2]
+center_point  = kamp
+path_walk = kamp_task
+
+;--'Последний день в лаборатории
+[logic@zat_lab_lastday_walker1]
+active = walker1@zat_lab_lastday
+
+[walker1@zat_lab_lastday]
+path_walk = walk1
+path_look = look1
+
+[logic@zat_lab_lastday_walker2]
+active = walker2@zat_lab_lastday
+
+[walker2@zat_lab_lastday]
+path_walk = walk2
+path_look = look2
+
+[logic@zat_lab_lastday_walker3]
+active = walker3@zat_lab_lastday
+
+[walker3@zat_lab_lastday]
+path_walk = walk3
+path_look = look3
+
+[logic@zat_lab_lastday_walker4]
+active = walker4@zat_lab_lastday
+
+[walker4@zat_lab_lastday]
+path_walk = walk4
+path_look = look4
+
+[logic@zat_lab_lastday_walker5]
+active = walker5@zat_lab_lastday
+
+[walker5@zat_lab_lastday]
+path_walk = walk5
+path_look = look5
+
+[logic@zat_lab_lastday_walker6]
+active = walker6@zat_lab_lastday
+
+[walker6@zat_lab_lastday]
+path_walk = walk6
+
+[logic@zat_lab_lastday_walker7]
+active = walker7@zat_lab_lastday
+
+[walker7@zat_lab_lastday]
+path_walk = walk7
+path_look = look7
+
+[logic@zat_lab_lastday_walker8]
+active = walker8@zat_lab_lastday
+
+[walker8@zat_lab_lastday]
+path_walk = walk8
+path_look = look8
+

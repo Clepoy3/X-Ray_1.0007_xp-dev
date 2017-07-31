@@ -1,0 +1,129 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+
+	-- Гулаг сталков в деревне у костра
+	if type == "village_gulag_small" then
+		-- 3 работы
+		t = {section = "logic@village_gulag_small_walker1", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@village_gulag_small_walker2", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@village_gulag_small_kamp3", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	-- Гулаг бандитов в деревне
+	if type == "lost_village_bandit" then
+		-- 4 работы
+		t = {section = "logic@lost_village_bandit_walker1", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lost_village_bandit_walker2", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lost_village_bandit_kamp3", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lost_village_bandit_kamp4", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	-- Гулаг сталков в деревне у штаба
+	if type == "village_gulag_big" then
+		-- 7 работ
+		t = {section = "logic@village_gulag_big_walker1", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@village_gulag_big_walker2", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@village_gulag_big_kamp3", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@village_gulag_big_kamp4", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		for i = 5, 7 do
+			t = {section = "logic@village_gulag_big_walker"..i, idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end	    
+		     
+---'''' Гулаги с переменным состоянием ''''---
+
+	
+end
+
+function load_states(gname,type)
+
+	if type == "village_gulag_small" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "lost_village_bandit" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "village_gulag_big" then
+		return function(gulag)
+			return 0
+		end
+	end
+		     
+  end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	if gulag_type == "village_gulag_small" then
+		return npc_community == "stalker"
+	end
+	if gulag_type == "lost_village_bandit" then
+		return npc_community == "bandit"
+	end
+	if gulag_type == "village_gulag_big" then
+		return npc_community == "stalker"
+	end
+		
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+     	return false
+end

@@ -1,0 +1,13 @@
+shell_particles	 		= weapons\shells_r_ns_9mm
+shell_particles	 		= weapons\shells_r_ns_12g
+shell_particles	 		= weapons\shells_r_ns_57m
+shell_particles	 		= weapons\shells_r_ns_338
+shell_particles	 		= weapons\shells_r_ns_556
+shell_particles	 		= weapons\shells_r_ns_762
+
+shell_particles	 		= weapons\shells_l_ns_9mm
+shell_particles	 		= weapons\shells_l_ns_12g
+shell_particles	 		= weapons\shells_l_ns_57m
+shell_particles	 		= weapons\shells_l_ns_338
+shell_particles	 		= weapons\shells_l_ns_556
+shell_particles	 		= weapons\shells_l_ns_762

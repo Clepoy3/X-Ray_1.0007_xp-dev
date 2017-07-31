@@ -1,0 +1,19 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+kit_saund_end} sr_idle@time
+
+[sr_idle@time]
+on_timer = 4000 | sr_idle@time1 %=arhara_dialog.sms_saund_end1%
+
+[sr_idle@time1]
+on_timer = 6000 | sr_idle@time2 %=arhara_dialog.sms_saund_end2 =arhara_dialog.dell_boroda_dilog%
+
+[sr_idle@time2]
+on_timer = 8000 | sr_idle@time3 %=arhara_dialog.sms_saund_end3%
+
+[sr_idle@time3]
+on_timer = 5000 | sr_idle@nil %+boroda_go3%
+
+[sr_idle@nil]

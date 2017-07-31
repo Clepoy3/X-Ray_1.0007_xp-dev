@@ -1,0 +1,36 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = kamp1
+danger = danger_condition
+on_death = death
+
+[kamp1]
+center_point = camp_center
+path_walk = camp_center_task
+radius = 3
+def_state_moving = patrol
+on_actor_dist_ge_nvis = 50 | kamp2
+
+[kamp2]
+center_point = camp_center
+path_walk = camp_center_task
+radius = 3
+def_state_moving = rush
+on_actor_dist_le_nvis = 50 | kamp1
+on_actor_dist_ge_nvis = 80 |  kamp3
+
+[kamp3]
+center_point = camp_center
+path_walk = camp_center_task
+radius = 3
+def_state_moving = run
+on_actor_dist_le_nvis = 80 | kamp2
+on_actor_dist_ge_nvis = 100 | %=ex_hoard.dell_spawn%
+
+[danger_condition]
+ignore_distance_corpse = 0
+
+[death]
+on_info = %=ex_hoard.death_spawn%

@@ -1,0 +1,50 @@
+[smart_terrains]
+none = true
+
+[logic]
+active=walker@rabi
+;danger = danger_ignore@rabi
+combat_ignore = combat_ignore
+
+[walker@rabi]
+path_walk = rabi_walk
+path_look = rabi_look
+combat_ignore_cond = always
+meet = no_meet
+danger = danger_condition@rabi
+on_actor_dist_le_nvis = 5 | remark@rabi
+
+[remark@rabi]
+anim = guard
+target = actor
+combat_ignore_cond = always
+meet = meet@rabi
+on_info = {+kot_find_rabi_have} remark@rabi_zomb
+
+[remark@rabi_zomb]
+anim = psy_pain
+target = nil
+combat_ignore_cond = always
+meet = no_meet
+on_timer = 10000 | camper@rabi_zomb %+rabi_mad_info%
+
+[camper@rabi_zomb]
+path_walk = rabi_walk
+path_look = rabi_look
+meet = no_meet
+danger = danger_condition@rabi
+
+[meet@rabi]
+meet_state		= 15|guard@wait
+meet_state_wpn	= 15|backoff@threat_weap
+victim		= 15|actor
+victim_wpn		= 15|actor
+use			= true
+use_wpn		= false
+syndata		= backoff@threat_weap
+
+[danger_condition@rabi]
+ignore_distance = 0
+
+[combat_ignore]
+combat_ignore_cond = always

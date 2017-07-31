@@ -1,0 +1,213 @@
+--\\*"НаноЭкзоСкелет "Скат-15М""..С Системой Жизненной Поддержки (СЖП) и С возможностью апгрейда..Меченый(Стрелок)..
+local t_upd = 0
+local f_1 = false
+local f_1_end = false
+
+local f_2 = false
+local f_2_end = false
+
+local f_3 = false
+local f_3_end = false
+
+local f_4 = false
+local f_4_end = false
+
+local con_skat_1 = 1
+local con_skat_2 = 1
+local con_skat_3 = 1
+
+local flag_skat_1 = false
+local flag_skat_2 = false
+local flag_skat_3 = false
+
+outfit_sections = {
+	["exo_mil_exoskeleton_add"]	= true,
+	["exo_mil_exoskeleton_addr"]	= true,
+	["exo_mil_exoskeleton_addrs"]	= true,
+}
+
+function on_actor_update()
+	if t_upd < time_global() then
+		t_upd = time_global() + 3333
+		local outfit = db.actor:item_in_slot(6)
+		if not outfit then return end
+		local sect = outfit:section()
+		if not outfit_sections[sect] or not db.actor:object("af_acumm") then return end
+		system_outfit()
+		if sect == "exo_mil_exoskeleton_addr" then new_system_rad()
+		elseif sect == "exo_mil_exoskeleton_addrs" then
+			new_system_rad()
+			new_system_power()
+			new_anti_dot()
+		end
+	end
+end
+
+
+function update_spawn()
+	alife():create("doc_1",vector():set(-192.38,-0.00,119.09),27464,1326)
+	alife():create("af_acumm",vector():set(-192.38,-0.00,119.09),27464,1326)
+	alife():create("doc_8",vector():set(-11.57,0.67,0.28),35311,1500)
+	alife():create("doc_10",vector():set(112.11,0.55,-285.65),306802,968)
+	alife():create("af_acumm",vector():set(112.11,0.55,-285.65),306802,968)
+	alife():create("af_acumm",vector():set(112.11,0.55,-285.65),306802,968)
+end
+
+local drop = {
+	["doc_1"] = { ["have"] = "exo_mil_exoskeleton",	["give"] = "exo_mil_exoskeleton_add" },
+	["doc_8"] = { ["have"] = "exo_mil_exoskeleton_add", ["give"] = "exo_mil_exoskeleton_addr" },
+	["doc_10"] = { ["have"] = "exo_mil_exoskeleton_addr", ["give"] = "exo_mil_exoskeleton_addrs" }
+}
+
+function on_item_drop(obj)
+	if obj then
+		local sect = obj:section()
+		if drop[sect] then
+			local outfit = db.actor:object(drop[sect]["have"])
+			if outfit and alife():object(outfit:id()) then
+				local cond = outfit:condition()
+				alife():release(alife():object(outfit:id()))
+				local new_outfit = amk.spawn_item_in_inv(drop[sect]["give"])
+				amk.start_timer("set_condition", 1, {new_outfit.id, cond * 100})
+				news_manager.send_tip(db.actor, "Апгрейд Закончен.", nil, nil, 10000)
+			else amk.spawn_item_in_inv(sect)
+			end
+		end
+	end
+end
+
+function system_outfit()
+	local act = db.actor
+	if (act.health > 0.5) and (act:get_bleeding() <= 0.3) then 
+		f_1, f_1_end = false, false
+		return 
+	end
+	if (act.health <= 0.5) and (not f_1) then	
+		news_manager.send_tip(act, "%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Ваше Состояние Здоровья ниже 50% от Обычного Состояния, если у вас есть мед. препараты, то Система Жизненой Поддержки произведет лечение".."\n", nil, nil, 30000)
+		meceniy_art.useEnergy(1)
+	elseif (act:get_bleeding() > 0.3) and (not f_1) then	
+		news_manager.send_tip(act, "%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."У вас сильное кровотечение, если у вас есть мед. препараты, то Система Жизненой Поддержки произведет лечение".."\n", nil, nil, 30000)
+		meceniy_art.useEnergy(1)
+	end
+	f_1 = true
+	if (act.health <= 0.5) and act:object("medkit") then
+		act:eat(act:object("medkit"))
+		f_1 = false
+	elseif (act.health <= 0.5) and act:object("medkit_army") then
+		act:eat(act:object("medkit_army"))
+		f_1 = false
+	elseif (act.health <= 0.5) and act:object("medkit_scientic")   then
+		act:eat(act:object("medkit_scientic"))
+		f_1 = false
+	elseif (act.health <= 0.5) and act:object("suvorotka")   then
+		act:eat(act:object("suvorotka"))
+		f_1 = false
+	elseif act:get_bleeding() > 0.3 and act:object("bandage") then
+		act:eat(act:object("bandage"))
+		f_1 = false
+	end
+	if not f_1 then
+		do_heal(true,"%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Обнаружены мед. препараты. Произвожу применение.".."\n")
+		f_1_end = false
+		meceniy_art.useEnergy(5)
+		return
+	elseif not f_1_end then
+		do_heal(false,"%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".." Мед. препараты не обнаруженны.".."\n")
+		f_1_end = true
+		meceniy_art.useEnergy(1)
+	end
+end
+
+function new_system_rad()
+	local act = db.actor
+	if act.radiation < 0.75 then 
+		f_2, f_2_end = false, false
+		return 
+	end
+	if not f_2 then
+		news_manager.send_tip(act, "%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Полученная доза радиации близка к критичной, если у вас есть антидоты, то Система Жизненой Поддержки выведет радиацию из организма при опасной потере здоровья".."\n", nil, nil, 30000)
+		meceniy_art.useEnergy(1)
+	end
+	f_2 = true
+	local anti_1 = act:object("antirad") 
+	if (act.health <= 0.6) and anti_1 then
+		act:eat(anti_1)
+		do_heal(true,"%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Обнаружены антидоты. Система Жизненой Поддержки производит применение \"антирадиантов\".".."\n")
+		f_2 = false
+		f_2_end = false
+		meceniy_art.useEnergy(5)
+		return
+	elseif (act.health <= 0.6) and not f_2_end then
+		do_heal(false,"%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Антидоты не обнаруженны.".."\n")
+		f_2_end = true
+		meceniy_art.useEnergy(1)
+	end
+
+end
+
+function new_anti_dot()
+	local act = db.actor
+	if db.actor.psy_health >= 0.5 then
+		f_3, f_3_end = false, false
+		return
+	end
+
+	if not f_3 then
+		news_manager.send_tip(act, "%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Полученная доза пси-излучения привела к вашему зомбированию. Если у вас есть антидоты, то Система Жизненой Поддержки выведет пси-излучение из организма ".."\n", nil, nil, 30000)
+		meceniy_art.useEnergy(1)
+	end
+	f_3 = true
+	local a1 = act:object("antizombie") 
+	if a1 then
+		act:eat(a1)
+		do_heal(true,"%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Обнаружены антидоты. Система Жизненой Поддержки производит применение \"антирадиантов\".".."\n")
+		f_3 = false
+		f_3_end = false
+		meceniy_art.useEnergy(5)
+		return
+	elseif not f_3_end then
+		do_heal(false,"%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Антидоты не обнаруженны.".."\n")
+		f_3_end = true
+		meceniy_art.useEnergy(1)
+	end
+end
+
+
+function new_system_power()
+	local act = db.actor
+	if act.power > 0.25 then 
+		f_4, f_4_end = false, false
+		return 
+	end
+
+	if not f_4 then
+		news_manager.send_tip(act, "%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Вы устали. Ищу энергетики".."\n", nil, nil, 30000)
+		meceniy_art.useEnergy(1)
+	end
+	f_4 = true
+	local el = act:object("energy_drink") 
+	if el then
+		act:eat(el)
+		do_heal(true,"%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".."Обнаруженны энергетики. Произвожу введение в тело носителя.".."\n")
+		f_4 = false
+		f_4_end = false
+		meceniy_art.useEnergy(5)
+		return
+	elseif not f_4_end then
+		do_heal(false,"%c[10,241,129,129]".."Система Жизненной Поддержки:".."\\n".."%c[10,241,129,129]".." Энергетиков нет. Отдохните.".."\n")
+		f_4_end = true
+		meceniy_art.useEnergy(1)
+	end
+end
+
+function do_heal(a,str)
+	if a then play_snd([[meceniy\outfit\est_med]])
+	else play_snd([[meceniy\outfit\net_med]])
+	end
+	news_manager.send_tip(db.actor, str, nil, nil, 30000)
+end
+
+function play_snd(snd)
+	local snd_obj = xr_sound.get_safe_sound_object(snd)
+	if snd_obj then snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0) end
+end

@@ -1,0 +1,167 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+	
+	-- Контролёры по Золотым Ломтям с Безоарами
+	if type == "aes2_controller" then
+		--' 4 работы
+
+			t = {section = "logic@aes2_controller_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+
+			t = {section = "logic@aes2_controller_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+
+			t = {section = "logic@aes2_controller_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+
+			t = {section = "logic@aes2_controller_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+	end
+	-- Контролёры по Золотым Ломтям с Безоарами
+	if type == "aes2_controller1" then
+		--' 4 работы
+
+			t = {section = "logic@aes2_controller1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+
+			t = {section = "logic@aes2_controller1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+
+			t = {section = "logic@aes2_controller1_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+
+			t = {section = "logic@aes2_controller1_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+	end
+	-- Химеры
+	if type == "aes2_chimera1" then
+		--' 6 работ
+		for t = 1, 2 do
+			t = {section = "logic@aes2_chimera1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@aes2_chimera1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Крысы
+	if type == "aes2_rat1" then
+		--' 20 работ
+		for t = 1, 5 do
+			t = {section = "logic@aes2_rat1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@aes2_rat1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@aes2_rat1_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@aes2_rat1_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+---'''' Гулаги с переменным состоянием ''''---
+
+end
+
+function load_states(gname,type)
+
+	if type == "aes2_controller" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes2_controller1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes2_chimera1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes2_rat1" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+   end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+	if gulag_type == "aes2_controller" then
+		return npc_community == "controller"
+	end
+	if gulag_type == "aes2_controller1" then
+		return npc_community == "controller"
+	end
+	if gulag_type == "aes2_chimera1" then
+		return npc_community == "chimera"
+	end
+	if gulag_type == "aes2_rat1" then
+		return npc_community == "rat"
+	end
+
+	return false
+end

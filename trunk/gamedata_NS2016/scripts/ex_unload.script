@@ -1,0 +1,211 @@
+		---- *** Трансфер хабара ГГ *** ----
+--[[	Таблицы:
+forget_items - Предметы, которые всегда игнорируются
+esc_drug - Выдача в пещере
+	Функции:
+esc_drug_load - возврат хабара из ящика
+esc_drug_unload - перенос инвентаря ГГ в ящик перед сном в пещере
+esc_drug_wpn - вложит в руки ГГ болт
+esc_pes - создаем переход в пещеру
+pes_drug_load - выдача хабара - сон в пещере
+pes_drug_unload - очистка инвентаря ГГ при выходе из сна
+pes_drug_wpn - вложит оружие в руки ГГ
+--]]
+
+--- Таблицы и переменные --------------------------------------------------
+local forget_items = {
+	['device_torch'] = 1,
+	['device_pda'] = 1,
+	['bolt'] = 1,
+	['netpacket_pda'] = 1,
+	['wpn_binoc'] = 1
+}
+local esc_drug = {
+	['wpn_aps_sk1'] = 1,
+	['af_part_monolit_pes'] = 1,
+	['kolbasa'] = 1,
+	['af_spirit_pes'] = 1,
+	['af_dik_pes'] = 5,
+	['ammo_9x18_pmm'] = 3,
+	['stalker_outfit_m3'] = 1,
+	['wpn_ak74_m1'] = 1,
+	['flaska'] = 1,
+	['ammo_5.45x39_ap'] = 3,
+	['medkit'] = 2,
+	['wpn_spas12_m1'] = 1,
+	['ammo_12x76_zhekan'] = 3
+}
+--- Таблицы и переменные ------------------------------------------ end ---
+
+function esc_drug_load(a,n)
+	local actor = db.actor
+	local box = actor and level_object_by_sid(1)
+	local binoc = actor:object('wpn_binoc')
+	local sim = alife()
+	local s_binoc
+	if binoc then
+		s_binoc = sim:object(binoc:id())
+		if s_binoc then
+			sim:release(s_binoc,true)
+		end 
+	end
+	-- возращать только из бокса
+	if box then
+		local obj,par
+		for id = 1, 65535 do
+			obj = level.object_by_id(id)
+			if obj then
+				par = obj:parent()
+				if par and par:id() == box:id() then
+					box:transfer_item(obj, actor)
+				end
+			end
+		end
+	end	
+	local money = amk.load_variable('esc_drug_money')
+	money = actor:money() - money
+	actor:give_money(-money)
+	game_stats.money_quest_update(-money)
+	amk.del_variable('esc_drug_money')
+end
+
+function esc_drug_unload()
+	local actor = db.actor
+	local box = level_object_by_sid(1)
+	local cnt = actor:object_count()
+	local obj,sect
+	for i = 0, cnt do
+		obj = actor:object(i)
+		sect = obj and obj:section()
+		if sect and not forget_items[sect] then
+			if box then
+				actor:transfer_item(obj,box)
+			else
+				-- что-то пошло не так:
+				actor:drop_item(obj)
+			end
+		end
+	end
+	local money = actor:money()
+	amk.save_variable('esc_drug_money',money)
+end
+
+function esc_drug_wpn(a,n)
+	local actor = db.actor
+	local sim = alife()
+	local sect
+	if actor then
+		actor:activate_slot(5)
+	end
+	local slot = actor:item_in_slot(4)
+	if not slot then
+		spawn_GG_item('wpn_binoc')
+	else
+		sect = slot:section()
+		if sect ~= 'wpn_binoc' then
+			local sobj = sim:object(slot:id())
+			if sobj then
+				sim:release(sobj,true)
+				spawn_GG_item('wpn_binoc')
+				spawn_GG_item(sect)
+			end
+		end
+	end
+end
+
+function esc_pes()
+	local actor = db.actor
+	local pos = vector():set(-152.55093383789,1.223703622818,23.965879440308)
+	spawn_level_changer.create_level_changer(99999,actor:position(),actor:level_vertex_id(),actor:game_vertex_id(),4314,2865,pos,vector():set(0,0,1),'peshera',1)
+end
+
+function pes_drug_load(a,n)
+	spawn_GG_tabl(esc_drug,'esc_drug_load')
+	local actor = db.actor
+	local binoc = actor:object('wpn_binoc')
+	local sim = alife()
+	local s_binoc
+	if binoc then
+		s_binoc = sim:object(binoc:id())
+		if s_binoc then
+			sim:release(s_binoc,true)
+		end 
+	end
+	local sobj = sim:object('esc_sidor2')
+	if sobj then
+		sim:release(sobj,true)
+	end
+	actor:give_money(67300)
+	game_stats.money_quest_update(67300)
+end
+
+function pes_drug_wpn(a,n)
+	local actor = db.actor
+	local slot = 5
+	if actor then
+		local slot1 = actor:item_in_slot(1)
+		local slot2 = actor:item_in_slot(2)
+		if slot1 and slot2 then
+			slot = math.random(1,2)
+		else
+			if slot2 then
+				slot = 2
+			else
+				if slot1 then
+					slot = 1
+				end
+			end
+		end
+		actor:activate_slot(slot)
+	end
+	spawn_GG_item('wpn_binoc')
+end
+
+function pes_drug_unload()
+	ex_all.dell_GG_all(forget_items)
+	-- проверим что еще осталось:
+	local sim = alife()
+	local tabl = amk.load_table('esc_drug_load')
+	local sobj
+	for k,v in pairs(tabl) do
+		sobj = k and sim:object(k)
+		if sobj and sobj:name() == v then
+			sim:release(sobj,true)
+		end
+	end
+	amk.del_variable('esc_drug_load')
+end
+
+--- Вспомогательные функции ---
+function spawn_GG_item(thing)
+	local actor = db.actor
+	local sim = alife()
+	if actor and sim then
+		sim:create(thing,actor:position(),actor:level_vertex_id(),actor:game_vertex_id(),actor:id())
+	end
+end
+
+function spawn_GG_tabl(thing,tabl)
+	local actor = db.actor
+	local spawn = {}
+	local sobj, id
+	for k,v in pairs(thing) do
+		if v and v > 0 then
+			for i = 1, v do
+				if tabl then
+					sobj = alife():create(k,actor:position(),actor:level_vertex_id(),actor:game_vertex_id(),actor:id())
+					id = sobj and (sobj.id or sobj:id())
+					if id then
+						spawn[id] = sobj:name()
+					end
+				else
+					alife():create(k,actor:position(),actor:level_vertex_id(),actor:game_vertex_id(),actor:id())
+				end
+			end
+		end
+	end
+	if tabl then
+		amk.save_table(tabl,spawn)
+	end
+end
+--- Вспомогательные функции --- end ---

@@ -1,0 +1,43 @@
+[logic]
+active = heli_move@idle
+
+on_hit = hit
+
+[hit]
+on_info = heli_move@fly1 %+planer_posadka +aes_choper_crush_sound =heli_start_flame%
+
+[heli_move@idle]
+path_move = zaton_planer_idle_move
+engine_sound = false
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+mute = true
+on_info = {+planer_start} heli_move@fly1
+
+[heli_move@fly1]
+path_move = zaton_planer1_idle_move
+default_velocity = 25
+engine_sound = false
+combat_use_rocket = false
+combat_use_mgun = false
+combat_enemy = nil
+invulnerable = true
+immortal = true
+mute = true
+combat_safe_altitude = 60
+on_info = {+planer_posadka} heli_move@fly2
+
+
+[heli_move@fly2]
+path_move = zaton_planer_final_move
+default_velocity = 14
+engine_sound = false
+combat_use_rocket = false
+combat_use_mgun = false
+combat_enemy = nil
+invulnerable = true
+immortal = true
+mute = true
+combat_safe_altitude = 60
+

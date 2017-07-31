@@ -1,0 +1,403 @@
+---' revision and adaptation for NS_2016 lsclon 13.10.16 '---
+--' Biodetector. Биодетектор под разные худы, с привязкой к размеру и отступам мини ПДА '--
+--' Точное отображение дистанции до цели на экране радара.
+--[[
+	-- Реальные размеры:
+dot_indent - ширина альфа канала скрывающего часть точки (в пикселях)
+dot_real - высота текстуры точки (в пикселях)
+indent_x - отступ от правого края текстуры до начала корпуса биорадара (в пикселях)
+indent_y - отступ от верхнего края текстуры до начала корпуса биорадара (в пикселях)
+factor_x - отступ от края монитора до мини ПДА при разрешении 1024/768
+factor_y - отступ от края монитора до мини ПДА при разрешении 1024/768
+max_dist - радиус действия радара обозначеный цифрами на его экране (в метрах)
+radius - радиус действия радара обозначеный цифрами на текстуре (в пикселях)
+real_x - ширина экрана монитора (в пикселях)
+real_y - высота экрана монитора (в пикселях)
+texture_x - ширина текстуры (в пикселях)
+texture_y - высота текстуры (в пикселях)
+	-- Коэффиценты:
+device_k - коэффицент отношения сторон экрана монитора
+dot_k - коэффицент уменьшения размера текстуры точки
+dot_offset - смещение текстуры с учетом коэффицента уменьшения размера (в пикселях)
+compression - коэффицент сжатия текстуры по оси x
+texture_k - коэффицент уменьшения размера текстуры биорадара
+length_x - отступ от правого края текстуры до начала корпуса биорадара, с учетом коэффицента уменьшения размера (в пикселях)
+length_y - отступ от верхнего края текстуры до начала корпуса биорадара, с учетом коэффицента уменьшения размера (в пикселях)
+koef_x = - привязка отступа к миниПДА
+koef_y = - привязка отступа к миниПДА
+offset_x - смещение биорадара относительно правого края монитора
+offset_y - смещение биорадара относительно верхнего края монитора
+radius_s - радиус экрана радара с учетом коэффицента уменьшения размера текстуры (в пикселях)
+dist_k - коэффициент для точного отображения дистанции до цели на экране радара (radius_s / max_dist)
+	-- Размеры и координаты для точки:
+dot_heigth - высота точки (в пикселях)
+dot_width - ширина точки, с учетом коэффицента сжатия текстуры по оси x (в пикселях)
+dot_x - координата по оси x, со смещением левого верхнего угла от центра
+dot_y - координата по оси y, со смещением левого верхнего угла от центра
+	-- Размеры и координаты для радара:
+biomap_heigth - высота радара (в пикселях)
+biomap_width - ширина радара, с учетом коэффицента сжатия текстуры по оси x (в пикселях)
+biomap_x - координата по оси x, с учетом смещения левого верхнего угла
+biomap_y - координата по оси y, с учетом смещения левого верхнего угла
+center_x - координата центра по оси x
+center_y - координата центра по оси y
+	-- Разное
+detectorShowed - флаг детектора на поясе
+counter - счетчик точек (единица - всегда ГГ)
+max_count - максимальное колличество точек (не может быть больше, чем прописано в ui_custom_msgs.xml)
+dots - таблица задействованных точек
+	-- Индификатор худов
+"hud_org" = 0
+"hud_num" = 1
+"hud_gsc" = 2
+"hud_min" = 3
+"hud_s12" = 4
+]]
+
+-- Реальные размеры:
+local dot_indent = 1
+local dot_real = 8
+local indent_x = 0
+local indent_y = 22
+local factor_x = nil
+local factor_y = nil
+local max_dist = 60
+local radius = 216
+local real_x = device().width
+local real_y = device().height
+local texture_x = 512
+local texture_y = 512
+local texture_k = 2.46
+local bio_texture = [[biomap\biomap_texture]]
+
+local hud_index
+if ui_mm_opt_main then
+	hud_index = tonumber(ui_mm_opt_main.solReadVar("hud"))
+	if hud_index == 0 then
+		factor_y = 9
+	elseif hud_index == 1 then
+		max_dist = 70
+		indent_y = 70
+		factor_y = 87
+		radius = 174
+		texture_k = 2.91
+		bio_texture = [[biomap\biomap_texture_num]]
+	elseif hud_index == 2 then
+		indent_y = 20
+		factor_y = 10
+		radius = 222
+		texture_k = 2.66
+		bio_texture = [[biomap\biomap_texture_gsc]]
+	elseif hud_index == 3 then
+		indent_x = 26
+		indent_y = 0
+		factor_x = 3
+		radius = 210
+		texture_k = 2.57
+		bio_texture = [[biomap\biomap_texture_min]]
+	elseif hud_index == 4 then
+		indent_y = 44
+		factor_y = 18
+		radius = 180
+		texture_k = 2.47
+		bio_texture = [[biomap\biomap_texture_s12]]
+	end
+end
+
+-- Коэффиценты:
+local device_k = real_y / real_x
+local dot_k = 2.66
+local dot_offset = dot_indent / dot_k
+local compression = device_k / (768 / 1024)
+local length_x = indent_x / texture_k
+local length_y = indent_y / texture_k
+local koef_x = factor_x or device_k * length_x
+local koef_y = factor_y or device_k * length_y
+local offset_x = (length_x - koef_x) * compression
+local offset_y = koef_y - length_y
+local radius_s = radius / texture_k
+local dist_k = radius_s / max_dist
+-- Размеры и координаты для точки:
+local dot_heigth = dot_real / dot_k
+local dot_width = dot_real / dot_k * compression
+local dot_x = (dot_width - dot_offset) /2
+local dot_y = (dot_heigth - dot_offset) /2
+-- Размеры и координаты для радара:
+local biomap_heigth = texture_y / texture_k
+local biomap_width = texture_x / texture_k * compression
+local biomap_x = 1024 + offset_x - biomap_width
+if hud_index == 1 then
+	biomap_x = 994 - biomap_heigth + ((biomap_heigth - biomap_width) / 2)
+end
+local biomap_y = offset_y
+local center_x = biomap_x + (biomap_width / 2) - dot_x
+local center_y = biomap_y + (biomap_heigth / 2) - dot_y
+-- Разное
+local detectorShowed = false
+local dots = {}
+local counter = 1
+local max_count = 100
+local dot_texture = [[biomap\white_dot]]
+local string_find = string.find
+
+-- запчасти монстров по их классу
+local monster_part = {
+	[clsid.bloodsucker_s] = {"mutant_krovosos_jaw","mutant_krovosos_red_jaw"},
+	[clsid.boar_s       ] = {"mutant_boar_leg"},
+	[clsid.burer_s      ] = {"mutant_burer_hand","mutant_burer_red_hand"},
+	[clsid.cat_s        ] = {"mutant_tail_cat"},
+	[clsid.chimera_s    ] = {"mutant_chimera_kogot"},
+	[clsid.controller_s ] = {"bezoar","mozg","mutant_hand_kontroler","red_mozg"},
+	[clsid.dog_s        ] = {"mutant_dog_tail"},
+	[clsid.flesh_s      ] = {"mutant_flesh_eye"},
+	[clsid.fracture_s   ] = {"mutant_fracture_hand"},
+	[clsid.gigant_s     ] = {"mutant_psevdogigant_hand"},
+	[clsid.poltergeist_s] = {"mutant_poltergeist_glas"},
+	[clsid.pseudodog_s  ] = {"mutant_psevdodog_tail"},
+	[clsid.psy_dog_s    ] = {"mutant_psevdodog_tail"},
+	[clsid.snork_s      ] = {"mutant_snork_leg"},
+	[clsid.tushkano_s   ] = {"mutant_face_tushkano"},
+	[clsid.zombie_s     ] = {"mutant_zombie_hand","mutant_zombie_teeth"}
+	}
+
+-- чтение запчастей монстров, с определением отдельных групп
+function get_part(obj,cls)
+	local sect = obj:section()
+	if monster_part[cls] then
+		-- вначале те, кто не должен отображаться
+		if string_find(sect,"eltush", 1, true) or string_find(sect,"scelet", 1, true) then
+			return "unknown"
+		end
+		-- новые группировки
+		if string_find(sect,"bibliotekar", 1, true) then
+			return {"part_digitis_biblio"}
+		end
+		if string_find(sect,"medwed", 1, true) then
+			return {"mutant_medwed_paw"}
+		end
+		if string_find(sect,"ratlike", 1, true) then
+			return {"mutant_ratlike_tail"}
+		end
+		if string_find(sect,"rat", 1, true) or string_find(sect,"mouse", 1, true) then
+			return {"mutant_spleen_rat"}
+		end
+		if string_find(sect,"spider", 1, true) then
+			return {"mutant_spider_part"}
+		end
+		if string_find(sect,"swamp", 1, true) then
+			return {"mutant_swamp_heart"}
+		end
+		if string_find(sect,"tarakan", 1, true) then
+			return {"mutant_tarakan_part"}
+		end
+		-- стандартные группировки
+		return monster_part[cls]
+	end
+end
+
+-- назначение цвета
+local colors = {
+-------------------------------------- Красный
+	["mutant_krovosos_jaw"]      = GetARGB(255, 204,   0,   0),
+	["mutant_krovosos_red_jaw"]  = GetARGB(255, 204,   0,   0),
+	["mutant_chimera_kogot"]     = GetARGB(255, 255,   0,   0),
+	["mutant_psevdogigant_hand"] = GetARGB(255, 255,  80,  80),
+-------------------------------------- Оранжевый
+	["mutant_psevdodog_tail"]    = GetARGB(255, 255, 153,   0),
+	["mutant_dog_tail"]          = GetARGB(255, 255, 204,   0),
+	["mutant_tail_cat"]          = GetARGB(255, 255, 204, 102),
+-------------------------------------- Зеленый
+	["mutant_boar_leg"]          = GetARGB(255,   0, 102,   0),
+	["mutant_flesh_eye"]         = GetARGB(255,  51, 153,  51),
+	["mutant_ratlike_tail"]      = GetARGB(255, 102, 255, 102),
+-------------------------------------- Голубой
+	["mutant_hand_kontroler"]    = GetARGB(255,   0, 102, 204),
+	["bezoar"]                   = GetARGB(255,   0, 102, 204),
+	["red_mozg"]                 = GetARGB(255,   0, 102, 204),
+	["mozg"]                     = GetARGB(255,   0, 102, 204),
+	["mutant_burer_hand"]        = GetARGB(255,   0, 153, 255),
+	["mutant_burer_red_hand"]    = GetARGB(255,   0, 153, 255),
+	["mutant_poltergeist_glas"]  = GetARGB(255,  51, 204, 255),
+-------------------------------------- Синий
+	["mutant_spleen_rat"]        = GetARGB(255,   0,   0, 204),
+	["mutant_tarakan_part"]      = GetARGB(255,   0, 255, 255),
+	["mutant_face_tushkano"]     = GetARGB(255,   0, 102, 255),
+-------------------------------------- Фиолетовый
+	["mutant_snork_leg"]         = GetARGB(255, 153,   0, 204),
+	["mutant_swamp_heart"]       = GetARGB(255, 153,   0, 204),
+	["part_digitis_biblio"]      = GetARGB(255, 204,   0, 255),
+	["mutant_fracture_hand"]     = GetARGB(255, 204, 102, 255),
+-------------------------------------- Серый
+	["mutant_zombie_teeth"]      = GetARGB(255, 128, 128, 128),
+	["mutant_zombie_hand"]       = GetARGB(255, 128, 128, 128),
+-------------------------------------- Другое
+	["mutant_medwed_paw"]        = GetARGB(255, 102,  51,   0),
+	["mutant_spider_part"]       = GetARGB(255,   8,   8,   8),
+	["stalker"]                  = GetARGB(255, 255, 255,   0),
+	["corpse"]                   = GetARGB(255, 128, 128, 128),
+	["actor"]                    = GetARGB(255, 248, 248, 248),
+	["unknown"]                  = GetARGB(  0, 128, 128, 128)
+}
+
+local math_atan2 = math.atan2
+local math_floor = math.floor
+local math_pi_180 = 180 / math.pi
+
+function getColor(obj)
+	if obj:id() == db.actor:id() then
+		return colors["actor"]
+	else
+		local cls = obj:clsid()
+		if IAmAStalker[cls] then
+			if obj:alive() then
+				return colors["stalker"]
+			else
+				return colors["corpse"]
+			end
+		elseif IAmAMonster[cls] then
+			local group = get_part(obj,cls)
+			if group then
+				local parts
+				for i = 1, #group do
+					parts = group[i]
+					if inventory.belt[parts] then
+						if obj:alive() then
+							return colors[parts]
+						else
+							return colors["corpse"]
+						end
+					end
+				end
+			end
+		end
+	end
+	return nil
+end
+
+function update()
+	if inventory.belt["bioradar"] and not bind_stalker.scopeUsed then
+		detectorShowed = true
+		local hud = get_hud()
+		if not hud:GetCustomStatic("biomap") then
+			hud:AddCustomStatic("biomap", true)
+			local biomap_static = hud:GetCustomStatic("biomap")
+			biomap_static:wnd():InitTexture(bio_texture)
+			biomap_static:wnd():SetWndPos(biomap_x, biomap_y)
+			biomap_static:wnd():SetWidth(biomap_width)
+			biomap_static:wnd():SetHeight(biomap_heigth)
+		end
+		local level_object_by_id = level.object_by_id
+		local o, stalker, monster
+		local actorPos = db.actor:position()
+		local objPos, x, y, dir, color
+		local custom_static
+		local dotName
+		local vect
+		local sdir = device().cam_dir
+		counter = 2
+		for id,obj in pairs(db.storage) do
+			o = level_object_by_id(id)
+			if o then
+				stalker = IAmAStalker[o:clsid()]
+				monster = IAmAMonster[o:clsid()]
+				objPos = o:position()
+				if o:id() == db.actor:id() then
+					x = center_x
+					y = center_y
+					dotName = "target_dot_1"
+					custom_static = hud:GetCustomStatic(dotName)
+					if not custom_static then
+						hud:AddCustomStatic(dotName, true)
+						custom_static = hud:GetCustomStatic(dotName)
+						custom_static:wnd():InitTexture(dot_texture)
+						custom_static:wnd():SetWndPos(x, y)
+						custom_static:wnd():SetWidth(dot_width)
+						custom_static:wnd():SetHeight(dot_heigth)
+						dots[1] = true
+					end
+				else
+					if (stalker or monster) and objPos:distance_to_xz(actorPos) <= max_dist then
+						-- определяем координаты
+						dir = objPos:sub(actorPos)
+						vect = vector_rotate_y(vector():set(dir.x * dist_k, 0, -dir.z * dist_k), math_atan2(-sdir.x, sdir.z) * math_pi_180)
+						x = vect.x * compression + center_x
+						y = vect.z + center_y
+						-- определяем цвет
+						color = getColor(o)
+						if color then
+							-- рисуем точку
+							dotName = "target_dot_"..counter
+							custom_static = hud:GetCustomStatic(dotName)
+							if not custom_static then
+								hud:AddCustomStatic(dotName, true)
+								custom_static = hud:GetCustomStatic(dotName)
+								custom_static:wnd():InitTexture(dot_texture)
+								custom_static:wnd():SetColor(color)
+								custom_static:wnd():SetWndPos(x, y)
+								dots[counter] = {}
+								dots[counter]["color"] = color
+								dots[counter]["x"] = x
+								dots[counter]["y"] = y
+							else
+								if dots[counter]["color"] ~= color then
+									custom_static:wnd():SetColor(color)
+									dots[counter]["color"] = color
+								end
+								if dots[counter]["x"] ~= x or dots[counter]["y"] ~= y then
+									custom_static:wnd():SetWndPos(x, y)
+									dots[counter]["x"] = x
+									dots[counter]["y"] = y
+								end
+							end
+							counter = counter+1
+							if counter > max_count then
+								break
+							end
+						end
+					end
+				end
+			end
+		end
+		if counter <= max_count then
+			-- зачистка неактуальных точек
+			local custom_static
+			for i = counter, max_count do
+				if dots[i] then
+					dotName = "target_dot_"..i
+					custom_static = hud:GetCustomStatic(dotName)
+					if custom_static then
+						hud:RemoveCustomStatic(dotName)
+					end
+					dots[i] = nil
+				end
+			end
+		end
+	else
+		if detectorShowed then
+			biodetectorRemove()
+		end
+	end
+end
+
+function biodetectorRemove()
+	detectorShowed = false
+	local hud = get_hud()
+	local biomap_static = hud:GetCustomStatic("biomap")
+	if biomap_static then
+		hud:RemoveCustomStatic("biomap")
+	end
+	if dots then
+		local dotName
+		local custom_static
+		for i = 1, max_count do
+			if dots[i] then
+				dotName = "target_dot_"..i
+				custom_static = hud:GetCustomStatic(dotName)
+				if custom_static then
+					hud:RemoveCustomStatic(dotName)
+				end
+			end
+		end
+		dots = {}
+	end
+end

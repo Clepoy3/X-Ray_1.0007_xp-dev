@@ -1,0 +1,54 @@
+total_diaries_number = 33
+
+function monster_killed(obj,who) 
+  if obj and string.find(obj:section(),'controller') then
+    check_info(obj,who)
+  end
+end
+
+function check_info(obj,who)
+    local s = get_random_diary_section(1, total_diaries_number)
+       if s then
+          amk.spawn_item_in_inv(s, obj)
+       else
+           -- все дневники уже прочитаны.
+       end
+end
+
+function on_get_diary(obj)
+  local obj_sect = obj:section()
+  for i=1, total_diaries_number do
+    if obj_sect == ("arc_diary_"..i) then
+      db.actor:give_info_portion("kontroler_diary_info_"..i)
+      arc.remove_obj(obj:id())
+      return
+    end
+  end
+end
+
+function get_random_diary_section(a, b)
+  local f = {}
+  local c = 0
+
+  for i = a, b do
+    f[i] = has_alife_info("kontroler_diary_info_"..i)
+    if not f[i] then
+      c = c + 1
+    end
+  end
+
+  if c<1 then
+    return false
+  end
+
+  local r = math.random(c)
+
+  for i = a, b do
+    if not f[i] then
+      r = r - 1
+      if r==0 then
+        return "arc_diary_"..i
+      end
+    end
+  end
+end

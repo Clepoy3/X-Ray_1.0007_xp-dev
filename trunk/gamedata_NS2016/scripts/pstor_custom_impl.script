@@ -1,0 +1,34 @@
+class "defer_rel_q"
+
+function defer_rel_q:__init()
+	self.classname = "defer_rel_q"
+	self.st = {}
+end
+
+function defer_rel_q:save(packet)
+	local k,v
+	local n = 0
+	for k,v in pairs(self.st) do
+		n = n + 1
+	end
+	packet:w_u16(n)
+
+	local time = math.floor(time_global() * 0.001)
+	for k,v in pairs(self.st) do
+		packet:w_u16(k)
+		if v <= time then
+			packet:w_u16(0)
+		else
+			packet:w_u16(v - time)
+		end
+	end
+end
+
+function defer_rel_q:load(packet)
+	local i,k
+	local time = math.floor(time_global() * 0.001)
+	for i = 1,packet:r_u16() do
+		k = packet:r_u16()
+		self.st[k] = time + packet:r_u16()
+	end
+end

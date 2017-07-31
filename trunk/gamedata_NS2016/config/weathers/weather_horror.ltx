@@ -1,0 +1,91 @@
+	;---- *** Погода для ЧУ *** ---- *** ex_all *** ----
+  ;-- * Текстуры погоды - ATMOSFEAR BY CROMM CRUAC - переработанные(спасибо CHORIK-у) * --
+
+;--- ** базовые настройки ** ----------------------------------------------
+[horr_base]
+flares		=
+sky_texture		=	sky\horror\horror_1
+sky_rotation	=	0
+sky_color		=	0.08,0.08,0.1,0.3,0			
+clouds_texture	=	sky\sky_oblaka
+clouds_color	=	0.1,0.1,0.12,0.1,0
+far_plane		=	350
+fog_distance		=	180
+fog_color		=	0,0,0
+fog_density		=	0
+rain_density	=	0
+rain_color		=	0,0,0
+thunderbolt 	=
+bolt_period		=	0
+bolt_duration	=	0
+wind_velocity	=	0.0
+wind_direction	=	0.0
+ambient		=	0,0,0,0,0.8,0
+lmap_color		=	1.0,1.0,1.0
+hemi_color		=	0.01,0.01,0.01,0.8,0
+sun_color		=	0.05,0.05,0.05,0.5,0
+sun_dir		=	-20.0, 180
+;--- ** base setting ** ------------------------------------------- end ---
+
+;--- ** настройки фикса ** ------------------------------------------------
+[h_w_02]:horr_base
+sky_texture		=	sky\horror\horror_2
+
+[h_w_03]:horr_base
+sky_texture		=	sky\horror\horror_3
+
+[h_w_04]:horr_base
+sky_texture		=	sky\horror\horror_4
+
+[h_w_05]:horr_base
+sky_texture		=	sky\horror\horror_5
+
+[h_w_06]:horr_base
+sky_texture		=	sky\horror\horror_6
+
+[h_w_07]:horr_base
+sky_texture		=	sky\horror\horror_7
+
+[h_w_08]:horr_base
+sky_texture		=	sky\horror\horror_8
+
+[h_w_09]:horr_base
+sky_texture		=	sky\horror\horror_9
+;--- ** fix setting ** -------------------------------------------- end ---
+
+;--- ** секции ** ---------------------------------------------------------
+[sect_horror]
+00:00:00 = horr_base
+12:00:00 = horr_base
+
+[horr_01]
+00:00:00		=	horr_base
+00:00:20		=	h_w_02
+00:00:40		=	h_w_03
+00:01:00		=	h_w_04
+
+[horr_02]
+00:00:10		=	h_w_05
+00:00:20		=	h_w_06
+00:00:30		=	h_w_05
+00:00:40		=	h_w_04
+00:00:50		=	h_w_05
+00:01:00		=	h_w_06
+00:01:10		=	h_w_05
+00:01:20		=	h_w_04
+00:01:30		=	h_w_05
+00:01:40		=	h_w_06
+00:01:50		=	h_w_05
+00:02:00		=	h_w_04
+
+[horr_03]
+00:00:10		=	h_w_05
+00:00:20		=	h_w_06
+00:00:30		=	h_w_05
+00:00:40		=	h_w_04
+00:00:50		=	h_w_05
+00:01:00		=	h_w_07
+00:01:20		=	h_w_08
+00:01:40		=	h_w_09
+00:02:00		=	horr_base
+;--- ** section ** ------------------------------------------------ end ---

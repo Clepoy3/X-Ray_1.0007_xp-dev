@@ -1,0 +1,90 @@
+[logic]
+active = heli_move@idle
+
+[heli_move@idle]
+path_move = agr_desant_heli2_idle_move
+engine_sound = false
+mute = true
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+on_info = {+vertuxi_vpered} heli_move@fly1
+
+[heli_move@fly1]
+path_move = agr_nii_way_heli_arhara
+default_velocity = 40
+engine_sound = true
+combat_enemy = actor
+combat_use_rocket = false
+combat_use_mgun = true
+rocket_delay = 6000
+combat_safe_altitude = 60
+invulnerable =  false
+on_timer = 30000 | heli_move@fly2
+
+[heli_move@fly2]
+path_move = agr_desant_heli2_predesant_move
+engine_sound = true
+default_velocity = 5
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+invulnerable = true
+combat_safe_altitude = 120
+on_timer = 14000 | heli_move@fly3
+
+[heli_move@fly3]
+path_move = agr_desant_heli2_desant_move
+engine_sound = true
+default_velocity = 5
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+rocket_delay = 6000
+combat_safe_altitude = 70
+velocity = 0
+invulnerable = true
+on_timer = 20000 | heli_move@fly4 %+agro_des_krusha_spawn =play_snd(characters_voice\scenario\aes\aes_desant_proceed2)%
+
+[heli_move@fly4]
+path_move = agr_des_heli2_otlet1_move
+engine_sound = true
+default_velocity = 35
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+rocket_delay = 6000
+combat_safe_altitude = 800
+invulnerable = false
+on_timer = 7000 | heli_move@fly5
+
+[heli_move@fly5]
+path_move = agr_nii_way_heli_arhara
+engine_sound = true
+default_velocity = 30
+combat_enemy = actor
+combat_use_rocket = true
+combat_use_mgun = true
+rocket_delay = 6000
+combat_safe_altitude = 30
+invulnerable = false
+on_timer = 35000 | heli_move@fly6
+
+
+[heli_move@fly6]
+path_move = agr_desant_heli2_otlet_move
+engine_sound = true
+default_velocity = 45
+combat_enemy = actor
+combat_use_rocket = false
+combat_use_mgun = true
+rocket_delay = 6000
+combat_safe_altitude = 120
+invulnerable = false
+on_timer = 40000 | heli_move@stop    
+
+[heli_move@stop]
+path_move = agr_desant_heli2_idle_move
+engine_sound = false
+combat_enemy = nil
+combat_ignore = true

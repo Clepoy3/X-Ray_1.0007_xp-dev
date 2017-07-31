@@ -1,0 +1,472 @@
+local levels =
+{
+{"l01_escape",                          "Кордон"},
+{"l02_garbage",                         "Свалка"},
+{"l03_agroprom",                      "Агропром"},
+{"l03u_agr_underground",  "Подземелье Агропрома"},
+{"l04_darkvalley",               "Тёмная Долина"},
+{"l04u_labx18",               "Лаборатория Х-18"},
+{"l05_bar",                                "Бар"},
+{"l06_rostok",                          "Росток"},
+{"l08_yantar",                          "Янтарь"},
+{"l08u_brainlab",            "Лаборатория Х-16"},
+{"l07_military",             "Армейские Склады"},
+{"l10_radar",                           "Радар"},
+{"l10u_bunker",                        "Лаборатория Х-10"},
+{"l11_pripyat",                       "Припять"},
+{"l12_stancia",                        "ЧАЭС-1"},
+{"l12u_sarcofag",                    "Саркофаг"},
+{"l12u_control_monolith",   "Контроль Монолита"},
+{"l12_stancia_2",                      "ЧАЭС-2"},
+
+ {"peshera", "Пещера"},
+ {"atp_for_test22", "АТП"},
+ {"puzir", "Забытый Лес"}, 
+ {"aver", "Неразведанная Земля"}, 
+ {"warlab", "Военная лаборатория"}, 
+ {"av_peshera", "Лабиринт"},
+ {"marsh", "Болота"},
+ {"red_forest", "Красный лес"},
+ {"hospital", "Госпиталь"},
+ {"lost_village", "Старая деревня"},
+ {"limansk", "Лиманск"},
+ {"generators", "Генераторы"},
+ {"dead_city", "Мёртвый город"},
+ {"zaton", "Затон"}, 
+ {"jupiter", "Юпитер"},
+ {"pripyat", "Восточная Припять"}, 
+ {"jupiter_underground", "Путевод Юпитера"},
+ {"labx8", "Лаборатория Х-8"},
+ {"mine", "Шахта"},
+ {"la15_darkscape", "Лощина"}
+}
+local restr_visited = 1
+local tp_art_need = "af_dummy_battery"
+local tp_time = 0
+local changers = {}
+
+function EnableDevice(param)
+	level.start_stop_menu(level.main_input_receiver(),true)
+	local can_use = true
+	if (tp_art_need ~= "" and amk_utils.inventory_search(tp_art_need,1) == false) then
+		can_use = false
+		local art = game.translate_string(amk.get_inv_name(tp_art_need))
+		amk.send_tip("Требуется артефакт "..art,"телепорт",0,10)
+	end
+	if tp_time > 0 then
+		local curr_time = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()
+--		amk.send_tip("текущее время "..curr_time,"телепорт",0,15)
+		local last_used_tp = amk.load_variable("tp_last_time",0)
+--		amk.send_tip("время использования "..last_used_tp,"телепорт",0,15)
+		if (curr_time - last_used_tp)/60 < tp_time then
+			can_use = false
+			local time_remain = tp_time - (curr_time - last_used_tp)/60
+			local text_tr = string.format("Телепорт перезарядится через %.2f  час.", time_remain)
+			amk.send_tip(text_tr,"телепорт",0,10)
+		end		
+	end
+	
+	-- changers = spawn_level_changer.export_places()
+	if can_use == true then
+		local tbl = spawn_level_changer.export_places()
+		if restr_visited == 0 then
+			changers = tbl
+		else
+			local tmp_tbl = {}
+			local visited = amk.load_table("art_limit")
+			amk.dump_table(visited)
+			-- for i = 1, #tbl do
+			for k,v in pairs(tbl) do			
+				local l_name = k
+				local lid = game_graph():vertex(v[1]["gvid"]):level_id()
+				if visited[lid] then
+					if not tmp_tbl[l_name] then
+						tmp_tbl[l_name] = {}
+					end
+					tmp_tbl[l_name] = v
+				end
+			end
+			-- amk.dump_table(tmp_tbl)
+			changers = tmp_tbl		
+		end
+		CreateItemActor("hand_teleporter")
+		level.start_stop_menu(this.mobile_changer(), true)
+	else
+		CreateItemActor("hand_teleporter")
+		end
+end
+
+function UseTeleport(oItem)
+	if oItem:section() == "hand_teleporter" then
+		amk.start_timer("UseTeleport", 0.2, oItem:id())		
+	end
+end
+function CreateItemActor(sItemSection)
+	if alife() and sItemSection then
+		return alife():create(sItemSection, db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id(),db.actor:id())
+	end
+end
+class "list_item" (CUIListItemEx) --\\ отдельный класс для ItemList. Обязательное условие.
+
+function list_item:__init() super()
+	self:SetWndRect		(0,0,150,29)
+	
+	self.fn					= CUIStatic	()
+	self.fn:SetAutoDelete	(true)          
+	self:AttachChild		(self.fn)       
+	self.fn:SetWndRect		(0,0,150,29)    
+	self.fn:SetText			("level_name")  
+	self.fn:SetTextY        (6)             
+	self.fn:InitTexture("ui\\ui_btn_mm_h")  
+	self.fn:SetOriginalRect(0, 0, 255, 37)  
+	self.fn:SetStretchTexture(true)         
+	self.fn:SetTextAlign(2)                 
+end
+
+class "mobile_changer" (CUIScriptWnd)
+
+function mobile_changer:__init() super()	
+    local index_level = alife():level_id()
+	self.name_level = alife():level_name(index_level)
+    self:Init(50,50,900,640)
+
+	self.xml = CScriptXmlInit()
+	self.xml:ParseFile("_mobile_changer.xml")
+	
+	self.xml:InitStatic("background", self)
+
+	local list = self.xml:InitList("list", self)
+	list:ShowSelectedItem(false)
+	list:EnableScrollBar(true)
+	self:Register(list, "list_window")
+	self:AddCallback("list_window", ui_events.LIST_ITEM_CLICKED, self.OnListItemClicked,	self)
+	
+	for k,v in ipairs(levels) do
+
+		local _itm	= list_item()  --\\ класс "list_item"
+		local fn = _itm.fn         --\\ блок CUIStatic
+		fn:SetText( v[2] )
+		if self.name_level == v[1] then
+			fn:InitTexture("ui\\ui_btn_mm_t")
+			fn:SetOriginalRect(0, 0, 255, 37)
+		end
+		list:AddItem(_itm)
+    end
+	
+    local vectors			      = CUIStatic	()
+	vectors:SetAutoDelete	  (true)
+	vectors:Init             (225,55,620,80)
+	vectors:InitTexture      ("ui\\ui_frame_dialog_back")
+	vectors:SetStretchTexture(true)
+	self:AttachChild		      (vectors)
+	
+	
+ local enter = self.xml:Init3tButton("enter", vectors)
+	enter:EnableTextHighlighting(true)
+	self:Register(enter,"enter_but")
+	self:AddCallback("enter_but",		ui_events.BUTTON_CLICKED,	self.Enter,		self)
+
+	local zone_pic =  CUIStatic	()
+	zone_pic:SetAutoDelete	  (true)
+	zone_pic:Init             (225,140,620,440)
+	zone_pic:ClipperOn(true)
+	self:AttachChild		      (zone_pic)
+	
+	local picX,picY,picW,picH = 30,5,128,96
+	local fon
+	-- for i=1, 16 do
+	for i=1, 4 do
+	    local fX,fY = 1,0
+	    if i>4 and i<=8 then
+		fX,fY = 5,1
+		elseif i>8 and i<=12 then
+		fX,fY = 9,2
+		elseif i>12 then
+		fX,fY = 13,3
+		end
+		local picXs = picX + (picW + 10) * (i-fX)
+		local picYs = picY + (picH + 10) * fY
+	    local pic = CUIStatic()
+	    pic:SetAutoDelete	 (true)
+		pic:SetWindowName    ("pic"..i)
+	    pic:Init             (picXs,picYs,picW,picH)
+		if changers[self.name_level] then
+			fon = changers[self.name_level][i]
+		end
+		if fon then
+			local texture = "level_change\\"..fon["pic"]
+		    pic:InitTexture      (texture)
+			pic:SetOriginalRect(0, 0, 128, 96)
+		else
+		    pic:InitTexture      ("ui\\ui_frame_dialog_back") 
+		end
+	    pic:SetStretchTexture(true)
+	    zone_pic:AttachChild (pic)
+		
+		local btn = CUIButton()
+	    btn:SetAutoDelete	 (true)
+		btn:SetWindowName    ("btn"..i)
+	    btn:Init             (0,0,picW,picH)
+		pic:AttachChild (btn)
+		self:Register(btn)
+	end
+
+	self:AddCallback("btn1",		ui_events.BUTTON_CLICKED,	self.Btn_1,		self)
+	self:AddCallback("btn2",		ui_events.BUTTON_CLICKED,	self.Btn_2,		self)
+	self:AddCallback("btn3",		ui_events.BUTTON_CLICKED,	self.Btn_3,		self)
+	self:AddCallback("btn4",		ui_events.BUTTON_CLICKED,	self.Btn_4,		self)
+	self:Btn_print(1)
+end
+
+function mobile_changer:OnListItemClicked()
+    local list = self:GetListWnd("list_window") 
+	if list:GetSize()==0 then return end        
+	
+	local index = list:GetSelectedItem()        
+	if index == -1 then return end              
+	
+	local item		= list:GetItem(index)       
+	local text		= item.fn:GetText()         
+	
+	list:RemoveAll()                            
+	
+	for _,v in ipairs(levels) do
+	    local _itm	= list_item()               
+		local fn    = _itm.fn                   
+		fn:SetText(v[2])
+		if text == v[2] then
+		    fn:InitTexture("ui\\ui_btn_mm_t")
+			fn:SetOriginalRect(0, 0, 255, 37)
+			self.name_level = v[1]
+		end
+		list:AddItem(_itm)
+	end
+	local fon
+	for i=1,4 do
+	    local zone = self:GetStatic("pic"..i)
+        -- local fon = _change_list.jump_to_level(self.name_level, i)
+		if changers[self.name_level] then
+			fon = changers[self.name_level][i]
+		end
+		if fon then
+			local texture = "level_change\\"..fon["pic"]
+		    zone:InitTexture      (texture)
+			zone:SetOriginalRect(0, 0, 128, 96)
+		else
+		    zone:InitTexture      ("ui\\ui_frame_dialog_back")
+		end		
+	end
+	self.LN=self.name_level
+	self:Btn_print(1)
+end
+
+function mobile_changer:Enter()
+	
+    local x = tonumber(self.X)
+	local y = tonumber(self.Y)
+	local z = tonumber(self.Z)
+
+	if not x then level.start_stop_menu(teleport_menu.wind_error("Ошибка в координате Х"), true) return
+	elseif not y then level.start_stop_menu(teleport_menu.wind_error("Ошибка в координате Y"), true) return
+	elseif not z then level.start_stop_menu(teleport_menu.wind_error("Ошибка в координате Z"), true) return
+	end
+
+    if alife():level_name(alife():level_id()) == self.name_level then
+	    self:on_quit()
+		level.add_pp_effector("teleport.ppe", 1524, false)
+	    db.actor:set_actor_position(vector():set(x,y,z))		
+	else
+
+	    local lv = tonumber(self.LV)
+	    local gv = tonumber(self.GV)
+		local lev = self.LN
+
+		if not lv then level.start_stop_menu(teleport_menu.wind_error("Ошибка в координате LV"), true) return
+	    elseif not gv then level.start_stop_menu(teleport_menu.wind_error("Ошибка в координате GV"), true) return
+	    elseif not lev then level.start_stop_menu(teleport_menu.wind_error("Ошибка в имени локации"), true) return
+	    end
+	    self:on_quit()
+		level.add_pp_effector("teleport.ppe", 1524, false)
+	    this.start_level_changer(vector():set(x,y,z), lv, gv, lev)
+	end
+	if tp_time > 0 then
+
+		local tp_last_time_use = level.get_time_days()*60*24+level.get_time_hours()*60+level.get_time_minutes()
+		amk.save_variable("tp_last_time",tp_last_time_use)
+	end
+	if tp_art_need ~= "" then
+		amk.remove_item_from_inventory_by_name(tp_art_need,db.actor)
+	end
+--		level.start_stop_menu(this.mobile_changer(), true)
+end
+
+
+function mobile_changer:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:on_quit()
+		end
+	end
+	return true
+end
+
+function mobile_changer:Btn_1() self:Btn_print(1) end
+function mobile_changer:Btn_2() self:Btn_print(2) end
+function mobile_changer:Btn_3() self:Btn_print(3) end
+function mobile_changer:Btn_4() self:Btn_print(4) end
+
+function mobile_changer:Btn_print(index)
+    -- local data = _change_list.jump_to_level(self.name_level, index)
+	local data
+	if changers[self.name_level] then
+		data = changers[self.name_level][index]
+	end
+	
+	if data then
+	    self.X=data["pos_x"]
+	    self.Y=data["pos_y"]
+	    self.Z=data["pos_z"]
+	    self.LV=data["lvid"]
+	    self.GV=data["gvid"]
+	else
+	    self.X=''
+	    self.Y=''
+	    self.Z=''
+	    self.LV=''
+	    self.GV=''
+	end
+	
+	
+	for i=1,4 do
+	    local btn = self:GetButton("btn"..i)
+		if index == i then
+		    btn:InitTexture("ui\\ramka")
+		else
+		    btn:InitTexture("ui\\clear")
+		end
+	end
+end
+
+
+function mobile_changer:on_quit()
+	self:GetHolder():start_stop_menu (self,true)
+end
+
+class "wind_error" (CUIScriptWnd)
+
+function wind_error:__init(n) super()
+    self:Init(380,300,345,212)
+	
+	self.fon = CUIStatic()
+	self.fon:Init(0,0,345,212)
+	self.fon:InitTexture("ui\\ui_trade_list_back")
+	self.fon:SetText("Error")
+	self.fon:SetTextX(30)
+	self.fon:SetTextY(10)
+	self.fon:SetTextAlign(0)
+	self:AttachChild (self.fon)
+	
+	self.text = CUIStatic()
+	self.text:Init(0,60,345,30)
+	self.text:SetText(n)
+	self.text:SetTextAlign(2)
+	self.fon:AttachChild (self.text)
+	
+	self.btn = CUI3tButton ()
+	self.btn:Init("ui\\ui_btn_02", 150,150,45,26)
+	self.btn:SetText("OK")
+	self:Register(self.btn, "btn")
+	self:AddCallback("btn",		ui_events.BUTTON_CLICKED,	self.Btn,		self)
+	self.fon:AttachChild (self.btn)
+end
+
+function wind_error:Btn()
+    self:GetHolder():start_stop_menu (self,true)
+end
+
+function start_level_changer(p_dest_pos, p_dest_lv, p_dest_gv, p_dest_level)
+	local obj = alife():create("level_changer", db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id())
+	local packet = net_packet()
+	obj:STATE_Write(packet)
+-- свойства cse_alife_object
+    local game_vertex_id     = packet:r_u16()
+    local distance           = packet:r_float()
+    local direct_control     = packet:r_u32()
+    local level_vertex_id    = packet:r_u32()
+    local object_flags       = packet:r_u32()
+    local custom_data        = packet:r_stringZ()
+    local story_id           = packet:r_u32()
+    local spawn_story_id     = packet:r_u32()
+
+    local shape_count = packet:r_u8()
+    for i=1,shape_count do
+        local shape_type = packet:r_u8()
+        if shape_type == 0 then
+
+            local center = packet:r_vec3()
+            local radius = packet:r_float()
+        else
+
+			local axis_x                = packet:r_vec3()
+			local axis_y                = packet:r_vec3()
+			local axis_z                = packet:r_vec3()
+			local offset                = packet:r_vec3()
+        end
+    end
+
+	local restrictor_type 			= packet:r_u8()
+
+	local dest_game_vertex_id		= packet:r_u16()  
+	local dest_level_vertex_id 		= packet:r_u32()  
+	local dest_position 			= packet:r_vec3()
+	local dest_direction 			= packet:r_vec3()
+	local dest_level_name 			= packet:r_stringZ()
+	local dest_graph_point 			= packet:r_stringZ()
+	local silent_mode 			    = packet:r_u8()
+ 
+
+	packet:w_begin(game_vertex_id)
+	packet:w_float(distance)
+	packet:w_u32(direct_control) 
+	packet:w_u32(level_vertex_id)
+	packet:w_u32( bit_not(193) )
+	packet:w_stringZ(custom_data)
+    packet:w_u32(46489)
+	packet:w_u32(46489)
+    packet:w_u8(1)
+    packet:w_u8(0)
+    packet:w_vec3(vector():set(0, 0, 0))
+    packet:w_float(2)
+	packet:w_u8(3)
+	packet:w_u16(p_dest_gv)
+	packet:w_u32(p_dest_lv)	
+	packet:w_vec3(p_dest_pos)
+	packet:w_vec3(vector():set(0, 0, 0))
+	packet:w_stringZ(p_dest_level)
+	packet:w_stringZ("start_actor_99")
+	packet:w_u8(1)
+ 
+	packet:r_seek(0)
+	obj:STATE_Read(packet, packet:w_tell())
+end
+
+function start_del()
+    local obj =  alife():story_object( 46489 )
+	if obj then
+	    db.actor:set_fastcall(del_changer, db.actor)
+	end
+end
+
+function del_changer()
+	local obj =  alife():story_object( 46489 )
+		if obj then
+	        local lv_ch = game_graph():vertex(obj.m_game_vertex_id):level_id() 
+		    local lv_ac = alife():level_id()                                   
+		    if lv_ch ~= lv_ac then                                             
+	            alife():release(obj, true)                                     
+            end
+	    end
+end
+
+start_del()

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+
+<mobil_changer>
+
+    <background x="0" y="0" width="900" height="640" stretch="1">
+		<texture x="0" y="0" width="900" height="640">ui\ui_pda_back_big</texture>
+	</background>
+    
+	<list x="70" y="55" width="175" height="530" item_height="29">
+	    <font font="letterica16" r="216" g="186" b="140" />
+    </list>
+	
+	<edit x="40" y="0" width="100" height="23">
+		<texture>ui_linetext_e</texture>
+		<text font="letterica18" r="240" g="217" b="182"/>
+	</edit>
+	
+	<vector_x x="0" y="10" width="140" height="23">
+		<text x="20" y="3">X:</text>
+	</vector_x>
+	
+	<vector_y x="150" y="10" width="140" height="23">
+		<text x="20" y="3">Y:</text>
+	</vector_y>
+	
+	<vector_z x="300" y="10" width="140" height="23">
+		<text x="20" y="3">Z:</text>
+	</vector_z>
+	
+	<vector_lv x="0" y="50" width="140" height="23">
+		<text x="15" y="3">LV:</text>
+	</vector_lv>
+	
+	<vector_gv x="150" y="50" width="140" height="23">
+		<text x="15" y="3">GV:</text>
+	</vector_gv>
+	
+	<vector_ln x="300" y="50" width="250" height="23">
+		<text x="0" y="3">Level:</text>
+	</vector_ln>
+	
+	<enter x="500" y="10" width="55" height="24">
+	    <text font="letterica18" r="240" g="50" b="50" >Enter</text>
+	    <texture_e >ui\ui_btn_numpad_okcancel_e</texture_e>  <!-- идловая -->
+	    <texture_h >ui\ui_btn_numpad_okcancel_h</texture_h>  <!-- при наведении -->
+	</enter>
+
+</mobil_changer>

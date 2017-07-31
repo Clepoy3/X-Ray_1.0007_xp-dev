@@ -1,0 +1,200 @@
+---' revision and adaptation for NS_2012 lsclon 20.01.12 '---
+--[[
+-- Результаты статистики, выводимые в ПДА - просто баллы, и ни как не влияют на ранг ГГ.
+   Ранг повышается согласно таблицы kill_obj_count и зависит от группировки и ранга убитого.
+   За убийсто раненного или нейтрально настроеного по отношению к ГГ нпс, баллы не начисляются и ранг не повышается.
+-- Выделены монстры по которым не ведется статистика и не повышается ранг.
+   Теперь просчитываются ареновские нпс и мобы.
+   Отдельно ведется статистика по рангам убитых. Для мобов это стронги и персоналы, у которых обычно реально отличаются конфиги.
+-- Таблицы:
+   monster_classes - Если нет класса, то статистика не ведется, и ранг не повышается.
+   community_group - Если не вписана группировка, то по ней статистика не ведется, и ранг не повышается.
+   kill_obj_count  - Задает, на сколько будет повышатся ранг ГГ, в зависимости от группировки убитого и если есть, то и от его ранга.
+-- Функции:
+   get_obj_group - На входе игровой объект. Определяет коммъюнити объекта.
+                   Для мобов - если есть в таблице monster_classes и новых монстров по секции объекта.
+   get_npc_type  - Определяет ранг объекта и тип статистических данных.
+                   Для нпс проверяет отношение к ГГ, и если не враждебное, то сменяет ранг и группу.
+   addKillCount  - Собственно ведет статистику и повышает ранг ГГ.
+--]]
+
+local string_find = string.find
+
+local monster_classes = {
+	[clsid.bloodsucker_s] = "bloodsucker",
+	[clsid.boar_s       ] = "boar",
+	[clsid.burer_s      ] = "burer",
+	[clsid.cat_s        ] = "cat",
+	[clsid.chimera_s    ] = "chimera",
+	[clsid.controller_s ] = "controller",
+	[clsid.dog_s        ] = "dog",
+	[clsid.flesh_s      ] = "flesh",
+	[clsid.fracture_s   ] = "fracture",
+	[clsid.poltergeist_s] = "poltergeist",
+	[clsid.gigant_s     ] = "pseudo_gigant",
+	[clsid.pseudodog_s  ] = "pseudodog",
+	[clsid.psy_dog_s    ] = "psy_dog",
+	[clsid.snork_s      ] = "snork",
+	[clsid.tushkano_s   ] = "tushkano",
+	[clsid.zombie_s     ] = "zombie"
+}
+
+local community_group = {
+	["arena_enemy"] = "arena_enemy",
+	["bandit"] = "bandit",
+	["bandos"] = "bandos",
+	["dolg"] = "dolg",
+	["ecolog"] = "ecolog",
+	["freedom"] = "freedom",
+	["green"] = "green",
+	["killer"] = "killer",
+	["lastday"] = "lastday",
+	["military"] = "military",
+	["monolith"] = "monolith",
+	["nebo"] = "nebo",
+	["sniper"] = "sniper",
+	["stalker"] = "stalker",
+	["stranger"] = "stranger",
+	["trader"] = "trader",
+	["voin"] = "voin",
+	["zombied"] = "zombied"
+}
+
+local kill_obj_count = {
+	arena_enemy_stat = 2,
+	bandit_stat = 1,
+	bandos_stat = 1,
+	dolg_stat = 1,
+	ecolog_stat = 1,
+	freedom_stat = 1,
+	green_stat = 1,
+	killer_stat = 1,
+	lastday_stat = 1,
+	military_stat = 1,
+	monolith_stat = 1,
+	nebo_stat = 1,
+	sniper_stat = 1,
+	stalker_stat = 1,
+	stranger_stat = 1,
+	trader_stat = 1,
+	voin_stat = 1,
+	zombied_stat = 1,
+	neutral_stat = 0,
+	wounded_stat = 0,
+	experienced_stat = 1,
+	veteran_stat = 2,
+	master_stat = 3,
+
+	arena_monstr_stat = 2,
+	bibliotekar_stat = 2,
+	bloodsucker_stat = 1,
+	boar_stat = 1,
+	burer_stat = 1,
+	cat_stat = 1,
+	chimera_stat = 1,
+	controller_stat = 1,
+	dog_stat = 1,
+	flesh_stat = 1,
+	fracture_stat = 1,
+	ghoul_stat = 1,
+	medwed_stat = 2,
+	poltergeist_stat = 1,
+	pseudo_gigant_stat = 2,
+	pseudodog_stat = 1,
+	psy_dog_stat = 1,
+	rat_stat = 1,
+	ratlike_stat = 1,
+	snork_stat = 1,
+	spider_stat = 1,
+	swamp_stat = 1,
+	tarakan_stat = 1,
+	tushkano_stat = 1,
+	zombie_stat = 1,
+	strong_stat = 1,
+	personal_stat = 2
+}
+
+function addKillCount(obj)
+	if obj then
+		local actor = db.actor
+		local npc_count,npc_rank,count
+		local props, group, rank, npc = get_npc_type(obj)
+		if props and actor then
+			npc_count = kill_obj_count[group] or 0
+			npc_rank = kill_obj_count[rank]
+			actor_stats.add_points(props, group, 1, npc_count)
+			if npc_rank then
+				actor_stats.add_points(props, rank, 1, npc_rank)
+			else
+				npc_rank = 0
+			end
+			count = npc_count + npc_rank
+			actor:set_character_rank(actor:character_rank() + count)
+		end
+	end
+end
+
+function get_npc_type(obj)
+	local group,npc,rank
+	if obj then
+		group, npc = get_obj_group(obj)
+		if group then
+			rank = ranks.get_obj_rank_name(obj)
+			if npc then
+				if obj:relation(db.actor) ~= game_object.enemy then
+					group = "neutral"
+					rank = "unknown"
+				elseif obj:wounded() then
+					group = "wounded"
+					rank = "unknown"
+				end
+				return "stalkerkills", group.."_stat", rank.."_stat", npc
+			else
+				return "monsterkills", group.."_stat", rank.."_stat"
+			end
+		end
+	end
+	return nil
+end
+
+function get_obj_group(obj)
+	local sect = obj:section()
+	local cls = obj:clsid()
+	local team, group
+	if cls == clsid.script_stalker then
+		team = obj:character_community() or obj:community()
+		group = team and community_group[team]
+		return group, true
+	end
+	if string_find(sect,"eltush") or string_find(sect,"scelet") or string_find(sect,"mouse") then
+		return nil
+	end
+	if string_find(sect,"_arena") or string_find(sect,"aem_") then
+		return "arena_monstr"
+	end
+	if monster_classes[cls] == "boar" and string_find(sect,"medwed") then
+		return "medwed"
+	end
+	if monster_classes[cls] == "boar" and string_find(sect,"spider") then
+		return "spider"
+	end
+	if monster_classes[cls] == "fracture" and string_find(sect,"bibliotekar") then
+		return "bibliotekar"
+	end
+	if monster_classes[cls] == "tushkano" and string_find(sect,"ratlike") then
+		return "ratlike"
+	end
+	if monster_classes[cls] == "tushkano" and string_find(sect,"rat") then
+		return "rat"
+	end
+	if monster_classes[cls] == "tushkano" and string_find(sect,"swamp") then
+		return "swamp"
+	end
+	if monster_classes[cls] == "tushkano" and string_find(sect,"tarakan") then
+		return "tarakan"
+	end
+	if monster_classes[cls] == "zombie" and string_find(sect,"ghoul") then
+		return "ghoul"
+	end
+	return monster_classes[cls] or nil
+end

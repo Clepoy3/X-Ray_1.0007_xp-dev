@@ -1,0 +1,54 @@
+	---' Проверка на потерю предмета из рюкзака ГГ '---
+
+function on_item_drop(obj)
+	local actor = db.actor
+	local id = obj:id()
+	local name = obj:name()
+	local sect = obj:section()
+
+	if sect == 'ex_hoard_tip12' then
+		amk.start_timer('timer_hoard',0.2,{id,name})
+	end
+	if sect == 'zamok' then
+		zamok_add(id)
+	end
+	if sect == 'shaxter_tele' and actor:has_info('pes_snotvornoe_have') then
+		amk.start_timer('pes_snotvornoe',0.2,{id,name})
+	end
+
+
+end	
+
+	---' Исполняющие функции '---
+function pes_snotvornoe()
+		level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
+		level.add_pp_effector("yantar_underground_psi.ppe", 2007, false)
+	ex_unload.pes_drug_unload()
+	local actor = db.actor
+	local pos = vector():set(-210.39352416992,-22.882308959961,-125.8132019043)
+	spawn_level_changer.create_level_changer(99999,actor:position(),actor:level_vertex_id(),actor:game_vertex_id(),42624,59,pos,vector():set(0,0,1),'l01_escape',1)
+end
+
+function zamok_add(id)
+	local sim = alife()
+	local sobj = sim:object(id)
+	local par_id = sobj and sobj.parent_id ~= 65535 and sobj.parent_id
+	local box = par_id and sim:object(par_id)
+	local box_id = box and (box:clsid() == clsid.inventory_box) and box.id
+	if box_id then
+		--get_console():execute("load [zamok] add protect box ID: "..box_id.." story ID: "..box.m_story_id.." name: "..box:name())
+		if not amk_offline_alife.protected.ids[box.id] then
+			amk_offline_alife.protected.ids[box.id] = true
+			amk_offline_alife.update_tables(level.name())
+			amk.send_tip('Заперли тайник на замок.',nil,nil,5)
+		end
+	end
+end
+
+function remove_changer()
+	local sim = alife()
+	local sobj = sim:story_object(99999)
+	if sobj then
+		sim:release(sobj,true)
+	end
+end

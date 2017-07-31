@@ -1,0 +1,19 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+sos_say_one_done} sr_idle@time %=arhara_dialog.elza_dver_sms%
+
+[sr_idle@time]
+on_timer = 8000 | sr_idle@time1 %=arhara_dialog.elza_dver_sms1%
+
+[sr_idle@time1]
+on_timer = 8000 | sr_idle@time2 %=arhara_dialog.elza_dver_sms2%
+
+[sr_idle@time2]
+on_timer = 12000 | sr_idle@last %=arhara_dialog.elza_dver_sms3%
+
+[sr_idle@last]
+on_timer = 6000 | sr_idle@nil %+elza_door_open =arhara1_dialog1.dell_kill_elza_restr%
+
+[sr_idle@nil]

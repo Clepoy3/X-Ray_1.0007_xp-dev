@@ -1,0 +1,286 @@
+;---''' RATLIKE '''---
+;--'' первичная модель SANSANI4 ''--
+;--'' доработка VADYAN for NS 2013 ''--
+[m_ratlike_e]:monster_base
+GroupControlSection     = spawn_group
+SpaceRestrictionSection = space_restrictor,zone_mosquito_bald
+$npc      = on
+$prefetch = 16
+cform          = skeleton
+class          = SM_TUSHK
+script_binding = bind_monster.bind
+visual         = monsters\ratlike\ratlike
+corpse_visual  = monsters\ratlike\ratlike
+icon           = ui_npc_monster_ratlike
+
+ef_creature_type = 2
+ef_weapon_type   = 2
+ef_detector_type = 1
+panic_threshold  = 0
+
+bone_torso   = bip01_spine1
+bone_head    = bip01_head
+bone_fire    = bip01_head
+weapon_usage = 0
+
+distance_to_corpse = 1.2
+DynamicObjectsCount = 32
+Spawn_Inventory_Item_Section = mutant_ratlike_tail
+Spawn_Inventory_Item_Probability_onDeath = 0.5
+
+;--' Offline Alife '--
+Scheduled = on
+Human     = off
+Health    = 40
+
+MinSpeed     = 1
+MaxSpeed     = 6
+going_speed  = 6
+search_speed = 1.5
+MaxHealthValue = 40
+current_level_going_speed = 1
+
+DayTime_Begin = 0
+DayTime_End   = 21
+terrain       = 255,000,255,255
+smart_terrain_choose_interval = 00:15:00
+
+;--' Physics '--
+ph_box0_center = 0.00, 0.9, 0
+ph_box0_size   = 0.35, 0.9, 0.35
+ph_box1_center = 0.00, 0.6, 0
+ph_box1_size   = 0.40, 0.6, 0.4
+
+ph_crash_speed_min         = 10
+ph_crash_speed_max         = 30
+ph_collision_damage_factor = 0.1
+ph_mass                    = 20
+
+destroyed_vis_name = physics\Dead_Body\trupik_crash
+
+ph_skeleton_airr_lin_factor = 2
+ph_skeleton_airr_ang_factor = 0
+ph_skeleton_hinger_factor1  = 1
+ph_skeleton_ddelay          = 15
+
+ph_skel_fatal_impulse_factor   = 6.0
+ph_after_death_velocity_factor = 0.75
+ph_skel_shot_up_factor         = 0.25
+
+;--' Movement '--
+Velocity_Stand          = 0.0, 3.5, 3.5, 1.00, 1
+Velocity_WalkFwdNormal  = 1.0, 7.5, 7.5, 0.02, 1.8
+Velocity_RunFwdNormal   = 5.0, 3.5, 3.5, 0.30, 1
+Velocity_WalkFwdDamaged = 1.0, 4.5, 4.5, 0.20, 1.8
+Velocity_RunFwdDamaged  = 3.0, 3.0, 3.0, 0.50, 1
+Velocity_Drag           = 1.0, 3.0, 3.0, 1.00, 1
+Velocity_Steal          = 1.5, 3.0, 3.0, 1.00, 1
+
+Accel_Generic    = 1.5
+Accel_Calm       = 2.5
+Accel_Aggressive = 7.5
+
+;--' Attack '--
+MinAttackDist = 1.2
+MaxAttackDist = 1.8
+as_min_dist   = 0.25
+as_step       = 0.25
+
+hit_type  = wound
+hit_power = 1
+
+squad_attack_algorithm = 1
+attack_effector = small_monster_attack_effector
+attack_params   = ratlike_attack_params
+
+;--' Conditions '--
+satiety_v          = 0.00001
+radiation_v        = 0.00001
+satiety_power_v    = 0.005
+satiety_health_v   = 0.0001
+satiety_critical   = -1.0
+radiation_health_v = 0.01
+morale_v           = 0.01
+health_hit_part    = 1.0
+power_hit_part     = 1.0
+psy_health_v       = 0.1
+
+immunities_sect    = ratlike_immunities
+
+bleeding_v          = 0.04
+wound_incarnation_v = 0.05
+min_wound_size      = 0.01
+
+sleep_health     = 1
+sleep_power      = 1
+sleep_satiety    = 1
+sleep_radiation  = 1
+sleep_psy_health = 1
+
+eat_freq         = 5
+eat_slice        = 0.01
+eat_slice_weight = 10
+
+Min_Satiety = 0.4
+Max_Satiety = 1
+satiety_threshold = 0.5
+
+;--' Sounds '--
+sound_idle           = monsters\ratlike\ratlike_idle_
+sound_eat            = monsters\tushkano\tushkano_eat_
+sound_aggressive     = monsters\ratlike\ratlike_aggressive_
+sound_attack_hit     = monsters\ratlike\ratlike_attack_
+sound_take_damage    = monsters\ratlike\ratlike_pain_
+sound_die            = monsters\ratlike\ratlike_death_
+sound_threaten       = monsters\ratlike\ratlike_aggressive_
+sound_landing        = monsters\ratlike\ratlike_pain_ 
+sound_steal          = monsters\ratlike\ratlike_steal_
+sound_panic          = monsters\ratlike\ratlike_panic_
+sound_growling       = monsters\beeps_
+sound_die_in_anomaly = monsters\tushkano\tushkano_anomaly_
+
+killer_clsids = Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
+
+idle_sound_delay   = 80000
+eat_sound_delay    = 4000
+attack_sound_delay = 8000
+
+sound_distant_idle = monsters\ratlike\ratlike_idle_
+distant_idle_sound_delay = 80000
+distant_idle_sound_range = 100
+
+SoundThreshold = 0.06
+max_hear_dist  = 50
+material       = creatures\medium
+
+;--' Vision '--
+eye_fov   = 110
+eye_range = 30
+
+min_view_distance       = 0.7
+max_view_distance       = 1
+visibility_threshold    = 100
+always_visible_distance = 0.4
+time_quant              = 0.001
+decrease_value          = 0.01
+velocity_factor         = 0.5
+luminocity_factor       = 0.5
+transparency_threshold  = 0.25
+
+;--' Morale '--
+Morale_Hit_Quant             = 0.1
+Morale_Attack_Success_Quant  = 0.1
+Morale_Take_Heart_Speed      = 0.1
+Morale_Despondent_Speed      = 0.1
+Morale_Stable_Speed          = 0.05
+Morale_Despondent_Threashold = 0.5
+
+;--' Damages '--
+damage = ratlike_damage
+DamagedThreshold = 0.4
+
+critical_wound_threshold      = -1
+critical_wound_decrease_quant = 0
+
+critical_wound_anim_head  = critical_hit_head_0
+critical_wound_bones_head = ratlike_critical_wound_bones_head
+
+critical_wound_anim_torso  = critical_hit_torso_0
+critical_wound_bones_torso = ratlike_critical_wound_bones_torso
+
+critical_wound_anim_legs  = critical_hit_torso_0
+critical_wound_bones_legs = ratlike_critical_wound_bones_legs
+
+;--' Species '--
+species   = ratlike
+rank      = 101
+spec_rank = weak
+community = ratlike
+
+;--' Other '--
+LegsCount = 4
+step_params = ratlike_step_params
+
+actor_restrictor = medium_monster
+
+ImpulseMin = 20
+ImpulseMax = 35
+
+;--' Sections '--
+[ratlike_attack_params]
+stand_attack_0 = 0.25, 0.05, 20, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
+stand_attack_1 = 0.25, 0.05, 30, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
+stand_attack_2 = 0.25, 0.05, 35, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
+stand_attack_3 = 0.25, 0.05, 35, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
+
+[ratlike_damage]
+default      = 1, -1, 0.3
+bip01_pelvis = 1, -1, 0.5
+bip01_spine  = 1, -1, 0.5
+bip01_spine1 = 1, -1, 0.5
+bip01_neck   = 1, -1, 1.5
+bip01_head   = 2, -1, 0.5, 10
+
+[ratlike_critical_wound_bones_head]
+bip01_head
+bip01_neck
+
+[ratlike_critical_wound_bones_torso]
+bip01_spine
+bip01_spine1
+bip01_spine3
+
+[ratlike_critical_wound_bones_legs]
+
+[ratlike_immunities]
+burn_immunity			= 0.06			;коэффициенты иммунитета 
+strike_immunity		= 0.2
+shock_immunity			= 0.2
+wound_immunity			= 0.03
+radiation_immunity		= 0.0
+telepatic_immunity		= 1.0
+chemical_burn_immunity	= 0.2
+explosion_immunity		= 0.2
+fire_wound_immunity		= 0.05
+
+[ratlike_step_params]
+stand_walk_fwd_0 = 1, 0.20, 0.5, 0.70, 1
+stand_run_0      = 1, 0.25, 1.0, 0.25, 1
+
+;---'' BASE PROFILES ''---
+;--' weak '--
+[ratlike_weak]:m_ratlike_e
+$spawn = "monsters\ratlikes\ratlike_weak"
+
+;--' normal '--
+[ratlike_normal]:m_ratlike_e
+$spawn = "monsters\ratlikes\ratlike_normal"
+rank = 301
+spec_rank = normal
+
+;--' strong '--
+[ratlike_strong]:m_ratlike_e
+$spawn = "monsters\ratlikes\ratlike_strong"
+visual = monsters\ratlike\ratlike_u
+corpse_visual = monsters\ratlike\ratlike_u
+rank = 601
+spec_rank = strong
+
+;---'' HORROR ''---
+[horror_ratlike_weak]:ratlike_weak
+$spawn ="monsters\ratlikes\horror_ratlike_weak"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24
+
+[horror_ratlike_normal]:ratlike_normal
+$spawn ="monsters\ratlikes\horror_ratlike_normal"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24
+
+[horror_ratlike_strong]:ratlike_strong
+$spawn ="monsters\ratlikes\horror_ratlike_strong"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24

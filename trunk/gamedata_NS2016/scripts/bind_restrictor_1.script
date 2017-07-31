@@ -1,0 +1,153 @@
+--[[---
+--' Чугай Александр
+---' revision and adaptation for NS_2016 lsclon 13.12.16 '---
+--' Bind_restrictor. Биндер рестрикторов. Обновление через апдейт ГГ.
+--' С биндера ГГ перенесены пси-зоны
+--' Добавлены spawn_zone. См. sr_respawn.script
+--]]---
+
+local string_format = string.format
+function log(ct,...)
+	get_console():execute( string_format("load ~[%s]:[bind_restrictor]: %s",ct,string_format(...)))
+end
+
+-- Таблица рестрикторов, которые требуют обновлений (update)
+local updatable_binders = {}
+local psy_zone_load = false
+local psy_zone_save = false
+
+function actor_update(delta)
+	for i, v in pairs(updatable_binders) do
+		v:actor_update(delta)
+	end
+end
+
+function bind(obj)
+	obj:bind_object(restrictor_binder(obj))
+end
+
+---' ---
+class "restrictor_binder" (object_binder)
+---' ---
+
+function restrictor_binder:__init(obj, char_ini) super(obj)
+	self.initialized = false
+	self.loaded = false
+	self.psy_zone = nil
+	self.spawn_zone = nil
+end
+
+function restrictor_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function restrictor_binder:reinit()
+	object_binder.reinit(self)
+	local zone_id = self.object:id()
+	local sect = self.object:section()
+	if sect == "psy_zone" then
+		self.psy_zone = true
+	elseif sect == "spawn_zone" then
+		self.spawn_zone = true
+	end
+	db.storage[zone_id] = {}
+	self.st = db.storage[zone_id]
+end
+
+function restrictor_binder:net_spawn(data)
+	if not object_binder.net_spawn( self,data ) then
+		return false
+	end
+	local zone = self.object
+	db.add_zone(zone)
+	-- Не регистрироваться на апдейты, если у объекта в customdata нет секции logic вообще.
+	local char_ini = xr_logic.get_customdata_or_ini_file(zone, "<customdata>")
+	if char_ini:section_exist("logic") then
+		updatable_binders[zone:id()] = self
+	end
+	return true
+end
+
+function restrictor_binder:net_destroy()
+	local st = self.st
+	local zone = self.object
+	if st.active_scheme then
+		xr_logic.issue_event(zone, st[st.active_scheme], "net_destroy")
+	end
+	if sr_psy_antenna.psy_antenna then
+		sr_psy_antenna.psy_antenna:destroy()
+		sr_psy_antenna.psy_antenna = false
+	end
+	db.del_zone(zone)
+	updatable_binders[zone:id()] = nil
+	object_binder.net_destroy(self)
+end
+
+-- вызывается из обновления актёра!
+function restrictor_binder:actor_update(delta)
+	local st = self.st
+	local zone = self.object
+	if not self.initialized and db.actor then
+		self.initialized = true
+		xr_logic.initialize_obj(zone, st, self.loaded, db.actor, modules.stype_restrictor)
+	end
+	if st.active_section == "sr_idle@nil" then
+		updatable_binders[zone:id()] = nil
+	elseif st.active_section ~= nil then
+		xr_logic.issue_event(zone, st[st.active_scheme], "update", delta)
+		if sr_psy_antenna.psy_antenna then
+			sr_psy_antenna.psy_antenna:update(delta)
+		end
+	end
+end
+
+function restrictor_binder:net_save_relevant()
+	return true
+end
+
+function restrictor_binder:save(packet)
+	object_binder.save(self, packet)
+	xr_logic.save_obj(self.object, packet)
+	if self.psy_zone and not psy_zone_save and self.object:inside(db.actor:position()) then
+			psy_zone_save = true
+			sr_psy_antenna.save(packet)
+	end
+	if self.spawn_zone then
+		local tabl = sr_respawn.spawned_obj[self.object:id()]
+		if tabl then
+			packet:w_u8(#tabl)
+			for k,v in pairs(tabl) do
+				packet:w_u16(v)
+			end
+		end
+	end
+end
+
+function restrictor_binder:load(reader)
+	object_binder.load(self, reader)
+	self.loaded = true
+	xr_logic.load_obj(self.object, reader)
+	if self.psy_zone and not psy_zone_load and self.object:inside(db.actor:position()) then
+		if not reader:r_eof() then
+			psy_zone_load = true
+			sr_psy_antenna.load(reader)
+		end
+	end
+	if self.spawn_zone then
+		local zone_id = self.object:id()
+		if not reader:r_eof() then
+			local count = reader:r_u8()
+			if count and count > 0 then
+				if not sr_respawn.spawned_obj[zone_id] then
+					sr_respawn.spawned_obj[zone_id] = {}
+				end
+				local tabl = sr_respawn.spawned_obj[zone_id]
+				local id
+				for i = 1, count do
+					id = reader:r_u16()
+					table.insert(tabl,id)
+				end
+			end
+		end
+	end
+end

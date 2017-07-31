@@ -1,0 +1,23 @@
+[logic]
+active = sr_idle@one
+
+[sr_idle@one]
+on_info = {+denis_wound_have} sr_idle@two
+
+[sr_idle@two]
+on_actor_inside = sr_idle@tri %+denis_wound_next%
+
+[sr_idle@tri]
+on_timer = 8000 | sr_idle@time1 %=arhara_dialog.sms_denis1%
+single = true
+
+[sr_idle@time1]
+on_timer = 8000 | sr_idle@time2 %=arhara_dialog.sms_denis2%
+single = true
+
+[sr_idle@time2]
+on_timer = 8000 | sr_idle@time3 %=arhara_dialog.sms_denis3 +klyak_forest_doc_start%
+single = true
+
+[sr_idle@time3]
+on_timer = 10000 | nil 

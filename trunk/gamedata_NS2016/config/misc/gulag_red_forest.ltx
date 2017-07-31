@@ -1,0 +1,704 @@
+;-- Денис оффлайн
+[logic@forest_wound_of]
+active = walker@forest_wound_of
+combat_ignore = combat_ignore
+
+[walker@forest_wound_of]
+path_walk = denis_walk
+path_look = denis_look
+combat_ignore_cond = always
+
+;-- Денис онлайн
+[logic@forest_wound]
+active = walker@forest_wound
+on_death = death@forest_wound
+
+[danger_condition@forest_wound]
+ignore_distance = 0
+
+[death@forest_wound]
+on_info = %+forest_wound_dead%
+
+[walker@forest_wound]
+path_walk = denis_walk
+path_look = denis_look
+wounded = wounded@forest_wound
+danger = danger_condition@forest_wound
+meet = meet@forest_wound
+on_info = {+denis_wound_have} karavan@forest_wound
+
+[karavan@forest_wound]
+close_dist = 2
+near_dist = 10
+faraway_dist = 31
+close_state = guard
+near_state = rush
+faraway_state = sprint
+wait_state = rush
+look_on_actor = false 
+radius = 1 
+combat_ignore_cond = {=fighting_dist_ge(40)} always 
+no_loot = true
+
+[wounded@forest_wound]
+hp_state = 35|wounded_heavy@help_heavy
+hp_state_see = 35|wounded_heavy@help_heavy
+hp_victim = 35|nil
+hp_cover = 35|false
+hp_fight = 35|false
+
+[meet@forest_wound]
+meet_state		= 2|wait@wait
+meet_state_wpn	= 2|wait@wait
+victim			= 2|actor
+victim_wpn		= 2|actor
+use				= true
+use_wpn			= true
+
+;-- Денис спящий
+[logic@forest_wound_sleep]
+active = sleeper@forest_wound_sleep
+on_death = death@forest_wound_sleep
+
+[death@forest_wound_sleep]
+on_info = %+forest_wound_dead%
+
+[sleeper@forest_wound_sleep]
+path_main = denis_sleep
+danger = danger_condition@forest_wound
+meet = meet@forest_wound_sleep
+
+[meet@forest_wound_sleep]
+meet_state		= 15|guard@wait
+meet_state_wpn	= 15|backoff@threat_weap
+victim		= 15|actor
+victim_wpn		= 15|actor
+use			= true
+use_wpn		= false
+syndata		= backoff@threat_weap
+
+;--' Медведи
+[logic@for_medwed_home1]
+active = mob_home1@for_medwed
+
+[mob_home1@for_medwed]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@for_medwed_home2]
+active = mob_home2@for_medwed
+
+[mob_home2@for_medwed]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@for_medwed_small_home]
+active = mob_home@for_medwed_small
+
+[mob_home@for_medwed_small]
+path_home = home
+home_min_radius = 15
+home_max_radius = 40
+
+;-- Бюреры
+[logic@for_burer_home]
+active = mob_home@for_burer
+
+[mob_home@for_burer]
+path_home = home
+home_min_radius = 15
+home_max_radius = 40
+
+;-- Охотники
+[logic@green_day_speak_night]
+active = camper@green_day_speak_night
+
+[camper@green_day_speak_night]
+path_walk = green_day_speak_night_walk
+path_look = green_day_speak_night_look
+danger = danger_ignore@green_forest
+meet = meet@green_day_speak_night
+on_info = {+klyak_forest_doc_begin} walker@green_day_speak_night
+
+[walker@green_day_speak_night]
+path_walk = green_day_speak_night_walk
+path_look = green_day_speak_night_look
+danger = danger_ignore@green_forest
+meet = meet@green_day_speak_night2
+
+[meet@green_day_speak_night]
+meet_dialog = green_need_doc
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[meet@green_day_speak_night2]
+meet_dialog = green_est_doc
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[danger_condition@green_forest]
+ignore_distance = 0
+
+[logic@green_day_patr_night]
+active = walker@green_day_patr_night
+
+[walker@green_day_patr_night]
+path_walk = green_day_patr_night_walk
+path_look = green_day_patr_night_look
+danger = danger_ignore@green_forest
+
+[logic@green_day1]
+active = walker@green_day1
+
+[walker@green_day1]
+path_walk = green_day1_walk
+path_look = green_day1_look
+danger = danger_ignore@green_forest
+def_state_moving1 = sneak
+def_state_moving2 = sneak
+def_state_moving3 = sneak
+def_state_standing = hide
+
+[logic@green_day2]
+active = walker@green_day2
+
+[walker@green_day2]
+path_walk = green_day2_walk
+path_look = green_day2_look
+danger = danger_ignore@green_forest
+def_state_moving1 = sneak
+def_state_moving2 = sneak
+def_state_moving3 = sneak
+def_state_standing = hide
+
+[logic@green_day3]
+active = walker@green_day3
+
+[walker@green_day3]
+path_walk = green_day3_walk
+path_look = green_day3_look
+danger = danger_ignore@green_forest
+def_state_moving1 = sneak
+def_state_moving2 = sneak
+def_state_moving3 = sneak
+def_state_standing = hide
+
+[logic@green_day4]
+active = walker@green_day4
+
+[walker@green_day4]
+path_walk = green_day4_walk
+path_look = green_day4_look
+danger = danger_ignore@green_forest
+def_state_moving1 = sneak
+def_state_moving2 = sneak
+def_state_moving3 = sneak
+def_state_standing = hide
+
+[logic@green_night1]
+active = kamp@green_night1
+
+[kamp@green_night1]
+center_point = green_night_centr 
+danger = danger_ignore@green_forest
+
+[logic@green_night2]
+active = kamp@green_night2
+
+[kamp@green_night2]
+center_point = green_night_centr 
+danger = danger_ignore@green_forest
+
+[logic@green_night3]
+active = kamp@green_night3
+
+[kamp@green_night3]
+center_point = green_night_centr 
+danger = danger_ignore@green_forest
+
+[logic@green_night4]
+active = kamp@green_night4
+
+[kamp@green_night4]
+center_point = green_night_centr 
+danger = danger_ignore@green_forest
+
+;-- Наёмники
+[logic@for_killer_most_walker1]
+active = walker1@for_killer_most
+
+[walker1@for_killer_most]
+path_walk = walk1
+path_look = look1
+
+[logic@for_killer_most_walker2]
+active = walker2@for_killer_most
+
+[walker2@for_killer_most]
+path_walk = walk2
+path_look = look2
+
+[logic@for_killer_most_walker3]
+active = walker3@for_killer_most
+
+[walker3@for_killer_most]
+path_walk = walk3
+path_look = look3
+
+[logic@for_killer_most_walker4]
+active = walker4@for_killer_most
+
+[walker4@for_killer_most]
+path_walk = walk4
+path_look = look4
+
+[logic@for_killer_most_walker5]
+active = walker5@for_killer_most
+
+[walker5@for_killer_most]
+path_walk = walk5
+path_look = look5
+
+[logic@for_killer_most_walker6]
+active = walker6@for_killer_most
+
+[walker6@for_killer_most]
+path_walk = walk6
+path_look = look6
+
+[logic@for_killer_most_walker7]
+active = walker7@for_killer_most
+
+[walker7@for_killer_most]
+path_walk = walk7
+path_look = look7
+
+[logic@for_killer_most_walker8]
+active = walker8@for_killer_most
+
+[walker8@for_killer_most]
+path_walk = walk8
+path_look = look8
+
+[logic@for_killer_most_walker9]
+active = walker9@for_killer_most
+
+[walker9@for_killer_most]
+path_walk = walk9
+path_look = look9
+
+[logic@for_killer_most_walker10]
+active = walker10@for_killer_most
+
+[walker10@for_killer_most]
+path_walk = walk10
+path_look = look10
+
+[logic@for_killer_most_walker11]
+active = walker11@for_killer_most
+
+[walker11@for_killer_most]
+path_walk = walk11
+path_look = look11
+
+[logic@for_killer_most_walker12]
+active = walker12@for_killer_most
+
+[walker12@for_killer_most]
+path_walk = walk12
+path_look = look12
+
+[logic@for_killer_most_walker13]
+active = walker13@for_killer_most
+
+[walker13@for_killer_most]
+path_walk = walk13
+path_look = look13
+
+[logic@for_killer_most_walker14]
+active = walker14@for_killer_most
+
+[walker14@for_killer_most]
+path_walk = walk14
+path_look = look14
+
+[logic@for_killer_most_walker15]
+active = walker15@for_killer_most
+
+[walker15@for_killer_most]
+path_walk = walk15
+path_look = look15
+
+;-- Сталкеры
+[logic@for_stalker_walker1]
+active = walker1@for_stalker
+
+[walker1@for_stalker]
+path_walk = walk1
+path_look = look1
+
+[logic@for_stalker_walker2]
+active = walker2@for_stalker
+
+[walker2@for_stalker]
+path_walk = walk2
+path_look = look2
+
+[logic@for_stalker_walker3]
+active = walker3@for_stalker
+
+[walker3@for_stalker]
+path_walk = walk3
+path_look = look3
+
+[logic@for_stalker_kamp1]
+active = kamp1@for_stalker
+
+[kamp1@for_stalker]
+center_point  = kamp1
+path_walk = kamp1_task
+
+[logic@for_stalker_kamp2]
+active = kamp2@for_stalker
+
+[kamp2@for_stalker]
+center_point  = kamp2
+path_walk = kamp2_task
+
+;--' Тушканы
+[logic@for_tushkano1_home1]
+active = mob_home1@for_tushkano1
+
+[mob_home1@for_tushkano1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@for_tushkano1_home2]
+active = mob_home2@for_tushkano1
+
+[mob_home2@for_tushkano1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@for_tushkano1_home3]
+active = mob_home3@for_tushkano1
+
+[mob_home3@for_tushkano1]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@for_ratlike_home]
+active = mob_home@for_ratlike
+
+[mob_home@for_ratlike]
+path_home = home
+home_min_radius = 15
+home_max_radius = 40
+
+;--' Кабаны и свиньи
+[logic@for_flesh_boar_home1]
+active = mob_home1@for_flesh_boar
+
+[mob_home1@for_flesh_boar]
+path_home = home1
+home_min_radius = 20
+home_max_radius = 60
+
+[logic@for_flesh_boar_home2]
+active = mob_home2@for_flesh_boar
+
+[mob_home2@for_flesh_boar]
+path_home = home2
+home_min_radius = 20
+home_max_radius = 60
+
+;--' Кабаны и поросята
+[logic@for_boar_small_home]
+active = mob_home@for_boar_small
+
+[mob_home@for_boar_small]
+path_home = home
+home_min_radius = 20
+home_max_radius = 60
+
+;--' Слепыши и псевдособаки
+[logic@for_dog_pseudodog_home]
+active = mob_home@for_dog_pseudodog
+
+[mob_home@for_dog_pseudodog]
+path_home = home
+home_min_radius = 20
+home_max_radius = 60
+
+;--' Кровососы
+[logic@for_bloodsucker1_home1]
+active = mob_home1@for_bloodsucker1
+
+[mob_home1@for_bloodsucker1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@for_bloodsucker1_home2]
+active = mob_home2@for_bloodsucker1
+
+[mob_home2@for_bloodsucker1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+;--' Крысы
+[logic@for_rat_home1]
+active = mob_home1@for_rat
+
+[mob_home1@for_rat]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 30
+
+[logic@for_rat_home2]
+active = mob_home2@for_rat
+
+[mob_home2@for_rat]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 30
+
+;--'Гулаг Шадоумана, временный
+;--'0 состояние, ждём в гулаге
+[logic@for_freed_nebo_walker1]
+active = walker1@for_freed_nebo
+
+[walker1@for_freed_nebo]
+path_walk = walk1
+path_look = look1
+danger = danger_ignore@shadowman
+
+[logic@for_freed_nebo_walker2]
+active = walker2@for_freed_nebo
+
+[walker2@for_freed_nebo]
+path_walk = walk2
+path_look = look2
+danger = danger_ignore@shadowman
+
+[logic@for_freed_nebo_walker3]
+active = walker3@for_freed_nebo
+
+[walker3@for_freed_nebo]
+path_walk = walk3
+path_look = look3
+danger = danger_ignore@shadowman
+
+[logic@for_freed_nebo_walker4]
+active = walker4@for_freed_nebo
+
+[walker4@for_freed_nebo]
+path_walk = walk4
+path_look = look4
+danger = danger_ignore@shadowman
+
+[logic@for_freed_nebo_walker5]
+active = walker5@for_freed_nebo
+
+[walker5@for_freed_nebo]
+path_walk = walk5
+path_look = look5
+danger = danger_ignore@shadowman
+
+[logic@for_freed_nebo_walker6]
+active = walker6@for_freed_nebo
+
+[walker6@for_freed_nebo]
+path_walk = walk6
+path_look = look6
+danger = danger_ignore@shadowman
+
+[logic@for_freed_nebo_walker7]
+active = walker7@for_freed_nebo
+
+[walker7@for_freed_nebo]
+path_walk = walk7
+path_look = look7
+on_actor_dist_ge = 15 | remark@shadowman
+danger = danger_ignore@shadowman
+meet = no_meet
+
+[remark@shadowman]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hello
+target = actor
+on_actor_dist_le_nvis = 7 | walker71@for_freed_nebo
+
+[walker71@for_freed_nebo]
+path_walk = walk7
+path_look = look7
+danger = danger_ignore@shadowman
+meet = meet@shadowman
+
+[meet@shadowman]
+meet_state = 3|guard@wait
+meet_state_wpn = 3|guard@wait
+victim = 3|actor
+victim_wpn = 3|actor
+use	= true
+use_wpn = true
+
+[danger_ignore@shadowman]
+ignore_distance = 0
+ignore_distance_corpse = 0
+ignore_distance_sound	 = 0
+
+;--'1 состояние, идём на мост
+
+[logic@for_freed_nebo_walker8]
+active = walker8@for_freed_nebo
+
+[walker8@for_freed_nebo]
+path_walk = walk8
+path_look = look8
+danger = danger_ignore@shadowman2
+
+[logic@for_freed_nebo_walker9]
+active = walker9@for_freed_nebo
+
+[walker9@for_freed_nebo]
+path_walk = walk9
+path_look = look9
+danger = danger_ignore@shadowman2
+
+[logic@for_freed_nebo_walker10]
+active = walker10@for_freed_nebo
+
+[walker10@for_freed_nebo]
+path_walk = walk10
+path_look = look10
+danger = danger_ignore@shadowman2
+
+[logic@for_freed_nebo_walker11]
+active = walker11@for_freed_nebo
+
+[walker11@for_freed_nebo]
+path_walk = walk11
+path_look = look11
+danger = danger_ignore@shadowman2
+
+[logic@for_freed_nebo_walker12]
+active = walker12@for_freed_nebo
+
+[walker12@for_freed_nebo]
+path_walk = walk12
+path_look = look12
+danger = danger_ignore@shadowman2
+
+[logic@for_freed_nebo_walker13]
+active = walker13@for_freed_nebo
+
+[walker13@for_freed_nebo]
+path_walk = walk13
+path_look = look13
+danger = danger_ignore@shadowman2
+
+[logic@for_freed_nebo_walker14]
+active = walker14@for_freed_nebo
+
+[walker14@for_freed_nebo]
+path_walk = walk14
+path_look = look14
+danger = danger_ignore@shadowman2
+
+[danger_ignore@shadowman2]
+ignore_distance_corpse = 20
+
+;--'Гулаг Шадоумана, постоянный
+
+[logic@for_freed_nebo2_walker1]
+active = walker1@for_freed_nebo2
+
+[walker1@for_freed_nebo2]
+path_walk = walk1
+path_look = look1
+
+[logic@for_freed_nebo2_walker2]
+active = walker2@for_freed_nebo2
+
+[walker2@for_freed_nebo2]
+path_walk = walk2
+path_look = look2
+
+[logic@for_freed_nebo2_walker3]
+active = walker3@for_freed_nebo2
+
+[walker3@for_freed_nebo2]
+path_walk = walk3
+path_look = look3
+
+[logic@for_freed_nebo2_walker4]
+active = walker4@for_freed_nebo2
+
+[walker4@for_freed_nebo2]
+path_walk = walk4
+path_look = look4
+
+[logic@for_freed_nebo2_walker5]
+active = walker5@for_freed_nebo2
+
+[walker5@for_freed_nebo2]
+path_walk = walk5
+path_look = look5
+
+[logic@for_freed_nebo2_walker6]
+active = walker6@for_freed_nebo2
+
+[walker6@for_freed_nebo2]
+path_walk = walk6
+path_look = look6
+
+[logic@for_freed_nebo2_walker7]
+active = walker7@for_freed_nebo2
+
+[walker7@for_freed_nebo2]
+path_walk = walk7
+path_look = look7
+
+[logic@for_freed_nebo2_walker8]
+active = walker8@for_freed_nebo2
+
+[walker8@for_freed_nebo2]
+path_walk = walk8
+path_look = look8
+
+[logic@for_freed_nebo2_walker9]
+active = walker9@for_freed_nebo2
+
+[walker9@for_freed_nebo2]
+path_walk = walk9
+path_look = look9
+
+[logic@for_freed_nebo2_walker10]
+active = walker10@for_freed_nebo2
+
+[walker10@for_freed_nebo2]
+path_walk = walk10
+path_look = look10
+
+[logic@for_freed_nebo2_kamp]
+active = kamp@for_freed_nebo2
+
+[kamp@for_freed_nebo2]
+center_point  = kamp
+path_walk = kamp_task
+
+
+
+
+
+

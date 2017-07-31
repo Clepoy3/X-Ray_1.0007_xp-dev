@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_ns_stuff">
+		<text>Народная Солянка:</text>
+	</string>
+	<string id="st_ns_author">
+		<text>Автор и руководитель</text>
+	</string>
+	<string id="st_ns_arhara">
+		<text>Arhara (Дмитрий), Архангельск, Россия</text>
+	</string>
+	<string id="st_ns_team">
+		<text>Также помогали</text>
+	</string>
+	<string id="st_ns_bfg">
+		<text>lsclon (Людмила), Россия</text>
+	</string>
+	<string id="st_ns_sapsan">
+		<text>Sapsan (Сергей), Ровно, Украина</text>
+	</string>
+	<string id="st_ns_habarych">
+		<text>Хабарыч (Марат), Новгород, Россия</text>
+	</string>
+	<string id="st_ns_shadowman">
+		<text>Shadowman (Алексей), Одесса, Украина</text>
+	</string>
+	<string id="st_ns_chorik">
+		<text>Chorik (Сергей), Кировоград, Украина</text>
+	</string>
+	<string id="st_ns_dennis_chikin">
+		<text>Dennis_Chikin (Денис), Пермь, Россия</text>
+	</string>
+	<string id="st_ns_whatabout">
+		<text>WhatAbout (Пётр), Киев, Украина</text>
+	</string>
+	<string id="st_ns_ray">
+		<text>RAY (Андрей), Светловодск, Украина</text>
+	</string>
+	<string id="st_ns_solvador">
+		<text>Solvador (Владимир), Чебоксары, Россия</text>
+	</string>
+	<string id="st_ns_fokstar">
+		<text>Fokstar (Антон), Пермь, Россия</text>
+	</string>
+	<string id="st_ns_dimon">
+		<text>D1m0n (Дмитрий), Россия</text>
+	</string>
+	<string id="st_ns_sarcus">
+		<text>Sarcus (Сергей), Томск, Россия</text>
+	</string>
+	<string id="st_ns_plotnikoff">
+		<text>Plotnikoff (Дмитрий), Михайловка, Россия</text>
+	</string>
+	<string id="st_ns_mav">
+		<text>MAV (Анатолий), Запорожье, Украина</text>
+	</string>
+	<string id="st_ns_serget">
+		<text>SergeT (Сергей), Одесса, Украина</text>
+	</string>
+	<string id="st_ns_chrysler">
+		<text>BFG (Петрович), Казань, Россия</text>
+	</string>
+	<string id="st_ns_a185">
+		<text>a185 (Андрей), Тюмень, Россия</text>
+	</string>
+	<string id="st_ns_prizrak">
+		<text>_Призрак_ (Фёдор), Тамбов, Россия</text>
+	</string>
+	<string id="st_ns_kalter">
+		<text>Kalter (Дмитрий), Астана, Казахстан</text>
+	</string>
+	<string id="st_ns_vadyan">
+		<text>Vadyan (Вадим), Ровеньки, Россия</text>
+	</string>
+	<string id="st_ns_gektor">
+		<text>Гектор (Андрей), Казахстан</text>
+	</string>
+	<string id="st_ns_ptisa">
+		<text>Сашкин Журавель (Птица), Санкт-петербург, Россия</text>
+	</string>
+	<string id="st_ns_sansanich">
+		<text>САНСАНЫ4 (Александр), Германия</text>
+	</string>
+	<string id="st_ns_vitaly">
+		<text>Vitaly_m67 (Виталий), Чернигов, Украина</text>
+	</string>
+	<string id="st_ns_pahanxcop">
+		<text>pahanxcop33 (Павел), Владимир, Россия</text>
+	</string>
+	<string id="st_ns_panteramarina">
+		<text>panteramarina (Маришка), Иркутск, Россия</text>
+	</string>
+	<string id="st_ns_sii">
+		<text>Sii__ (Иван), Россия</text>
+	</string>
+	
+
+
+	<!-- SPECIAL THANKS -->
+
+	<string id="st_ns_special_thanks">
+		<text>Отдельная благодарность:</text>
+	</string>
+	<string id="st_ns_thanks_and">
+		<text>_And_</text>
+	</string>
+</string_table>

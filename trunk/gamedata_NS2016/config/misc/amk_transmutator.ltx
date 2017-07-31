@@ -1,0 +1,72 @@
+[amk_transmutator]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn             = "food and drugs\amk_transmutator"
+$prefetch          = 32
+class              = II_ANTIR
+cform              = skeleton
+visual             = equipments\item_pda.ogf
+description        = item_transmutator
+quest_item		= true
+
+inv_name           = "Трансмутатор"
+inv_name_short     = "Трансмутатор"
+inv_weight         = 1.0
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 23 ; 
+inv_grid_y = 8 ; 
+cost               = 1
+
+; eatable item
+eat_health        = 0
+eat_satiety       = 0
+eat_power         = 0
+eat_radiation     = 0
+eat_alcohol       = 0
+wounds_heal_perc  = 0
+eat_portions_num  = 1
+
+; food item
+animation_slot    = 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[sh_remnabor]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn             = "food and drugs\sh_remnabor"
+$prefetch          = 32
+class              = II_ANTIR
+cform              = skeleton
+visual             = equipments\remnabor.ogf
+description        = item_remnabor
+quest_item		= false
+
+inv_name           = "Ремонтный ящик"
+inv_name_short     = "Ремъящик"
+inv_weight         = 3.0
+
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 2 ; 
+inv_grid_y = 10 ; 
+cost               = 10000
+
+; eatable item
+eat_health        = 0
+eat_satiety       = 0
+eat_power         = 0
+eat_radiation     = 0
+eat_alcohol       = 0
+wounds_heal_perc  = 0
+eat_portions_num  = 1
+
+; food item
+animation_slot    = 4
+
+;hud item
+hud = wpn_vodka_hud

@@ -1,0 +1,16 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_in_zone = rostok_volkodav_fire_sound | ph_sound
+
+[ph_sound]
+snd = gar_seryi_shooting
+looped = true
+max_idle = 5000
+on_actor_in_zone = rostok_volkodav_fire_sound_end| ph_sound@end
+
+[ph_sound@end]
+snd = gar_seryi_shooting_2
+looped = false
+on_signal = sound_end| nil

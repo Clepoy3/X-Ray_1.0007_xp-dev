@@ -1,0 +1,391 @@
+---- Rulix aka Bak --- 22.6.2009
+
+local math_random = math.random
+
+local hit_sound = [[material\dead-body\collide\hithard06hl]]
+
+function read_from_ini(iniFileName,sec,val,def,typ) counterAdd("rx_facer.read_from_ini")
+	--return rx_utils.read_from_ini(ini,sec,val,def,typ)
+	return rx_utils.read_from_ini_new(iniFileName,sec,val,def,typ)
+end
+
+local iniFileName = "misc\\rx_facer.ltx"
+local fr_ini = g_ini_file(iniFileName)
+local facer_sets = {forbiddens = {weapons = {},factions = {},npcs = {}},
+				ranks = {},
+				check_prd = read_from_ini(iniFileName,"main","check_period",1500),
+				enabled = read_from_ini(iniFileName,"main","enabled",true,0)}
+
+function init() counterAdd("rx_facer.init")
+	local ranks = {"novice","experienced","veteran","master"}
+	local v
+	for i = 1, #ranks do
+		v = ranks[i]
+		if fr_ini:section_exist(v) then
+			facer_sets.ranks[v] = {power = read_from_ini(iniFileName,v,"power",50),
+								k_mutant = read_from_ini(iniFileName,v,"k_mutant",1),
+								k_stalker = read_from_ini(iniFileName,v,"k_stalker",1),
+								k_actor = read_from_ini(iniFileName,v,"k_actor",1),
+								k_friend = read_from_ini(iniFileName,v,"k_friend",0.3),
+								min_delay = read_from_ini(iniFileName,v,"min_delay",1400)}
+		end
+	end
+	facer_sets.forbiddens.weapons = rx_utils.parse_list_new(iniFileName,"main","forbidden_weapons",true)
+	facer_sets.forbiddens.factions = rx_utils.parse_list_new(iniFileName,"main","forbidden_factions",true)
+	facer_sets.forbiddens.npcs = rx_utils.parse_list_new(iniFileName,"main","forbidden_npcs",true)
+	facer_sets.inited = true
+end
+
+class "evaluator_facer" (property_evaluator)
+function evaluator_facer:__init(npc,name,storage) super (nil,name) counterAdd("rx_facer.evaluator_facer:__init")
+	self.st = storage
+	self.st.abtime = time_global()
+	self.st.check_time = self.st.abtime + math_random(facer_sets.check_prd,5000)
+	rx_ai.subscribe_for_events(npc,self)
+end
+function evaluator_facer:evaluate() counterAdd("rx_facer.evaluator_facer:evaluate")
+	local npc,tg = self.object,time_global()
+	if self.st.abtime > tg then
+		return false
+	end
+	if xr_wounded.is_wounded(npc) then
+		self.st.target = nil
+		return false
+	end
+	local target = self.st.target and level.object_by_id(self.st.target)
+	if not target then
+		self.st.target = nil
+	end
+	if target and (not target:alive() and npc:animation_count() == 0) then
+		self.st.target = nil
+		target = nil
+	end
+	local spos = npc:position()
+	if not spos then return false end
+	local be = npc:best_enemy()
+	if target and npc:see(target) then
+		--get_console():execute("load ~evaluator_facer:evaluate~ npc:see(target)")
+		if npc:relation(target) == game_object.enemy or (not be and target.health > 0.3) then
+			local tpos = target:position()
+			if tpos and tpos:distance_to_sqr(spos) < 2.25 and math.abs(spos.y - tpos.y) < 0.8 then
+				return true
+			end
+		end
+	end
+	if be and self.st.check_time < tg and npc:see(be) then
+		--get_console():execute("load ~evaluator_facer:evaluate~ npc:see(best_enemy)")
+		local epos = be:position()
+		if epos and epos:distance_to_sqr(spos) < 2.25 and math.abs(spos.y - epos.y) < 0.8 then
+			self.st.target = be:id()
+			self.st.check_time = tg+facer_sets.check_prd
+			return true
+		end
+	end
+	return false
+end
+function evaluator_facer:hit_callback(amount,dir,who) counterAdd("rx_facer.evaluator_facer:hit_callback")
+	if who and check_enemy(who) then
+		local target = self.st.target and level.object_by_id(self.st.target)
+		if (not target or self.object:relation(target) ~= game_object.enemy or target:position():distance_to_sqr(self.object:position()) > 4) then
+			self.st.target = who:id()
+			self.st.check_time = time_global()+facer_sets.check_prd
+		end
+	end
+end
+
+class "action_facer" (action_base)
+function action_facer:__init(npc,action_name,storage) super (nil,action_name) counterAdd("rx_facer.action_facer:__init")
+	self.st = storage
+	self.rank = ranks.get_obj_rank_name(npc)
+end
+
+function action_facer:initialize() counterAdd("rx_facer.action_facer:initialize")
+	action_base.initialize(self)
+	local npc,wpn = self.object,self.object:active_item() and IAmAWeaponFireOnly[self.object:active_item():clsid()] and self.object:active_item() or self.object:best_weapon()
+	self.end_time = time_global()+3000
+	if rx_wmgr then
+		rx_wmgr.get_wm(npc):disable(self.end_time)
+	end
+	npc:set_desired_position()
+	npc:set_desired_direction()
+	npc:set_movement_type(move.stand)
+	npc:set_body_state(move.standing)
+	npc:set_item(object.idle,wpn)
+end
+
+function action_facer:execute() counterAdd("rx_facer.action_facer:execute")
+	action_base.execute(self)
+	local npc,wpn,tg = self.object,self.object:active_item(),time_global()
+	local target = self.st.target and level.object_by_id(self.st.target)
+	if not (self.end_time and target) then
+		self:cancel()
+		return
+	end
+	npc:set_movement_type(move.stand)
+	npc:set_sight(look.fire_point,target:bone_position("bip01_neck"))
+	if self.end_time < tg then
+		self:cancel()
+	elseif not self.hit_time then
+		if npc:see(target) then --npc:position():distance_to_xz(target:position()) > wpn:position():distance_to_xz(target:position()) then
+			local anim1,anim2 = get_anim(npc)
+			npc:clear_animations()
+			rx_utils.add_anim(npc,anim1)
+			rx_utils.add_anim(npc,anim2)
+			self.hit_time = tg+333
+			if npc:mental_state() == anim.free then
+				self.hit_time = self.hit_time+222
+			end
+		end
+	elseif self.hit_time < tg then
+		local spos,tpos = npc:bone_position("bip01_neck"),target:bone_position("bip01_neck")
+		local ysub = spos.y - tpos.y
+		local cls,bone = target:clsid()
+		if cls == clsid.script_stalker or cls == clsid.actor then
+			if ysub > 1.5 then
+			elseif ysub > -0.3 then
+				bone = "bip01_head"
+			elseif ysub > -0.5 then
+				bone = "bip01_spine2"
+			elseif ysub > -0.8 then
+				bone = "bip01_spine1"
+			elseif ysub > -1.0 then
+				bone = "bip01_pelvis"
+			elseif ysub > -1.4 then
+				bone = "bip01_l_calf"
+			elseif ysub > -1.8 then
+				bone = "bip01_l_foot"
+			end
+		elseif ysub < 1.2 and ysub > -1.8 then
+			if math_random() > 0.4 then
+				bone = "bip01_spine"
+			else
+				bone = "bip01_head"
+			end
+		end
+		if bone and spos:distance_to_xz(tpos) < 1.5 and npc:animation_count() ~= 0 then
+			local vals = facer_sets.ranks[self.rank]
+			local power = vals.power or 50
+			if cls == clsid.script_stalker then
+				power = power*vals.k_stalker
+			elseif IAmAMonster[cls] then
+				power = power*vals.k_mutant
+			elseif cls == clsid.actor then
+				power = power*vals.k_actor
+			end
+			if npc:relation(target) ~= game_object.enemy then
+				power = power*vals.k_friend
+			end
+			local hi = hit()
+			hi:bone(bone)
+			hi.type = hit.strike
+			hi.power = power/math_random(70,120)
+			hi.impulse = math_random(power)*3
+			hi.draftsman = npc
+			hi.direction = target:bone_position(bone):sub(npc:bone_position("bip01_neck"))
+			if math_random()/(4 - level.get_game_difficulty()) < hi.power*2 then
+				local item,slot = target:active_item(),target:active_slot()
+				if item and (slot == 2 or slot == 1) then
+					if cls == clsid.actor then
+						target:drop_item(item)
+					else
+						if npc:relation(target) ~= game_object.enemy then
+							target:set_item(object.drop,item)
+						end
+					end
+				end
+			end
+			if math_random() < 0.33 then
+				hi.type = hit.wound
+				hi.power = hi.power+math_random(3)/10
+				hi.impulse = hi.impulse+math_random(100)
+			end
+			if cls == clsid.actor then
+				rx_utils.get_sound([[affects\hit_fist]]):play_no_feedback(db.actor,sound_object.s2d,0,vector(),1.0)
+				level.add_cam_effector("camera_effects\\fusker.anm",959,false,"")
+			-- и чего же это дело закомментировали ? sapsan
+--			elseif target:animation_count() == 0 then
+--				target:add_animation("wounded_2_out")
+			end
+			rx_utils.get_sound(hit_sound):play_at_pos(target,target:position(),0)
+			target:hit(hi)
+			self.hit_time = self.end_time
+		else
+			self.hit_time = self.end_time
+		end
+	elseif npc:animation_count() == 0 then
+		self:cancel()
+	end
+end
+function action_facer:cancel() counterAdd("rx_facer.action_facer:cancel")
+	local npc,tg = self.object,time_global()
+	local mind = facer_sets.ranks[self.rank].min_delay
+	if mind < 1000 then
+		mind = 1000
+	end
+	self.st.check_time = tg+mind
+	self.st.abtime = tg+facer_sets.ranks[self.rank].min_delay
+	self.end_time = nil
+	self.hit_time = nil
+	self.st.target = nil
+	if not xr_wounded.is_wounded(npc) then -- or state_mgr.get_state(npc) == "idle"
+		npc:clear_animations()
+	end
+	if rx_wmgr then
+		rx_wmgr.get_wm(npc):enable()
+	end
+end
+function action_facer:finalize() counterAdd("rx_facer.action_facer:finalize")
+    action_base.finalize(self)
+	self:cancel()
+end
+
+
+class "evaluator_steal_up" (property_evaluator)
+function evaluator_steal_up:__init(npc,name,storage) super (nil,name) counterAdd("rx_facer.evaluator_steal_up:__init")
+	self.st = storage
+end
+function evaluator_steal_up:evaluate() counterAdd("rx_facer.evaluator_steal_up:evaluate")
+	local npc = self.object
+	local be = npc:best_enemy()
+	local target = self.st.target and level.object_by_id(self.st.target)
+	if npc:active_item() or not be then
+		return false
+	elseif target or be then
+		local spos,tpos = npc:position(),(target or be):position()
+		local dist = tpos:distance_to_sqr(spos)
+		local wpn = rx_utils.get_weapon(npc)
+		if wpn or npc.health < 0.33 then
+			return false
+		elseif dist < 3.3 then
+			return false
+		elseif dist > 80 then
+			self.st.target = nil
+			return false
+		end
+		if not target then
+			if npc:see(be) and not be:see(npc) then
+				self.st.target = be:id()
+				target = be
+			end
+			return false
+		end
+		local vid = target:level_vertex_id()
+		if npc:accessible(vid) and level.vertex_position(vid):distance_to_sqr(tpos) < 3 then
+			return true
+		end
+	end
+	return false
+end
+
+class "action_steal_up" (action_base)
+function action_steal_up:__init(npc,action_name,storage) super (nil,action_name) counterAdd("rx_facer.action_steal_up:__init")
+	self.st = storage
+end
+
+function action_steal_up:initialize() counterAdd("rx_facer.action_steal_up:initialize")
+	action_base.initialize(self)
+	local npc = self.object
+	npc:set_desired_position()
+	npc:set_desired_direction()
+	npc:set_path_type(game_object.level_path)
+	npc:clear_animations()
+	npc:set_movement_type(move.run)
+end
+
+function action_steal_up:execute() counterAdd("rx_facer.action_steal_up:execute")
+	action_base.execute(self)
+	local npc = self.object
+	local target = self.st.target and level.object_by_id(self.st.target)
+	if not target then
+		return
+	end
+	npc:set_dest_level_vertex_id(target:level_vertex_id())
+--	utils.send_to_nearest_accessible_vertex(npc,target:level_vertex_id())
+end
+function action_steal_up:finalize() counterAdd("rx_facer.action_steal_up:finalize")
+    action_base.finalize(self)
+end
+
+
+function check_enemy(enemy) counterAdd("rx_facer.check_enemy")
+	local cls = enemy:clsid()
+	return enemy:alive() and not xr_wounded.is_wounded(enemy) and (cls == clsid.actor or cls == clsid.script_stalker or IAmAMonster[cls])
+end
+
+ -- не буду связываться со ст манагер
+function get_anim(npc) counterAdd("rx_facer.get_anim")
+	local wpn,slot,a1,a2 = npc:active_item(),0
+	if wpn and npc:weapon_unstrapped() then
+		slot = wpn:animation_slot()
+	end
+	if npc:mental_state() == anim.free then
+		a1 = "free_facer_"..slot
+		if slot == 0 and math_random() < 0.5 then
+			a1 = "udar_0"
+		end
+	else
+		a1 = "norm_facer_"..slot.."_0"
+		a2 = "norm_facer_"..slot.."_1"
+	end
+	return a1,a2
+end
+
+evid_facer = rx_ai.base_id+15
+evid_steal_up_facer = evid_facer+1
+actid_facer = evid_facer
+actid_steal_up_facer = evid_steal_up_facer
+
+function add_to_binder(npc,ini,scheme,section,storage) counterAdd("rx_facer.add_to_binder")
+	if not facer_sets.inited then
+		init()
+	end
+	local manager = npc:motivation_action_manager()
+	if not (facer_sets.enabled and not facer_sets.forbiddens.factions[npc:character_community()] and facer_sets.ranks[ranks.get_obj_rank_name(npc)] and not facer_sets.forbiddens.npcs[npc:name()]) then
+		manager:add_evaluator(evid_facer,property_evaluator_const(false))
+		manager:add_evaluator(evid_steal_up_facer,property_evaluator_const(false))
+		return
+	end
+	manager:add_evaluator(evid_facer,evaluator_facer(npc,"eva_facer",storage))
+	manager:add_evaluator(evid_steal_up_facer,evaluator_steal_up(npc,"eva_steal_up_facer",storage))
+	local action = action_facer(npc,"act_facer",storage)
+	action:add_precondition(world_property(stalker_ids.property_alive,true))
+	action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base,false))
+--	action:add_precondition(world_property(xr_evaluators_id.state_mgr+1,true))
+	if xrs_grenade and xrs_grenade.evid_aaa_grenade then
+		action:add_precondition(world_property(xrs_grenade.evid_aaa_grenade,false))
+	end
+	action:add_precondition(world_property(evid_facer,true))
+	action:add_effect(world_property(evid_facer,false))
+	manager:add_action(actid_facer,action)
+	action = action_steal_up(npc,"act_steal_up_facer",storage)
+	action:add_precondition(world_property(stalker_ids.property_alive,true))
+	action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base,false))
+--	action:add_precondition(world_property(xr_evaluators_id.state_mgr+1,true))
+	if xrs_grenade and xrs_grenade.evid_aaa_grenade then
+		action:add_precondition(world_property(xrs_grenade.evid_aaa_grenade,false))
+	end
+	if blowout_scheme and blowout_scheme.evid_outside then
+		action:add_precondition(world_property(blowout_scheme.evid_outside,false))
+	end
+	action:add_precondition(world_property(evid_facer,false))
+	action:add_precondition(world_property(evid_steal_up_facer,true))
+	action:add_effect(world_property(evid_steal_up_facer,false))
+	manager:add_action(actid_steal_up_facer,action)
+	local acts = {xr_actions_id.alife,stalker_ids.action_combat_planner,stalker_ids.action_danger_planner,xr_actions_id.stohe_meet_base+1}
+	for i = 1, #acts do
+		action = manager:action(acts[i])
+		action:add_precondition(world_property(evid_facer,false))
+		action:add_precondition(world_property(evid_steal_up_facer,false))
+	end
+end
+
+function set_scheme(npc,ini,scheme,section) counterAdd("rx_facer.set_scheme")
+	local st = xr_logic.assign_storage_and_bind(npc,ini,scheme,section)
+end
+
+function disable_scheme(npc,scheme) counterAdd("rx_facer.disable_scheme")
+	local st = db.storage[npc:id()][scheme]
+	if st then
+		st.enabled = false
+	end
+end

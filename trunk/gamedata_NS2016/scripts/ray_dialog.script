@@ -1,0 +1,142 @@
+------------------------ Дла заказа у Седого by RAY ------------------------
+
+-- проверка был ли заказ на Агро
+function is_bil_zakaz(actor, trader)
+	if (db.actor:has_info("zakaz_sedoy_aek")) or (db.actor:has_info("zakaz_sedoy_pernac")) then
+		return true
+	else 
+		return false
+	end	 
+end
+
+
+--отдаём АЕК-971
+function give_AEK971_to_player(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	flamethrower.relocate_n_items_section(trader, "wpn_aek971", "in", 1)
+end
+
+
+--отдаём Пернач
+function give_pernac_to_player(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	flamethrower.relocate_n_items_section(trader, "wpn_oc33", "in", 1)
+end
+
+
+--отдаём Винторез
+function give_vint_to_player(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	flamethrower.relocate_n_items_section(trader, "wpn_vintorez_m2", "in", 1)
+end
+
+
+--спавним посылку Шурупу
+function spawn_posilka(first_speaker, second_speaker)
+alife():create("inventory_sakbox_05",vector():set(-61.409622192383,-14.632818222046,-37.288017272949),131392,322)
+end
+
+
+--проверка наличия посылки
+function posilka_have()
+	return amk_utils.inventory_search("inventory_sakbox_05",1)
+end
+
+
+--отдаём посылку
+function give_shurup_posilka(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	flamethrower.relocate_n_items_section(trader, "inventory_sakbox_05", "out", 1)
+end
+
+
+-- СМС от Седого
+function sms_to_vint_shurup()
+	if db.actor:has_info("zakaz_sedoy_vint") and db.actor:dont_has_info("vint_u_shurupa") then
+		news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СЕДОЙ:".."\\n".."%c[255,255,128,128]Меченый, по твоему Винторезу. Короче узнал я - есть такой в Зоне и находится он у Шурупа. Достать его я не смог - Шуруп ни в какую не хочет его мне отдавать. Дуй к нему сам - может что и срастется. Аванс я себе оставляю - считаю, что заслужил. Удачи!".."".."\n", nil, nil, 25000)
+		-- Звуковое сопровождение
+		sol_sound.sms("characters_voice\\Sedoy_Vint")
+		-- Выдача поршня
+		db.actor:give_info_portion("vint_u_shurupa")
+
+	end
+end
+
+
+-- проверка на оставшийся заказ
+function is_eshe_zakaz(actor, trader)
+	if (db.actor:dont_has_info("zakaz_sedoy_aek")) or (db.actor:dont_has_info("zakaz_sedoy_pernac")) then
+		return true
+	else 
+		return false
+	end	 
+end
+
+
+
+
+------------------------ Ветка на Затон ------------------------
+
+--получаем записную книгу от Эльзу
+function poluch_book_elza(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	flamethrower.relocate_n_items_section(trader, "book_elza", "in", 1)
+end
+
+--проверка наличия книги Эльзы
+function book_elza_have()
+return amk_utils.inventory_search("book_elza",1)
+end
+
+--проверка отсутствия книги Эльзы
+function book_elza_dont_have()
+return not amk_utils.inventory_search("book_elza",1)
+end
+
+--отдаём записную книгу Сахару
+function otdal_book_elza(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id() == first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	flamethrower.relocate_n_items_section(trader, "book_elza", "out", 1)
+end

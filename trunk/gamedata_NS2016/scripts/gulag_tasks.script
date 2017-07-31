@@ -1,0 +1,45 @@
+local string_format = string.format
+local level_gulags = xr_gulag.level_gulags
+-- кэш для динамических ltx
+local dynamic_ltx = {}
+
+function loadJob(sj,gname,type,squad,groups,lvlid,gulag)
+	for k, v in pairs(level_gulags) do
+		v.load_job(sj,gname,type,squad,groups,lvlid,gulag)
+	end
+end
+
+function loadStates(gname,type,lvlid)
+	local f
+	for k, v in pairs(level_gulags) do
+		f = v.load_states(gname,type,lvlid)
+		if f then
+			return f
+		end
+	end
+end
+
+-- загрузка динамических ltx
+-- их имена: "*имя_смарттерейна*тип_гулага"
+function loadLtx(name,type)
+	local h = string_format("*%s*%s",name,type)
+	local dltx = dynamic_ltx[h]
+	if dltx then
+		return dltx,h
+	else
+		local l
+		for k, v in pairs(level_gulags) do
+			l = v.load_ltx(name, type)
+			if l then
+				dltx = create_ini_file(l)
+				dynamic_ltx[h] = dltx
+				return dltx,h
+			end
+    		end
+		return nil, nil
+	end
+end
+
+function get_megafone(type,name)
+	return nil
+end

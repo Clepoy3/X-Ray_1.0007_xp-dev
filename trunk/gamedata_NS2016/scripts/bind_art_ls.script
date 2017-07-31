@@ -1,0 +1,174 @@
+---' revision and adaptation for NS_2016 lsclon 09.10.16 '---
+--' Биндер артефактов, совмещенный с детекторами. '--
+--[[
+	Одновременно может работать только один тип детектора.
+	Радиус действия одинаковый для всех детекторов.
+	Простой детектор издает звуковой сигнал. Интенсивность зависит от дистанции до объекта
+	Детектор изоморфов, подает сигнал с постоянной частотой и ставит метку на карте
+	Метки остаются пока объект в зоне действия детектора
+--]]
+
+local actor = db.actor
+local snd_obj = xr_sound.get_safe_sound_object("ambient\\da_beep")
+
+function bind(obj)
+	obj:bind_object(art_binder(obj))
+end
+
+class "art_binder" (object_binder)
+
+function art_binder:__init(obj) super(obj)
+	self.beep = nil    -- флаг для проигрывания звука
+	self.indy = nil    -- флаг простого детектора
+	self.init = true   -- флаг инициализации
+	self.spot = nil    -- флаг постановки метки
+	self.super = nil   -- флаг детектора изоморфов
+	self.tim_beep = 0  -- звуковой таймер
+end
+
+function art_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function art_binder:reinit() 
+	object_binder.reinit(self)
+end 
+
+function art_binder:net_save_relevant()
+	return true
+end
+
+function art_binder:net_spawn(sobj)
+	if not object_binder.net_spawn(self, sobj) then
+		return false
+	end
+	-- серверный объект и его ид
+	self.id = sobj.id
+	self.art = alife():object(self.id)
+	return true 
+end 
+
+function art_binder:update(delta)
+	object_binder.update(self, delta)
+	local art = self.object
+	-- утверждают, что это от провала артов под текстуры
+	if self.init then
+		local ps = art:get_physics_shell()
+		if ps and not art:parent() then
+			local impulse = art:mass() * 1300
+			ps:apply_force( 0, impulse, 0 )
+		end
+		self.init = nil
+	end
+	-- проверка пояса на детекторы.
+	self.super, self.indy = self:belt(self.super, self.indy)
+	-- если есть детектор
+	if self.indy or self.super then
+		local sobj = self.art
+		-- правильно будет запрашивать парент у серверного объекта
+		if sobj and sobj.parent_id == 65535 then
+			local apos = actor:position()
+			local pos = art:position()
+			local dist = apos and pos and apos:distance_to_sqr(pos)
+			-- проверка на дистанцию, для всех детекторов одна
+			if dist and dist < 60*60 then
+				local time_g = time_global()
+				-- простой детектор - звуковой сигнал в зависимости от дистанции
+				if self.indy and dist < time_g - self.tim_beep then
+					self.tim_beep = time_g
+					self.beep = true
+				end
+				-- детектор изоморфов - сигнал с равномерным промежутком
+				if self.super then
+					if self.tim_beep < time_g then
+						self.tim_beep = time_g + 3000
+						self.beep = true
+					end
+					-- метка - проверка в два этапа: флаг потом наличие метки
+					if not self.spot then
+						if level.map_has_object_spot(self.id, "artefact_location") == 0 then
+							level.map_add_object_spot(self.id,"artefact_location",art:section())
+						end
+						self.spot = true
+					end
+				end
+				-- проиграть сигнал
+				if self.beep and not snd_obj:playing() then
+					snd_obj:play_no_feedback(actor,sound_object.s2d,0,vector(),1.0)
+					self.beep = nil
+				end
+			-- вне зоны действия детектора
+			else
+				if self.spot then
+					level.map_remove_object_spot(self.id,"artefact_location")
+					self.spot = nil
+				end
+				self.beep = nil
+			end
+		-- нет парента - снимаем метку и заниляем флаги
+		else
+			if self.spot then
+				level.map_remove_object_spot(self.id,"artefact_location")
+				self.spot = nil
+			end
+			self.tim_beep = 0
+			self.indy  = nil
+			self.super = nil
+		end
+	-- если на поясе нет детекторов - снимаем метку если есть флаг
+	else
+		if self.spot then
+			level.map_remove_object_spot(self.id,"artefact_location")
+			self.spot = nil
+		end
+	end
+end
+
+-- Проверка пояса на детекторы. Одновременно может работать только один тип детектор.
+function art_binder:belt(super, indy)
+	-- если нет флага детектора изоморфов
+	if not super then
+		-- и нет флага простого детектора
+		if not indy then
+			-- проверяем пояс на детектор изоморфов
+			if inventory.belt["detektor_amorf"] then
+				return true, nil
+			end
+			-- проверяем пояс на простой детектор
+			if inventory.belt["det_artefact_indy"] then
+				return nil, true
+			end
+		-- если есть флаг простого детектора
+		else
+			-- проверяем пояс на снятие простого детектора
+			if not inventory.belt["det_artefact_indy"] then
+				return nil, nil
+			end
+		end
+	-- если есть флаг детектора изоморфов
+	else
+		-- проверяем пояс на снятие детектора изоморфов
+		if not inventory.belt["detektor_amorf"] then
+			return nil, nil
+		end
+	end
+	-- ни чего не поменялось - выдаем входящие значения
+	return super, indy
+end
+
+-- Переход в оффлайн. Снимаем метку если есть флаг - self.spot
+function art_binder:net_destroy()
+	if self.spot then
+		level.map_remove_object_spot(self.id,"artefact_location")
+		self.spot = nil
+	end
+	object_binder.net_destroy(self)
+end 
+
+function art_binder:load(reader)
+	object_binder.load(self, reader)
+end
+
+function art_binder:save(packet)
+	object_binder.save(self, packet)
+end

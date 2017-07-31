@@ -1,0 +1,135 @@
+function normalize(val)
+	if val > 100 then
+		val = 100
+	elseif val < 1 then
+		val  = 1
+	end
+	
+	return val
+end
+
+
+function read_if_exist(ltx, section, value, default)
+	if ltx:line_exist(section,value) then
+		return ltx:r_float(section,value)
+	else
+		return default
+	end
+end
+
+function GetRPM(section)
+	
+	local rpm = getIniValueFloatSimple(section,"rpm", 1)
+	local mag_size = getIniValueFloatSimple(section,"ammo_mag_size")
+	local f_modes = getIniValueFloatSimple(section, "f_mode", 1)
+	
+	if rpm > 100 then
+		rpm = (mag_size*(60/((mag_size/(rpm/60)) + 5.5)))/2.4
+	else
+		rpm = rpm/14
+	end
+	
+	if mag_size < 5	then
+		rpm = 30
+	end	  
+	
+	return normalize(rpm)
+end
+
+function GetDamage(section)
+			
+	local hit_power = getIniValueFloatSimple(section,"hit_power")
+
+	if hit_power <= 1 then
+		val =  10 + 100 * (hit_power - 0.6)
+	elseif hit_power <= 2 then
+		val =  50 + 20 * (hit_power - 1)
+	elseif hit_power <= 3 then
+		val =  70 + 10 * (hit_power - 2)
+	elseif hit_power <= 5 then
+		val =  80 + 5 * (hit_power - 3)
+	elseif hit_power <= 50 then
+		val =  90 + 0.5 * (hit_power - 5)
+	end
+
+	return normalize(val)
+end
+
+function GetDamageMP(section)
+	local val = getIniValueFloatSimple(section,"hit_power")
+		
+	if val < 1.05 then
+		val = val*100-30
+	else
+		val = 75 + math.pow(val/4,2)*25
+	end
+	
+	return normalize(val)	
+end
+
+function GetHandling(section)
+			
+	local misfire_probability	= getIniValueFloatSimple(section,"misfire_probability")
+	local misfire_condition_k  = getIniValueFloatSimple(section, "misfire_condition_k", 1)
+	local condition_shot_dec = getIniValueFloatSimple(section,"condition_shot_dec")
+
+	local ammo_list			= getIniValueStringSimple(section,"ammo_class")
+	
+	local pos  = string.find(ammo_list,",",1)
+	local impair
+	if nil ~= pos then
+		local ammo = string.sub(ammo_list,1,pos - 1)
+		impair				= getIniValueFloatSimple(ammo, "impair");
+	else
+		impair				= getIniValueFloatSimple(ammo_list, "impair");
+	end
+		local n = 3000
+		local cond = 1 - impair*condition_shot_dec*n
+			if cond < 0 then cond = 0 
+		end
+		local prob
+			if cond > 0.95 then prob = 0
+			else
+			prob = (0.95 - cond)*(misfire_condition_k - misfire_probability) + misfire_probability
+		end
+
+		local val = 100*(1 - prob*7) 
+			if val < 20 then val = 20
+		end
+		
+	return normalize(val)
+
+
+--	local ltx = system_ini()
+			
+--	local misfire_probability	= ltx:r_float(section,"misfire_probability")
+--	local condition_shot_dec = ltx:r_float(section,"condition_shot_dec")
+
+--	local val = math.sqrt(((0.05/condition_shot_dec)/1250) * ((1/misfire_probability)/1250))
+		
+--	return normalize(val)
+end
+
+function GetAccuracy(section)
+			
+	local fire_dispersion_base	= getIniValueFloatSimple(section,"fire_dispersion_base")
+	local disp_rate = getIniValueFloatSimple(section, "disp_rate", 1)
+	local ammo_list			= getIniValueStringSimple(section,"ammo_class")
+	
+	local pos  = string.find(ammo_list,",",1)
+	local k_disp
+	if nil ~= pos then
+		local ammo = string.sub(ammo_list,1,pos - 1)
+		k_disp				= getIniValueFloatSimple(ammo, "k_disp");
+	else
+		k_disp				= getIniValueFloatSimple(ammo_list, "k_disp");
+	end
+	
+	
+	local fir = disp_rate + math.log10(0.9/(fire_dispersion_base*k_disp))
+	
+	
+	val =  28*fir
+
+	return normalize(val)
+end

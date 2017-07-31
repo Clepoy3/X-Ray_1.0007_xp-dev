@@ -1,0 +1,223 @@
+[wpn_tavor]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	= 
+$spawn              	= "weapons\tavor"	
+$npc					= on				
+$prefetch 			= 8
+scheduled				= off               
+cform               	= skeleton
+class               	= WP_LR300			
+min_radius          	= 30				
+max_radius          	= 100				
+description				= enc_weapons1_wpn-tavor
+
+script_binding  = bind_wpn.init
+	
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier	= 1.0		        
+holder_fov_modifier		= 0.7              
+
+cost					= 6000				
+weapon_class			= assault_rifle		
+	
+ammo_limit			= 210
+ammo_elapsed			= 30	
+	
+ammo_mag_size			= 30	
+fire_modes			= 1,  -1
+
+ammo_class			= ammo_5.56x45_ss190, ammo_5.56x45_ap
+
+hand_dependence		= 1	
+single_handed			= 0
+	
+slot 				= 2
+animation_slot			= 8	
+
+inv_name	        	     = wpn-tavor21 	
+inv_name_short      	= wpn-tavor21		
+inv_weight			= 3.18			
+inv_grid_width     = 3
+inv_grid_height    = 2
+inv_grid_x         = 37
+inv_grid_y         = 30
+
+
+kill_msg_x			= 0
+kill_msg_y			= 123
+kill_msg_width		     = 69
+kill_msg_height		= 30
+
+;params of weapon recoil
+fire_dispersion_base			= 0.18		
+control_inertion_factor			= 1.09f
+
+;отдача
+cam_relax_speed         		= 8
+cam_dispersion          		= 0.4		
+cam_dispersion_inc			= 0.18		
+cam_dispertion_frac			= 0.9		
+cam_max_angle				= 12		
+cam_max_angle_horz			= 20		
+cam_step_angle_horz			= 1.25
+
+fire_dispersion_condition_factor 	= 3		 
+misfire_probability 		= 0.002	 
+misfire_condition_k			= 0.07
+condition_shot_dec 			= 0.00015	
+
+fire_point             	=  0.0,0.228,0.33		 
+
+flame_particles				= weapons\generic_weapon05	
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles		= weapons\generic_weapon01
+	
+shell_point		 		= 0.0,0.234,-0.2			
+shell_particles	 			= weapons\shells_r_ns_556
+
+PDM_disp_base 				= 1.0
+PDM_disp_vel_factor 		= 0.95
+PDM_disp_accel_factor 		= 0.95
+PDM_crouch	 			= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+; ttc
+hit_power                    =  0.83		
+hit_impulse		 		= 4			
+hit_type 				= fire_wound 	
+
+fire_distance            		= 225
+bullet_speed				     = 910		
+rpm                      		= 900		
+
+use_aim_bullet				= true		
+time_to_aim					= 1.0	
+
+silencer_hit_power       		= 0.75
+silencer_hit_impulse	 		= 3
+silencer_fire_distance   		= 200
+silencer_bullet_speed	 		= 820
+
+hud                      	= wpn_tavor_hud				
+
+position         	        = -0.026,-0.180,0.01			
+orientation      	        = 0,5,0						
+
+strap_position         		= -0.12,-0.46,0.33			
+strap_orientation      		= -10,-5,10					
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+visual                   	= weapons\Tavor\wpn_tavor.ogf	
+
+
+ph_mass						= 5							
+
+;addons
+scope_status				= 0
+silencer_status			= 2
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor	     	= 60							
+
+silencer_name  			= wpn_addon_sil_556_ar			
+silencer_x                  = 136
+silencer_y                  = 16			
+
+
+snd_draw			= weapons\Tavor\tavor_draw, 0.5
+snd_holster		= weapons\Tavor\tavor_holster, 0.5
+snd_shoot			= weapons\Tavor\tavor_shot
+snd_empty			= weapons\Tavor\tavor_empty, 0.5
+snd_reload		= weapons\Tavor\tavor_reload1, 0.5
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+snd_silncer_shot			= weapons\sg550_silent, 0.5 
+
+light_color					= 0.6,0.5,0.3				
+light_range					= 5							
+light_var_color				= 0.05						
+light_var_range				= 0.5
+light_time 					= 0.2						
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_tavor_hud]
+shell_point     	   	 	= -0.36, 0.00, 0.00
+shell_dir			     	= 0.0, 1.0, 0.0
+
+fire_point			     = -0.1, 0.0, 0.00
+fire_point2              	= 0.30, 0.00, 0.05
+fire_bone               	= wpn_body
+
+orientation             	= 0, 0, 0		
+position                	= 0, 0, 0
+visual                       = weapons\Tavor\wpn_tavor_hud.ogf
+
+; animation names
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload				= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset			= -0.1255,0.0078,-0.115100
+zoom_rotate_x		= -0.005000
+zoom_rotate_y		= 0.000900
+
+zoom_hide_crosshair	= false						
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2
+
+;------апгрейды----
+
+
+; Снижение отдачи
+[wpn_tavor_otdaca]:wpn_tavor
+$spawn             		     = "weapons\tavor\wpn_tavor_otdaca"
+fire_dispersion_base         = 0.09
+cam_relax_speed              = 4
+cam_dispersion          	= 0.2		
+cam_dispersion_inc	          = 0.09		
+cam_max_angle	               = 6		
+inv_name	        			= wpn-tavor_otdaca
+inv_name_short			     = wpn-tavor_otdaca
+description				= enc_otdaca_wpn_tavor
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 7300
+
+
+; Снижение веса
+[wpn_tavor_ves]:wpn_tavor
+$spawn             		     = "weapons\tavor\wpn_tavor_ves"
+inv_weight				= 2.4
+inv_name	        			= wpn-tavor_ves
+inv_name_short			     = wpn-tavor_ves
+description				= enc_ves_wpn_tavor
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 7000
+
+
+; Отдача и вес
+[wpn_tavor_otdaca_ves]:wpn_tavor_otdaca
+$spawn             		     = "weapons\tavor\wpn_tavor_otdaca_ves"
+inv_weight				= 2.4
+inv_name	        			= wpn-tavor_otdaca_ves
+inv_name_short			     = wpn-tavor_otdaca_ves
+description				= enc_otdaca_ves_wpn_tavor
+cost					     = 13300
+

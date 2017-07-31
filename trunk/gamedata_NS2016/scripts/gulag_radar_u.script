@@ -1,0 +1,176 @@
+local t = {}
+local gulags = {}
+
+function load_job(sj, gname, type, squad, groups)
+	 -- Монолит верх
+	if type == "x10_monolith1" then
+		--' 20 работ
+            for i = 1, 6 do
+			t = {section = "logic@x10_monolith1_walker"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+            for i = 1, 14 do
+			t = {section = "logic@x10_monolith1_camper"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Монолит низ
+	if type == "x10_monolith2" then
+		--' 20 работ
+            for i = 1, 4 do
+			t = {section = "logic@x10_monolith2_walker"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+            for i = 1, 16 do
+			t = {section = "logic@x10_monolith2_camper"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	 -- Кровососы
+	if type == "x10_bloodsucker" then
+		--' 5 работ
+		for t = 1, 1 do
+			t = {section = "logic@x10_bloodsucker_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 1 do
+			t = {section = "logic@x10_bloodsucker_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@x10_bloodsucker_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 1 do
+			t = {section = "logic@x10_bloodsucker_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Тараканы
+	if type == "x10_tarakan" then
+		--' 15 работ
+		for t = 1, 1 do
+			t = {section = "logic@x10_tarakan_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 1 do
+			t = {section = "logic@x10_tarakan_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@x10_tarakan_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Полтергейсты
+	if type == "x10_poltergeist" then
+		--' 4 работы
+		for t = 1, 2 do
+			t = {section = "logic@x10_poltergeist_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@x10_poltergeist_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end       
+
+---'''' Гулаги с переменным состоянием ''''---
+
+end
+
+
+function load_states(gname, type)
+
+	if type == "x10_monolith1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "x10_monolith2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "x10_bloodsucker" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "x10_tarakan" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "x10_poltergeist" then
+		return function(gulag)
+			return 0
+		end
+	end
+ 
+end
+
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	return nil
+end
+--------------------------------------------------------------------------
+function checkStalker(npc_community, gulag_type)
+
+    	if gulag_type == "x10_monolith1" then
+		return npc_community == "monolith"
+	end
+	if gulag_type == "x10_monolith2" then
+		return npc_community == "monolith"
+	end
+   
+	return false
+end
+
+function checkMonster( npc_community, gulag_type )
+
+	if gulag_type == "x10_bloodsucker" then
+		return npc_community == "bloodsucker"
+	end
+	if gulag_type == "x10_tarakan" then
+		return npc_community == "tarakan"
+	end
+	if gulag_type == "x10_poltergeist" then
+		return npc_community == "poltergeist"
+	end
+
+  	return false
+end

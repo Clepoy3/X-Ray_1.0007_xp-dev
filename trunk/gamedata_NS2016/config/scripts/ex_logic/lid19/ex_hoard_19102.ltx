@@ -1,0 +1,16 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = walker1
+
+[walker1]
+path_walk = aes2_monolit_first_ambush_walk5
+path_look = aes2_monolit_first_ambush_look5
+on_info = {!is_day} kamp1
+
+[kamp1]
+center_point = aes2_monolit_camp1
+path_walk = aes2_monolit_camp1_task
+radius = 2
+on_info = {=is_day} walker1

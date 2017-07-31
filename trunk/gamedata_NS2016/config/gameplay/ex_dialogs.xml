@@ -1,0 +1,190 @@
+<?xml version = '1.0' encoding = 'windows-1251'?>
+<game_dialogs>
+<dialog id = 'ex_hoard_zukerman' priority = '2'>
+	<precondition>ex_hoard.have_teleport</precondition>
+	<phrase_list>
+		<phrase id = '0'>
+			<text>ex_hoard_zukerman_0</text>
+				<next>1</next>
+		</phrase>
+		<phrase id = '1'>
+			<text>ex_hoard_zukerman_1</text>
+				<next>11</next>
+				<next>12</next>
+				<next>13</next>
+				<next>14</next>
+		</phrase>
+		<phrase id = '11'>
+			<has_info>ex_hoard_info_block_teleport</has_info>
+			<has_info>ex_hoard_info_zukerman_first</has_info>
+			<text>ex_hoard_zukerman_11</text>
+				<next>111</next>
+		</phrase>
+		<phrase id = '111'>
+			<text>ex_hoard_zukerman_111</text>
+				<next>112</next>
+		</phrase>
+		<phrase id = '112'>
+			<text>ex_hoard_zukerman_112</text>
+				<next>113</next>
+				<next>121</next>
+		</phrase>
+		<phrase id = '113'>
+			<has_info>ex_hoard_info_block_teleport</has_info>
+			<text>ex_hoard_zukerman_113</text>
+			<disable_info>ex_hoard_info_zukerman_first</disable_info>
+				<next>114</next>
+				<next>117</next>
+		</phrase>
+		<phrase id = '114'>
+			<precondition>ex_hoard.have_30000_money</precondition>
+			<text>ex_hoard_zukerman_114</text>
+			<action>ex_hoard.money_30000_out</action>
+			<action>ex_hoard.cipher1_teleport</action>
+			<disable_info>ex_hoard_info_block_teleport</disable_info>
+				<next>115</next>
+		</phrase>
+		<phrase id = '115'>
+			<text>ex_hoard_zukerman_115</text>
+				<next>116</next>
+		</phrase>
+		<phrase id = '116'>
+			<text>ex_hoard_zukerman_116</text>
+		</phrase>
+		<phrase id = '117'>
+			<text>ex_hoard_zukerman_117</text>
+		</phrase>
+		<phrase id = '12'>
+			<dont_has_info>ex_hoard_info_block_teleport</dont_has_info>
+			<has_info>ex_hoard_info_zukerman_first</has_info>
+			<text>ex_hoard_zukerman_12</text>
+				<next>111</next>
+		</phrase>
+		<phrase id = '121'>
+			<dont_has_info>ex_hoard_info_block_teleport</dont_has_info>
+			<text>ex_hoard_zukerman_121</text>
+			<disable_info>ex_hoard_info_zukerman_first</disable_info>
+				<next>122</next>
+				<next>117</next>
+		</phrase>
+		<phrase id = '122'>
+			<precondition>ex_hoard.have_arts</precondition>
+			<text>ex_hoard_zukerman_122</text>
+			<action>ex_hoard.arts_out</action>
+				<next>123</next>
+		</phrase>
+		<phrase id = '123'>
+			<text>ex_hoard_zukerman_123</text>
+			<disable_info>ex_hoard_info_zukerman_art</disable_info>
+				<next>124</next>
+				<next>125</next>
+				<next>126</next>
+				<next>127</next>
+				<next>128</next>
+				<next>117</next>
+		</phrase>
+		<phrase id = '124'>
+			<precondition>ex_hoard.have_80000_money</precondition>
+			<precondition>ex_hoard.have_cipher2</precondition>
+			<text>ex_hoard_zukerman_124</text>
+			<action>ex_hoard.money_80000_out</action>
+			<action>ex_hoard.cipher2_teleport</action>
+				<next>129</next>
+		</phrase>
+		<phrase id = '125'>
+			<precondition>ex_hoard.have_80000_money</precondition>
+			<text>ex_hoard_zukerman_125</text>
+			<action>ex_hoard.money_80000_out</action>
+			<action>ex_hoard.cipher3_teleport</action>
+				<next>129</next>
+		</phrase>
+		<phrase id = '126'>
+			<precondition>ex_hoard.have_130000_money</precondition>
+			<precondition>ex_hoard.have_cipher2</precondition>
+			<text>ex_hoard_zukerman_126</text>
+			<action>ex_hoard.money_130000_out</action>
+			<action>ex_hoard.cipher2_teleport</action>
+			<disable_info>ex_hoard_info_arts</disable_info>
+				<next>129</next>
+		</phrase>
+		<phrase id = '127'>
+			<precondition>ex_hoard.have_130000_money</precondition>
+			<text>ex_hoard_zukerman_127</text>
+			<action>ex_hoard.money_130000_out</action>
+			<action>ex_hoard.cipher3_teleport</action>
+			<disable_info>ex_hoard_info_arts</disable_info>
+				<next>129</next>
+		</phrase>
+		<phrase id = '128'>
+			<precondition>ex_hoard.have_50000_money</precondition>
+			<text>ex_hoard_zukerman_128</text>
+			<action>ex_hoard.money_50000_out</action>
+			<disable_info>ex_hoard_info_arts</disable_info>
+				<next>129</next>
+		</phrase>
+		<phrase id = '129'>
+			<text>ex_hoard_zukerman_129</text>
+				<next>116</next>
+		</phrase>
+		<phrase id = '13'>
+			<has_info>ex_hoard_info_block_teleport</has_info>
+			<dont_has_info>ex_hoard_info_zukerman_first</dont_has_info>
+			<text>ex_hoard_zukerman_13</text>
+				<next>131</next>
+		</phrase>
+		<phrase id = '131'>
+			<text>ex_hoard_zukerman_131</text>
+				<next>114</next>
+				<next>117</next>
+		</phrase>
+		<phrase id = '14'>
+			<dont_has_info>ex_hoard_info_block_teleport</dont_has_info>
+			<dont_has_info>ex_hoard_info_zukerman_first</dont_has_info>
+			<text>ex_hoard_zukerman_14</text>
+				<next>141</next>
+				<next>142</next>
+				<next>143</next>
+		</phrase>
+		<phrase id = '141'>
+			<has_info>ex_hoard_info_zukerman_art</has_info>
+			<text>ex_hoard_zukerman_141</text>
+				<next>122</next>
+				<next>117</next>
+		</phrase>
+		<phrase id = '142'>
+			<has_info>ex_hoard_info_arts</has_info>
+			<dont_has_info>ex_hoard_info_zukerman_art</dont_has_info>
+			<text>ex_hoard_zukerman_142</text>
+				<next>124</next>
+				<next>125</next>
+				<next>126</next>
+				<next>127</next>
+				<next>128</next>
+				<next>117</next>
+		</phrase>
+		<phrase id = '143'>
+			<dont_has_info>ex_hoard_info_arts</dont_has_info>
+			<dont_has_info>ex_hoard_info_zukerman_art</dont_has_info>
+			<text>ex_hoard_zukerman_143</text>
+				<next>144</next>
+				<next>145</next>
+				<next>117</next>
+		</phrase>
+		<phrase id = '144'>
+			<precondition>ex_hoard.have_100000_money</precondition>
+			<precondition>ex_hoard.have_cipher2</precondition>
+			<text>ex_hoard_zukerman_124</text>
+			<action>ex_hoard.money_100000_out</action>
+			<action>ex_hoard.cipher2_teleport</action>
+				<next>129</next>
+		</phrase>
+		<phrase id = '145'>
+			<precondition>ex_hoard.have_100000_money</precondition>
+			<text>ex_hoard_zukerman_125</text>
+			<action>ex_hoard.money_100000_out</action>
+			<action>ex_hoard.cipher3_teleport</action>
+				<next>129</next>
+		</phrase>
+	</phrase_list>
+</dialog>
+</game_dialogs>

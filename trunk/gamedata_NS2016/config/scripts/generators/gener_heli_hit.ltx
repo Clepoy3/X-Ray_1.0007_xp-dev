@@ -1,0 +1,73 @@
+[logic]
+active = heli_move@idle
+on_hit = hit
+on_death = death
+
+[death]
+on_info = %+zemlyk_zadanie1_done%
+
+[hit]
+on_info = {+zemlyk_zadanie1_start} heli_move@fly1 %+hit_heli_hit_sms%
+on_info2 = {+zemlyk_zadanie1_have} %+zemlyk_zadanie1_done%
+
+[heli_move@idle]
+path_move = gen_heli_hit_idle_move
+engine_sound = false
+mute = true
+default_velocity = 10
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+;on_info = {+zemlyk_vert_hit} heli_move@fly1 %=arhara_dialog.gen_vert_ataka%
+
+
+[heli_move@fly1]
+path_move = gen_heli_hit_idle1_move1
+engine_sound = true
+default_velocity = 75
+combat_enemy = actor
+mute = true
+combat_use_rocket = true
+combat_use_mgun = true
+rocket_delay = 2000
+invulnerable = false
+combat_safe_altitude = 10
+on_timer = 50000 | heli_move@fly2 %+hit1_heli1_hit1_sms +aes_choper_crush_sound =heli_start_flame%
+on_info = {=heli_health_le(0.3)} heli_move@death %+aes_choper_crush_sound +zemlyk_zadanie1_have%
+on_info2 = {+vert_zadanie_proval_actor} heli_move@fly3 %+hit2_heli2_hit2_sms%
+
+[heli_move@fly2]
+path_move = gen_heli_hit_idle1_move1
+engine_sound = true
+default_velocity = 5
+combat_enemy = actor
+combat_use_rocket = true
+mute = true
+combat_use_mgun = true
+mute = true
+rocket_delay = 3000
+invulnerable = false
+combat_safe_altitude = 30
+on_info = {=heli_health_le(0.2)} heli_move@death
+on_info2 = {+vert_zadanie_proval_actor} heli_move@fly3 
+
+[heli_move@fly3]
+path_move = generators_dok_heli_otlet_move
+engine_sound = true
+default_velocity = 15
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = true
+rocket_delay = 6000
+combat_safe_altitude = 120
+invulnerable = true
+on_timer = 47000 | nil %=arhara_dialog.dell_gen_heli_hit%
+
+
+[heli_move@death]
+path_move = gen_heli_hit_idle1_move1
+invulnerable = false
+engine_sound = true
+on_info = {=heli_health_le(0.1)} %+zemlyk_zadanie1_done +zemlyk_zadanie1_have%
+combat_ignore = true
+on_info2 = {+vert_zadanie_proval_actor} heli_move@fly3 %+hit2_heli2_hit2_sms%

@@ -1,0 +1,50 @@
+<ui_texture>
+<file_name>ui\ui_arhara_unique</file_name>
+
+	<texture id="ui_npc_u_xabaruch_new" x="0" y="864" width="165" height="108"/>
+	<texture id="ui_npc_monster_eltush" x="165" y="1942" width="165" height="108"/>
+
+     <texture id="ui_arhara_u_likvidator" x="0" y="1942" width="165" height="108" />
+        <texture id="ui_arhara_u_kontrik" x="0" y="1834" width="165" height="108" />
+        <texture id="ui_arhara_u_obmorok" x="0" y="1728" width="165" height="108" />
+<texture id="ui_arhara_dokplen_nachalnik" x="0" y="1620" width="165" height="108" />
+      <texture id="ui_arhara_lday_sniper" x="0" y="1512" width="165" height="108" />
+      <texture id="ui_arhara_vitek_voron" x="0" y="1404" width="165" height="108" />
+      <texture id="ui_arhara_osvedomitel" x="0" y="1295" width="165" height="108" />
+        <texture id="ui_arhara_tumenskiy" x="0" y="1187" width="165" height="108" />
+       <texture id="ui_arhara_ek_z_zhelt" x="0" y="1078" width="165" height="108" />
+       <texture id="ui_arhara_ek_z_zelen" x="0" y="971" width="165" height="108" />
+  <texture id="ui_arhara_osvedomitel_new" x="0" y="756" width="165" height="108" />
+    <texture id="ui_arhara_robi_stalker2" x="0" y="647" width="165" height="108" />
+    <texture id="ui_arhara_robi_stalker1" x="0" y="539" width="165" height="108" />
+           <texture id="ui_arhara_boroda" x="0" y="431" width="165" height="108" />           
+            <texture id="ui_arhara_biven" x="0" y="324" width="165" height="108" />
+             <texture id="ui_arhara_vell" x="0" y="215" width="165" height="108" />
+        <texture id="ui_arhara_zaton_st1" x="0" y="107" width="165" height="108" />
+        <texture id="ui_arhara_zaton_st2" x="0" y="0" width="165" height="107" />		
+          <texture id="ui_arhara_karagez" x="165" y="1834" width="165" height="108" />
+        <texture id="ui_arhara_skad_piyn" x="165" y="1727" width="165" height="108" />
+              <texture id="ui_arhara_ded" x="165" y="1618" width="165" height="108" />
+          <texture id="ui_arhara_vazelin" x="165" y="1511" width="165" height="108" />
+          <texture id="ui_arhara_hunter1" x="165" y="1404" width="165" height="108" />
+         <texture id="ui_arhara_skarabey" x="165" y="1295" width="165" height="108" />
+             <texture id="ui_arhara_elza" x="165" y="1187" width="165" height="108" />
+           <texture id="ui_arhara_borman" x="165" y="1079" width="165" height="108" />
+          <texture id="ui_arhara_amerika" x="330" y="648" width="165" height="108" />
+         <texture id="ui_arhara_zvez_new" x="165" y="863" width="165" height="108" />
+          <texture id="ui_arhara_brodway" x="330" y="540" width="165" height="108" />
+          <texture id="ui_arhara_sosolov" x="330" y="432" width="165" height="108" />
+           <texture id="ui_arhara_gulden" x="330" y="756" width="165" height="108" />
+            <texture id="ui_arhara_iskra" x="330" y="864" width="165" height="108" />
+
+          <texture id="ui_npc_u_stalker_diger_kontroler" x="165" y="972" width="165" height="108" />
+          <texture id="ui_npc_u_stalker_ecolog_0_zombie" x="165" y="648" width="165" height="108" />
+          <texture id="ui_npc_u_stalker_ecolog_1_zombie" x="165" y="756" width="165" height="108" />
+          <texture id="ui_npc_u_stalker_ecolog_2_zombie" x="165" y="864" width="165" height="108" />
+          <texture id="ui_npc_u_stalker_nebo_holodov_new" x="165" y="432" width="165" height="108" />
+          <texture id="ui_npc_u_stalker_mo_kot_new" x="165" y="0" width="165" height="108" />
+          <texture id="ui_npc_u_stalker_nebo_leader_new" x="330" y="0" width="165" height="108" />
+          <texture id="ui_sapsan" x="330" y="108" width="165" height="108" />
+          <texture id="ui_npc_u_stalker_new_bpom" x="330" y="216" width="165" height="108" />
+          <texture id="ui_npc_sidor_kepka" x="330" y="324" width="165" height="108" />
+</ui_texture>

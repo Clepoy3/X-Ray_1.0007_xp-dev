@@ -1,0 +1,39 @@
+[logic]
+active = {-bychok_say_two_start} walker1, walker4
+meet = meet
+danger = danger_ignore
+on_death = death
+
+[walker1]
+path_walk = skadovsk_bandos_vxod_walk
+path_look = skadovsk_bandos_vxod_look
+on_info = {+bychok_poshli1} walker2
+
+[walker2]
+path_walk = skadovsk_bandos1_vxod1_walk
+path_look = skadovsk_bandos1_vxod1_look
+on_info = {+mous_vpered} walker3
+
+[walker3]
+path_walk = skadovsk_bandos1_vxod1_walk
+path_look = skadovsk_bandos1_vxod1_look
+on_info = {+bychok_say_two_start} walker4
+on_timer = 750000 | walker4
+
+[walker4]
+path_walk = skadovsk_bandos_vxod_walk
+path_look = skadovsk_bandos_vxod_look
+
+[spawn]
+medkit
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[death]
+on_info = %+bandos_vhod_dead%
+
+[danger_ignore]
+ignore_distance = 0

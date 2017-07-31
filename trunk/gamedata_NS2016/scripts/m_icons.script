@@ -1,0 +1,143 @@
+--*******************************************************
+--[[ -----------------------------------------------------------------------------------------------
+ File       : m_icons.script
+ Description: иконки состояний на худе (v.1.1)
+ Copyright  : 2010 © Erlik
+ Author     : Erlik(aka Garry_Galler)
+ Last edit  : 08.02.2011 
+--]] -----------------------------------------------------------------------------------------------
+
+--// дебаговый вывод инфы    
+
+local console  = false
+function Console(fmt,...)
+   if console then  
+   get_console():execute("load ~ "..string.format(fmt,...))
+   end
+end 
+
+local tUIStatics ={}  --// таблица для хранения экзмепляров статиков
+local Icon            --// экзмепляр статика
+local hud = get_hud() --// ссылка на экземпляр класса худа 
+
+--// таблица имен текстур иконок (из файла ui_hud.xml), координат вывода и размеров
+
+local tIcons ={
+
+["ui_hud_point_health_sol"]                 = {47, 30, 7, 7},  -- здоровье
+["ui_hud_point_stamina_sol"]				= {47, 50, 7, 7},   -- для датчика энергии
+["ui_hud_point_radiation_sol"]              = {145, 50, 7, 7},  -- радиация
+["ui_hud_point_psycho_sol"]                 = {145, 30, 7, 7},  -- псих. здоровье
+["ui_hud_shkala_psycho_sol"]				= {145, 38, 52, 7},  -- псих. рамка шкалы
+["ui_hud_shk_psycho_sol"]                 	= {146, 39, 50, 5},  -- псих. шкала
+["ui_hud_point_armour_sol"]					= {839, 30, 7, 7},  -- броня
+["ui_hud_point_weapon_sol"]                 = {839, 50, 7, 7},  -- оружие индикатор
+["ui_hud_shkala_weapon_sol"]				= {839, 58, 52, 7},  -- оружие рамка шкалы
+["ui_hud_shk_weapon_sol"]                 	= {840, 59, 50, 5},  -- оружие шкала
+
+["ui_hud_icon_health_sol"]                 	= {27, 30, 15, 15},
+["ui_hud_icon_stamina_sol"]					= {27, 50, 15, 15},
+["ui_hud_icon_radiation_sol"]              	= {125, 50, 15, 15},
+["ui_hud_icon_psycho_sol"]                 	= {125, 30, 15, 15},
+["ui_hud_icon_armour_sol"]                 	= {819, 30, 15, 15},
+["ui_hud_icon_weapon_sol"]					= {819, 50, 15, 15},
+["ui_hud_icon_light_sol"]                  	= {970, 205, 7, 7},
+["ui_hud_icon_noise_sol"]                  	= {980, 205, 7, 7},
+}
+
+--// инициация статиков - вызов ставить на апдейт
+
+function InitIcons()
+   if next(tUIStatics)== nil then
+       for k, v in pairs (tIcons) do 
+       Icon =CUIStatic()
+	   Icon:Init(unpack(tIcons[k]))
+	   Icon:InitTexture(k)
+       Icon:SetStretchTexture(true)
+	   Icon:SetText("")
+	   Icon:SetFont(GetFontSmall())
+	   Icon:SetTextColor(255,190,255,190)
+	   --Icon:SetTextColor(255,255,215,0)
+	   Icon:SetTextY(-2)
+	   Icon:SetTextX(7)
+       hud:AddDialogToRender(Icon)
+       tUIStatics[k] =Icon
+       end
+   end 
+end 
+
+--// цветовая заливка статиков - вызов ставить на апдейт
+
+function SetColorIcons()
+local actor      = db.actor
+local fHealth    = actor.health
+local fPsyHealth = actor.psy_health
+local fRadiation = actor.radiation
+local fPower     = actor.power
+local fArmor     = actor:get_current_outfit() and actor:get_current_outfit():condition()
+local fWeapon    = actor:active_item() and isWeapon(actor:active_item())  and  actor:active_item():condition()
+
+local function Alfa(arg)
+return arg and 255 or 0 
+end 
+
+local function IfTrue(if_true, arg)
+return if_true and string.format("%.1f", arg*100) or ""
+end 
+
+local function IfTrue2(if_true, arg)
+return if_true and string.format("%.1f", (arg/2)*100) or ""
+end 
+
+if (not actor:alive()) or (weapon_hide == true) or (has_alife_info("ui_inventory")) or (has_alife_info("ui_pda")) or (has_alife_info("ui_trade")) then 
+RemoveIcons()
+end 
+
+--// меняем цвет в зависимости от показателей
+--//переход от зеленого к красному 
+
+if next(tUIStatics) then 
+   tUIStatics["ui_hud_point_health_sol"]:SetColor(GetARGB(255, 255-255*fHealth, 255*fHealth, 0)) 
+   tUIStatics["ui_hud_point_health_sol"]:SetText(string.format("%.1f", fHealth*100))
+   
+   tUIStatics["ui_hud_point_radiation_sol"]:Show(false)
+   if hud_rad then
+   tUIStatics["ui_hud_point_radiation_sol"]:Show(true)
+   tUIStatics["ui_hud_point_radiation_sol"]:SetColor(GetARGB(255, 255*fRadiation, 255-255*fRadiation, 0))
+   tUIStatics["ui_hud_point_radiation_sol"]:SetText(string.format("%.1f", fRadiation*100))
+   end
+   
+   tUIStatics["ui_hud_point_psycho_sol"]:SetColor(GetARGB(255, 255-255*fPsyHealth, 255*fPsyHealth, 0))
+   tUIStatics["ui_hud_point_psycho_sol"]:SetText(string.format("%.1f", fPsyHealth*100))
+   tUIStatics["ui_hud_shk_psycho_sol"]:SetWidth((fPsyHealth/2)*100)
+   --db.actor:give_game_news("vel: "..fPsyHealth, "ui\\ui_iconsTotal", Frect():set(83,47,83,47), 0, 15000)
+   
+   tUIStatics["ui_hud_point_stamina_sol"]:SetColor(GetARGB(255, 255-255*fPower, 255*fPower, 0))
+   tUIStatics["ui_hud_point_stamina_sol"]:SetText(string.format("%.1f", fPower*100)) 
+
+   tUIStatics["ui_hud_point_armour_sol"]:SetColor(GetARGB(Alfa(fArmor and fArmor<=1), 255-(255*(fArmor or 1)), 255*(fArmor or 1), 0))
+   tUIStatics["ui_hud_point_armour_sol"]:SetText(IfTrue(fArmor and fArmor<=1, fArmor))
+ 
+   tUIStatics["ui_hud_point_weapon_sol"]:SetColor(GetARGB(Alfa(fWeapon and fWeapon<=1), 255-(255*(fWeapon or 1)), 255*(fWeapon or 1), 0))
+   tUIStatics["ui_hud_point_weapon_sol"]:SetText(IfTrue(fWeapon and fWeapon<=1, fWeapon))
+   tUIStatics["ui_hud_shk_weapon_sol"]:SetWidth(IfTrue2(fWeapon and fWeapon<=1, fWeapon))
+   if fWeapon and fWeapon<=1 then tUIStatics["ui_hud_shkala_weapon_sol"]:Show(true) else tUIStatics["ui_hud_shkala_weapon_sol"]:Show(false) end
+end 
+end 
+
+--// удаление статиков - вызов ставить в метод net_destroy()  в биндере эктора
+
+function RemoveIcons()
+local hud = get_hud() 
+    if next(tUIStatics) then 
+	   for k, v in pairs (tUIStatics) do 
+       hud:RemoveDialogToRender(v) 
+       end
+	tUIStatics={} 
+    end 
+end
+
+function UpdateIcons()
+InitIcons()
+SetColorIcons()
+end 

@@ -1,0 +1,39 @@
+[logic]
+active = walker
+on_death = death
+on_hit = hit
+
+[walker]
+path_walk = forest_lastday_snip1_walk
+path_look = forest_lastday_snip1_look
+danger = danger_ignore
+on_timer = 50000 | walker2
+on_info = {+forest_last_snip_otxod} walker4
+
+[walker2]
+path_walk = forest1_lastday1_snip1_walk
+path_look = forest1_lastday1_snip1_look
+danger = danger_ignore
+on_timer = 50000 | walker3
+on_info = {+forest_last_snip_otxod} walker4
+
+[walker3]
+path_walk = forest2_lastday2_snip1_walk
+path_look = forest2_lastday2_snip1_look
+danger = danger_ignore
+on_timer = 40000 | walker4
+on_info = {+forest_last_snip_otxod} walker4
+
+[walker4]
+path_walk = forest3_lastday3_snip1_walk
+path_look = forest3_lastday3_snip1_look
+danger = danger_ignore
+
+[danger_ignore]
+ignore_distance = 0
+
+[death]
+on_info = {=killed_by_actor} %+lesnik_say_snip_done =arhara_dialog.spawn_pushka_fot%
+
+[hit]
+on_info = {=hit_by_actor} %+forest_last_snip_otxod%

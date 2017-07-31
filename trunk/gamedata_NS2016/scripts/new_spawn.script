@@ -1,0 +1,427 @@
+-- ОБРАБОТКА взятых предметов (спавн рюкзаков Кости):
+function checking_taken_item(obj)
+
+ -- ПДА в тайнике Кости Х-10 (checking_taken_item37)
+ if obj:section()=="kostya_pda9" and not has_alife_info("new_inventory12") then
+ alife():create("m_inventory_box12",vector():set(7.35,-23.52,8.07),7689,2703)
+  db.actor:give_info_portion("new_inventory12")
+  news_manager.send_tip(db.actor, "Найдена информация о коде доступа", nil, nil, 30000)
+
+ -- документы Кости (checking_taken_item23)
+ elseif obj:section()=="kostya_documents" and not has_alife_info("kostya_documents_have") then
+  alife():create("m_inventory_box13",vector():set(258.68,-7.56,-131.48),371824,404)
+  alife():create("m_inventory_box94",vector():set(255.25,-48.91,-30.13),66964,1930)
+  db.actor:give_info_portion("kostya_documents_have")
+  db.actor:give_info_portion("rad_door_init")
+ 
+ elseif obj:section()=="kostya_documents1" and not has_alife_info("kostya_documents1_have") then
+  db.actor:give_info_portion("kostya_documents1_have")
+ end
+end
+
+function pda_prizrak()
+ amk.spawn_item("pda_priz",vector():set(-95.40,23.16,-20.67),1529,579) 
+end
+
+--function esc_zahar()
+--local obj = alife():create("stalker_green_zahar",vector():set(111.88757324,0.099669277667,74.2647323608),33195,1225)
+--local params=amk.read_stalker_params(obj)
+--params.custom="[logic]\ncfg = scripts\\new\\stalker_green_zahar.ltx"
+--params.sid=9613
+--amk.write_stalker_params(params,obj)
+--end
+
+--function esc_shustryi()
+--local obj = alife():create("esc_dan",vector():set(-8.28458690643311,2.47888994216919,61.6851959228516),268486,88)
+--local params=amk.read_stalker_params(obj)
+--params.custom="[logic]\ncfg = scripts\\new\\esc_dan.ltx"
+--params.sid=9622
+--amk.write_stalker_params(params,obj)
+--end
+
+
+function bar_informator()
+ local obj = alife():create("mil_trader_gavr",vector():set(25.325489,-8.35158157,-17.512226425),330707,1587)
+ local params=amk.read_stalker_params(obj)
+ params.sid=9623
+ amk.write_stalker_params(params,obj)
+
+ local obj = alife():create("mil_gavr_bodyguard1",vector():set(25.325489,-8.35158157,-17.512226425),330707,1587)
+ local obj = alife():create("mil_gavr_bodyguard2",vector():set(25.325489,-8.35158157,-17.512226425),330707,1587)
+end
+
+--function mil_gavr()
+--local obj = alife():create("mil_bolt",vector():set(-373.1247253,-13.994354248,398.263183594),869,1848)
+--local params=amk.read_stalker_params(obj)
+--params.custom="[logic]\nactive=walker\n[walker]\npath_walk = mil_bolt_walk1\npath_look = mil_bolt_look1\ncombat_ignore_cond=always"
+--params.sid=9621
+--amk.write_stalker_params(params,obj)
+
+--local obj = alife():create("mil_bolt_bodyguard1",vector():set(-373.1247253,-13.994354248,398.263183594),869,1848)
+--local params=amk.read_stalker_params(obj)
+--params.custom="[logic]\nactive=walker\n[walker]\npath_walk = mil_bolt_bodyguard1_walk1\npath_look = mil_bolt_bodyguard1_look1\ncombat_ignore_cond=always"
+--params.sid=9626
+--amk.write_stalker_params(params,obj)
+
+--local obj = alife():create("mil_bolt_bodyguard2",vector():set(-373.1247253,-13.994354248,398.263183594),869,1848)
+--local params=amk.read_stalker_params(obj)
+--params.custom="[logic]\nactive=walker\n[walker]\npath_walk = mil_bolt_bodyguard2_walk1\npath_look = mil_bolt_bodyguard2_look1\ncombat_ignore_cond=always"
+--params.sid=9627
+--amk.write_stalker_params(params,obj)
+--end
+
+function under_stalker()
+local obj=amk.spawn_item("stalker_agro_und",vector():set(-38.554332733,-4.621260643,-26.150243759),733,4747)
+        local tbl = amk.read_stalker_params(obj)
+        tbl.sid = 9660
+        tbl.health = 0
+	tbl.updhealth = 0
+        amk.write_stalker_params(tbl, obj)
+end
+
+function under_kontr()
+local obj = alife():create("controller_normal",vector():set(-50.33838653564,-6.51431989,9.447748184),4221,727)
+local obj = alife():create("controller_strong",vector():set(-67.20966339,-16.463214874,-42.71123886),3647,716)
+end
+
+--[[function prizrak_fail()
+local obj =alife():create("boev_sniper1",vector():set(-51.989505767822,-6.5053696632385,24.031425476074),4182,726)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper1.ltx"
+--params.sid=9640
+amk.write_stalker_params(params,obj)
+
+local obj =alife():create("boev_sniper2",vector():set(-47.507171630859,-6.4884614944458,8.3766565322876),4307,729)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper2.ltx"
+--params.sid=9641
+amk.write_stalker_params(params,obj)
+
+local obj =alife():create("boev_sniper3",vector():set(-57.223609924316,-6.4028582572937,21.511028289795),4019,775)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper3.ltx"
+--params.sid=9642
+amk.write_stalker_params(params,obj)
+
+local obj =alife():create("boev_sniper4",vector():set(-56.480762481689,-6.2299695014954,2.7234523296356),3993,777)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper4.ltx"
+--params.sid=9643
+amk.write_stalker_params(params,obj)
+
+local obj =alife():create("boev_sniper5",vector():set(-77.649810791016,-16.465929031372,16.364751815796),2986,764)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper5.ltx"
+--params.sid=9644
+amk.write_stalker_params(params,obj)
+
+local obj =alife():create("boev_sniper6",vector():set(-79.996566772461,-16.413192749023,1.0358234643936),2645,711)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper6.ltx"
+--params.sid=9645
+amk.write_stalker_params(params,obj)
+end
+
+function prizrak_true()
+local obj =alife():create("boev_sniper_rad1",vector():set(608.736389160,-52.1336784363,-279.3496398926),218431,1883)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad1.ltx"
+--params.sid=9670
+amk.write_stalker_params(params,obj)
+
+local obj =alife():create("boev_sniper_rad2",vector():set(593.38671875,-51.838394165039,-289.097137451),210993,1883)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad2.ltx"
+--params.sid=9671
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad3",vector():set(597.50213623,-53.779800415039,-255.705276489),213454,1863)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad3.ltx"
+--params.sid=9672
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad4",vector():set(611.5910034179,-52.4556274414,-304.1400756836),219774,1882)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad4.ltx"
+--params.sid=9673
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad5",vector():set(613.7868041992,-50.43564987183,-8.73648929596),220734,1899)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad5.ltx"
+--params.sid=9674
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad6",vector():set(606.57836914063,-53.641632081,-52.6836853027),217655,1897)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad6.ltx"
+--params.sid=9675
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad7",vector():set(511.014770507,-49.80339813232,16.531932830811),171492,1920)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad7.ltx"
+--params.sid=9676
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad8",vector():set(515.36065673828,-49.98353958129,0.59198832512),173514,1917)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad8.ltx"
+--params.sid=9677
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad9",vector():set(394.22698974609,-49.7197265625,15.6820411682),121105,1864)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad9.ltx"
+--params.sid=9678
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad10",vector():set(349.57217407227,-49.9717864990,15.1036739349),92719,1927)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad10.ltx"
+--params.sid=9679
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad11",vector():set(131.92094421387,-3.201653480529,30.6498222351),51503,1940)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad11.ltx"
+--params.sid=9680
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad12",vector():set(105.66445922852,-0.200214698910,-18.860168457),45473,1951)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad12.ltx"
+--params.sid=9681
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad13",vector():set(115.53982543945,-0.306800276,-33.98778152466),48501,1951)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad13.ltx"
+--params.sid=9682
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad14",vector():set(69.816612243,-0.4328181147575,-0.680386841297),33781,1984)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad14.ltx"
+--params.sid=9683
+amk.write_stalker_params(params,obj)
+
+local obj=alife():create("boev_sniper_rad15",vector():set(90.30807495117,-0.39964208006,-18.0512924194),40764,1982)
+local params=amk.read_stalker_params(obj)
+params.custom="[logic]\ncfg = scripts\\new\\boev_sniper_rad15.ltx"
+--params.sid=9684
+amk.write_stalker_params(params,obj)
+end]]
+
+function spawn_zver()
+ local obj=alife():create("esc_zver",vector():set(-123.13681793213,-30.051919937134,-368.98876953125),130148,25)
+ local params=amk.read_stalker_params(obj)
+ params.sid=9731
+ amk.write_stalker_params(params,obj)
+
+ local obj=alife():create("esc_bodyzver1",vector():set(-123.13681793213,-30.051919937134,-368.98876953125),130148,25)
+ local obj=alife():create("esc_bodyzver2",vector():set(-123.13681793213,-30.051919937134,-368.98876953125),130148,25)
+ local obj=alife():create("esc_bodyzver3",vector():set(-123.13681793213,-30.051919937134,-368.98876953125),130148,25)
+ local obj=alife():create("esc_bodyzver4",vector():set(-123.13681793213,-30.051919937134,-368.98876953125),130148,25)
+ local obj=alife():create("esc_bodyzver5",vector():set(-123.13681793213,-30.051919937134,-368.98876953125),130148,25)
+
+ local obj=alife():create("esc_mil_def",vector():set(-168.19195556641,-31.625070571899,-272.02471923828),83865,35)
+ local obj=alife():create("esc_mil2_def",vector():set(-168.19195556641,-31.625070571899,-272.02471923828),83865,35)
+ local obj=alife():create("esc_mil3_def",vector():set(-168.19195556641,-31.625070571899,-272.02471923828),83865,35)
+ local obj=alife():create("esc_mil4_def",vector():set(-168.19195556641,-31.625070571899,-272.02471923828),83865,35)
+ local obj=alife():create("esc_mil5_def",vector():set(-163.01707458496,-25.436334609985,-350.4128112793),86407,31)
+ local obj=alife():create("esc_mil6_def",vector():set(-163.01707458496,-25.436334609985,-350.4128112793),86407,31)
+ local obj=alife():create("esc_mil7_def",vector():set(-163.01707458496,-25.436334609985,-350.4128112793),86407,31)
+ local obj=alife():create("esc_mil8_def",vector():set(-163.01707458496,-25.436334609985,-350.4128112793),86407,31)
+ local obj=alife():create("esc_mil9_def",vector():set(-133.7991027832,-25.811548233032,-354.52139282227),117354,19)
+ local obj=alife():create("esc_mil10_def",vector():set(-133.7991027832,-25.811548233032,-354.52139282227),117354,19)
+ local obj=alife():create("esc_mil11_def",vector():set(-133.21928405762,-29.690362930298,-354.28179931641),118113,19)
+ local obj=alife():create("esc_mil12_def",vector():set(-133.7991027832,-25.811548233032,-354.52139282227),117354,19)
+ local obj=alife():create("esc_mil13_def",vector():set(-139.49812316895,-29.691171646118,-353.13653564453),111254,19)
+ local obj=alife():create("esc_mil14_def",vector():set(-139.49812316895,-29.691171646118,-353.13653564453),111254,19)
+end
+
+function add_zver()
+ local obj=alife():create("esc_snip_atak",vector():set(-130.93258666992,-17.900747299194,-187.99856567383),120643,42)
+ local obj=alife():create("esc_snip2_atak",vector():set(-130.93258666992,-17.900747299194,-187.9985656738),120643,42)
+ local obj=alife():create("esc_snip3_atak",vector():set(-130.93258666992,-17.900747299194,-187.9985656738),120643,42)
+ local obj=alife():create("esc_snip4_atak",vector():set(-130.4655456543,-10.02149772644,-126.00447845459),121547,44)
+ local obj=alife():create("esc_snip5_atak",vector():set(-130.4655456543,-10.02149772644,-126.00447845459),121547,44)
+ local obj=alife():create("esc_snip6_atak",vector():set(-130.4655456543,-10.02149772644,-126.00447845459),121547,44)
+ local obj=alife():create("esc_snip7_atak",vector():set(-238.85079956055,-19.541189193726,-118.84622192383),16851,8)
+ local obj=alife():create("esc_snip8_atak",vector():set(-238.85079956055,-19.541189193726,-118.84622192383),16851,8)
+ local obj=alife():create("esc_snip9_atak",vector():set(-238.85079956055,-19.541189193726,-118.84622192383),16851,8)
+end
+
+function spawn_art()
+ alife():create("gold_art",vector():set(294.39636230469,16.796379089355,68.041152954102),102440,2594)
+ alife():create("gold_art",vector():set(69.090293884277,4.9815683364868,113.45052337646),54000,2536)
+ alife():create("gold_art",vector():set(15.024145126343,4.4579954147339,148.66020202637),33501,2525)
+ alife():create("gold_art",vector():set(20.866310119629,3.6217188835144,209.01692199707),34266,2524)
+ alife():create("gold_art",vector():set(82.715995788574,8.7262849807739,168.47891235352),57448,2557)
+ alife():create("gold_art",vector():set(184.58985900879,21.803495407104,188.47557067871),74473,2569)
+ alife():create("gold_art",vector():set(-2.0464670658112,17.001815795898,277.74737548828),24758,2541)
+ alife():create("gold_art",vector():set(96.206855773926,50.358055114746,79.338745117188),59035,2566) 
+ alife():create("gold_art",vector():set(294.06600952148,16.822654724121,69.23900604248),102227,2594)
+ alife():create("gold_art",vector():set(429.02359008789,8.5063734054565,159.03492736816),143946,2599)
+ alife():create("gold_art",vector():set(456.19100952148,8.5008964538574,158.3337097168),149725,2599)
+ alife():create("gold_art",vector():set(573.65032958984,5.0415830612183,126.05679321289),170815,2627)
+ alife():create("gold_art",vector():set(535.68536376953,-0.08577823638916,130.34606933594),169069,2627)
+ alife():create("gold_art",vector():set(692.55303955078,-0.11799703538418,165.55288696289),194971,2623)
+ alife():create("gold_art",vector():set(758.5927734375,-0.085957616567612,354.07299804688),203677,2655)
+ alife():create("gold_art",vector():set(577.39178466797,9.0905065536499,201.67486572266),173475,2631)
+end
+
+function tri_tainik_firstsp()
+ alife():create("bloodsucker_strong",vector():set(370.66629,-0.00156867504,406.57116699),123988,2586)
+ alife():create("bloodsucker_strong",vector():set(370.66629,-0.00156867504,406.57116699),123988,2586)
+ alife():create("bloodsucker_strong",vector():set(370.66629,-0.00156867504,406.57116699),123988,2586)
+ alife():create("bloodsucker_strong",vector():set(370.66629,-0.00156867504,406.57116699),123988,2586)
+ alife():create("bloodsucker_strong",vector():set(370.66629,-0.00156867504,406.57116699),123988,2586)
+end
+
+function tri_tainik_secondsp()
+ alife():create("chimera_grey",vector():set(562.12567,0.6415554,374.206726),136487,2586)
+ alife():create("chimera_grey",vector():set(562.12567,0.6415554,374.206726),136487,2586)
+ alife():create("chimera_grey",vector():set(562.12567,0.6415554,374.206726),136487,2586)
+ alife():create("chimera_grey",vector():set(562.12567,0.6415554,374.206726),136487,2586)
+end
+
+function tri_tainik_thirdsp()
+ alife():create("controller_tubeman",vector():set(446.917,-0.09459,73.922073),147015,2602)
+ alife():create("controller_tubeman",vector():set(446.917,-0.09459,73.922073),147015,2602)
+ alife():create("controller_tubeman",vector():set(446.917,-0.09459,73.922073),147015,2602)
+ alife():create("controller_tubeman",vector():set(446.917,-0.09459,73.922073),147015,2602)
+end
+
+
+-- Hand Teleport
+
+function esc_kostya_ammo()
+ alife():create("ammo_12x76_zhekan", db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(), db.actor:id())
+end
+
+function esc_kostya_ammo1()
+ alife():create("ammo_12x76_dart", db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(), db.actor:id())
+end
+
+function esc_kostya_ammo2()
+ alife():create("ammo_12x76_dart", db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(), db.actor:id())
+end
+
+function pda_vasilyev()
+ alife():create("pda_vasilyev",vector():set(127.93,30.71,-12.63),7187,1543)
+end
+
+function spawn_flash()
+ alife():create("m_inventory_box46",vector():set(-6.39,-9.35,22.70),4644,2682)
+ alife():create("m_inventory_box47",vector():set(120.80,-3.00,25.28),550794,2828)
+end
+
+function matvei_tainik()
+ alife():create("m_inventory_box48",vector():set(209.39,4.47,-23.35),436418,3768)
+end
+
+function matvei_infa_spawn()
+ alife():create("m_inventory_box49",vector():set(-78.67,-7.03,59.00),228932,1610)
+ alife():create("m_inventory_box56",vector():set(65.77,-5.93,-94.00),472661,2818)
+end
+
+function matvei_infa_spawn2()
+ alife():create("m_inventory_box50",vector():set(-65.22,-18.86,-36.10),15681,1494)
+ alife():create("m_inventory_box57",vector():set(-111.10,-32.40,87.45),257,3832)
+end
+
+function matvei_infa_spawn3()
+ alife():create("m_inventory_box51",vector():set(-190.05,4.97,-357.31),29017,3753)
+ alife():create("m_inventory_box58",vector():set(82.60,-40.53,237.01),1015270,2899)
+end
+
+function matvei_infa_spawn4()
+ alife():create("m_inventory_box52",vector():set(-96.68,7.60,205.30),560091,3717)
+ alife():create("m_inventory_box59",vector():set(-151.26,-2.29,-14.78),1034,2248)
+end
+
+function matvei_infa_spawn5()
+ alife():create("m_inventory_box53",vector():set(1.81,-17.17,58.65),5814,2753)
+ alife():create("m_inventory_box60",vector():set(-106.94,-30.27,-394.27),157979,16)
+end
+
+function matvei_infa_spawn6()
+ alife():create("m_inventory_box54",vector():set(78.00,-7.05,14.32),186315,2227)
+ alife():create("m_inventory_box61",vector():set(53.26,0.31,141.97),36669,3817)
+end
+
+function matvei_infa_spawn7()
+ alife():create("m_inventory_box55",vector():set(-2.88,12.45,29.10),1286,2443)
+ alife():create("m_inventory_box62",vector():set(353.94,27.65,-371.50),1279723,3745)
+end
+
+function gavr_tainik_spawn()
+ alife():create("m_inventory_box64",vector():set(-24.63,0.10,51.67),12296,2988)
+ alife():create("m_inventory_box65",vector():set(158.18,3.95,-53.58),358139,3766)
+ alife():create("m_inventory_box66",vector():set(418.30,27.33,-467.44),1374830,3745)
+ alife():create("m_inventory_box67",vector():set(-358.19,-19.45,205.87),253004,2891)
+ alife():create("m_inventory_box68",vector():set(-338.60,-1.75,262.70),144405,3701)
+end
+
+function treasure_ecolog_spawn()
+ alife():create("m_inventory_box44",vector():set(43.77,4.66,-49.90),59442,1505)
+end
+
+function obhak_spawn()
+ alife():create("m_inventory_box69",vector():set(-100.52,21.51,-314.01),552305,3710)
+end
+
+function pda_voyak_spawn()
+ alife():create("pda_voyak",vector():set(-397.17,3.97,-2.20),46743,3708)
+end
+
+function trup_taynik_spawn()
+ alife():create("m_inventory_box70",vector():set(-5.28,0.93,-34.79),37895,1444)
+ alife():create("m_inventory_box71",vector():set(33.13,6.17,4.37),4743,1538)
+ alife():create("m_inventory_box72",vector():set(927.71,0.42,-198.60),409629,2285)
+end
+
+function poisk_taynik_spawn()
+ alife():create("m_inventory_box73",vector():set(-111.71,1.87,19.47),103607,319)
+ alife():create("m_inventory_box74",vector():set(-103.14,-11.83,94.70),651,3831)
+end
+
+function poisk_taynik2_spawn()
+ alife():create("m_inventory_box75",vector():set(-186.32,-11.90,353.75),401594,3711)
+ alife():create("m_inventory_box76",vector():set(-128.75,1.60,99.35),5333,2216)
+end
+
+function poisk_taynik3_spawn()
+ alife():create("m_inventory_box77",vector():set(1.07,6.67,-105.02),11495,3326)
+end
+
+function taynik_voyak_spawn()
+ alife():create("m_inventory_box78",vector():set(345.16,37.73,64.14),207012,2654)
+end
+
+function take_val_pula_ammo()
+local obj = alife():create("m_inventory_box90",vector():set(-79.689498901367,-0.0586838722229,-187.74920654297),124492,270)
+end
+
+function gravi_outfit_spawn()
+ alife():create("m_inventory_box80",vector():set(-139.72,-29.60,-356.85),110480,19)
+end
+
+function konteiner_spawn()
+ alife():create("inventory_sakbox_05",vector():set(-385.62,20.03,432.52),65571,3701)
+end
+
+
+
+
+
+
+
+
+
+
+
+

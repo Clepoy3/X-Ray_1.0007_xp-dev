@@ -1,0 +1,13 @@
+active = sr_idle
+
+[sr_idle]
+on_info = {+rostok_camera_start} nil,{-bar_rescue_research_start} sr_cutscene
+
+[sr_cutscene]
+point = rostok_cam_way
+look = rostok_cam_look
+cam_effector = rostok_camera
+on_signal = cameff_end | sr_idle@nil
+on_actor_inside = %+rostok_camera_start%
+
+[sr_idle@nil]

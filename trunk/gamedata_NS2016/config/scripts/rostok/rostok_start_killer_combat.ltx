@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {-bar_freedom_attack_ecolog} sr_idle@wait
+on_info = {+rostok_actor_kill_killer} sr_idle@kill
+
+[sr_idle@wait]
+on_timer = 15000 | nil %+bar_freedom_attack_ecolog%
+on_info = {+rostok_actor_kill_killer} sr_idle@kill
+
+[sr_idle@kill]
+on_timer = 5000 | nil %+bar_freedom_attack_ecolog%

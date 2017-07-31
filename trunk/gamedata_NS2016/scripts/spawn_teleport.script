@@ -1,0 +1,25 @@
+-- ОБРАБОТКА взятых предметов (спавн/удаление телепортов, телепортация):
+
+function spawn_teleport_hospital()
+ if level.name()=="hospital" and not has_alife_info("spawn_teleport_hospital") then
+  if has_alife_info("pri_helicopters_start") then 
+   local se_obj = alife():create("m_teleport_hospital",vector():set(-74.66,23.69,562.013),7350,3075)
+   xr_logic.pstor_store(db.actor, "m_teleport_hospital", se_obj.id)
+   db.actor:give_info_portion("spawn_teleport_hospital")
+  end	
+ end
+end
+
+function marsh_teleport_1( actor, npc )
+ level.add_pp_effector("peace_fade.ppe", 160608)
+ db.actor:set_actor_position(patrol("marsh_walk_1"):point(0))
+ local dir = patrol("marsh_walk_1"):point(0):sub(patrol("marsh_walk_1"):point(0))
+ db.actor:set_actor_direction(-dir:getH()) 
+end
+
+function marsh_teleport_2( actor, npc )  
+ level.add_pp_effector("peace_fade.ppe", 160608)
+ db.actor:set_actor_position(patrol("marsh_walk_2"):point(0))
+ local dir = patrol("marsh_walk_2"):point(0):sub(patrol("marsh_walk_2"):point(0))
+ db.actor:set_actor_direction(-dir:getH())  
+end

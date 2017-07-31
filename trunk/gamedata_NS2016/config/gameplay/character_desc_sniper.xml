@@ -1,0 +1,975 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+
+<!-- tm_kill_stalker_1 -->
+	<specific_character id="esc_sniper1" team_default = "1">
+	<name>GENERATE_NAME_bandit</name>
+	<icon>ui_npc_u_stalker_bandit_master</icon>
+	<map_icon x="5" y="0"></map_icon>
+	<bio>mil_Stalker_master_bio</bio>
+
+	<class>esc_sniper1</class>
+	<community>sniper</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>1059</rank>
+	<reputation>0</reputation>
+	<money min="2000" max="3000" infinitive="0"></money>
+ 
+	<visual>actors\bandit\stalker_bandit_master</visual>
+	<snd_config>characters_voice\human_01\bandit\</snd_config>
+	<crouch_type>0</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_fort \n
+		ammo_9x18_fmj \n
+		wpn_ak74 = 1, scope \n
+		ammo_5.45x39_fmj \n
+#include "gameplay\character_drugs.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+#include "gameplay\character_criticals_6.xml"
+</specific_character>
+
+<!-- tm_kill_stalker_2 -->
+<specific_character id="esc_sniper2" team_default = "1">
+	<name>GENERATE_NAME_bandit</name>
+	<icon>ui_npc_u_stalker_bandit_master</icon>
+	<map_icon x="5" y="0"></map_icon>
+	<bio>mil_Stalker_master_bio</bio>
+
+	<class>esc_sniper2</class>
+	<community>sniper</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>0</reputation>
+	<money min="2000" max="6000" infinitive="0"></money>
+
+	<visual>actors\bandit\stalker_bandit_master</visual>
+	<snd_config>characters_voice\human_02\bandit\</snd_config>
+	<crouch_type>0</crouch_type>
+	<panic_threshold>0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_hpsa \n
+		ammo_9x19_fmj \n
+		wpn_abakan = 1, scope \n
+		ammo_5.45x39_fmj \n
+#include "gameplay\character_drugs.xml"
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+#include "gameplay\character_criticals_6.xml"
+</specific_character>
+
+<!--снайпер-кордон3-->
+	<specific_character id="esc_sniper3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>esc_sniper3</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>1059</rank>
+    <reputation>100</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n     
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 	
+
+<!--снайпер-кордон4-->
+	<specific_character id="esc_sniper4" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>esc_sniper4</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>1059</rank>
+    <reputation>100</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-кордон5-->
+	<specific_character id="esc_sniper5" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>esc_sniper5</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>1059</rank>
+    <reputation>100</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n     
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 
+
+ 
+<!--снайпер-бар-->
+	<specific_character id="bar_sniper1" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>bar_sniper1</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="1600" infinitive="0"></money>
+    
+           <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>new\holo_plash</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 
+
+
+
+<!--снайпер-бар3-->
+	<specific_character id="bar_sniper3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>bar_sniper3</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>new\holo_plash</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-бар4-->
+	<specific_character id="bar_sniper4" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>bar_sniper4</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="1230" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n    
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+    
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 
+
+<!--снайпер-бар5-->
+	<specific_character id="bar_sniper5" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>bar_sniper5</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n     
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>	
+
+<!--снайпер-склады-->
+	<specific_character id="mil_sniper1" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_soldier_bandana_9</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>mil_sniper1</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="1600" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>actors\bandit\stalker_arhara1</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_m16a2_sk12 \n
+      ammo_5.56x45_ap \n       
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 
+
+<!--снайпер-склады2-->
+	<specific_character id="mil_sniper2" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>mil_sniper2</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+     wpn_svu \n
+      ammo_7.62x54_7h1 \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+
+<!--снайпер-склады3-->
+	<specific_character id="mil_sniper3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>mil_sniper3</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>new\holo_plash</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_svu \n
+      ammo_7.62x54_7h1 \n       
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-склады4-->
+	<specific_character id="mil_sniper4" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>mil_sniper4</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="1100" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 
+
+<!--снайпер-пузырь3-->
+	<specific_character id="puzir_sniper3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>	
+
+        <class>puzir_sniper3</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="2300" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>actors\bandit\stalker_arhara1</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_aek971 \n
+      ammo_5.45x39_fmj \n     
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-пузырь1-->
+	<specific_character id="puzir_sniper1" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>puzir_sniper1</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="2600" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-пузырь2-->
+	<specific_character id="puzir_sniper2" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>puzir_sniper2</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="600" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>new\holo_plash</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-росток-->
+	<specific_character id="ros_sniper1" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>ros_sniper1</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+          <rank>914</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_svu \n
+      ammo_7.62x54_7h1 \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-росток2-->
+	<specific_character id="ros_sniper2" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_soldier_bandana_9</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>ros_sniper2</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+          <rank>808</rank>
+		<reputation>-132</reputation>
+ 
+		<visual>actors\bandit\stalker_arhara1</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_m16a2_sk12 \n
+      ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 
+
+<!--снайпер-росток3-->
+	<specific_character id="ros_sniper3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>ros_sniper3</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+          <rank>808</rank>
+		<reputation>-132</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 
+
+  
+<!--снайпер-боевик-1-->
+	<specific_character id="boev_sniper1" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>
+
+        <class>boev_sniper1</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>459</rank>
+    <reputation>100</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <panic_treshold>0</panic_treshold>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-боевик-2-->
+	<specific_character id="boev_sniper2" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>boev_sniper2</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>559</rank>
+    <reputation>100</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <panic_treshold>0</panic_treshold>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_val \n
+      ammo_9x39_pab9 \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-боевик-3-->
+	<specific_character id="boev_sniper3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>boev_sniper3</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>659</rank>
+    <reputation>100</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <panic_treshold>0</panic_treshold>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_groza \n
+      ammo_9x39_pab9 \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-боевик-радар-1-->
+	<specific_character id="boev_sniper_rad1" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>		
+
+        <class>boev_sniper_rad1</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>909</rank>
+    <reputation>-10</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <panic_treshold>0</panic_treshold>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-боевик-радар-2-->
+	<specific_character id="boev_sniper_rad2" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_soldier_bandana_9</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+
+	        <class>boev_sniper_rad2</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>909</rank>
+    <reputation>-70</reputation>
+ 
+    <visual>actors\bandit\stalker_arhara1</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <panic_treshold>0</panic_treshold>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_m16a2_sk12 \n
+      ammo_5.56x45_ap \n      
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-боевик-радар-3-->
+	<specific_character id="boev_sniper_rad3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>		
+
+        <class>boev_sniper_rad3</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>916</rank>
+    <reputation>-60</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <panic_treshold>0</panic_treshold>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_svu \n
+      ammo_7.62x54_7h1 \n 
+      caps_mosquito_bald \n 
+#include "gameplay\character_drugs.xml"
+    </supplies>
+#include "gameplay\character_criticals_6.xml"
+    
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 
+
+<!--снайпер-боевик-радар-4-->
+<specific_character id="boev_sniper_rad4" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_land_arhara_sniper</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>		
+
+        <class>boev_sniper_rad4</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="20" max="360" infinitive="0"></money>
+    
+    <rank>996</rank>
+        <reputation>-950</reputation>
+ 
+    <visual>new\holo_plash</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n   
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+    
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--снайпер-боевик-кордон-->
+	<specific_character id="esc_snip_atak" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>esc_snip_atak</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>816</rank>
+    <reputation>-100</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <panic_treshold>0</panic_treshold>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+       wpn_groza \n
+      ammo_9x39_pab9 \n      
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+    
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--охраник-zvera-->
+	<specific_character id="esc_bodyzver" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>esc_bodyzver</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>816</rank>
+    <reputation>-100</reputation>
+ 
+    <visual>actors\bandit\stalker_bandit_master</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <panic_treshold>0</panic_treshold>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+       wpn_val \n
+      ammo_9x39_pab9 \n        
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+    
+#include "gameplay\character_dialogs.xml"
+
+</specific_character> 
+
+<!--Бивень-->
+	<specific_character id="esc_zver" team_default = "1">
+		<name>Бивень</name>
+		<icon>ui_arhara_biven</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>esc_zver</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="200" max="3600" infinitive="0"></money>
+    
+    <rank>816</rank>
+    <reputation>-100</reputation>
+ 
+    <visual>new\biven</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <panic_treshold>0</panic_treshold>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+       wpn_spas12 \n
+      ammo_12x70_buck \n 
+      new_document_sniper \n        
+#include "gameplay\character_food.xml" 
+    </supplies>
+    
+#include "gameplay\character_dialogs.xml"
+
+</specific_character>
+
+<!--SPECNAZ-->
+
+  <specific_character id="esc_mil_def" team_default = "1">
+    <name>GENERATE_NAME_sergeant</name>
+    <icon>ui_npc_u_soldier_spetsnaz</icon>
+    <map_icon x="2" y="2"></map_icon>
+    <bio>sim_soldier_specnaz_bio</bio>
+
+    <class>esc_mil_def</class>
+    <community>military</community> <terrain_sect>stalker_military_terrain</terrain_sect>
+    <money min="600" max="2000" infinitive="0"></money>
+    
+    <rank>490</rank>
+    <reputation>-70</reputation>
+
+    <visual>actors\soldier\soldier_spetsnaz</visual>    
+    <snd_config>characters_voice\human_01\military\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_pm \n
+      ammo_9x18_fmj \n
+      wpn_abakan \n
+      ammo_5.45x39_fmj \n
+      device_torch \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+    </supplies>  
+
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+    
+  </specific_character>                      
+
+</xml>

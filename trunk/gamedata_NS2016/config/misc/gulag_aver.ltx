@@ -1,0 +1,484 @@
+;--' Люди Отшельника
+[logic@aver_otshelnik_kamp]
+active = kamp@aver_otshelnik
+
+[kamp@aver_otshelnik]
+center_point  = camp_center
+path_walk = camp_center_task
+
+[logic@aver_otshelnik_walker1]
+active = walker1@aver_otshelnik
+
+[walker1@aver_otshelnik]
+path_walk = walk1
+path_look = look1
+
+[logic@aver_otshelnik_walker2]
+active = walker2@aver_otshelnik
+
+[walker2@aver_otshelnik]
+path_walk = walk2
+path_look = look2
+
+;--' Охотники
+[logic@aver_hunter_kamp]
+active = kamp@aver_hunter
+
+[kamp@aver_hunter]
+center_point  = camp_center
+path_walk = camp_center_task
+
+[logic@aver_hunter_walker1]
+active = walker1@aver_hunter
+
+[walker1@aver_hunter]
+path_walk = walk1
+path_look = look1
+
+[logic@aver_hunter_walker2]
+active = walker2@aver_hunter
+
+[walker2@aver_hunter]
+path_walk = walk2
+path_look = look2
+
+;-- Снайперы на НЗ База
+[logic@land_arhara_sniper_walker1]
+active = walker1@land_arhara_sniper
+combat_ignore = combat_ignore
+on_hit = hit@sniper
+
+[walker1@land_arhara_sniper]
+path_walk = walk1
+path_look = look1
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker11@land_arhara_sniper
+
+[walker11@land_arhara_sniper]
+path_walk = walk1
+path_look = look1 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker1@land_arhara_sniper
+
+[logic@land_arhara_sniper_walker2]
+active = walker2@land_arhara_sniper
+combat_ignore = combat_ignore
+on_hit = hit@sniper
+
+[walker2@land_arhara_sniper]
+path_walk = walk2
+path_look = look2
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker22@land_arhara_sniper
+
+[walker22@land_arhara_sniper]
+path_walk = walk2
+path_look = look2 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker2@land_arhara_sniper
+
+[logic@land_arhara_sniper_kamp]
+active = kamp@land_arhara_sniper
+combat_ignore = combat_ignore
+on_hit = hit@sniper
+
+[kamp@land_arhara_sniper]
+center_point  = kamp
+path_walk = kamp_task
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} kamp11@land_arhara_sniper
+
+[kamp11@land_arhara_sniper]
+center_point  = kamp
+path_walk = kamp_task
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} kamp@land_arhara_sniper
+
+[hit@sniper]
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire =hit_by_actor} %+chimaera_fire%
+
+;-- Снайперы на НЗ Минигулаг_1 у карьера
+[logic@aver_arhara_sniper_mikrogulag1_walker1]
+active = walker1@aver_arhara_sniper_mikrogulag1
+combat_ignore = combat_ignore
+on_hit = hit@mikrogulag1
+
+[walker1@aver_arhara_sniper_mikrogulag1]
+path_walk = walk1
+path_look = look1
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker11@aver_arhara_sniper_mikrogulag1
+
+[walker11@aver_arhara_sniper_mikrogulag1]
+path_walk = walk1
+path_look = look1 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker1@aver_arhara_sniper_mikrogulag1
+
+[logic@aver_arhara_sniper_mikrogulag1_walker2]
+active = walker2@aver_arhara_sniper_mikrogulag1
+combat_ignore = combat_ignore
+on_hit = hit@mikrogulag1
+ 
+[walker2@aver_arhara_sniper_mikrogulag1]
+path_walk = walk2
+path_look = look2
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker22@aver_arhara_sniper_mikrogulag1
+
+[walker22@aver_arhara_sniper_mikrogulag1]
+path_walk = walk2
+path_look = look2 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker2@aver_arhara_sniper_mikrogulag1
+
+[logic@aver_arhara_sniper_mikrogulag1_walker3]
+active = walker3@aver_arhara_sniper_mikrogulag1
+combat_ignore = combat_ignore
+on_hit = hit@mikrogulag1
+
+[walker3@aver_arhara_sniper_mikrogulag1]
+path_walk = walk3
+path_look = look3
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker33@aver_arhara_sniper_mikrogulag1
+
+[walker33@aver_arhara_sniper_mikrogulag1]
+path_walk = walk3
+path_look = look3 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker3@aver_arhara_sniper_mikrogulag1
+
+[hit@mikrogulag1]
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire =hit_by_actor} %+chimaera_fire%
+
+;-- Снайперы на НЗ гулаг_2 
+[logic@aver_arhara_sniper_makrogulag2_walker1]
+active = walker1@aver_arhara_sniper_makrogulag2
+combat_ignore = combat_ignore
+on_hit = hit@makrogulag2
+ 
+[walker1@aver_arhara_sniper_makrogulag2]
+path_walk = walk1
+path_look = look1
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker11@aver_arhara_sniper_makrogulag2
+
+[walker11@aver_arhara_sniper_makrogulag2]
+path_walk = walk1
+path_look = look1 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker1@aver_arhara_sniper_makrogulag2
+
+[logic@aver_arhara_sniper_makrogulag2_walker2]
+active = walker2@aver_arhara_sniper_makrogulag2
+combat_ignore = combat_ignore
+on_hit = hit@makrogulag2
+
+[walker2@aver_arhara_sniper_makrogulag2]
+path_walk = walk2
+path_look = look2
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker22@aver_arhara_sniper_makrogulag2
+
+[walker22@aver_arhara_sniper_makrogulag2]
+path_walk = walk2
+path_look = look2 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker2@aver_arhara_sniper_makrogulag2
+
+[logic@aver_arhara_sniper_makrogulag2_walker3]
+active = walker3@aver_arhara_sniper_makrogulag2
+combat_ignore = combat_ignore
+on_hit = hit@makrogulag2
+
+[walker3@aver_arhara_sniper_makrogulag2]
+path_walk = walk3
+path_look = look3
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker33@aver_arhara_sniper_makrogulag2
+
+[walker33@aver_arhara_sniper_makrogulag2]
+path_walk = walk3
+path_look = look3 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker3@aver_arhara_sniper_makrogulag2
+
+[logic@aver_arhara_sniper_makrogulag2_walker4]
+active = walker4@aver_arhara_sniper_makrogulag2
+combat_ignore = combat_ignore
+on_hit = hit@makrogulag2
+
+[walker4@aver_arhara_sniper_makrogulag2]
+path_walk = walk4
+path_look = look4
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker44@aver_arhara_sniper_makrogulag2
+
+[walker44@aver_arhara_sniper_makrogulag2]
+path_walk = walk4
+path_look = look4 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker4@aver_arhara_sniper_makrogulag2
+
+[logic@aver_arhara_sniper_makrogulag2_walker5]
+active = walker5@aver_arhara_sniper_makrogulag2
+combat_ignore = combat_ignore
+on_hit = hit@makrogulag2
+
+[walker5@aver_arhara_sniper_makrogulag2]
+path_walk = walk5
+path_look = look5
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker55@aver_arhara_sniper_makrogulag2
+
+[walker55@aver_arhara_sniper_makrogulag2]
+path_walk = walk5
+path_look = look5 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker5@aver_arhara_sniper_makrogulag2
+
+[logic@aver_arhara_sniper_makrogulag2_walker6]
+active = walker6@aver_arhara_sniper_makrogulag2
+combat_ignore = combat_ignore
+on_hit = hit@makrogulag2
+
+[walker6@aver_arhara_sniper_makrogulag2]
+path_walk = walk6
+path_look = look6
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire} walker66@aver_arhara_sniper_makrogulag2
+
+[walker66@aver_arhara_sniper_makrogulag2]
+path_walk = walk6
+path_look = look6 
+combat_ignore_cond = {-chimaera_fire =fighting_actor}
+on_info = {+chimaera_fire} walker6@aver_arhara_sniper_makrogulag2
+
+[hit@makrogulag2]
+on_info = {+akkum_and_mikposx_nayti_done -chimaera_fire =hit_by_actor} %+chimaera_fire%
+
+;--' Медведи
+[logic@aver_medwed1_home1]
+active = mob_home1@aver_medwed1
+
+[mob_home1@aver_medwed1]
+path_home = home1
+home_min_radius = 20
+home_max_radius = 45
+
+[logic@aver_medwed1_home2]
+active = mob_home2@aver_medwed1
+
+[mob_home2@aver_medwed1]
+path_home = home2
+home_min_radius = 20
+home_max_radius = 45
+
+[logic@aver_medwed2_home]
+active = mob_home@aver_medwed2
+
+[mob_home@aver_medwed2]
+path_home = home
+home_min_radius = 20
+home_max_radius = 45
+
+;--' Кабаны и свинки
+[logic@aver_boar_flesh1_home]
+active = mob_home@aver_boar_flesh1
+
+[mob_home@aver_boar_flesh1]
+path_home = home
+home_min_radius = 20
+home_max_radius = 45
+
+[logic@aver_boar_flesh2_home]
+active = mob_home@aver_boar_flesh2
+
+[mob_home@aver_boar_flesh2]
+path_home = home
+home_min_radius = 20
+home_max_radius = 55
+
+[logic@aver_boar_flesh3_home]
+active = mob_home@aver_boar_flesh3
+
+[mob_home@aver_boar_flesh3]
+path_home = home
+home_min_radius = 20
+home_max_radius = 55
+
+;--' Снорки
+[logic@aver_snork1_home1]
+active = mob_home1@aver_snork1
+
+[mob_home1@aver_snork1]
+path_home = home1
+home_min_radius = 20
+home_max_radius = 45
+
+[logic@aver_snork1_home2]
+active = mob_home2@aver_snork1
+
+[mob_home2@aver_snork1]
+path_home = home2
+home_min_radius = 20
+home_max_radius = 45
+
+[logic@aver_snork2_home1]
+active = mob_home1@aver_snork2
+
+[mob_home1@aver_snork2]
+path_home = home1
+home_min_radius = 20
+home_max_radius = 45
+
+[logic@aver_snork2_home2]
+active = mob_home2@aver_snork2
+
+[mob_home2@aver_snork2]
+path_home = home2
+home_min_radius = 20
+home_max_radius = 45
+
+;--' Слепыши
+[logic@aver_dog1_home]
+active = mob_home@aver_dog1
+
+[mob_home@aver_dog1]
+path_home = home
+home_min_radius = 15
+home_max_radius = 55
+
+[logic@aver_dog2_home1]
+active = mob_home1@aver_dog2
+
+[mob_home1@aver_dog2]
+path_home = home1
+home_min_radius = 25
+home_max_radius = 70
+
+[logic@aver_dog2_home2]
+active = mob_home2@aver_dog2
+
+[mob_home2@aver_dog2]
+path_home = home2
+home_min_radius = 25
+home_max_radius = 70
+
+[logic@aver_dog2_home3]
+active = mob_home3@aver_dog2
+
+[mob_home3@aver_dog2]
+path_home = home3
+home_min_radius = 25
+home_max_radius = 70
+
+;--' Тушканы
+[logic@aver_tushkano1_home1]
+active = mob_home1@aver_tushkano1
+
+[mob_home1@aver_tushkano1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 45
+
+[logic@aver_tushkano1_home2]
+active = mob_home2@aver_tushkano1
+
+[mob_home2@aver_tushkano1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 45
+
+[logic@aver_tushkano2_home]
+active = mob_home@aver_tushkano2
+
+[mob_home@aver_tushkano2]
+path_home = home
+home_min_radius = 15
+home_max_radius = 45
+
+[logic@aver_tushkano3_home1]
+active = mob_home1@aver_tushkano3
+
+[mob_home1@aver_tushkano3]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 45
+
+[logic@aver_tushkano3_home2]
+active = mob_home2@aver_tushkano3
+
+[mob_home2@aver_tushkano3]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 45
+
+[logic@aver_tushkano3_home3]
+active = mob_home3@aver_tushkano3
+
+[mob_home3@aver_tushkano3]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 45
+
+[logic@aver_tushkano3_home4]
+active = mob_home4@aver_tushkano3
+
+[mob_home4@aver_tushkano3]
+path_home = home4
+home_min_radius = 15
+home_max_radius = 45
+
+;--' Псевдогигант
+[logic@aver_pseudo_gigant_home]
+active = mob_home@aver_pseudo_gigant
+
+[mob_home@aver_pseudo_gigant]
+path_home = home
+home_min_radius = 15
+home_max_radius = 45
+
+;--' Кошки
+[logic@aver_cat_home1]
+active = mob_home1@aver_cat
+
+[mob_home1@aver_cat]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 45
+
+[logic@aver_cat_home2]
+active = mob_home2@aver_cat
+
+[mob_home2@aver_cat]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 45
+
+;--' Кабаны с поросятами
+[logic@aver_boar_home]
+active = mob_home@aver_boar
+
+[mob_home@aver_boar]
+path_home = home
+home_min_radius = 15
+home_max_radius = 45
+
+;--' Медвежата
+[logic@aver_medwed_small_home]
+active = mob_home@aver_medwed_small
+
+[mob_home@aver_medwed_small]
+path_home = home
+home_min_radius = 15
+home_max_radius = 45
+
+;--' Крысоволки
+[logic@aver_ratlike1_home]
+active = mob_home@aver_ratlike1
+
+[mob_home@aver_ratlike1]
+path_home = home
+home_min_radius = 15
+home_max_radius = 45
+
+[logic@aver_ratlike2_home]
+active = mob_home@aver_ratlike2
+
+[mob_home@aver_ratlike2]
+path_home = home
+home_min_radius = 15
+home_max_radius = 45
+
+
+

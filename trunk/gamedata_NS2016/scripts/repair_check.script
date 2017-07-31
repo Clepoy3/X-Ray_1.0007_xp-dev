@@ -1,0 +1,37 @@
+
+
+-- Advanced Trader Weapon Repair v.1.1
+
+-- Basic functions by AMK Team, advanced functions by Black 777 Team (Wlad777 and BlackyBPG)
+
+-- переписано и добавлено до хрена by RAY
+
+--------------------------------------------------------------------------------------------------------
+
+-- тут же апгрейд оружия by RAY. В большинстве основан на скриптах Wlad777 and BlackyBPG, за что им большое спасибо :)
+
+
+
+local ammo_for_weapons_cached = {}
+
+function getAmmoForWeapon(wpnSection, ammosLine)
+	if not wpnSection then return {} end
+	if not ammosLine then
+		ammosLine = "ammo_class"
+	end
+	if not ammo_for_weapons_cached[wpnSection..ammosLine] then
+		local ammo_classes = getIniValueStringSimple(wpnSection, ammosLine, "")
+		ammo_for_weapons_cached[wpnSection..ammosLine] = Parse_StrToTbl(ammo_classes, ',')
+	end
+	return ammo_for_weapons_cached[wpnSection..ammosLine]
+end
+
+function current_ammo_section_in_weapon(section, ammo_type)
+	local ammo_classes_tbl = getAmmoForWeapon(section)
+	
+	ammo_type = ammo_type + 1
+	if ammo_type > #ammo_classes_tbl then
+		abort(string.format("current_ammo_section_in_weapon: ammo_type > #ammo_classes_tbl for %s ammo_classes '%s' ammo_type %s", section, ammo_classes, tostring(ammo_type)))
+	end
+	return ammo_classes_tbl[ammo_type]
+end

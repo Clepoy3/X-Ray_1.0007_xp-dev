@@ -1,0 +1,31 @@
+[logic]
+active = walker
+meet = meet
+combat_ignore = combat_ignore
+danger = danger_ignore
+
+[walker]
+path_walk = zat_elza_walk
+path_look = zat_elza_look
+combat_ignore_cond = always
+on_info = {+elza_say_one_start} walker1
+
+[walker1]
+path_walk = zat_elza1_walk
+path_look = zat_elza1_look
+combat_ignore_cond = always
+on_info = {!is_day} walker2
+
+[walker2]
+path_walk = zat_elza2_walk
+path_look = zat_elza2_look
+combat_ignore_cond = always
+on_info = {=is_day} walker1
+
+[danger_ignore]
+ignore_distance = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true

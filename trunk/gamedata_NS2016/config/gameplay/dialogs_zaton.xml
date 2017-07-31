@@ -1,0 +1,2519 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+
+<!-- Робинзон встречает на Затоне-->
+
+<dialog id="robinzon_say_one">
+<dont_has_info>robinzon_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>robinzon_say_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>robinzon_say_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>robinzon_say_one_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>robinzon_say_one_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>robinzon_say_one_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>robinzon_say_one_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>robinzon_say_one_6</text>
+<give_info>robinzon_say_one_start</give_info>
+<action>arhara_dialog.remove_parfum_trabl_metka</action>
+<action>arhara_dialog.zaton_poshli_k_borode_sms</action>
+<action>arhara_dialog.mg_dok_dell</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Борода встречает на Затоне-->
+
+<dialog id="boroda_say_one">
+<dont_has_info>boroda_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>boroda_say_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>boroda_say_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>boroda_say_one_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>boroda_say_one_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>boroda_say_one_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>boroda_say_one_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>boroda_say_one_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>boroda_say_one_7</text>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>boroda_say_one_8</text>
+<next>9</next>
+</phrase>
+<phrase id="9">
+<text>boroda_say_one_9</text>
+<give_info>boroda_say_one_start</give_info>
+<next>10</next>
+</phrase>
+<phrase id="10">
+<text>boroda_say_one_10</text>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Борода разговор про антенну-->
+
+<dialog id="boroda_say_two">
+<has_info>boroda_say_two_start</has_info>
+<dont_has_info>boroda_say_two_finish</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>boroda_say_two_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>boroda_say_two_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>boroda_say_two_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>boroda_say_two_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>boroda_say_two_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>boroda_say_two_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>boroda_say_two_6</text>
+<give_info>boroda_say_two_finish</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Борода разговор про Сосолова, запчасти принесены-->
+
+<dialog id="boroda_say_tri">
+<has_info>anten_sbor_done</has_info>
+<dont_has_info>boroda_say_tri_start1</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>boroda_say_tri_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>boroda_say_tri_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>boroda_say_tri_2</text>
+<next>3</next>
+<next>4</next>
+</phrase>
+<phrase id="3">
+<has_info>vazelin_say_two_start</has_info>
+<text>boroda_say_tri_3</text>
+<give_info>boroda_say_tri_start</give_info>
+<next>5</next>
+</phrase>
+<phrase id="4">
+<dont_has_info>vazelin_say_two_start</dont_has_info>
+<text>boroda_say_tri_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>boroda_say_tri_5</text>
+<give_info>boroda_say_tri_start1</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--ВЭЛ разговор про торговлю ознакомительный-->
+
+<dialog id="zaton_vell_one">
+<dont_has_info>zaton_vell_one_done</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>zaton_vell_one_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>zaton_vell_one_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>zaton_vell_one_2</text>
+<give_info>zaton_vell_one_done</give_info>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!--Обморок разговор начальный, отдаём ствол и договариваемся о походе к Скадовску-->
+
+<dialog id="obmor_bandos_one">
+<has_info>boroda_say_two_finish</has_info>
+<precondition>arhara1_dialog1.have_pushka_obmorok</precondition>
+<dont_has_info>obmor_bandos_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>obmor_bandos_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>obmor_bandos_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>obmor_bandos_one_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>obmor_bandos_one_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>obmor_bandos_one_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>obmor_bandos_one_5</text>
+<give_info>obmor_bandos_one_start</give_info>
+<action>arhara1_dialog1.obmorok_stvol_out</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Обморок разговор о том что уже ПОРА топать к Скадовску-->
+
+<dialog id="obmor_bandos_tu">
+<has_info>kit_antena_two_start</has_info>
+<dont_has_info>obmor_bandos_tu_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>obmor_bandos_tu_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>obmor_bandos_tu_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>obmor_bandos_tu_2</text>
+<give_info>obmor_bandos_tu_start</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Обморок разговор на Скадовске, типа припёрлись фсё зашибись заходи гостем будешь-->
+
+<dialog id="obmor_bandos_tri">
+<has_info>obmor_say_bar</has_info>
+<dont_has_info>bandos_barmen_one_start</dont_has_info>
+<dont_has_info>obmorok_go_stoyka</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>obmor_bandos_tri_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>obmor_bandos_tri_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>obmor_bandos_tri_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>obmor_bandos_tri_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>obmor_bandos_tri_4</text>
+<give_info>obmorok_go_stoyka</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Кит разговор про антенну, отдаём калаш и идём на холм-->
+
+<dialog id="kit_antena">  
+<has_info>boroda_say_two_finish</has_info>
+<has_info>obmor_bandos_one_start</has_info>
+<precondition>arhara1_dialog1.have_pushka_kit</precondition>
+<dont_has_info>kit_antena_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>kit_antena_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>kit_antena_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>kit_antena_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>kit_antena_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>kit_antena_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>kit_antena_5</text>
+<give_info>kit_antena_start</give_info>
+<action>arhara1_dialog1.kit_stvol_out</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Кит разговор про антенну, уже на холме, получаем задание на деталюшки-->
+
+<dialog id="kit_antena_two">
+<has_info>kit_say_two</has_info>
+<dont_has_info>kit_antena_two_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>kit_antena_two_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>kit_antena_two_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>kit_antena_two_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>kit_antena_two_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>kit_antena_two_4</text>
+<give_info>kit_antena_two_start</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Кит разговор про антенну, отдаём деталюшки-->
+
+<dialog id="kit_antena_tri">
+<precondition>arhara1_dialog1.anten_sbor_have</precondition>
+<dont_has_info>anten_sbor_done</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>kit_antena_tri_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>kit_antena_tri_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>kit_antena_tri_2</text>
+<give_info>anten_sbor_done</give_info>
+<action>arhara1_dialog1.anten_sbor_done</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Кит разговор про человека в пещере-->
+
+<dialog id="kit_antena_four">
+<dont_has_info>kit_antena_four_done</dont_has_info>
+<has_info>spawn_zaton_amerika</has_info>
+<dont_has_info>planer_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>kit_antena_four_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>kit_antena_four_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>kit_antena_four_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>kit_antena_four_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>kit_antena_four_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>kit_antena_four_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>kit_antena_four_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>kit_antena_four_7</text>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>kit_antena_four_8</text>
+<give_info>kit_antena_four_done</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Дед разговор за жизнь, получаем задание обследование заброшенной баржи-->
+
+<dialog id="ded_say_one">
+<has_info>bandos_barmen_one_start</has_info>
+<dont_has_info>ded_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>ded_say_one_0</text> 
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>ded_say_one_1</text> 
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>ded_say_one_2</text> 
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>ded_say_one_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>ded_say_one_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>ded_say_one_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>ded_say_one_6</text>
+<give_info>ded_say_one_start</give_info>
+<action>arhara1_dialog1.spawn_kondery</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Дед разговор про брата Бродвея, зависит от Скарабея. Отправляем ГГ к нему-->
+
+<dialog id="ded_say_two">
+<has_info>skarabey_one_ok</has_info>
+<dont_has_info>spawn_brodway</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>ded_say_two_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>ded_say_two_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>ded_say_two_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>ded_say_two_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>ded_say_two_4</text>
+<give_info>spawn_brodway</give_info>
+<give_info>ok_brodway</give_info>
+<action>arhara1_dialog1.ded_dal_ryukzak</action>
+<action>arhara1_dialog1.set_brodway</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Дед разговор про брата Бродвея такой же как и предыдущий но по иным условиям от Скарабея-->
+
+<dialog id="ded_say_tri">
+<has_info>skarabey_one_neok</has_info>
+<dont_has_info>spawn_brodway</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>ded_say_tri_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>ded_say_tri_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>ded_say_tri_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>ded_say_tri_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>ded_say_tri_4</text>
+<give_info>spawn_brodway</give_info>
+<give_info>neok_brodway</give_info>
+<action>arhara1_dialog1.ded_dal_ryukzak</action>
+<action>arhara1_dialog1.set_brodway</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Карагёз-бармен начальный диалог, типа здарова Стрелок -->
+
+<dialog id="bandos_barmen_one">
+<dont_has_info>bandos_barmen_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bandos_barmen_one_0</text>
+<next>1</next>
+<next>5</next>
+</phrase>
+<phrase id="1">
+<has_info>obmorok_go_stoyka</has_info>
+<text>bandos_barmen_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bandos_barmen_one_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>bandos_barmen_one_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>bandos_barmen_one_4</text>
+<give_info>bandos_barmen_one_start</give_info>
+</phrase>
+<phrase id="5">
+<dont_has_info>obmorok_go_stoyka</dont_has_info>
+<text>bandos_barmen_one_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>bandos_barmen_one_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>bandos_barmen_one_7</text>
+<give_info>obmorok_go_stoyka</give_info>
+<next>2</next>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Карагёз-бармен диалог про мышей, типа давай топай щастья тебе многа и даром-->
+
+<dialog id="bandos_barmen_two">
+<has_info>bandos_barmen_one_start</has_info>
+<has_info>ded_say_one_start</has_info>
+<dont_has_info>bychok_say_one_start</dont_has_info>
+<dont_has_info>bandos_barmen_two_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bandos_barmen_two_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>bandos_barmen_two_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bandos_barmen_two_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>bandos_barmen_two_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>bandos_barmen_two_4</text>
+<give_info>bandos_barmen_two_start</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Карагёз-бармен диалог про вора типа ннада поймать его-->
+
+<dialog id="bandos_barmen_tri">
+<has_info>elza_say_one_start</has_info>
+<has_info>mishey_sbito3</has_info>
+<has_info>vazelin_say_one_start</has_info>
+<dont_has_info>bandos_barmen_tri_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bandos_barmen_tri_0</text>
+<give_info>spawn_zaton_vor</give_info>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>bandos_barmen_tri_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bandos_barmen_tri_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>bandos_barmen_tri_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>bandos_barmen_tri_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>bandos_barmen_tri_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>bandos_barmen_tri_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>bandos_barmen_tri_7</text>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>bandos_barmen_tri_8</text>
+<give_info>bandos_barmen_tri_start</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Карагёз-бармен диалог про вора все ОК, даёт ГГ 2 летучих мышей и отправляет к Скарабею-->
+
+<dialog id="bandos_barmen_four">
+<precondition>arhara_dialog.piligrim_have_money_70000</precondition>
+<has_info>vor_one_dialog_start</has_info>
+<dont_has_info>bandos_barmen_tri_done</dont_has_info>
+<dont_has_info>bandos_barmen_vor_finish</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bandos_barmen_four_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>bandos_barmen_four_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bandos_barmen_four_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>bandos_barmen_four_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>bandos_barmen_four_4</text>
+<give_info>bandos_barmen_vor_finish</give_info>
+<give_info>bandos_barmen_tri_done</give_info>
+<give_info>spawn_skarabey</give_info>
+<give_info>skarabey_naiti</give_info>
+<action>arhara_dialog.piligrim_give_money_70000</action>
+<action>arhara1_dialog1.dal_letumov</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Карагёз-бармен диалог про вора когда ГГ провалил задание-->
+
+<dialog id="bandos_barmen_five">
+<has_info>vor_kvest_proval</has_info>
+<dont_has_info>bandos_barmen_five_start</dont_has_info>
+<dont_has_info>bandos_barmen_five_out</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bandos_barmen_five_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>bandos_barmen_five_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bandos_barmen_five_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>bandos_barmen_five_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>bandos_barmen_five_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>bandos_barmen_five_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>bandos_barmen_five_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>bandos_barmen_five_7</text>
+<next>8</next>
+<next>81</next>
+</phrase>
+<phrase id="8">
+<text>bandos_barmen_five_8</text>
+<give_info>bandos_barmen_five_start</give_info>
+</phrase>
+<phrase id="81">
+<text>bandos_barmen_five_81</text>
+<give_info>bandos_barmen_five_out</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Карагёз-бармен сдача колобка-->
+
+<dialog id="bandos_barmen_six">
+<precondition>arhara1_dialog1.have_kolobok_karagez</precondition>
+<has_info>bandos_barmen_five_start</has_info>
+<dont_has_info>bandos_barmen_tri_done</dont_has_info>
+<dont_has_info>bandos_barmen_vor_finish</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bandos_barmen_six_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>bandos_barmen_six_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bandos_barmen_six_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>bandos_barmen_six_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>bandos_barmen_six_4</text>
+<give_info>bandos_barmen_vor_finish</give_info>
+<give_info>spawn_skarabey</give_info>
+<give_info>skarabey_naiti</give_info>
+<action>arhara1_dialog1.kolobok_karagez_out</action>
+<action>arhara1_dialog1.dal_letumov</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Карагёз-бармен, ГГ передумал-->
+
+<dialog id="bandos_barmen_seven">
+<has_info>bandos_barmen_five_out</has_info>
+<dont_has_info>bandos_barmen_tri_done</dont_has_info>
+<dont_has_info>bandos_barmen_five_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bandos_barmen_seven_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>bandos_barmen_seven_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bandos_barmen_seven_2</text>
+<give_info>bandos_barmen_five_start</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Бычок разговор о походе к барже с мышами-->
+
+<dialog id="bychok_say_one">
+<has_info>ded_say_one_start</has_info>
+<has_info>bandos_barmen_two_start</has_info>
+<dont_has_info>bychok_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bychok_say_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>bychok_say_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bychok_say_one_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>bychok_say_one_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>bychok_say_one_4</text>
+<give_info>bychok_say_one_start</give_info>
+<give_info>bychok_poshli1</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Бычок зассал идти на баржу разговор у камня-->
+
+<dialog id="bychok_say_two">
+<has_info>mishey_sbito3</has_info>
+<dont_has_info>bychok_say_two_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bychok_say_two_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>bychok_say_two_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bychok_say_two_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>bychok_say_two_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>bychok_say_two_4</text>
+<give_info>bychok_say_two_start</give_info>
+<action>arhara1_dialog1.dell_buchok_restriktors</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Вазелин разговор о вышке и минах типа залезь раз ты такой смелый-->
+
+<dialog id="vazelin_say_one">
+<has_info>bychok_say_two_start</has_info>
+<dont_has_info>vazelin_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>vazelin_say_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<next>2</next>
+<next>7</next>
+</phrase>
+<phrase id="2">
+<has_info>bychok_say_two_start</has_info>
+<text/>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>vazelin_say_one_1</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>vazelin_say_one_2</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>vazelin_say_one_3</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>vazelin_say_one_4</text>
+<give_info>vazelin_say_one_start</give_info>
+<give_info>staraya_posudina_done</give_info>
+<action>arhara1_dialog1.dell_buchok_restriktors</action>
+</phrase>
+<phrase id="7">
+<dont_has_info>bychok_say_two_start</dont_has_info>
+<text/>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>vazelin_say_one_5</text>
+<next>9</next>
+</phrase>
+<phrase id="9">
+<text>vazelin_say_one_6</text>
+<action>dialogs.break_dialog</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Вазелин разговор о подстанции Эльзе и тайничке своём-->
+
+<dialog id="vazelin_say_two">
+<has_info>vazelin_two</has_info>
+<dont_has_info>vazelin_say_two_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>vazelin_say_two_0_1</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>vazelin_say_two_0_2</text>
+<next>2</next>
+<next>14</next>
+</phrase>
+<phrase id="2">
+<dont_has_info>anten_sbor_done</dont_has_info>
+<text>vazelin_say_two_0</text>
+<next>4</next>
+</phrase>
+<phrase id="14">
+<has_info>anten_sbor_done</has_info>
+<text>vazelin_say_two_1_2</text>
+<action>arhara_dialog.boroda_sosolov</action>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>vazelin_say_two_1</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>vazelin_say_two_2</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>vazelin_say_two_3</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>vazelin_say_two_4</text>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>vazelin_say_two_5</text>
+<next>9</next>
+</phrase>
+<phrase id="9">
+<text>vazelin_say_two_6</text>
+<next>10</next>
+</phrase>
+<phrase id="10">
+<text>vazelin_say_two_7</text>
+<next>11</next>
+</phrase>
+<phrase id="11">
+<text>vazelin_say_two_8</text>
+<next>12</next>
+</phrase>
+<phrase id="12">
+<text>vazelin_say_two_9</text>
+<next>13</next>
+</phrase>
+<phrase id="13">
+<text>vazelin_say_two_10</text>
+<give_info>vazelin_say_two_start</give_info>
+<action>arhara1_dialog1.rukzak_vazelin_spawn</action>
+
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Скарабей охотник говорит о острове, Бродвее и прочем-->
+
+<dialog id="skarabey_one">
+<dont_has_info>spawn_brodway</dont_has_info>
+<dont_has_info>skarabey_one_ok</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>skarabey_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>skarabey_one_1</text>
+<next>2</next>
+<next>11</next>
+</phrase>
+<phrase id="2">
+<precondition>arhara1_dialog1.mushi_est</precondition>
+<text>skarabey_one_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>skarabey_one_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>skarabey_one_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>skarabey_one_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>skarabey_one_6</text>
+<next>7</next>
+</phrase> 
+<phrase id="7">
+<text>skarabey_one_7</text>
+<next>8</next>
+</phrase> 
+<phrase id="8">
+<text>skarabey_one_8</text>
+<next>9</next>
+</phrase> 
+<phrase id="9">
+<text>skarabey_one_9</text>
+<next>10</next>
+</phrase> 
+<phrase id="10">
+<text>skarabey_one_10</text>
+<give_info>skarabey_one_ok</give_info>
+<action>arhara1_dialog1.letun_otdat_ohot</action>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="11">
+<precondition>arhara1_dialog1.mushi_net</precondition>
+<dont_has_info>skarabey_one_ok</dont_has_info>
+<text>skarabey_one_11</text>
+<next>12</next>
+</phrase> 
+<phrase id="12">
+<text>skarabey_one_12</text>
+<next>13</next>
+</phrase> 
+<phrase id="13">
+<text>skarabey_one_13</text>
+<next>14</next>
+</phrase> 
+<phrase id="14">
+<text>skarabey_one_14</text>
+<next>15</next>
+</phrase> 
+<phrase id="15">
+<text>skarabey_one_15</text>
+<next>16</next>
+</phrase> 
+<phrase id="16">
+<text>skarabey_one_16</text>
+<next>17</next>
+</phrase> 
+<phrase id="17">
+<text>skarabey_one_17</text>
+<next>18</next>
+</phrase>
+<phrase id="18">
+<text>skarabey_one_18</text>
+<next>19</next>
+<next>22</next>
+<next>23</next>
+</phrase>
+<phrase id="19">
+<precondition>arhara1_dialog1.mushi_est</precondition>
+<text>skarabey_one_19</text>
+<next>20</next>
+</phrase> 
+<phrase id="20">
+<text>skarabey_one_20</text>
+<next>21</next>
+</phrase> 
+<phrase id="21">
+<text>skarabey_one_21</text>
+<give_info>skarabey_one_ok</give_info>
+<action>arhara1_dialog1.letun_otdat_ohot</action>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="22">
+<precondition>arhara1_dialog1.mushi_est</precondition>
+<text>skarabey_one_22</text>
+<give_info>skarabey_one_neok</give_info>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="23">
+<precondition>arhara1_dialog1.mushi_net</precondition>
+<text>skarabey_one_23</text>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!-- Первый разговор с Эльзой  -->
+
+<dialog id="elza_dialog_one">
+<has_info>vazelin_say_two_start</has_info>
+<dont_has_info>elza_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>elza_dialog_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>elza_dialog_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>elza_dialog_one_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>elza_dialog_one_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>elza_dialog_one_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>elza_dialog_one_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>elza_dialog_one_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>elza_dialog_one_7</text>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>elza_dialog_one_8</text>
+<next>9</next>
+</phrase>
+<phrase id="9">
+<text>elza_dialog_one_9</text>
+<next>10</next>
+</phrase>
+<phrase id="10">
+<text>elza_dialog_one_10</text>
+<next>11</next>
+</phrase>
+<phrase id="11">
+<text>elza_dialog_one_11</text>
+<next>12</next>
+</phrase>
+<phrase id="12">
+<text>elza_dialog_one_12</text>
+<next>13</next>
+</phrase>
+<phrase id="13">
+<text>elza_dialog_one_13</text>
+<next>14</next>
+</phrase>
+<phrase id="14">
+<text>elza_dialog_one_14</text>
+<next>15</next>
+</phrase>
+<phrase id="15">
+<text>elza_dialog_one_15</text>
+<next>16</next>
+</phrase>
+<phrase id="16">
+<text>elza_dialog_one_16</text>
+<next>17</next>
+</phrase>
+<phrase id="17">
+<text>elza_dialog_one_17</text>
+<next>18</next>
+</phrase>
+<phrase id="18">
+<text>elza_dialog_one_18</text>
+<next>19</next>
+</phrase>
+<phrase id="19">
+<text>elza_dialog_one_19</text>
+<next>20</next>
+</phrase>
+<phrase id="20">
+<text>elza_dialog_one_20</text>
+<give_info>elza_say_one_start</give_info>
+<give_info>vazelin_say_two_done</give_info>
+<action>ray_dialog.poluch_book_elza</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Разговор с Эльзой № 2 после Сахарова-->
+
+<dialog id="elza_dopros">
+<has_info>skazal_saharu_pro_elza</has_info>
+<has_info>elza_dopros</has_info>
+<has_info>elza_snova</has_info>
+<dont_has_info>elza_dopros_ok</dont_has_info>
+<dont_has_info>elza_dopros_neok</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>elza_dopros_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>elza_dopros_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>elza_dopros_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>elza_dopros_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>elza_dopros_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>elza_dopros_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>elza_dopros_6</text>
+<next>7</next>
+</phrase> 
+<phrase id="7">
+<text>elza_dopros_7</text>
+<next>8</next>
+</phrase> 
+<phrase id="8">
+<text>elza_dopros_8</text>
+<next>9</next>
+</phrase> 
+<phrase id="9">
+<text>elza_dopros_9</text>
+<next>10</next>
+<next>13</next>
+</phrase> 
+<phrase id="10">
+<precondition>arhara1_dialog1.sos_say_one_have</precondition>
+<text>elza_dopros_10</text>
+<next>11</next>
+</phrase> 
+<phrase id="11">
+<text>elza_dopros_11</text>
+<next>12</next>
+</phrase> 
+<phrase id="12">
+<text>elza_dopros_12</text>
+<action>arhara1_dialog1.ray_metka</action>
+<action>arhara1_dialog1.biodoki_otdal</action>
+<give_info>elza_dopros_ok</give_info>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="13">
+<precondition>arhara1_dialog1.biodokov_net</precondition>
+<text>elza_dopros_13</text>
+<give_info>elza_dopros_neok</give_info>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!--Разговор с Эльзой № 3-->
+
+<dialog id="elza_dopros_two">
+<precondition>arhara1_dialog1.sos_say_one_have</precondition>
+<has_info>elza_dopros_neok</has_info>
+<dont_has_info>elza_dopros_ok</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>elza_dopros_two_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>elza_dopros_two_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>elza_dopros_two_2</text>
+<give_info>elza_dopros_ok</give_info>
+<action>arhara1_dialog1.ray_metka</action>
+<action>arhara1_dialog1.biodoki_otdal</action>
+<action>dialogs.break_dialog</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Разговор с Эльзой про пульт-->
+
+<dialog id="elza_say_pult">
+<precondition>arhara1_dialog1.netbook_est</precondition>
+<has_info>mg_kod_have</has_info>
+<dont_has_info>elza_say_pult_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>elza_say_pult_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>elza_say_pult_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>elza_say_pult_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>elza_say_pult_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>elza_say_pult_4</text>
+<give_info>elza_say_pult_start</give_info>
+<action>arhara1_dialog1.netbook_otdal</action>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!--Разговор с Эльзой про пульт - не работает-->
+
+<dialog id="elza_pult_nerobit">
+<has_info>elza_good_sovet</has_info>
+<dont_has_info>elza_pult_nerobit_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>elza_pult_nerobit_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>elza_pult_nerobit_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>elza_pult_nerobit_2</text>
+<give_info>elza_pult_nerobit_start</give_info>
+<action>arhara1_dialog1.netbook_vzyal</action>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!--Разговор с Эльзой про пульт- работает-->
+
+<dialog id="elza_pult_robit">
+<has_info>iskra_netbuk_two_start</has_info>
+<dont_has_info>elza_pult_robit_start</dont_has_info>
+<dont_has_info>mg_kod_done</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>elza_pult_robit_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>elza_pult_robit_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>elza_pult_robit_2</text>
+<give_info>elza_pult_robit_start</give_info>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!--Америка ниггер на Затоне-->
+
+
+<dialog id="amerika_one">
+<dont_has_info>planer_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>amerika_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>amerika_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>amerika_one_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>amerika_one_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>amerika_one_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>amerika_one_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>amerika_one_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>amerika_one_7</text>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>amerika_one_8</text>
+<next>9</next>
+</phrase>
+<phrase id="9">
+<text>amerika_one_9</text>
+<next>10</next>
+</phrase>
+<phrase id="10">
+<text>amerika_one_10</text>
+<give_info>planer_start</give_info>
+<action>arhara1_dialog1.zvuk_amerika</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<dialog id="amerika_two">
+<precondition>arhara1_dialog1.planer_have</precondition>
+<dont_has_info>planer_done</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>amerika_two_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>amerika_two_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>amerika_two_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>amerika_two_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>amerika_two_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>amerika_two_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>amerika_two_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>amerika_two_7</text>
+<next>8</next>
+<next>9</next>
+</phrase>
+<phrase id="8">
+<precondition>arhara1_dialog1.amerika_electra_flash</precondition>
+<text>amerika_two_8</text>
+<action>arhara1_dialog1.planer_done</action>
+<action>arhara1_dialog1.amerika_electra_take</action>
+<give_info>planer_done</give_info>
+<action>arhara_dialog.elza_vstrecha</action>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="9">
+<precondition>arhara1_dialog1.amerika_electra_flash1</precondition>
+<text>amerika_two_9</text>
+<action>arhara1_dialog1.planer_done</action>
+<give_info>planer_done</give_info>
+<action>arhara_dialog.elza_vstrecha</action>
+<action>dialogs.break_dialog</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<dialog id="amerika_goodbay_one">
+<has_info>doshli_do_negra</has_info>
+<dont_has_info>amerika_goodbay_one_start</dont_has_info>
+<dont_has_info>gulden_oxran_death</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>amerika_goodbay_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>amerika_goodbay_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>amerika_goodbay_one_2</text>
+<give_info>amerika_goodbay_one_start</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<dialog id="amerika_goodbay_two">
+<has_info>doshli_do_negra</has_info>
+<has_info>gulden_oxran_death</has_info>
+<dont_has_info>amerika_goodbay_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>amerika_goodbay_two_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>amerika_goodbay_two_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>amerika_goodbay_two_2</text>
+<give_info>amerika_goodbay_one_start</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Хвост воришка на Скадовске-->
+
+<dialog id="vor_one_dialog_one">
+<has_info>vor_go</has_info>
+<dont_has_info>vor_one_dialog_start</dont_has_info>
+<dont_has_info>skarabey_naiti</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>vor_one_dialog_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>vor_one_dialog_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>vor_one_dialog_one_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>vor_one_dialog_one_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>vor_one_dialog_one_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>vor_one_dialog_one_5</text>
+<give_info>amerika_done</give_info>
+<give_info>vor_one_dialog_start</give_info>
+<action>arhara_dialog.vor_payment</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Бродвей на Затоне-->
+
+<dialog id="brodway_say_one">
+<precondition>arhara1_dialog1.ded_ryukzak_est</precondition>
+<has_info>ok_brodway</has_info>
+<dont_has_info>brodway_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>brodway_say_one_0</text>
+<action>arhara1_dialog1.remove_set_brodway</action>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>brodway_say_one_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>brodway_say_one_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>brodway_say_one_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>brodway_say_one_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>brodway_say_one_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>brodway_say_one_6</text>
+<next>7</next>
+</phrase> 
+<phrase id="7">
+<text>brodway_say_one_7</text>
+<next>8</next>
+</phrase> 
+<phrase id="8">
+<text>brodway_say_one_8</text>
+<next>9</next>
+</phrase> 
+<phrase id="9">
+<text>brodway_say_one_9</text>
+<next>10</next>
+</phrase> 
+<phrase id="10">
+<text>brodway_say_one_10</text>
+<next>11</next>
+</phrase> 
+<phrase id="11">
+<text>brodway_say_one_11</text>
+<give_info>brodway_say_one_start</give_info>
+<action>arhara1_dialog1.ded1_ryukzak1_otdat</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<dialog id="brodway_say_two">
+<precondition>arhara1_dialog1.ded_ryukzak_est</precondition>
+<has_info>neok_brodway</has_info>
+<dont_has_info>brodway_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>brodway_say_two_0</text>
+<action>arhara1_dialog1.remove_set_brodway</action>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>brodway_say_two_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>brodway_say_two_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>brodway_say_two_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>brodway_say_two_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>brodway_say_two_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>brodway_say_two_6</text>
+<next>7</next>
+</phrase> 
+<phrase id="7">
+<text>brodway_say_two_7</text>
+<next>8</next>
+</phrase> 
+<phrase id="8">
+<text>brodway_say_two_8</text>
+<next>9</next>
+</phrase> 
+<phrase id="9">
+<text>brodway_say_two_9</text>
+<next>10</next>
+</phrase> 
+<phrase id="10">
+<text>brodway_say_two_10</text>
+<next>11</next>
+</phrase> 
+<phrase id="11">
+<text>brodway_say_two_11</text>
+<next>12</next>
+</phrase> 
+<phrase id="12">
+<text>brodway_say_two_12</text>
+<next>13</next>
+</phrase> 
+<phrase id="13">
+<text>brodway_say_two_13</text>
+<give_info>brodway_say_one_start</give_info>
+<action>arhara1_dialog1.ded_ryukzak_otdat</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<dialog id="brodway_say_tri">
+<has_info>vetr_vernulsy</has_info>
+<dont_has_info>brodway_say_tri_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>brodway_say_tri_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>brodway_say_tri_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>brodway_say_tri_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>brodway_say_tri_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>brodway_say_tri_4</text>
+<give_info>brodway_say_tri_start</give_info>
+<action>arhara1_dialog1.baza_zaton_dal</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Кровососолов на затоне-->
+
+<dialog id="sos_say_one">
+<dont_has_info>sos_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>sos_say_one_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>sos_say_one_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>sos_say_one_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>sos_say_one_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>sos_say_one_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>sos_say_one_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>sos_say_one_6</text>
+<next>7</next>
+</phrase> 
+<phrase id="7">
+<text>sos_say_one_7</text>
+<next>8</next>
+</phrase> 
+<phrase id="8">
+<text>sos_say_one_8</text>
+<next>9</next>
+</phrase> 
+<phrase id="9">
+<text>sos_say_one_9</text>
+<next>10</next>
+</phrase> 
+<phrase id="10">
+<text>sos_say_one_10</text>
+<next>11</next>
+</phrase> 
+<phrase id="11">
+<text>sos_say_one_11</text>
+<next>12</next>
+</phrase> 
+<phrase id="12">
+<text>sos_say_one_12</text>
+<next>13</next>
+</phrase> 
+<phrase id="13">
+<text>sos_say_one_13</text>
+<next>14</next>
+</phrase> 
+<phrase id="14">
+<text>sos_say_one_14</text>
+<give_info>sos_say_one_start</give_info>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<dialog id="sos_say_two">
+<has_info>sos_say_one_have</has_info>
+<dont_has_info>sos_say_one_done</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>sos_say_two_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>sos_say_two_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>sos_say_two_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>sos_say_two_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>sos_say_two_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>sos_say_two_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>sos_say_two_6</text>
+<give_info>sos_say_one_done</give_info>
+<action>arhara_dialog.del_zapchasti_antena</action>
+<action>arhara_dialog.kit_antenna</action>
+<action>arhara_dialog.del_mause_sos</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!--Кровососолов2 на затоне-->
+
+<dialog id="sos_say_tri">
+<dont_has_info>sos_say_tri_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>sos_say_tri_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>sos_say_tri_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>sos_say_tri_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>sos_say_tri_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>sos_say_tri_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>sos_say_tri_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>sos_say_tri_6</text>
+<give_info>sos_say_tri_start</give_info>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<dialog id="sos_say_four">
+<has_info>spawn_sos_zol</has_info>
+<dont_has_info>sos_say_four_finish</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>sos_say_four_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>sos_say_four_1</text>
+<next>2</next>
+<next>7</next>
+<next>12</next>
+</phrase> 
+<phrase id="2">
+<has_info>sos_say_tri_done</has_info>
+<text>sos_say_four_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>sos_say_four_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>sos_say_four_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>sos_say_four_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>sos_say_four_6</text>
+<give_info>sos_say_four_finish</give_info>
+<action>arhara1_dialog1.drug_ryukzak_good</action>
+<action>arhara1_dialog1.box85_spawn</action>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="7">
+<has_info>sos_say_tri_proval</has_info>
+<text>sos_say_four_7</text>
+<next>8</next>
+</phrase> 
+<phrase id="8">
+<text>sos_say_four_8</text>
+<next>9</next>
+</phrase> 
+<phrase id="9">
+<text>sos_say_four_9</text>
+<next>10</next>
+</phrase> 
+<phrase id="10">
+<text>sos_say_four_10</text>
+<next>11</next>
+</phrase> 
+<phrase id="11">
+<text>sos_say_four_11</text>
+<give_info>sos_say_four_finish</give_info>
+<action>arhara1_dialog1.drug_ryukzak_xren</action>
+<action>arhara1_dialog1.box85_spawn</action>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="12">
+<dont_has_info>sos_say_tri_done</dont_has_info>
+<text>sos_say_four_12</text>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+<!--Разговор с Cосоловом про приборчик-->
+
+<dialog id="sos_say_five">
+<precondition>arhara1_dialog1.portator_est</precondition>
+<has_info>sosolov_pribor_have</has_info>
+<dont_has_info>sosolov_pribor_ok</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>sos_say_five_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>sos_say_five_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>sos_say_five_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>sos_say_five_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>sos_say_five_4</text>
+<give_info>sosolov_pribor_ok</give_info>
+<action>arhara1_dialog1.portator_otdal</action>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!--<Гульден-->
+
+<dialog id="gulden_say_one">
+<dont_has_info>gulden_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>gulden_say_one_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>gulden_say_one_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>gulden_say_one_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>gulden_say_one_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>gulden_say_one_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>gulden_say_one_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>gulden_say_one_6</text>
+<next>7</next>
+</phrase> 
+<phrase id="7">
+<text>gulden_say_one_7</text>
+<next>8</next>
+</phrase> 
+<phrase id="8">
+<text>gulden_say_one_8</text>
+<next>9</next>
+</phrase> 
+<phrase id="9">
+<text>gulden_say_one_9</text>
+<next>10</next>
+</phrase> 
+<phrase id="10">
+<text>gulden_say_one_10</text>
+<next>11</next>
+</phrase> 
+<phrase id="11">
+<text>gulden_say_one_11</text>
+<next>12</next>
+</phrase> 
+<phrase id="12">
+<text>gulden_say_one_12</text>
+<give_info>gulden_say_one_start</give_info>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<dialog id="gulden_goodbay_one">
+<has_info>amerika_goodbay_one_start</has_info>
+<dont_has_info>gulden_goodbay_one_start</dont_has_info>
+<dont_has_info>gulden_oxran_death</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>gulden_goodbay_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>gulden_goodbay_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>gulden_goodbay_one_2</text>
+<give_info>gulden_goodbay_one_start</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<dialog id="gulden_goodbay_two">
+<has_info>amerika_goodbay_one_start</has_info>
+<has_info>gulden_oxran_death</has_info>
+<dont_has_info>gulden_goodbay_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>gulden_goodbay_two_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>gulden_goodbay_two_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>gulden_goodbay_two_2</text>
+<give_info>gulden_goodbay_one_start</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Искра Затон-->
+
+<dialog id="iskra_say_one">
+<has_info>iskra_koster</has_info>
+<dont_has_info>iskra_say_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>iskra_say_one_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>iskra_say_one_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>iskra_say_one_2</text>
+<give_info>iskra_say_one_start</give_info>
+<action>arhara1_dialog1.notebook_zlo_spawn</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!--Искра2 Затон-->
+
+<dialog id="iskra_netbuk_one">
+<precondition>arhara1_dialog1.netbook_est</precondition>
+<has_info>elza_pult_nerobit_start</has_info>
+<dont_has_info>iskra_netbuk_one_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>iskra_netbuk_one_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>iskra_netbuk_one_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>iskra_netbuk_one_2</text>
+<give_info>iskra_netbuk_one_start</give_info>
+<action>arhara1_dialog1.netbook_otdal</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<dialog id="iskra_netbuk_two">
+<has_info>iskra_nout_good</has_info>
+<dont_has_info>iskra_netbuk_two_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>iskra_netbuk_two_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>iskra_netbuk_two_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>iskra_netbuk_two_2</text>
+<give_info>iskra_netbuk_two_start</give_info>
+<action>arhara1_dialog1.netbook_vzyal</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!--Злобный Затон-->
+
+<dialog id="zaton_zlobnyi_one">
+<dont_has_info>zaton_zlobnyi_one_finish</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>zaton_zlobnyi_one_0</text>
+<give_info>zaton_zlobnyi_one_start</give_info>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>zaton_zlobnyi_one_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>zaton_zlobnyi_one_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>zaton_zlobnyi_one_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>zaton_zlobnyi_one_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>zaton_zlobnyi_one_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>zaton_zlobnyi_one_6</text>
+<next>7</next>
+</phrase> 
+<phrase id="7">
+<text>zaton_zlobnyi_one_7</text>
+<give_info>zaton_zlobnyi_one_finish</give_info>
+<give_info>zlobnuy_fire</give_info>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!-- Разговор с Сахаром про жену  -->
+
+<dialog id="sahar_vesti_ot_elzi">
+<dont_has_info>skazal_saharu_pro_elza</dont_has_info>
+<has_info>elza_say_one_start</has_info>
+<phrase_list>
+<phrase id="0">
+<text>sahar_vesti_ot_elzi_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>sahar_vesti_ot_elzi_1</text>
+<next>2</next>
+<next>21</next>
+</phrase>
+<phrase id="2">
+<precondition>ray_dialog.book_elza_have</precondition>
+<text>sahar_vesti_ot_elzi_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>sahar_vesti_ot_elzi_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>sahar_vesti_ot_elzi_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>sahar_vesti_ot_elzi_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>sahar_vesti_ot_elzi_6</text>
+<give_info>skazal_saharu_pro_elza</give_info>
+<action>ray_dialog.otdal_book_elza</action>
+<action>arhara_dialog.elza_vstrecha</action>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="21">
+<precondition>ray_dialog.book_elza_dont_have</precondition>
+<text>sahar_vesti_ot_elzi_21</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>sahar_vesti_ot_elzi_7</text>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>sahar_vesti_ot_elzi_8</text>
+<action>dialogs.break_dialog</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Первый разговор с Сержем - ремонтником-->
+
+<dialog id="zat_remont">
+<dont_has_info>zat_remont_finish</dont_has_info>
+<dont_has_info>price_upgrade_jupiter_rem</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>zat_remont_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>zat_remont_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>zat_remont_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>zat_remont_3</text>
+<next>4</next>
+<next>41</next>
+</phrase>
+<phrase id="4">
+<text>zat_remont_4</text>
+<give_info>zat_remont_finish</give_info>
+<action>arhara1_dialog1.remont_maslo_spawn</action>
+</phrase>
+<phrase id="41">
+<text>zat_remont_41</text>
+<action>dialogs.break_dialog</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Сдаём Сержу канистру с маслом-->
+
+<dialog id="zat_remont2">
+<precondition>arhara1_dialog1.maslo_est</precondition>
+<has_info>zat_remont_finish</has_info>
+<dont_has_info>zat_remont2_finish</dont_has_info>
+<dont_has_info>price_upgrade_jupiter_rem</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>zat_remont2_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>zat_remont2_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>zat_remont2_2</text>
+<action>arhara1_dialog1.maslo_aut</action>
+<give_info>zat_remont2_finish</give_info>
+<give_info>price_upgrade_jupiter_rem</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Встреча с Блэндом, если в ТД было всё ОК-->
+
+<dialog id="bland_razgovor">
+<dont_has_info>bland_razgovor_finish</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>bland_razgovor_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>bland_razgovor_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>bland_razgovor_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>bland_razgovor_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>bland_razgovor_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>bland_razgovor_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>bland_razgovor_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>bland_razgovor_7</text>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>bland_razgovor_8</text>
+<next>9</next>
+</phrase>
+<phrase id="9">
+<text>bland_razgovor_9</text>
+<next>10</next>
+</phrase>
+<phrase id="10">
+<text>bland_razgovor_10</text>
+<next>11</next>
+</phrase>
+<phrase id="11">
+<text>bland_razgovor_11</text>
+<next>12</next>
+</phrase>
+<phrase id="12">
+<text>bland_razgovor_12</text>
+<next>13</next>
+</phrase>
+<phrase id="13">
+<text>bland_razgovor_13</text>
+<next>14</next>
+</phrase>
+<phrase id="14">
+<text>bland_razgovor_14</text>
+<next>15</next>
+</phrase>
+<phrase id="15">
+<text>bland_razgovor_15</text>
+<next>16</next>
+</phrase>
+<phrase id="16">
+<text>bland_razgovor_16</text>
+<next>17</next>
+</phrase>
+<phrase id="17">
+<text>bland_razgovor_17</text>
+<next>18</next>
+</phrase>
+<phrase id="18">
+<text>bland_razgovor_18</text>
+<next>19</next>
+</phrase>
+<phrase id="19">
+<text>bland_razgovor_19</text>
+<next>20</next>
+</phrase>
+<phrase id="20">
+<text>bland_razgovor_20</text>
+<give_info>bland_razgovor_finish</give_info>
+<action>arhara_dialog.del_friends</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Диалог с Клыком перед штурмом-->
+
+<dialog id="zat_shturm">
+<dont_has_info>zat_shturm_start</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>zat_shturm_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>zat_shturm_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>zat_shturm_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>zat_shturm_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>zat_shturm_4</text>
+<give_info>zat_shturm_start</give_info>
+<action>arhara_dialog.zat_del_bland</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Диалог с Молнией-->
+
+<dialog id="zat_molniy">
+<dont_has_info>zat_molniy_finish</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>zat_molniy_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>zat_molniy_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>zat_molniy_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>zat_molniy_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>zat_molniy_4</text>
+<give_info>zat_molniy_finish</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Диалог с Призраком о Фрице-->
+
+<dialog id="zat_prizrak">
+<has_info>doki_fritz_est</has_info>
+<has_info>doki_monolit_est</has_info>
+<dont_has_info>zat_prizrak_finish</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>zat_prizrak_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>zat_prizrak_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>zat_prizrak_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>zat_prizrak_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>zat_prizrak_4</text>
+<give_info>zat_prizrak_finish</give_info>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!--Диалог с Архарой финальный-->
+
+<dialog id="zat_arhara">
+<has_info>zat_portal_bum</has_info>
+<dont_has_info>zat_arhara_finish</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>zat_arhara_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>zat_arhara_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>zat_arhara_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>zat_arhara_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>zat_arhara_4</text>
+<give_info>zat_arhara_finish</give_info>
+<action>arhara1_dialog1.ronald_jenkees</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+</game_dialogs>

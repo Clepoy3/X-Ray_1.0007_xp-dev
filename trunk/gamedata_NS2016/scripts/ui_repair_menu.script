@@ -1,0 +1,2018 @@
+---------------------------------
+--Схема апгрейда ( Максимум 2-а уроня, больше не поместится в окно )
+---------------------------------
+--	recoil 	-	отдача 
+--	zoom	-	кратность прицела
+--	weight	-	снижение веса
+--	calibre	-	калибр
+--	speed	-	скорость
+---------------------------------
+local print_logs = false
+
+local actor = db.actor
+local sys_ini = system_ini()
+
+local oScreen = { }
+
+oRepair = nil
+local ActiveTab = 0
+
+local aAmmoList = {}
+local aOrderList = { selected = -1 }
+local aOrderInfo = { price = 0, d = 0, h = 0, m = 0 }
+
+local aAmmoSlots = {
+	{ aSlot = nil, sect = nil, usect = nil, idx = 0, fit=-1, x = 296, y = 30 },
+	{ aSlot = nil, sect = nil, usect = nil, idx = 0, fit=-1, x = 296, y = 160 }
+}
+
+local aUpgradeLevels = { weapon = 1, outfit = 1 }
+local aUpgradeBtns = {}
+local aUpgradeBtnsXY = {}
+
+local aObjectTypes = { weapon = "weapon", outfit = "outfit" }
+local aOrderTypes = { upgrade = "upgrade", repair = "repair" }
+
+local sFuncStringObject = "ui_repair_menu.oRepair" --"oRepair"
+
+--[[wUpgradeScheme = { --3-и уровня апгрейда ( 3-> 2 -> 1 )
+		[ "_ospeed" ] = { "_oweight", "_ocalibre", "_ozoom" },
+	[ "_oweight1" ] = { [ "_recoil" ] = { "_recoil", "_ocalibre", "_ozoom" } , [ "_recoil2" ] = { "_weight", "_calibre", "_zoom2" }}
+}
+]]
+
+--Апгрейд Оружия
+wUpgradeScheme = { --1-н уровень апгрейда 
+	"_calibre", "_recoil" , "_speed", "_weight", "_zoom"
+}
+
+---------------------------------
+--Апгрейд Брони
+oUpgradeScheme = { --1-н уровень апгрейда
+	"_green", "_digit" , "_whitenight", "_plus"
+}
+
+--Апгрейд Брони 
+--[[oUpgradeScheme = { --2-f уровень апгрейда
+	[ "_plus" ] = { "_zoom", "_whitenight" },
+	["_green" ] = { "_digit" }
+}]]
+
+--Для Солянки, возможные секции для одного вида апгрейда (есть такие)
+local aUpgradeSections = {
+	--оружие
+	[ "_calibre" ] = { "_kalibr" },
+	[ "_recoil" ] = { "_otdaca" },
+	[ "_weight" ] = { "_ves" },
+	[ "_zoom" ] = { "_pricel" },
+	[ "_speed" ] = { "_skorost" },
+	
+	--броня
+	[ "_green" ] = { "_bad" },
+	[ "_digit" ] = { "_good" },
+	[ "_whitenight" ] = { "_bast" },
+	[ "_plus" ] = { "_plus", "plus" },
+}
+
+--Перевод секций
+local _Lang = {
+	[ "_calibre" ] = "Калибр", [ "_recoil" ] = "Отдача", [ "_weight" ] = "Вес", [ "_zoom" ] = "Кратность" , [ "_speed" ] = "Cкорострельность",
+	[ "_green" ] = "ПНВ «Зеленый»", [ "_digit" ] = "ПНВ «Цифровой»", [ "_whitenight" ] = "ПНВ «Белая ночь»", [ "_plus" ] = "Укрепить",
+}
+
+--Инфопоршни, имена таблиц и функций в таймерах для  ремонтника
+local info_table = {
+	--Сидор ( trader_repair_start/trader_repair_end -> info_amk.xml )
+	escape_trader = { info = "sidor_repair_start", func = "sidor_trader_repair", tbl = "sidor_trader_repair" },
+	dolgovazyi = { info = "dolgovyazyj_repair_start", func = "dolgovyazyj_trader_repair", tbl = "dolgovyazyj_trader_repair" },
+	mil_freedom_member0002 = { info = "shurup_repair_start", func = "shurup_trader_repair", tbl = "shurup_trader_repair" },
+	marsh_remont = { info = "vasiliy_repair_start", func = "vasiliy_trader_repair", tbl = "vasiliy_trader_repair" },
+	opr_remontnik = { info = "petr_repair_start", func = "petr_trader_repair", tbl = "petr_trader_repair" },
+	zat_remontnik = { info = "jupiter_rem_repair_start", func = "jupiter_rem_trader_repair", tbl = "jupiter_rem_trader_repair" }
+}
+
+--Параметры заказа 
+local order_params = {
+	---------------------------------------------------
+	-- Сидор
+	---------------------------------------------------
+	escape_trader = 
+	{
+		repair = 
+		{
+			true,     --Есть ремонт ?
+			{ 	
+			  true, 	--ремонтировать оружие ?
+				false,   --ремонтировать броню
+				4,		--коэф прибыли на починку оружия 
+				3.2,		--коэф прибыли на починку брони 
+				0.25, 		--мин состояние при котором возможен ремонт оружия 
+				0.0, 		--мин состояние при котором возможен ремонт брони
+				0.3,		--максимальное время ремонта оружия в часах
+				0.3,			--максимальное время ремонта брони в часах
+			}
+		},
+		upgrade = 
+		{ 
+		  false,    --Есть апгрейд ?
+		  { 
+		    false,   --апгрейдить оружие ?
+		    false,   --апгрейдить броню
+		    6.0,    --коэф прибыли на апгрейд оружия 
+		    7.0,    --коэф прибыли на апгрейд брони 
+		    0.7,    --мин состояние при котором возможен апгрейд оружия
+		    0.3,    --мин состояние при котором возможен апгрейд брони
+		    3,    --максимальное время апгрейда оружия в часах
+		    3     --максимальное время апгрейда брони в часах
+		  } 
+		}, 
+	},
+	---------------------------------------------------
+	-- Долговязый
+	---------------------------------------------------
+	dolgovazyi = 
+	{
+		repair = 
+		{
+			true,     --Есть ремонт ?
+			{ 	
+			  true, 	--ремонтировать оружие ?
+				true,   --ремонтировать броню
+				4,		--коэф прибыли на починку оружия 
+				4,		--коэф прибыли на починку брони 
+				0.2, 		--мин состояние при котором возможен ремонт оружия 
+				0.0, 		--мин состояние при котором возможен ремонт брони
+				0.3,		--максимальное время ремонта оружия в часах
+				0.3,			--максимальное время ремонта брони в часах
+			}
+		},
+		upgrade = 
+		{ 
+		  true,    --Есть апгрейд ?
+		  { 
+		    true,   --апгрейдить оружие ?
+		    true,   --апгрейдить броню
+		    6.0,    --коэф прибыли на апгрейд оружия 
+		    7.0,    --коэф прибыли на апгрейд брони 
+		    0.95,    --мин состояние при котором возможен апгрейд оружия
+		    0.95,    --мин состояние при котором возможен апгрейд брони
+		    6,    --максимальное время апгрейда оружия в часах
+		    6     --максимальное время апгрейда брони в часах
+		  } 
+		}, -- { false, {} }, { false }
+		outfits = 
+		{
+      "dolg", 
+      "soldier", "specops", "specnaz", "military", 
+      "neytral", "novice", "stalker", "strelok", "broken", "meceniy_outfit_new", "outfit_exo", "exo_outfit", "psih_outfit",
+      "ecolog", "protection_outfit", "fire_outfit", "scientific_outfit", "exo_bandit"  
+		} --какие броники апгрейдит/чинит ремонтник. Нет параметра "outfits", значит все
+	},
+	
+	
+	---------------------------------------------------
+	-- Шуруп
+	---------------------------------------------------
+	mil_freedom_member0002 = 
+	{
+		repair = 
+		{
+			true,     --Есть ремонт ?
+			{ 	
+			  true, 	--ремонтировать оружие ?
+				true,   --ремонтировать броню
+				4,		--коэф прибыли на починку оружия 
+				4,		--коэф прибыли на починку брони 
+				0.25, 		--мин состояние при котором возможен ремонт оружия 
+				0.0, 		--мин состояние при котором возможен ремонт брони
+				0.3,		--максимальное время ремонта оружия в часах
+				0.3,			--максимальное время ремонта брони в часах
+			}
+		},
+		upgrade = 
+		{ 
+		  true,    --Есть апгрейд ?
+		  { 
+		    false,   --апгрейдить оружие ?
+		    true,   --апгрейдить броню
+		    6.0,    --коэф прибыли на апгрейд оружия 
+		    7.0,    --коэф прибыли на апгрейд брони 
+		    0.9,    --мин состояние при котором возможен апгрейд оружия
+		    0.9,    --мин состояние при котором возможен апгрейд брони
+		    3,    --максимальное время апгрейда оружия в часах
+		    3     --максимальное время апгрейда брони в часах
+		  } 
+		}, 
+		outfits = 
+		{
+        "svoboda", "freedom", 
+        "bandit", "hunter", 
+        "killer", "merc" ,
+        "monolit", "scientist_suit_white"
+     } --какие броники апгрейдит/чинит ремонтник. Нет параметра "outfits", значит все
+	},
+	
+	
+	---------------------------------------------------
+	-- Василий
+	---------------------------------------------------
+	marsh_remont = 
+	{
+		repair = 
+		{
+			true,     --Есть ремонт ?
+			{ 	
+			  true, 	--ремонтировать оружие ?
+				true,   --ремонтировать броню
+				4,		--коэф прибыли на починку оружия 
+				4,		--коэф прибыли на починку брони 
+				0.25, 		--мин состояние при котором возможен ремонт оружия 
+				0.0, 		--мин состояние при котором возможен ремонт брони
+				0.3,		--максимальное время ремонта оружия в часах
+				0.3,			--максимальное время ремонта брони в часах
+			}
+		},
+		upgrade = 
+		{ 
+		  true,    --Есть апгрейд ?
+		  { 
+		    false,   --апгрейдить оружие ?
+		    true,   --апгрейдить броню
+		    6.0,    --коэф прибыли на апгрейд оружия 
+		    7.0,    --коэф прибыли на апгрейд брони 
+		    0.7,    --мин состояние при котором возможен апгрейд оружия
+		    0.9,    --мин состояние при котором возможен апгрейд брони
+		    3,    --максимальное время апгрейда оружия в часах
+		    3     --максимальное время апгрейда брони в часах
+		  } 
+		}, 
+		outfits = 
+		{
+      "dolg",
+      "nebo",
+      "ecolog", "protection_outfit", "fire_outfit", "scientific_outfit"
+		} --какие броники апгрейдит/чинит ремонтник. Нет параметра "outfits", значит все
+	},
+	
+	
+		---------------------------------------------------
+	-- Гектор
+	---------------------------------------------------
+	opr_remontnik = 
+	{
+		repair = 
+		{
+			true,     --Есть ремонт ?
+			{ 	
+			  true, 	--ремонтировать оружие ?
+				true,   --ремонтировать броню
+				4,		--коэф прибыли на починку оружия 
+				4,		--коэф прибыли на починку брони 
+				0.25, 		--мин состояние при котором возможен ремонт оружия 
+				0.0, 		--мин состояние при котором возможен ремонт брони
+				0.3,		--максимальное время ремонта оружия в часах
+				0.3,			--максимальное время ремонта брони в часах
+			}
+		},
+		upgrade = --0.034 1500   0.0934 15000 0.099 150000
+		{ 
+		  true,    --Есть апгрейд ?
+		  { 
+		    false,   --апгрейдить оружие ?
+		    true,   --апгрейдить броню
+		    6.0,    --коэф прибыли на апгрейд оружия 
+		    7.0,    --коэф прибыли на апгрейд брони 
+		    0.7,    --мин состояние при котором возможен апгрейд оружия
+		    0.9,    --мин состояние при котором возможен апгрейд брони
+		    3,    --максимальное время апгрейда оружия в часах
+		    3     --максимальное время апгрейда брони в часах
+		  } 
+		}, -- { false, {} }, { false }
+		outfits = 
+		{
+      "neytral", "novice", "stalker", "strelok", "broken", "meceniy_outfit_new", "outfit_exo", "exo_outfit", "psih_outfit",
+      "svoboda", "freedom",
+      "nebo",
+      "monolit", "scientist_suit_white"
+		} --какие броники апгрейдит/чинит ремонтник. Нет параметра "outfits", значит все
+	},
+
+
+		---------------------------------------------------
+	-- На Юпитере
+	---------------------------------------------------
+	zat_remontnik = 
+	{
+		repair = 
+		{
+			true,     --Есть ремонт ?
+			{ 	
+			  true, 	--ремонтировать оружие ?
+				true,   --ремонтировать броню
+				4,		--коэф прибыли на починку оружия 
+				4,		--коэф прибыли на починку брони 
+				0.25, 		--мин состояние при котором возможен ремонт оружия 
+				0.6, 		--мин состояние при котором возможен ремонт брони
+				6,		--максимальное время ремонта оружия в часах
+				8,			--максимальное время ремонта брони в часах
+			}
+		},
+		upgrade = 
+		{ 
+		  true,    --Есть апгрейд ?
+		  { 
+		    false,   --апгрейдить оружие ?
+		    true,   --апгрейдить броню
+		    6.0,    --коэф прибыли на апгрейд оружия 
+		    7.0,    --коэф прибыли на апгрейд брони 
+		    0.7,    --мин состояние при котором возможен апгрейд оружия
+		    0.9,    --мин состояние при котором возможен апгрейд брони
+		    8,    --максимальное время апгрейда оружия в часах
+		    8     --максимальное время апгрейда брони в часах
+		  } 
+		}, 
+		outfits = 
+		{
+      "soldier", "specops", "specnaz", "military",
+      "killer", "merc" ,
+      "bandit", "hunter"
+		} --какие броники апгрейдит/чинит ремонтник. Нет параметра "outfits", значит все
+	}
+}
+
+--Дополнительные коэффициенты наценки апгрейда, Если не заполнить, апгрейд будет рассчитываться по умолчанию
+local aUpgradeProfitMargins = {
+	--Броня
+	_green = 1.1,
+	_digit = 1.3,
+	_whitenight = 1.4,
+	_plus = 1.5
+}
+
+local wpn_fit_table = 
+{
+	{ wpn_val=true, wpn_vintorez=true },
+	{ wpn_spas=true, wpn_winche=true, wpn_protecta=true },
+	{ wpn_bm16=true, wpn_toz34=true, wpn_m4super90=true, hunters_toz=true },
+	{ wpn_raging_bull=true },
+	{ wpn_kriss_super=true },
+	{ wpn_ak47=true, wpn_aek973=true, wpn_pkm=true },
+	{ wpn_ak74=true, wpn_aks74m=true, wpn_groza=true, wpn_bizon=true, wpn_aek971=true },
+	{ wpn_abakan=true },
+	{ wpn_famas=true, wpn_tavor=true },
+	{ wpn_p90=true },
+	{ wpn_g36=true, wpn_xm8=true },
+	{ wpn_mg42=true, wpn_m_134=true },
+	{ wpn_l85=false},
+	{ wpn_lr300=true, wpn_m16a=true, wpn_m4=true, wpn_hk417=true, wpn_sr25=true },
+	{ wpn_sig55=true, wpn_sg55=true, wpn_sig_m=true },
+	{ wpn_saiga=true },
+	{ wpn_ppsh41=true },
+	{ wpn_mp5=true, wpn_mp7=true, wpn_uzi=true, wpn_scorpion=true, wpn_mp5_m2=true },
+	{ 
+		wpn_svd=true, wpn_svu=true, wpn_awm=true, wpn_b94=true, wpn_m1891_30_scope=true, 
+		wpn_walther_wa2000=true, wpn_vuhlop=true, wpn_ptrd=true 
+	},
+	{ wpn_flame=true },
+	{ wpn_gungauss=true, wpn_gauss=true, wpn_dark_gauss=true, wpn_gauss_krayzis=true },
+	{ wpn_crossbow=true, wpn_crossbow_m1=true },
+	{ wpn_fn2000=true },
+	{ wpn_rg6=true, ["wpn_rg6"]=true, wpn_m79=true },
+	{ wpn_rpg=true },
+
+	{ wpn_beretta=true, wpn_hpsa=true, wpn_walther=true },                                                             
+	{ wpn_colt=true,  wpn_desert_eagle=true, wpn_eagle=true, wpn_sig22=true, wpn_usp=true },                 
+	{ wpn_aps=true, wpn_fort=true, wpn_pb=true, wpn_pm=true }
+}
+
+---------------------------------------------------
+
+--///////////////////////////
+class "ammo_item" ( CUIListItemEx )
+
+function ammo_item:__init( x, y, xml ) super()
+	self:SetWndRect( x, y, 270, 95 )
+	self:SetAutoDelete( true )
+	
+	self.itm = xml:InitStatic( "ammo_item:item", self )
+	self.itm:SetAutoDelete( true )
+	
+	self.dsc = xml:InitStatic( "ammo_item:item_desc", self )
+	self.dsc:SetAutoDelete( true )
+
+	self.cndb = xml:InitStatic( "ammo_item:condition_b", self )
+	self.cndb:SetAutoDelete( true )
+	
+	self.cnd = xml:InitStatic( "ammo_item:condition", self )
+	self.cnd:SetAutoDelete( true )
+	
+	self.cndp = xml:InitStatic( "ammo_item:condition_percent", self )
+	self.cndp:SetAutoDelete( true )
+	
+	self.slot = xml:InitStatic( "ammo_item:item_slot", self )
+	self.slot:SetAutoDelete( true )
+	
+	self.idx = CUIStatic()
+	self.idx:SetAutoDelete( true )
+	self.idx:Show( false )
+	self:AttachChild( self.idx )
+	
+		--//Обвесы
+	self.scp = xml:InitStatic( "ammo_item:item_addon_scope", self )
+	self.scp:SetAutoDelete( true )
+	
+	self.sln = xml:InitStatic( "ammo_item:item_addon_silencer", self )
+	self.sln:SetAutoDelete( true )
+	
+	self.grl = xml:InitStatic( "ammo_item:item_addon_grenade_launcher", self )
+	self.grl:SetAutoDelete( true )
+	--//
+end
+
+--///////////////////////////
+class "order_item" ( CUIListItemEx )
+
+function order_item:__init( xml ) super()
+	self:SetWndRect( 0, 0, 365, 100 )
+	
+	self.frm = xml:InitFrame("order_item:frame", self )
+	self.frm:SetAutoDelete( true )
+	
+	self.hlt = xml:InitStatic( "order_item:highlight", self )
+	self.hlt:SetAutoDelete( true )
+	--self.hlt:SetColor(GetARGB(255, 255, 0) )
+	self.hlt:Show( false )
+	
+	--Заголовок ( )
+	self.desc = xml:InitStatic( "order_item:order_desc", self )
+	self.desc:SetAutoDelete( true )
+	
+	self.itm1 = xml:InitStatic( "order_item:item_1", self )
+	self.itm1:SetAutoDelete( true )
+	
+	self.itm1_cap = xml:InitStatic( "order_item:item_1_cap", self )
+	self.itm1_cap:SetAutoDelete( true )
+	
+	self.itm2 = xml:InitStatic( "order_item:item_2", self )
+	self.itm2:SetAutoDelete( true )
+	
+	self.itm2_cap = xml:InitStatic( "order_item:item_2_cap", self )
+	self.itm2_cap:SetAutoDelete( true )
+	--self.itm2_cap:SetTextColor( 255,0,255,255 )
+	
+	--Цена 
+	self.price = xml:InitStatic( "order_item:price", self )
+	self.price:SetAutoDelete( true )
+	
+	self.price_cap = xml:InitStatic( "order_item:price_cap", self )
+	self.price_cap:SetAutoDelete( true )
+	
+	--Время
+	self.time = CUIStatic()
+	self.time:SetAutoDelete( true )
+	self.time:Show( false )
+	self:AttachChild( self.time )
+	
+	--Тип заказа u - апгрейд, r - ремонт
+	self.type = CUIStatic() 
+	self.type:SetAutoDelete( true )
+	self.type:Show( false )
+	self:AttachChild( self.type )
+	
+	--order ammo section
+	self.sect = CUIStatic()
+	self.sect:SetAutoDelete( true )
+	self.sect:Show( false )
+	self:AttachChild( self.sect )
+	
+	--ammo list index for slot 1
+	self.idx1 = CUIStatic()
+	self.idx1:SetAutoDelete( true )
+	self.idx1:Show( false )
+	self:AttachChild( self.idx1 )
+	
+	--ammo list index for slot 2
+	self.idx2 = CUIStatic()
+	self.idx2:SetAutoDelete( true )
+	self.idx2:Show( false )
+	self:AttachChild( self.idx2 )
+end
+
+--///////////////////////////
+class "scheme_item" ( CUIListItemEx )
+
+--///////////////////////////
+--//TAB UPGRADE
+--///////////////////////////
+class "tab_upgrade" ( CUIScriptWnd )
+
+--///////////////////////////
+function tab_upgrade:__init() super()
+end
+
+--///////////////////////////
+function tab_upgrade:__finalize() end
+
+--///////////////////////////
+function tab_upgrade:InitControls( x, y, xml, handler )
+	self:SetAutoDelete	( true )
+
+	self:Init( x, y, handler.coW - x,  handler.coH - y )
+	
+	self.oAmmoSlot = xml:InitFrame( "tab_upgrade:ammo_slot", self )
+	self.oAmmoSlot:SetAutoDelete( true )
+	
+	local oCap = xml:InitStatic( "cap_frame", self.oAmmoSlot )
+	oCap:SetText( "Улучшить" )
+	oCap:SetAutoDelete( true )
+	
+	self.oSchemeFrame = xml:InitFrame( "tab_upgrade:scheme_frame", self )
+	self.oSchemeFrame:SetAutoDelete( true )
+	
+	local oCap = xml:InitStatic( "cap_frame", self.oSchemeFrame )
+	oCap:SetText( "Схема" )
+	oCap:SetAutoDelete( true )
+	
+	self.oWinS = xml:InitScrollView( "tab_upgrade:scroll_s", self.oSchemeFrame )
+	
+	self.oWinSA = xml:InitStatic( "tab_upgrade:scroll_s_wnd", nil ) --Оружие
+	self.oWinSA:SetAutoDelete( true )
+	
+	self.oWinS:AddWindow( self.oWinSA, true )
+	
+	--------------------------------
+	-----UPGRADE DESCRIPTION FRAME WINDOW
+	--------------------------------
+	self.oDescFrame = xml:InitFrame( "tab_upgrade:desc_frame", self )
+	self.oDescFrame:SetAutoDelete( true )
+	
+	local oCap = xml:InitStatic( "cap_frame", self.oDescFrame )
+	oCap:SetText( "Описание" )
+	oCap:SetAutoDelete( true )
+
+	self.oWinD = xml:InitScrollView( "tab_upgrade:scroll_d", self.oDescFrame )
+	
+	self.oWinDA = xml:InitStatic( "tab_upgrade:scroll_d_wnd", nil )
+	self.oWinDA:SetAutoDelete( true )
+	
+	self.oWinD:AddWindow( self.oWinDA, true )
+	
+	local oBtn = xml:Init3tButton( "tab_upgrade:btn_upgrade", self )
+	oBtn:SetWndPos( handler.coW - ( x + 16 + oBtn:GetWidth()), handler.coH - ( y + 16 + oBtn:GetHeight() ) )
+	handler:Register( oBtn, "btn_upgrade" )
+	
+	oBtn = CUI3tButton()	
+	oBtn:SetAutoDelete( true )
+	oBtn:Enable( false )
+	self:AttachChild( oBtn )
+end
+-----------------------------
+
+--///////////////////////////
+--//TAB REPAIR
+--///////////////////////////
+class "tab_repair" ( CUIScriptWnd )
+
+function tab_repair:__init() super()
+end
+
+--///////////////////////////
+function tab_repair:__finalize() end
+
+--///////////////////////////
+function tab_repair:InitControls( x, y, xml, handler )
+	self:SetAutoDelete	( true )
+	self:Init( x, y, handler.coW - x,  handler.coH - y )
+	
+	self.oAmmoSlot1 = xml:InitFrame( "tab_repair:ammo_slot1", self )
+	self.oAmmoSlot1:SetAutoDelete( true )
+   
+	local oCap = xml:InitStatic( "cap_frame", self.oAmmoSlot1 )
+	oCap:SetText( "В ремонт" )
+	oCap:SetAutoDelete( true )
+	
+	self.oAmmoSlot2 = xml:InitFrame( "tab_repair:ammo_slot2", self )
+	self.oAmmoSlot2:SetAutoDelete( true )
+	
+	oCap = xml:InitStatic( "cap_frame", self.oAmmoSlot2 )
+	oCap:SetText( "На запчасти" )
+	oCap:SetAutoDelete( true )
+	
+	self.oAmmoSlot2Txt = xml:InitStatic( "tab_repair:ammo_slot2_txt", self )
+	self.oAmmoSlot2Txt:SetText( "" )
+	self.oAmmoSlot2Txt:SetAutoDelete( true )
+	
+	local oImgRepair = xml:InitStatic( "tab_repair:img_repair", self )
+	oImgRepair:SetWidth( oImgRepair:GetWidth() * oScreen.c )
+	oImgRepair:SetAutoDelete( true )
+	
+	--------------------------------
+	-----BUTTONS
+	--------------------------------
+	
+	local oBtnRect = { oX = handler.coW - ( x + 16  ), oY = handler.coH - ( y + 16 ), w = 0, h = 0 }
+	
+	local oBtn = xml:Init3tButton( "tab_repair:btn_repair", self )
+	oBtnRect.w, oBtnRect.h = oBtn:GetWidth(), oBtn:GetHeight()
+	oBtn:SetWndPos( oBtnRect.oX - oBtnRect.w * 2 - 2*2, oBtnRect.oY - oBtnRect.h ) --265 408
+	handler:Register( oBtn, "btn_repair" )
+	
+	oBtn = xml:Init3tButton( "tab_repair:btn_abort", self )
+	oBtn:SetWndPos( oBtnRect.oX - oBtnRect.w, oBtnRect.oY - oBtnRect.h )
+	handler:Register( oBtn, "btn_repair_abort" )
+	
+	oBtn = CUI3tButton()	
+	oBtn:SetAutoDelete( true )
+	oBtn:Enable( false )
+	self:AttachChild( oBtn )
+end
+
+-----------------------------
+
+--///////////////////////////
+--//TAB ORDERS
+--///////////////////////////
+class "tab_order" ( CUIScriptWnd )
+
+--///////////////////////////
+function tab_order:__init() super()
+end
+
+--///////////////////////////
+function tab_order:InitControls( x, y, xml, handler )
+	self:SetAutoDelete( true )
+	self:Init( x, y, handler.coW - x,  handler.coH - y )
+	
+	self.oListFrame = xml:InitFrame("tab_order:order_list_frame", self )
+	self.oListFrame:SetAutoDelete( true )
+	
+	self.oInfoFrame = xml:InitFrame("tab_order:order_info_frame", self )
+	self.oInfoFrame:SetAutoDelete( true )
+	
+	local oCap = xml:InitStatic( "cap_frame", self.oListFrame )
+	oCap:SetText( "Список заказов" )
+	oCap:SetAutoDelete( true )
+
+	self.oOrderList = xml:InitList( "tab_order:order_list", self.oListFrame )
+	self.oOrderList:SetAutoDelete( true )
+	self.oOrderList:EnableScrollBar( true )
+	self.oOrderList:ShowSelectedItem( false )
+	handler:Register( self.oOrderList, "order_list" )
+
+	local oPriceCap = xml:InitStatic( "order_info:price_cap", self.oInfoFrame)
+	oPriceCap:SetAutoDelete( true )
+	self.oPrice = xml:InitStatic( "order_info:price", self.oInfoFrame)
+	self.oPrice:SetAutoDelete( true )
+	
+	local oTimeCap = xml:InitStatic( "order_info:time_cap", self.oInfoFrame)
+	oTimeCap:SetAutoDelete( true )
+	self.oTime = xml:InitStatic( "order_info:time", self.oInfoFrame)
+	self.oTime:SetAutoDelete( true )
+	
+	local oBtnRect = { oX = handler.coW - ( x + 16  ), oY = handler.coH - ( y + 16 ), w = 0, h = 0 }
+	
+	self.oBtnRemove = xml:Init3tButton( "tab_order:btn_remove", self )
+	oBtnRect.w, oBtnRect.h = self.oBtnRemove:GetWidth(), self.oBtnRemove:GetHeight()
+	self.oBtnRemove:SetWndPos( oBtnRect.oX - oBtnRect.w, oBtnRect.oY - oBtnRect.h )
+	handler:Register( self.oBtnRemove, "btn_remove_order" )
+	
+	self.oBtnTake = xml:Init3tButton( "tab_order:btn_take", self )
+	oBtnRect.w, oBtnRect.h = self.oBtnTake:GetWidth(), self.oBtnTake:GetHeight()
+	self.oBtnTake:SetWndPos( oBtnRect.oX - oBtnRect.w * 2 - 2*2, oBtnRect.oY - oBtnRect.h ) --2*2 shif x
+	handler:Register( self.oBtnTake, "btn_take_order" )
+end
+
+--///////////////////////////
+function tab_order:__finalize() end
+
+-----------------------------
+ 
+--///////////////////////////
+class "repair" ( CUIScriptWnd )
+
+--///////////////////////////
+function repair:__init( first_speaker, second_speaker ) super()
+	self:SetFont( GetFontMedium() ) 
+	self.first_speaker = first_speaker
+	self.second_speaker = second_speaker
+	
+	self.trader_name = self.first_speaker:name()
+	--self.trader_name = "dolgovazyi"
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+--///////////////////////////
+function repair:__finalize() end
+
+--///////////////////////////
+function repair:InitControls()
+	
+	--local screen = device() screen.width
+	local coords = { x = 0, y = 0, w = 600, h = 512 }
+	coords.x = ( 1024 - coords.w ) / 2
+	coords.y = ( 768 - coords.h ) / 2 - 50
+	
+	self:SetAutoDelete( true )
+	self:Init( coords.x, coords.y, coords.w, coords.h  )
+	
+	--------------------------------
+	-----MAIN FRAME WINDOW
+	--------------------------------
+	
+	self.xml = CScriptXmlInit()
+	self.xml:ParseFile( "ui_repair_menu.xml" )
+	
+	self.main_frame = self.xml:InitStatic( "background", self ) 
+	self.main_frame:SetAutoDelete( true )
+	
+	self.coW, self.coH = self.main_frame:GetWidth(), self.main_frame:GetHeight()
+	
+	
+	--------------------------------
+	-----MONEY INFO
+	--------------------------------
+	self.aMoney = actor:money()
+	
+	local oActorMoneyInfo = self.xml:InitStatic( "actor_money_info", self )
+	oActorMoneyInfo:SetText( self.aMoney.." RU" )
+	oActorMoneyInfo:SetAutoDelete( true )
+	
+	--------------------------------
+	-----Number Of Orders Info
+	--------------------------------
+	self.oNumOrdersInfo = self.xml:InitStatic( "num_orders_info", self )
+	--------------------------------
+	-----MAIN MENU TAB BAR
+	--------------------------------
+	
+	self.oTab = self.xml:InitTab( "tab", self.main_frame )
+	self:Register( self.oTab, "tab" )
+	
+	--------------------------------
+	-----TABS
+	--------------------------------
+	local tX, tY = 25, 60
+	self.oTabRepair	= tab_repair()
+	self.oTabRepair:InitControls( tX, tY, self.xml, self )
+	self:AttachChild( self.oTabRepair )
+	self.oTabRepair:Show( false )
+	
+	
+	self.oTabUpgrade = tab_upgrade()
+	self.oTabUpgrade:InitControls( tX, tY, self.xml, self )
+	self:AttachChild( self.oTabUpgrade )
+	self.oTabUpgrade:Show( false )
+	
+	self.oTabOrder = tab_order()
+	self.oTabOrder:InitControls( tX, tY, self.xml, self )
+	self:AttachChild( self.oTabOrder )
+	self.oTabOrder:Show( false )
+	
+	--------------------------------
+	-----AMMO LIST
+	--------------------------------
+	
+	self.oAmmoListFrame = self.xml:InitFrame("ammo_list:frame", self )
+	self.oAmmoListFrame:SetAutoDelete( true )
+	
+	local oCap = self.xml:InitStatic( "cap_frame", self.oAmmoListFrame )
+	oCap:SetText( "Амуниция" )
+	oCap:SetAutoDelete( true )
+	
+	self.oAmmoList = self.xml:InitList( "ammo_list:list", self.oAmmoListFrame )
+	self.oAmmoList:SetAutoDelete( true )
+	self.oAmmoList:EnableScrollBar( true )
+	self:Register( self.oAmmoList, "ammo_list" )
+	
+	
+	self.oBtnCls = self.xml:Init3tButton( "btn_close", self.main_frame )
+	self.oBtnCls:SetWndPos( 20, self.coH - ( 16 + self.oBtnCls:GetHeight()) )
+	self:Register( self.oBtnCls, "btn_close" )
+	
+	self.oStatusBar = self.xml:InitFrame("status_bar", self )
+	self.oStatusBar:SetAutoDelete( true )
+	
+	self.oStatusInfo = self.xml:InitStatic( "status_bar:info", self.oStatusBar )
+	self.oStatusInfo:SetAutoDelete( true )
+	
+	local oParams = order_params[ self.trader_name ] 
+	if not oParams then
+		return
+	end
+	
+	local EnableRepair 	= oParams[ aOrderTypes.repair ][ 1 ]
+	local EnableUpgrade = oParams[ aOrderTypes.upgrade ][ 1 ]
+	
+	if not EnableRepair and not EnableUpgrade then
+		return
+	end	
+	
+	self:AmmoList()
+	self:AmmoListUpdate()
+	
+	self:UpgradeSchemeGetLevels( wUpgradeScheme, "weapon", 1 )
+	self:UpgradeSchemeGetLevels( oUpgradeScheme, "outfit", 1 )
+	
+	local oTabBtnR = self.oTab:GetButtonByIndex( 0 )
+	oTabBtnR:Enable( EnableRepair )
+	
+	local oTabBtnU = self.oTab:GetButtonByIndex( 1 )
+	oTabBtnU:Enable( EnableUpgrade )
+	
+	ActiveTab = ( oTabBtnR:IsEnabled() ) and 0 or 1
+	self.oTab:SetNewActiveTab( ActiveTab )
+	self:OnTabChange()
+end
+
+--///////////////////////////
+function repair:InitCallBacks()
+	self:AddCallback( "tab", ui_events.TAB_CHANGED, self.OnTabChange, self )
+	self:AddCallback( "ammo_list", ui_events.LIST_ITEM_CLICKED, self.OnAmmoListItemClicked, self )
+	self:AddCallback( "order_list", ui_events.LIST_ITEM_CLICKED, self.OnOrderListItemClicked, self )
+	
+	self:AddCallback( "btn_close", ui_events.BUTTON_CLICKED, self.OnCloseButtonClicked, self )
+	
+	self:AddCallback( "btn_repair", ui_events.BUTTON_CLICKED, self.OnRepairButtonClicked, self )
+	self:AddCallback( "btn_upgrade", ui_events.BUTTON_CLICKED, self.OnUpgradeButtonClicked, self )
+	self:AddCallback( "btn_repair_abort", ui_events.BUTTON_CLICKED, self.OnRepairAbortButtonClicked, self )
+	
+	self:AddCallback( "btn_remove_order", ui_events.BUTTON_CLICKED, self.OnRemoveOrderButtonClicked, self )
+	self:AddCallback( "btn_take_order", ui_events.BUTTON_CLICKED, self.OnTakeOrderButtonClicked, self )
+end
+
+--///////////////////////////
+--// GENERAL FUNCTIONS
+--///////////////////////////
+function repair:Translate( item )
+	return _Lang[ item ] or item
+end
+
+function repair:SetPriceInfoStr( handle, aOrderInfo )
+	local pPattern = "Ц : 0 RU, B : 0"
+	handle:SetText( "" )
+end
+
+--///////////////////////////
+function repair:GetIcoCoords( section )
+	local x,y,h,w = 0,0,0,0
+	if sys_ini:section_exist( section ) then
+		x = sys_ini:r_u32( section, "inv_grid_x" ) * 50
+		y = sys_ini:r_u32( section, "inv_grid_y" ) * 50
+		
+		h = sys_ini:r_u32( section, "inv_grid_height" ) * 50
+		w = sys_ini:r_u32( section, "inv_grid_width"  ) * 50
+	end
+	return x,y,h,w 
+end
+
+--///////////////////////////
+function repair:DrawIco( object, section )
+	local koef 	= 0
+	if sys_ini:section_exist( section ) then
+		
+		local x,y,h,w = self:GetIcoCoords( section )
+		object:InitTexture( "ui\\ui_icon_equipment" )
+		object:SetOriginalRect( x, y, w, h )
+		
+		local oWidth = object:GetWidth()
+		local oHeight = object:GetHeight()
+		
+		local hKoef = ( oHeight < h ) and oHeight / h or 0.7
+		local wKoef = ( oWidth < w ) and oWidth / w or 0.7
+		koef 		= ( hKoef < wKoef ) and hKoef or wKoef
+		
+		object:SetWidth( koef * w * oScreen.c )
+		object:SetHeight( koef * h  )
+		
+		object:SetStretchTexture( true )
+	end
+	return koef
+end
+
+--///////////////////////////
+function repair:DrawAddon( object, aSect, aAddonName, koef )
+	if not sys_ini:section_exist( aSect ) then return end
+	
+	local aAddonStatus = sys_ini:line_exist( aSect, aAddonName.."_status" ) and sys_ini:r_u32( aSect, aAddonName.."_status" ) or 0
+	if aAddonStatus ~= 2 then return end
+	
+	local aAddonSect = sys_ini:line_exist( aSect, aAddonName.."_name" ) and sys_ini:r_string( aSect, aAddonName.."_name" ) or nil
+	if not aAddonSect or not sys_ini:section_exist( aAddonSect ) then return end
+	
+	local x,y,h,w = self:GetIcoCoords( aAddonSect )
+	object:InitTexture( "ui\\ui_icon_equipment" )
+	object:SetOriginalRect( x, y, w, h )
+	
+	local oWidth = object:GetWidth()
+	local oHeight = object:GetHeight()
+		
+	object:SetWidth( w * koef  * oScreen.c)
+	object:SetHeight( h * koef  )
+		
+	object:SetStretchTexture( true )
+	
+	local aAddonX = sys_ini:r_string( aSect, aAddonName.."_x" )
+	local aAddonY = sys_ini:r_string( aSect, aAddonName.."_y" )
+	object:SetTextureOffset( tonumber( aAddonX * koef * oScreen.c ), tonumber( aAddonY * koef ) );
+end
+
+--///////////////////////////
+function repair:DrawCondition( aItem, oSlotItem )
+	local aCond = aItem.cond
+	if aCond < 0.01 then aCond = 0.02 end
+	oSlotItem.cnd:SetWidth( oSlotItem.cnd:GetWidth() * aCond )
+	oSlotItem.cnd:SetColor( GetARGB( 120, 255 * ( 1 - aCond ), 255 * aCond, 0) )
+end
+
+--///////////////////////////
+function repair:ClearSlot( oSlotItem, handle, list )
+	if oSlotItem.aSlot then
+		if list then
+			self:AmmoListAddItem( aAmmoList[ oSlotItem.idx ], oSlotItem.idx, list )
+		end
+		
+		handle:DetachChild( oSlotItem.aSlot )
+		oSlotItem.aSlot = nil
+		oSlotItem.sect = nil
+		oSlotItem.usect = nil
+		oSlotItem.fit = -1
+		oSlotItem.idx = 0
+	end
+end
+
+--///////////////////////////
+function repair:ClearTabSlots()
+		if ActiveTab == 0 then
+			self:ClearSlot( aAmmoSlots[ 1 ], self.oTabRepair, nil )
+			self:ClearSlot( aAmmoSlots[ 2 ], self.oTabRepair, nil )
+			self.oTabRepair.oAmmoSlot2Txt:SetText( "" )
+		elseif ActiveTab == 1 then
+			if aAmmoSlots[ 1 ].aSlot then
+				self:UpgradeSchemeRemove()
+			end
+			self:ClearSlot( aAmmoSlots[ 1 ], self.oTabUpgrade, nil )
+		end
+end
+
+--///////////////////////////
+function repair:SlotItemCreate( aItem, slot, handle )
+	play_sound( [[interface\inv_slot]] )
+	
+	local sInvNameSect = system_ini():r_string( aItem.sect, "inv_name_short" )
+	local oSlotItem = ammo_item( aAmmoSlots[ slot ].x, aAmmoSlots[ slot ].y, self.xml )
+	oSlotItem:SetWindowName( "oSlotItem"..aItem.id..slot )
+	oSlotItem.dsc:SetText( game.translate_string( sInvNameSect or "..." ) )
+	
+	self:DrawCondition( aItem, oSlotItem )
+	
+	local iCondP = ( aItem.cond > 0.95 ) and 100 or math.floor( aItem.cond * 100 )
+	oSlotItem.cndp:SetText( "["..iCondP.."%]" )
+	
+	local koef = self:DrawIco( oSlotItem.itm , aItem.sect )
+	local aIndex = aAmmoSlots[ slot ].idx
+	if ( aItem.scp ) then self:DrawAddon( oSlotItem.scp, aItem.sect, "scope", koef ) end
+	if ( aItem.sln ) then self:DrawAddon( oSlotItem.sln, aItem.sect, "silencer", koef ) end
+	if ( aItem.grl ) then self:DrawAddon( oSlotItem.grl, aItem.sect, "grenade_launcher", koef ) end
+	
+	handle:AttachChild( oSlotItem )
+	
+	return oSlotItem
+end
+
+--///////////////////////////
+function repair:ClearList( list )
+	local size = list:GetSize()
+	if size ~= 0 then
+		list:RemoveAll()
+	end
+end
+
+--///////////////////////////
+--//AMMO LIST FUNCTIONS
+--///////////////////////////
+function repair:AmmoList()
+	local j = 1
+	
+	local aSlot1Id, aSlot2Id, aSlot3Id = ItemInSlotId( 1 ), ItemInSlotId( 2 ), ItemInSlotId( 6 )
+	
+	for i = 0, db.actor:object_count() - 1 do
+		obj = db.actor:object( i )
+		if obj and ( isOutFit( obj ) or isWeaponFireOnly( obj ) ) then --броня или оружие
+			local obj_id = obj:id()
+			local aSlotIndex = 0
+			
+			if		obj_id == aSlot1Id then aSlotIndex = 1
+			elseif	obj_id == aSlot2Id then aSlotIndex = 2
+			elseif	obj_id == aSlot3Id then aSlotIndex = 6
+			end
+			
+			local t = {}
+			t.id = obj_id
+			t.sect = obj:section()
+			t.cond = obj:condition()
+			t.cost = obj:cost()
+			t.type = ( isWeaponFireOnly( obj ) ) and aObjectTypes.weapon or aObjectTypes.outfit
+			t.slot = aSlotIndex
+			t.active = true
+			
+			local wData = xrs_utils.get_weapon_data( alife():object( obj_id ) )
+			t.scp = bit_and( wData.addon_flags, 1 ) == 1
+			t.grl = bit_and( wData.addon_flags, 2 ) == 2
+			t.sln = bit_and( wData.addon_flags, 4 ) >= 4
+			
+			table.insert( aAmmoList,  t )
+			j = j + 1
+		end
+	end	
+end
+
+--///////////////////////////
+function repair:AmmoListGetItem( oList )
+	local aItem
+	local sIndex = -1
+	local aIndex
+	
+	if oList:GetSize() ~= 0 then  
+		sIndex = oList:GetSelectedItem()
+		if sIndex ~= -1 then  
+			local oListItem	= oList:GetItem( sIndex )    
+			aIndex = tonumber( oListItem.idx:GetText() )
+			aItem = aAmmoList[ aIndex ]
+		end
+	end
+	return aItem, sIndex, aIndex
+end
+
+--///////////////////////////
+function repair:AmmoListAddItem( aItem, index, list )
+	local sInvNameSect = system_ini():r_string( aItem.sect, "inv_name_short" )
+	local _itm = ammo_item( 0, 0, self.xml )
+	
+	_itm.dsc:SetText( game.translate_string( sInvNameSect or "..." ) )
+	_itm.idx:SetText( index )
+	_itm.slot:Show( false )
+	
+	local iCondP = ( aItem.cond > 0.95 ) and 100 or math.floor( aItem.cond * 100 )
+	_itm.cndp:SetText( "["..iCondP.."%]" )
+	
+	if aItem.slot ~= 0 then
+		_itm.slot:Show( true )
+		_itm.slot:SetText( "Слот:"..aItem.slot )
+	end
+	
+	self:DrawCondition( aItem, _itm )
+	
+	local koef = self:DrawIco( _itm.itm , aItem.sect )
+	if ( aItem.scp ) then self:DrawAddon( _itm.scp, aItem.sect, "scope", koef ) end
+	if ( aItem.sln ) then self:DrawAddon( _itm.sln, aItem.sect, "silencer", koef ) end
+	if ( aItem.grl ) then self:DrawAddon( _itm.grl, aItem.sect, "grenade_launcher", koef ) end
+	list:AddItem( _itm )
+end
+
+--///////////////////////////
+function repair:AmmoListUpdate()
+	self:ClearList( self.oAmmoList )
+	
+	for i = 1, #aAmmoList do
+		local t = aAmmoList[ i ]
+		if t.active == true then
+			self:AmmoListAddItem( t, i, self.oAmmoList )
+		end
+	end
+end
+
+
+--///////////////////////////
+--//UPGRADE FUNCTIONS
+--///////////////////////////
+
+function repair:UpgradeSchemeGetLevels( uScheme, aType, uLv )
+	for k, v in pairs( uScheme ) do
+		aUpgradeLevels[ aType ] = math.max( aUpgradeLevels[ aType ], uLv )
+		if v and type( v ) ~= "string" then
+			self:UpgradeSchemeGetLevels( v, aType, uLv + 1 )
+		end
+	end
+end
+
+--///////////////////////////
+function repair:UpgradeSchemeShow( uScheme, uLv, aType )
+	for k, v in pairs( uScheme ) do
+		if not aUpgradeBtnsXY[ "lv"..uLv ] then
+			aUpgradeBtnsXY[ "lv"..uLv ] = {}
+			aUpgradeBtnsXY[ "lv"..uLv ].x = 0
+			aUpgradeBtnsXY[ "lv"..uLv ].y = 0
+		end
+		
+		uLvY = tonumber( aUpgradeBtnsXY[ "lv"..uLv ].y )
+		
+		local uSchemeName = ( v and type( v ) ~= "string" ) and k or v
+		if not aUpgradeBtns[ uSchemeName ] then
+			local aSect = aAmmoList[ aAmmoSlots[ 1 ].idx ].sect
+			local uBtn = nil
+			
+			local uSect = aSect..uSchemeName
+			local sExist = sys_ini:section_exist( uSect )
+			
+			local aUpgradeDone = string.find( aSect, uSchemeName )
+			local uSchemeNameTxt = self:Translate( uSchemeName )
+			
+			--Для солянки
+			if not sExist then
+				if aUpgradeSections[ uSchemeName ] ~= nil then
+					local aUSections = aUpgradeSections[ uSchemeName ]
+					for s = 1, #aUSections do
+						sExist = sys_ini:section_exist( aSect..aUSections[ s ] )
+						if sExist then
+							uSect = aSect..aUSections[ s ]
+						end
+						aUpgradeDone = string.find( aSect, aUSections[ s ] )
+					end
+				end
+			end
+			--------------------------------------
+			
+			if ( aUpgradeDone ~= nil ) then
+				uBtn = self.xml:Init3tButton( "tab_upgrade:btn_upgrade_done", self.oTabUpgrade.oWinSA )
+				uBtn:Enable( false )
+			elseif sExist then
+				uBtn = self.xml:Init3tButton( "tab_upgrade:btn_upgrade_active", self.oTabUpgrade.oWinSA )
+				uBtn:Enable( true )
+			else
+				uBtn = self.xml:Init3tButton( "tab_upgrade:btn_upgrade_closed", self.oTabUpgrade.oWinSA )
+				uBtn:Enable( false )
+			end
+			
+			uBtn:SetText( uSchemeNameTxt )
+			uBtn:SetAutoDelete( true )
+			
+			local shiftX = aUpgradeLevels[ aType ] == 1 and 1.5 or 0.96 --Значение от кол-ва уровней апгрейда
+			uBtn:SetWndPos( ( 3 + self.oTabUpgrade.oWinSA:GetWidth() ) - ( ( uBtn:GetWidth() + 10 ) * uLv * shiftX ), uLvY + 5 )
+			
+			if sExist then
+				self:Register( uBtn, uSect )
+				local sFuncString = sFuncStringObject..":OnUpgradeSchemeButtonClicked( \""..uSect.."\", \""..uSchemeName.."\")"
+				self.oTabUpgrade:AddCallback( uSect, ui_events.BUTTON_CLICKED, loadstring( sFuncString ), self.oTabUpgrade )
+			end
+			
+			aUpgradeBtnsXY[ "lv"..uLv ].y =  uLvY + 18
+			aUpgradeBtns[ uSchemeName ] = { uBtn = nil }
+			aUpgradeBtns[ uSchemeName ].uBtn = uBtn
+			if v and type( v ) ~= "string" then
+				self:UpgradeSchemeShow( v, uLv + 1, aType )
+			end
+		end
+	end
+end
+
+--///////////////////////////
+function repair:UpgradeSchemeRemove()
+	for k, v in pairs( aUpgradeBtns ) do
+		self.oTabUpgrade.oWinSA:DetachChild( v.uBtn )
+		aUpgradeBtns[ k ].uBtn = nil
+	end
+	self.oTabUpgrade.oWinDA:SetText( "..." )
+	
+	aUpgradeBtnsXY = {}
+	aUpgradeBtns = {} 
+end
+
+--///////////////////////////
+function repair:UpgradeSchemeUpdate( oType )
+	self:UpgradeSchemeShow( ( oType ~= aObjectTypes.weapon ) and oUpgradeScheme or wUpgradeScheme, 1, oType )
+end
+
+--///////////////////////////
+function repair:OrderPrecondition( aItem, slot )
+	local oType = ( ActiveTab == 0 ) and aOrderTypes.repair or aOrderTypes.upgrade
+	local oParams = order_params[ self.trader_name ][ oType ]
+	
+	self.oStatusInfo:SetText( "" );
+	self.oStatusInfo:SetTextColor ( 255, 240, 217, 182 )
+	
+	local sTxt = ""
+	--Занимается ли ремонтник ремонтом/улучшением брони/оружия ? -- Проверка на всякий случай
+	if (  aItem.type == aObjectTypes.weapon and oParams[ 2 ][ 1 ] == false ) then
+		sTxt = ( oType == aOrderTypes.repair ) and "Не занимаюсь ремонтом оружия." or "Не занимаюсь улучшением оружия."
+		self.oStatusInfo:SetText( sTxt )
+		return false
+	elseif (  aItem.type == aObjectTypes.outfit and oParams[ 2 ][ 2 ] == false ) then
+		sTxt = ( oType == aOrderTypes.repair ) and "Не занимаюсь ремонтом брони." or "Не занимаюсь улучшением брони."
+		self.oStatusInfo:SetText( sTxt )
+		return false
+	end
+	
+	--Если апгрейд брони, апгрейдит ли ремонтник данный тип брони
+	if oType == aOrderTypes.upgrade and aItem.type == aObjectTypes.outfit then
+		local oOutfits = order_params[ self.trader_name ][ "outfits" ]
+		if oOutfits ~= nil then
+			local oFound = false
+			for o=1, #oOutfits do
+				if string.find( aItem.sect, oOutfits[ o ] ) then
+					oFound = true
+					break
+				end
+			end
+			if oFound == false then 
+				sTxt = "Не занимаюсь улучшением данного типа брони."
+				self.oStatusInfo:SetText( sTxt )
+				return oFound 
+			end
+		end
+	end
+	----------------------------------------------------
+	
+	local mCond = ( aItem.type == aObjectTypes.weapon ) and oParams[ 2 ][ 5 ] or oParams[ 2 ][ 6 ]
+	
+	if aItem.cond > 0.95 and oType == aOrderTypes.repair and slot ~= 2 then
+		sTxt = ( aItem.type == aObjectTypes.weapon ) and "Оружие не нуждается в починке." or "Броня не нуждается в починке."
+		self.oStatusInfo:SetText( sTxt )
+		return false
+	elseif aItem.cond < mCond then
+		sTxt = ( aItem.type == aObjectTypes.weapon ) and "Слишком сильное повреждение оружия !" or "Слишком сильное повреждение брони !"
+		self.oStatusInfo:SetText( sTxt )
+		self.oStatusInfo:SetTextColor ( 255, 255, 0, 0 )
+		return false
+	end
+	return true
+end
+
+--///////////////////////////
+function repair:OnUpgradeSchemeButtonClicked( uSect, uSName )
+	if ( uSect ) then
+		local uDesc = get_object_svalue( uSect, "description" )
+		local uInvName = get_object_svalue( uSect, "inv_name_short" )
+		local uDescText = game.translate_string( "«"..uInvName.."»\\n"..uDesc )
+		
+		self.oTabUpgrade.oWinDA:SetText( uDescText )
+		self.oTabUpgrade.oWinD:ScrollToBegin()
+		
+		aAmmoSlots[ 1 ].sect = uSect --Секция улучшенной амуниции
+		aAmmoSlots[ 1 ].usect = uSName --Имя секции схемы апгрейда
+		
+		play_sound( [[interface\inv_properties]] )
+	end
+end
+
+--///////////////////////////
+function repair:UpgradeItemClicked( slot )
+	local oList = self.oAmmoList
+	local aItem, sIndex, aIndex = self:AmmoListGetItem( oList )
+	if not aItem then return end
+	if not self:OrderPrecondition( aItem, slot ) then return end
+	
+	if aAmmoSlots[ slot ].aSlot then
+		self:UpgradeSchemeRemove()
+		self:ClearSlot( aAmmoSlots[ slot ], self.oTabUpgrade, oList )
+	end
+	oList:RemoveItem( sIndex )
+	
+	local oSlotItem = self:SlotItemCreate( aItem, slot, self.oTabUpgrade )
+	oSlotItem:SetWindowName( "oSlotItem"..aItem.id..slot )
+	
+	aAmmoSlots[ slot ].aSlot = oSlotItem
+	aAmmoSlots[ slot ].idx = aIndex
+	aAmmoSlots[ slot ].fit = -1
+	
+	local sFuncString = sFuncStringObject..":OnTabUpgradeAmmoSlotClicked( "..slot.." )"
+	self.oTabUpgrade:AddCallback( "oSlotItem"..aItem.id..slot, ui_events.BUTTON_CLICKED, loadstring( sFuncString ), self )
+	
+	local obj = alife():object( aAmmoList[ aIndex ].id )
+	self:UpgradeSchemeUpdate( ( isWeaponFireOnly( obj ) ) and aObjectTypes.weapon or aObjectTypes.outfit )
+end
+
+--///////////////////////////
+function repair:OnTabUpgradeAmmoSlotClicked( slot )
+	play_sound( [[interface\inv_drop]] )
+	self:UpgradeSchemeRemove()
+	self:ClearSlot( aAmmoSlots[ slot ], self.oTabUpgrade, self.oAmmoList )
+end
+
+--///////////////////////////
+--//REPAIR FUNCTIONS
+--///////////////////////////
+function repair:RepairItemClicked( slot )
+	
+	local oList = self.oAmmoList
+	local aItem, sIndex, aIndex = self:AmmoListGetItem( oList )
+	if not aItem then return end
+	if not self:OrderPrecondition( aItem, slot ) then return end
+	
+	local aFitIndex = -1
+	if slot == 1 then         
+		aFitIndex = GetFitIndex( aItem.sect, wpn_fit_table )
+		local aNeedRPartsTxt = ( aFitIndex == -1 ) and "Запчасти не требуются" or "На запчасти"
+		self.oTabRepair.oAmmoSlot2Txt:SetText( aNeedRPartsTxt )
+	else    
+		if isItemFit( aItem.sect, aAmmoSlots[ 1 ].fit, wpn_fit_table ) == false then 
+			return 
+		end
+		self.oTabRepair.oAmmoSlot2Txt:SetText( "" )
+	end
+	
+	self:ClearSlot( aAmmoSlots[ slot ], self.oTabRepair, oList )
+	oList:RemoveItem( sIndex )
+	
+	------------------
+	local oSlotItem = self:SlotItemCreate( aItem, slot, self.oTabRepair )
+	oSlotItem:SetWindowName( "oSlotItem"..aItem.id..slot )
+	------------------
+	aAmmoSlots[ slot ].aSlot = oSlotItem
+	aAmmoSlots[ slot ].idx = aIndex
+	aAmmoSlots[ slot ].sect = aItem.sect
+	aAmmoSlots[ slot ].fit = aFitIndex
+	
+	local sFuncString = sFuncStringObject..":OnTabRepairAmmoSlotClicked( "..slot.." )"
+	self.oTabRepair:AddCallback( "oSlotItem"..aItem.id..slot, ui_events.BUTTON_CLICKED, loadstring( sFuncString ), self )
+end
+
+--///////////////////////////
+function repair:OnAmmoListItemClicked()
+
+	local slot = 1 
+	if ( ActiveTab == 0 ) then
+		slot = ( aAmmoSlots[ 1 ].aSlot and aAmmoSlots[ 1 ].fit ~= -1 ) and 2 or 1
+		self:RepairItemClicked( slot )
+	else
+		self:UpgradeItemClicked( slot )
+	end 
+end
+
+--///////////////////////////
+function repair:OnTabRepairAmmoSlotClicked( slot )
+	play_sound( [[interface\inv_drop]] )
+	
+	if slot == 2 and aAmmoSlots[ 1 ].fit ~= -1 then
+		self.oTabRepair.oAmmoSlot2Txt:SetText( "На запчасти" )
+	else
+		self.oTabRepair.oAmmoSlot2Txt:SetText( "Запчасти не требуются" )
+	end 
+	
+	self:ClearSlot( aAmmoSlots[ slot ], self.oTabRepair, self.oAmmoList )
+	
+	if slot == 1 then 
+		self.oTabRepair.oAmmoSlot2Txt:SetText( "" )
+		self:ClearSlot( aAmmoSlots[ 2 ], self.oTabRepair, self.oAmmoList )
+	end
+end
+--///////////////////////////
+function repair:AddOrder( oTbl )
+	local oItem = order_item( self.xml )
+	
+	self:DrawIco( oItem.itm1 , oTbl.sect )
+	if ( oTbl.itm2 ) then
+		oItem.itm2	:SetText( oTbl.itm2 )
+	end
+	oItem.itm1_cap  :SetText( oTbl.itm1_cap )
+	oItem.desc		:SetText( oTbl.desc )
+	oItem.type		:SetText( oTbl.type )
+	oItem.sect		:SetText( oTbl.sect )
+	oItem.price		:SetText( oTbl.price )
+	oItem.time		:SetText( oTbl.time )
+	oItem.idx1		:SetText( oTbl.idx1 )
+	oItem.idx2		:SetText( oTbl.idx2 )
+	
+	local oList = self.oTabOrder.oOrderList
+	oList:AddItem( oItem )
+	
+	self:ClearTabSlots() --self.oTab:SetNewActiveTab( 2 )
+	self:SetOrderInfo()
+	play_sound( [[interface\inv_drop]] )
+end
+
+--///////////////////////////
+function repair:RemoveOrder( oTbl )
+	local oList = self.oTabOrder.oOrderList
+	if oList:GetSize() == 0 then return end
+	
+	local sIndex = oList:GetSelectedItem()
+	if sIndex == -1 then return end
+
+	local oListItem	= oList:GetItem( sIndex )
+	
+	if not oListItem then return end
+	
+	local aIndex1 = tonumber( oListItem.idx1:GetText() )
+	local aIndex2 = tonumber( oListItem.idx2:GetText() )
+	
+	if aIndex1 ~= 0 then aAmmoList[ aIndex1 ].active = true end
+	if aIndex2 ~= 0 then aAmmoList[ aIndex2 ].active = true end
+	
+	oList:RemoveItem( sIndex )
+	play_sound( [[interface\inv_drop]] )
+end
+
+--///////////////////////////
+function repair:SetOrderInfo()
+	local oPrice, oTime = self:GetPriceAndTime()
+	
+	local d,h,m,s,l = time_from_milliseconds( oTime )
+	
+	m = ( s > 30 and s ~= 0 ) and ( m + 1 ) or m
+	if m ~= 0 then
+		h = ( m > 30 ) and ( h + 1 ) or h
+		s = 0
+	end
+	
+	if h ~= 0 then
+		d = ( h > 12 ) and ( d + 1 ) or d 
+		m, s = 0, 0
+	end
+	
+	if d ~= 0 then h, m, s = 0, 0, 0 end
+	
+	local oTimeTxt = "" 
+	oTimeTxt = 
+		( d ~= 0  and d.." дн." or "" )..
+		( h ~= 0  and mid_val( h, { 1, 3, 6, 12, 24 } ).." ч." or "" )..
+		( m ~= 0  and mid_val( m, { 20, 60 } ).." мин." or "" ) 
+	
+	self.oTabOrder.oPrice:SetText( oPrice )
+	self.oTabOrder.oTime:SetText( oTimeTxt )
+	
+	self.oNumOrdersInfo:SetText( self.oTabOrder.oOrderList:GetSize() )
+end
+
+--///////////////////////////
+function repair:GetPriceAndTime()
+	local oPrice = 0 
+	local oTime = 0
+	local oList = self.oTabOrder.oOrderList
+	if oList:GetSize() ~= 0 then 
+		for i = 1, oList:GetSize() do
+			local oItem = oList:GetItem( i - 1 )
+			if oItem and oItem.price and oItem.time then
+				oPrice = oPrice + tonumber( oItem.price:GetText() )
+				oTime  = oTime  + tonumber( oItem.time:GetText() )
+			end
+		end
+	end
+	return oPrice, oTime
+end
+
+--///////////////////////////
+function repair:SetPrice( oTbl )
+	local aSlots = aAmmoSlots
+	
+	local aItem1 = aAmmoList[ oTbl.idx1 ]
+	local aCond1 = aItem1.cond
+	local aCond  = ( oTbl.idx2 ~= 0 ) and ( ( aCond1 + aAmmoList[ oTbl.idx2 ].cond ) / 2 ) or aCond1
+	
+	local oParams = order_params[ self.trader_name ][ oTbl.type ][ 2 ] --Параметры
+	local oType = aItem1.type -- броня или ствол
+	
+	local uPMgr = 1 -- дополнительный коэффициент наценки апгрейда
+	if aSlots[ 1 ].usect ~= nil then
+		uPMgr = ( aUpgradeProfitMargins[ aSlots[ 1 ].usect ] ) and aUpgradeProfitMargins[ aSlots[ 1 ].usect ] or 1
+	end
+	
+	local aPMrg	= ( aItem1.type == aObjectTypes.weapon ) and oParams[ 3 ] or oParams[ 4 ] --коэф накрутки
+	
+	--Расчет стоимости заказа
+	oTbl.price = math.floor( ( 1.1 - aCond ) * aItem1.cost * aPMrg * uPMgr )	
+end
+
+--///////////////////////////
+function repair:SetTime( oTbl )
+	local aSlots = aAmmoSlots
+	
+	local aItem1 = aAmmoList[ oTbl.idx1 ]
+	local aCond1 = aItem1.cond
+	local aCond  = ( oTbl.idx2 ~= 0 ) and ( aCond1 + aAmmoList[ oTbl.idx2 ].cond ) / 2 or aCond1
+	
+	local oParams = order_params[ self.trader_name ][ oTbl.type ][ 2 ] --Параметры
+	local oType = aItem1.type -- броня или ствол
+	
+	local mTime = ( aItem1.type == aObjectTypes.weapon ) and oParams[ 7 ] or oParams[ 8 ]
+	local oTime = math.floor( ( 1.1 - aCond ) * mTime *60*60*1000 )
+	
+	oTbl.time = oTime
+end
+
+--///////////////////////////
+function repair:OnUpgradeButtonClicked()
+	local aSlots = aAmmoSlots
+	if not ( aSlots[ 1 ].aSlot and aSlots[ 1 ].sect ) then return end
+	
+	local oTbl = { }
+	
+	oTbl.itm1_cap = get_object_svalue( aSlots[ 1 ].sect, "inv_name_short" )
+	oTbl.itm2 = get_object_svalue( aAmmoList[ aSlots[ 1 ].idx ].sect, "inv_name_short" )
+	oTbl.sect = aSlots[ 1 ].sect
+	oTbl.desc = "Апгрейд"
+	oTbl.type = aOrderTypes.upgrade
+	oTbl.idx1 = aSlots[ 1 ].idx
+	oTbl.idx2 = 0
+	
+	aAmmoList[ aSlots[ 1 ].idx ].active = false
+	
+	self:SetPrice( oTbl )
+	self:SetTime( oTbl )
+	
+	self:AddOrder( oTbl )
+end
+
+--///////////////////////////
+function repair:OnRepairButtonClicked()
+	local aSlots = aAmmoSlots
+	if not ( aSlots[ 1 ].aSlot ) then return end
+	
+	local aFitIndex = aSlots[ 1 ].fit
+	if aFitIndex ~= -1 and not aSlots[ 2 ].aSlot then return end
+	
+	local oTbl = { }
+	
+	oTbl.itm1_cap = get_object_svalue( aAmmoList[ aSlots[ 1 ].idx ].sect, "inv_name_short" )
+	oTbl.sect = aAmmoList[ aSlots[ 1 ].idx ].sect
+	oTbl.desc = "Ремонт"
+	oTbl.type = aOrderTypes.repair
+	oTbl.idx1 = aSlots[ 1 ].idx
+	oTbl.idx2 = 0
+	
+	aAmmoList[ aSlots[ 1 ].idx ].active = false
+	
+	if aFitIndex ~= -1 then
+		oTbl.itm2 = get_object_svalue( aAmmoList[ aSlots[ 2 ].idx ].sect, "inv_name_short" )
+		oTbl.idx2 = aSlots[ 2 ].idx
+		aAmmoList[ aSlots[ 2 ].idx ].active = false
+	end
+	
+	self:SetPrice( oTbl )
+	self:SetTime( oTbl )
+	
+	self:AddOrder( oTbl )
+end
+
+--///////////////////////////
+function repair:OnRepairAbortButtonClicked( )
+	self:ClearSlot( aAmmoSlots[ 1 ], self.oTabRepair, self.oAmmoList )
+	self:ClearSlot( aAmmoSlots[ 2 ], self.oTabRepair, self.oAmmoList )
+	play_sound( [[interface\inv_drop]] )
+end
+
+--///////////////////////////
+function repair:OnOrderListItemClicked()
+	local oList = self.oTabOrder.oOrderList
+	if oList:GetSize() == 0 then 
+		aOrderList.selected = -1 
+	return end
+	
+	local sIndex = oList:GetSelectedItem()
+	local oListItem = oList:GetItem( sIndex )
+	if oListItem == nil then return end
+	
+	if aOrderList.selected ~= -1 and aOrderList.selected ~= sIndex then
+		oListItemP = oList:GetItem( aOrderList.selected )
+		if oListItemP ~= nill then 
+			oListItemP.hlt:Show( false )
+		end
+	end
+	aOrderList.selected = sIndex
+	
+	oListItem.hlt:Show( true )
+end
+
+--///////////////////////////
+function repair:OnRemoveOrderButtonClicked()
+	self:RemoveOrder()
+	self:SetOrderInfo()
+	self:OnOrderListItemClicked()
+end
+
+--///////////////////////////
+function repair:OnTakeOrderButtonClicked()
+	local oList = self.oTabOrder.oOrderList
+	
+	if oList:GetSize() == 0 then return end
+	
+	local aMoney = actor:money()
+	local oPrice, oTime = self:GetPriceAndTime()
+	if  tonumber( oPrice ) > tonumber( aMoney ) then
+		self.oStatusInfo:SetTextColor ( 204, 255, 0, 50 )
+		self.oStatusInfo:SetText( "Не достаточно денег." )
+		return
+	end
+	
+	local aTbl = {}
+	for iNum = 1, oList:GetSize() do
+		local oItem = oList:GetItem( iNum - 1 )
+		if oItem then
+			local aIndex1 = tonumber( oItem.idx1:GetText() )
+			local aIndex2 = tonumber( oItem.idx2:GetText() )
+			
+			local aItem1 = aIndex1 ~= 0 and aAmmoList[ aIndex1 ] or nil
+			local aItem2 = aIndex2 ~= 0 and aAmmoList[ aIndex2 ] or nil
+			
+			local obj
+			if aItem1 then 
+				obj = alife():object( aItem1.id )
+				if obj then 
+					if aItem1.type == aObjectTypes.weapon then release_addons( obj, aItem1.sect, level.object_by_id( aItem1.id ) ) end
+					alife():release( obj , true )
+				end
+			end
+			if aItem2 then 
+				obj = alife():object( aItem2.id )
+				if obj then 
+					if aItem1.type == aObjectTypes.weapon then release_addons( obj, aItem2.sect, level.object_by_id( aItem2.id ) ) end
+					alife():release( obj , true ) 
+				end
+			end
+			
+			table.insert( aTbl, oItem.sect:GetText() )
+		end
+	end
+	
+	local d,h,m,s,l = time_from_milliseconds( oTime )
+	
+	local t = {}
+	t.order = aTbl
+	t.ready = 0
+	
+	dialogs.relocate_money( self.first_speaker, oPrice, "out")
+
+	local sTblName = info_table[ self.trader_name ].tbl
+	amk.save_table( sTblName, t )
+	
+	local gInfo = info_table[ self.trader_name ].info
+	local sFunc = info_table[ self.trader_name ].func
+	
+	actor:give_info_portion( gInfo )
+	amk.g_start_timer( sFunc ,d, h, m, sTblName )
+	
+	------------------------------------------------
+
+	self:on_quit()
+end
+
+--///////////////////////////
+function repair:OnTabChange()
+	self.oTabRepair:Show( false )
+	self.oTabUpgrade:Show( false )
+	self.oTabOrder:Show( false )
+	self.oAmmoListFrame:Show( true )
+	
+	--if ActiveTab ~= self.oTab:GetActiveIndex() then 
+		if ActiveTab == 0 then
+			self:ClearSlot( aAmmoSlots[ 1 ], self.oTabRepair, nil )
+			self:ClearSlot( aAmmoSlots[ 2 ], self.oTabRepair, nil )
+			self.oTabRepair.oAmmoSlot2Txt:SetText( "" )
+		elseif ActiveTab == 1 then
+			if aAmmoSlots[ 1 ].aSlot then
+				self:UpgradeSchemeRemove()
+			end
+			self:ClearSlot( aAmmoSlots[ 1 ], self.oTabUpgrade, nil )
+		end
+	--else 
+	--end
+	
+	ActiveTab = self.oTab:GetActiveIndex()
+	
+	if ActiveTab == 0 then 
+		self:AmmoListUpdate()
+		self.oTabRepair:Show( true )
+	elseif ActiveTab == 1 then
+		self:AmmoListUpdate()
+		self.oTabUpgrade:Show( true )
+	else
+		self.oTabOrder:Show( true )
+		self.oAmmoListFrame:Show( false )
+	end
+end
+
+--///////////////////////////
+function repair:OnCloseButtonClicked()
+	self:on_quit()
+end
+
+--///////////////////////////
+function repair:OnKeyboard( dik, keyboard_action )
+	CUIScriptWnd.OnKeyboard( self, dik, keyboard_action )
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:on_quit()
+		end
+	end
+	return true
+end
+
+--///////////////////////////
+function repair:on_quit()
+	DesibleRepairMenu()
+	self:GetHolder():start_stop_menu ( self, true )
+end
+
+--///////////////////////////
+function EnableRepairMenu( first_speaker, second_speaker )
+	get_console():execute("main_menu off")
+	
+	oScreen = { r = 1, c = 1, w = device().width, h = device().height }
+	oScreen.r = oScreen.h / oScreen.w
+	oScreen.c = oScreen.r / ( 768 / 1024 )
+	
+	oRepair = repair( first_speaker, second_speaker )
+	level.start_stop_menu( oRepair , true )
+end
+
+--///////////////////////////
+function DesibleRepairMenu()
+	oRepair = nil
+	aAmmoList = {}
+	aOrderList = {}
+	oScreen = {}
+	
+	for slot = 1,2 do
+		aAmmoSlots[ slot ].aSlot = nil
+		aAmmoSlots[ slot ].sect = nil
+		aAmmoSlots[ slot ].fit = -1
+	end
+	
+	aUpgradeBtns = {}
+	aUpgradeBtnsXY = {}
+	
+	ActiveTab = 0
+end
+
+--///////////////////////////
+function give_order( trader, actor )
+	local trader_name = trader:name()
+	local oTblName = info_table[ trader_name ].tbl
+	local tbl = amk.load_table( oTblName )
+	local t = tbl.order
+	
+	amk.del_variable( oTblName )
+	
+	local wpn_tbl = {}
+	for i=1,#t do
+		local ammo_sect = t[ i ]
+		
+		local ammo_obj = alife():create( ammo_sect, actor:position(), actor:level_vertex_id(), actor:game_vertex_id(), actor:id() )
+		if string.find( ammo_sect, "wpn_", 1, true ) then
+			table.insert( wpn_tbl,  ammo_obj.id )
+		end
+		news_manager.relocate_item( actor, "in", ammo_sect )
+	end
+	local u_tbl_name = "unload_o_weapon" 
+	amk.save_table( u_tbl_name, wpn_tbl )
+	amk.start_timer( u_tbl_name, 1, u_tbl_name )
+end
+
+--///////////////////////////
+function unload_weapon( tbl_name )
+	local tbl = amk.load_table( tbl_name )
+	if tbl then
+		for i=1,#tbl do
+			local obj_id = tbl[ i ]
+			if obj_id ~= nil then
+				local wpn = level.object_by_id( obj_id )
+				wpn:unload_magazine()
+			end
+		end
+	end
+	amk.del_variable( tbl_name )
+end
+
+--///////////////////////////
+function set_order_ready( tbl, flag )
+	if not flag then flag = 0 end
+	amk.update_table( tbl, "ready", 1 )
+end
+
+--///////////////////////////
+function order_ready( trader, actor )
+	local trader_name = trader:name()
+	local tbl_name = info_table[ trader_name ].tbl
+	local tbl = amk.load_table( tbl_name )
+	return ( tbl and tbl.order and tbl.ready == 1 )
+end
+
+--///////////////////////////
+function order_not_ready( trader, actor )
+	local trader_name = trader:name()
+	local tbl_name = info_table[ trader_name ].tbl
+	local tbl = amk.load_table( tbl_name )
+	return ( tbl and tbl.order and tbl.ready == 0 )
+end
+
+--///////////////////////////
+function release_addons( sobj, wpn, obj )
+	if sobj ~= nil then
+		local t = xrs_utils.get_weapon_data( sobj )
+		
+		t.scp = bit_and( t.addon_flags, 1 ) == 1
+		t.grl = bit_and( t.addon_flags, 2 ) == 2
+		t.sln = bit_and( t.addon_flags, 4 ) >= 4
+			
+		local h_scope = read_if_exist(system_ini(),wpn,"scope_status",nil)
+		local h_sil = read_if_exist(system_ini(),wpn,"silencer_status",nil)
+		local h_gren = read_if_exist(system_ini(),wpn,"grenade_launcher_status",nil)
+		
+		if h_scope == 2 then
+			h_scope = read_string_if_exist( system_ini(),wpn,"scope_name",nil )
+			if h_scope ~= nil and t.scp then
+				h_scope = alife():create(h_scope, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),db.actor:id())
+			end
+		end
+		if h_sil == 2 then
+			h_sil = read_string_if_exist(system_ini(),wpn,"silencer_name",nil)
+			if h_sil ~= nil and t.sln then
+				h_sil = alife():create(h_sil, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),db.actor:id())
+			end
+		end
+		if h_gren == 2 then
+			h_gren = read_string_if_exist(system_ini(),wpn,"grenade_launcher_name",nil)
+			if h_gren ~= nil and t.grl then
+				h_gren = alife():create(h_gren, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),db.actor:id())
+			end
+		end
+		local ammo = obj:get_ammo_in_magazine()
+		if ammo >= 1 then
+			local name = obj:name()
+			local ammoT = t.ammo_type
+			local section_ammo = current_ammo_section_in_weapon(obj:section(),ammoT)
+			if section_ammo ~= nil then
+				amk.spawn_ammo_in_inv(section_ammo, ammo, db.actor)
+			end
+		end
+	end
+end
+
+--///////////////////////////
+function read_if_exist(ltx, section, value, default)
+	if ltx:line_exist(section,value) then
+		return ltx:r_float(section,value)
+	else
+		return default
+	end
+end
+
+--///////////////////////////
+function read_string_if_exist(ltx, section, value, default)
+	if ltx:line_exist(section,value) then
+		return ltx:r_string(section,value)
+	else
+		return default
+	end
+end
+
+--///////////////////////////
+function current_ammo_section_in_weapon(section, ammo_type)
+	local ammo_classes = getIniValueStringSimple(section, "ammo_class", "")
+	local ammo_classes_tbl = Parse_StrToTbl(ammo_classes, ',')
+	ammo_type = ammo_type + 1
+	if ammo_type > #ammo_classes_tbl then
+		abort(string.format("current_ammo_section_in_weapon: ammo_type > #ammo_classes_tbl for %s ammo_classes '%s' ammo_type %s", section, ammo_classes, tostring(ammo_type)))
+	end
+	return ammo_classes_tbl[ammo_type]
+end
+
+--///////////////////////////
+function mid_val( val, arr )
+	local res = arr[ 1 ]
+	local dif = -1
+	local l = #arr
+	for i=1, l do
+		if ( dif < 0 or dif >= math.abs( arr[i] - val ) ) then
+			res = arr[ i ];
+			dif = math.abs( arr[i] - val )
+		end
+	end
+	return res
+end
+
+--///////////////////////////
+function time_from_milliseconds( milliseconds )
+	local t = milliseconds / 1000
+	local d = math.floor( t / 86400 ) 
+	t 		= math.fmod( t , 86400 )
+	local h = math.floor( t / 3600 )
+	t 		= math.fmod( t , 3600 )
+	local m	= math.floor( t / 60)
+	local s = math.floor( math.fmod( t , 60) )
+	local l = math.floor( math.fmod( milliseconds , 1000 ) )
+	return d,h,m,s,l
+end
+
+--///////////////////////////
+function GetFitIndex( sSect, t )
+	local index = -1
+	for i = 1, #t do
+		for k, v in pairs( t[ i ] ) do
+			if string.find( sSect, k, 1 ) and v then
+				index = i
+				break
+			end
+		end
+		if index ~= -1 then break end
+	end
+	return index
+end
+
+--///////////////////////////
+function isItemFit( sSect, index, t )
+	local isFit = false
+	local aItems = t[ index ]
+	
+	if not aItems then
+		return false 
+	end
+	
+	for k, v in pairs( aItems ) do
+		if string.find( sSect, k, 1 ) and v then
+			isFit = true
+			break
+		end
+	end
+	return isFit
+end
+
+--///////////////////////////
+function isOutFit( object )
+	local id = get_clsid( object )
+	if id == nil then return false end
+	
+	if id == clsid.equ_stalker_s then return true
+	elseif id == clsid.equ_exo then return true 
+	elseif id == clsid.equ_military then return true
+	elseif id == clsid.equ_scientific then return true
+	else 
+		return false
+	end
+end
+
+--///////////////////////////
+function get_object_svalue( sect, param )
+	local value = ""
+	if sys_ini:section_exist( sect ) then
+		if sys_ini:line_exist( sect, param ) then
+			value = game.translate_string( system_ini():r_string( sect, param ) )
+		end
+	end
+	return value
+end
+
+--///////////////////////////
+function ItemInSlotId( aSlot )
+	local sObj = db.actor:item_in_slot( aSlot )
+	return ( sObj ) and sObj:id() or 0
+end
+
+--///////////////////////////
+function StringSplit( sStr, sDiv, mode )
+    local tRet = {}
+    local sPatt
+	if sDiv then sPatt = '[^%s%'..sDiv..']+'
+        for sValue in sStr:gmatch( sPatt ) do
+			if mode == true then
+				tRet[ sValue ] = true
+			else
+				table.insert( tRet, sValue )
+			end
+        end
+    end
+	return tRet
+end
+
+--///////////////////////////
+function play_sound( sStr )
+	local sObj = xr_sound.get_safe_sound_object( sStr )
+	if sObj then
+		sObj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 2.0)
+	end
+end
+
+function spawner(text)
+	local type = text
+	local vid, gvid
+	local a = vector()
+	a = db.actor:position()
+	a.z = a.z + 2
+	a.y = a.y + 0.5
+	vid = db.actor:level_vertex_id()
+	gvid = db.actor:game_vertex_id()
+
+  local n = 1
+	local sf = string.find(text,",")
+	if sf then
+	  n = string.sub(text,sf+1)+0
+	  if n==nil then
+		n = 0
+	  elseif n>999 then
+		n = 999
+	  end
+	  type = string.sub(text,1,sf-1)
+	end
+
+	if not system_ini():section_exist(type) then
+	  amk.send_tip("Секция "..type.." не существует!","Cheat: Spawner",0,10,"gen_info")
+	  return false
+	end
+
+  for i=1,n do
+	alife():create(type,vector():set(a.x-1+math.random()*2,a.y,a.z-1+math.random()*2),vid,gvid,65535)
+  end
+
+  amk.send_tip("Создал "..type.." в количестве "..n.." штук.","Cheat: Spawner",0,10,"gen_info")
+  return true
+end

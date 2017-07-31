@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<!-- Respawner npc profile -->
+<xml>
+
+<character id="gr1_bandit_novice">
+	 <class>gr1_bandit_novice</class>
+</character>
+
+<character id="gr1_soldier_novice">
+	 <class>gr1_soldier_novice</class>
+</character>
+
+<character id="gr1_soldier_regular">
+	 <class>gr1_soldier_regular</class>
+</character>
+
+<character id="gr1_sergant_sniper">
+	 <class>gr1_sergant_sniper</class>
+</character>
+
+<character id="gr1_soldier_beret">
+	 <class>gr1_soldier_beret</class>
+</character>
+
+<character id="gr1_stalker_novice">
+	 <class>gr1_stalker_novice</class>
+</character>
+
+<character id="gr1_stalker_general">
+	 <class>gr1_stalker_general</class>
+</character>
+
+<character id="gr3_lastday_veteran">
+	 <class>gr3_lastday_veteran</class>
+</character>
+
+<character id="gr3_lastday_specnaz">
+	 <class>gr3_lastday_specnaz</class>
+</character>
+
+<character id="gr3_lastday_master">
+	 <class>gr3_lastday_master</class>
+</character>
+
+</xml>

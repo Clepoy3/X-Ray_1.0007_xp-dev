@@ -1,0 +1,273 @@
+local t_lc = {	-- ["info"] = { sid1, sid2, sid3, ... },
+		-- если sid и spawn_bla_bla_bla совпадают - все работает зашибись
+
+["info_atp_way_kordon"] = {1679, 1692},
+["agro_tainik_norman_done"] = {1641, 1648, 1649, 1650},
+["vuxod_atp_done"] = {1642},
+["shax_land_perehod_talk_start"] = {1664},
+["starik_zadanie_vzyt_done"] = {1671, 1682, 1646, 1647},
+["add_new_dcity_to_zaton"] = {1651},
+["perehod_warlab_na_gener"] = {1652, 1718},
+["frits_prohodi"] = {1653},
+["prizrak_frits_talk_start"] = {1654},
+["real_dok_say2_start"] = {1655},
+["saharov_poisk_start"] = {1656, 1658, 1659, 1713}, 
+["nayka_nabor3_finish"] = {1657, 1714},
+["info_amk_recipt_burer_grandmother_glassbeards"] = {1660, 1705, 1706, 1707},
+["esc_find_doctor_start"] = {1661},
+["val_chase_start"] = {1662, 1674, 1728, 1729},
+["agroprom_military_case"] = {1663},
+["ziklop_lekarstvo_nayti_start"] = {1727},
+["lysyi_klad_nayti_start"] = {1665, 1669},
+["otkput_march_perexod"] = {1666},
+["have_amk_zapiska"] = {1667},
+["add_new_agro_yantar"] = {1668},
+["kalinin_shnura_ok"] = {1670},
+["add_new_radar_109"] = {1672},
+["add_new_mil_darkvalley"] = {1673, 1684},
+["bar_darklab_document_start"] = {1640, 1675},
+["klenov_vse_ok_start"] = {1676},
+["bar_x16_documents_start"] = {1677},
+["bar_deactivate_radar_start"] = {1678},
+["ara_pda_est"] = {1680, 1683},
+["adr_shkatulka_dost_done"] = {1644, 1681},
+["yan_scientist_find_case_done"] = {1685},
+["have_sak_document"] = {1686},
+["denis_wound_start"] = {1687},
+["bolt_pda_start"] = {1688, 1699},
+["add_new_radar_to_warlab"] = {1689, 1719, 1720},
+["esc_reward_case_done"] = {1690},
+["have_rad_document6"] = {1691},
+["add_new_prypyat_to_village"] = {1693},
+["voronin_sms_done"] = {1694, 1711},
+["prizrak_chaes_say1_st"] = {1695},
+["open_perehod_aes"] = {1696, 1712}, 
+["perehod_chaes2_na_chaes"] = {1697, 1739},
+["chaes_perexod_done"] = {1698},
+["lima_dead_city"] = {1700},
+["semetskiy_vstrecha_start"] = {1701},
+["kolmogor_obsledovanie_done"] = {1702},
+["derevny_zashita_done"] = {1703},
+["boloto_provodnik_say1_st"] = {1704},
+["shax_plennik_nayti_start"] = {1643, 1708},
+["shax_kniga_naity_start"] = {1709, 1710},
+["borov_listok_est"] = {1715},
+["forest_psu_perex"] = {1716, 1717},
+["prizrak_tainiy_done"] = {1722, 1723},
+["gold_art_done"] = {1724, 1725},
+["ziklop_stix3_start"] = {1726, 1645},
+["robinzon_say_one_start"] = {1730},
+["yantar_tunnel_finish"] = {1731},
+["na_bolota"] = {1732},
+["na_gener_vert"] = {1733},
+["sarcofag_derevny"] = {1734},
+["control_monol_svalka"] = {1735},
+["saxar_zhena_say_start"] = {1736},
+["mozg_yantar"] = {1737},
+["dead_city_atpeshka"] = {1738},
+["escape_meceniy_start"] = {1638, 1639},
+["info_con_way_sar"] = {1637}
+}
+
+local t_labels = {	-- имена и метки
+[1637]	= { "exit_to_sarcofag_from_bum",	"Бум - Саркофаг" },
+[1638]	= { "exit_to_puzir_from_garbage",	"Свалка - Забытый Лес" },
+[1639]	= { "puz_exit_to_gar",			"Забытый Лес - Свалка" },
+[1640]	= { "gar_exit_to_darkvalley_high",	"Свалка - Тёмная Долина" },
+[1641]	= { "atp_to_cit", 	"АТП - Мёртвый Город" },
+[1642]	= { "atp_to_gar", 		"АТП - Свалка" },
+[1643]	= { "avu_to_pes", 		"Лабиринт - Пещера" },
+[1644]	= { "avu_to_ros", 		"Лабиринт - Росток" },
+[1645]	= { "avu_to_avr", 		"Лабиринт - Неразведанная земля" },
+[1646]	= { "aver_to_darkvalley", 	"Неразведанная земля - Тёмная Долина" },
+[1647]	= { "aver_to_military", 	"Неразведанная земля - АС" },
+[1648]	= { "dcity_to_limansk", 	"Мёртвый Город - Лиманск" },
+[1649]	= { "dead_city_to_atp", 	"Мёртвый Город - АТП" },
+[1650]	= { "dead_city_to_newrostok", 	"Мёртвый Город - Росток" },
+[1651]	= { "dcity_to_zaton", 		"Мёртвый Город - Затон" },
+[1652]	= { "gener_to_warlab", 		"Генераторы - Варлаб" },
+[1653]	= { "gener_to_hospital", 	"Генераторы - Госпиталь" },
+[1654]	= { "gener_to_pripyat", 	"Генераторы - Припять" },
+[1655]	= { "hospital_to_agroprom", 	"Госпиталь - Агропром" },
+[1656]	= { "jupiter_to_puteprovod", 	"Юпитер - Путепровод" },
+[1657]	= { "jupiter_to_pripyat", 	"Юпитер - Восточная Припять" },
+[1658]	= { "puteprovod_to_opr", 	"Путепровод - Восточная Припять" },
+[1659]	= { "puteprovod_to_jupiter", 	"Путепровод - Юпитер" },
+[1660]	= { "esc_to_mar",          "Кордон - Болота" },
+[1661]	= { "esc_to_agr",          "Кордон - Агропром" },
+[1662]	= { "esc_to_del",          "Кордон - Лощина" },
+[1663]	= { "esc_to_gar",          "Кордон - Свалка" },
+[1664]	= { "svalka_to_aver", 		"Свалка - Неразведанная Земля" },
+[1665]	= { "garbage_to_peshera", 	"Свалка - Пещера" },
+[1666]	= { "agroprom_marsh1", 		"Агропром - Болота" },
+[1667]	= { "agroprom_to_escape", 	"Агропром - Кордон" },
+[1668]	= { "agroprom_to_yantar", 	"Агропром - Янтарь" },
+[1669]	= { "agroprom_to_peshera", 	"Агропром - Пещера" },
+[1670]	= { "darkvalley_les", 		"Тёмная Долина - Забытый Лес" },
+[1671]	= { "td_to_aver", 		"Тёмная Долина - Неразведанная Земля" },
+[1672]	= { "td_to_radar", 		"Тёмная Долина - Радар" },
+[1673]	= { "td_to_mil", 		"Тёмная Долина - Шахта" },
+[1674]	= { "td_to_darkscape", 		"Тёмная Долина - Лощина" },
+[1675]	= { "td_to_svalka", 		"Тёмная Долина - Свалка" },
+[1676]	= { "x18_to_warlab", 		"Х18 - Варлаб" },
+[1677]	= { "bar_exit_to_rostok", 	"Бар - Росток" },
+[1678]	= { "bar_to_military", 		"Бар - АС" },
+[1679]	= { "bar_to_atp_", 		"Бар - АТП" },
+[1680]	= { "rostok_to_mil", 		"Росток - АС" },
+[1681]	= { "rostok_to_av_peshera", 	"Росток - Лабиринт" },
+[1682]	= { "military_to_aver", 	"АС - Неразведанная Земля" },
+[1683]	= { "military_to_rostok", 	"АС - Росток" },
+[1684]	= { "military_to_darkvalley", 	"АС - Шахта" },
+[1685]	= { "yantar_to_agroprom", 	"Янтарь - Агропром" },
+[1686]	= { "yantar_to_radar", 		"Янтарь - Радар" },
+[1687]	= { "radar_to_red_forest", 	"Радар - Красный Лес" },
+[1688]	= { "radar_to_х8", 		"Радар - Х8" },
+[1689]	= { "radar_to_warlab", 		"Радар - Варлаб" },
+[1690]	= { "radar_to_yantar", 		"Радар - Янтарь" },
+[1691]	= { "radar_to_darkvalley", 	"Радар - Тёмная Долина" },
+[1692]	= { "atp_to_bar", 	"АТП - Бар" },
+[1693]	= { "pripyat_lost_village", 	"Припять - Старая Деревня" },
+[1694]	= { "pripyat_to_opr", 		"Припять - Восточная Припять" },
+[1695]	= { "chaes_to_generators", 	"ЧАЭС1 - Генераторы" },
+[1696]	= { "aes_to_opr", 		"ЧАЭС1 - Восточная Припять" },
+[1697]	= { "as2_to_aes",               "ЧАЭС2 - ЧАЭС1" },
+[1698]	= { "as2_to_atp",               "ЧАЭС2 - АТП" },
+[1699]	= { "labx8_to_radar", 		"Х8 - Радар" },
+[1700]	= { "limansk_to_dead_city", 	"Лиманск - Мёртвый Город" },
+[1701]	= { "limansk_to_generators", 	"Лиманск - Генераторы" },
+[1702]	= { "lost_village_to_limansk", 	"Старая Деревня - Лиманск" },
+[1703]	= { "lost_village_to_hospital", "Старая Деревня - Госпиталь" },
+[1704]	= { "marsh_to_lost_village", 	"Болота - Старая Деревня" },
+[1705]	= { "mar_to_escape_1", 		"Болота - Кордон1" },
+[1706]	= { "mar_to_escape_2", 		"Болота - Кордон2" },
+[1707]	= { "mar_to_agroprom_1", 	"Болота - Агропром" },
+[1708]	= { "peshera_to_av_peshera", 	"Пещера - Лабиринт" },
+[1709]	= { "peshera_to_svalka", 	"Пещера - Свалка" },
+[1710]	= { "peshera_to_agroprom", 	"Пещера - Агропром" },
+[1711]	= { "opr_to_pripyat", 		"Восточная Припять - Припять" },
+[1712]	= { "opr_to_aes", 		"Восточная Припять - ЧАЭС1" },
+[1713]	= { "opr_to_puteprovod", 	"Восточная Припять - Путепровод" },
+[1714]	= { "opr_to_jupiter", 		"Восточная Припять - Юпитер" },
+[1715]	= { "puz_to_val", 		"Забытый Лес - Тёмная Долина" },
+[1716]	= { "red_forest_to_warlab", 	"Красный Лес - Варлаб" },
+[1717]	= { "red_forest_to_puzir", 	"Красный Лес - Забытый Лес" },
+[1718]	= { "war_to_gen",               "Варлаб - Генераторы" },
+[1719]	= { "war_to_rad",               "Варлаб - Радар" },
+[1720]	= { "war_to_x16",               "Варлаб - Х16" },
+[1722]	= { "sarkofag_to_bunker", 	"Саркофаг - Х10" },
+[1723]	= { "bunker_to_sarkofag", 	"Х10 - Саркофаг" },
+[1724]	= { "sarkofag_to_chaes2", 	"Саркофаг - ЧАЭС2" },
+[1725]	= { "as2_to_sar",         "ЧАЭС2 - Саркофаг" },
+[1726]	= { "aver_to_av_peshera", 	"Неразведанная Земля - Лабиринт" },
+[1727]	= { "aver_to_svalka", 		"Неразведанная Земля - Свалка" },
+[1728]	= {"ds_exit_to_esc",		"Лощина - Кордон" },
+[1729]	= {"ds_exit_to_val",		"Лощина - Тёмная Долина" },
+[1730]	= {"zat_exit_to_dcity",		"Затон - Мёртвый Город" },
+[1731]	= {"exit_to_yantarl_01",	"Х16 - Янтарь" },
+[1732]	= {"gener_bolota_lc",		"Генераторы - Болота" },
+[1733]	= {"mar_gener_lc",			"Болота - Генераторы" },
+[1734]	= {"sar_derevnya_lc",		"Саркофаг - Старая Деревня" },
+[1735]	= {"mon_svalka_lc",			"БУМ - Свалка" },
+[1736]	= {"yan_brainlab_lc",		"Янтарь - Х16(мозг)" },
+[1737]	= {"x16_brainlab_lc",		"Х16(мозг) - Янтарь" },
+[1738]	= {"dead_city_atpeshka",	"Мёртвый Город - АТП"},
+[1739]	= {"aes_to_aes2",	"ЧАЭС1 - ЧАЭС2"}
+}
+
+local t_static = {
+[1594]	= { "radar_to_military", 	"Радар - АС" },
+[1595]  = {"sarkofag_to_l12_stancia", "Саркофаг - ЧАЭС1" },
+[1596]  = {"min_to_l04_darkvalley", "Шахта - Тёмная Долина" },
+[1597]  = {"min_to_l07_military",	"Шахта - АС" },
+[1598]	= { "bar_to_garbage",			"Бар - Свалка" },
+[1599]	= { "gar_to_escape",			"Свалка - Кордон" },
+[1600]	= { "gar_exit_to_agroprom_02",		"Свалка- Агропром" },
+[1601]	= { "gar_exit_to_bar",			"Свалка - Бар" },
+
+[1605]	= { "exit_to_labx18_01",		"Тёмная Долина - Х18" },
+[1606]	= { "exit_to_darkvalley_01",		"Х18 - Тёмная Долина" },
+[1607]	= { "agr_exit_to_garbage_02",		"Агропром - Свалка" },
+[1608]	= { "exit_to_agr_underground_02",	"Агропром - Подземка Агро (Крот)" },
+[1609]	= { "exit_to_agr_underground_05",	"Агропром - Подземка Агро (база)" },
+[1610]	= { "exit_to_agroprom_02",		"подземка Агро - Агро (Крот)" },
+[1611]	= { "exit_to_agroprom_06",		"подземка Агро - Агро (база)" },
+[1612]	= { "rostok_exit_to_yantar",		"Росток - Янтарь" },
+[1613]	= { "rostok_exit_to_bar",		"Росток - Бар" },
+[1614]	= { "yan_exit_to_rostok",		"Янтарь - Росток" },
+[1615]	= { "yan_exit_to_brainlab",		"Янтарь - Х16" },
+[1616]	= { "red_level_changer_to_radar",	"Красный Лес - Радар" },
+[1617]	= { "exit_to_yantar_tunnel_01",		"Х16 - Янтарь  (тоннель)" },
+[1618]	= { "Mil_Exit_to_Bar",			"АС - Бар" },
+[1619]	= { "Mil_Exit_to_Radar",		"АС - Радар" },
+[1620]	= { "rad_exit_to_pripyat",		"Радар - Припять" },
+[1621]	= { "rad_bunker",			"Радар - Х10" },
+[1622]	= { "bunker_exit_to_radar_01",		"Х10 - Радар" },
+[1623]	= { "pri_exit_to_radar",		"Припять - Радар" },
+[1624]	= { "pri_exit_to_aes",			"Припять - ЧАЭС1" },
+[1625]	= { "exit_to_pripyat_from_st1",		"ЧАЭС1 - Припять" },
+[1626]	= { "exit_to_sarkofag_from_st1",	"ЧАЭС1 - Саркофаг" },
+[1627]	= { "exit_to_bum_from_sarkofag",	"Саркофаг - БУМ" },
+
+[1629]	= { "exit_to_stancia2_from_bum",	"Бум - ЧАЭС2" },
+[1630]	= { "as2_to_pri",                     "ЧАЭС2 - Припять" },
+[1631]	= { "as2_to_con",                     "ЧАЭС2 - БУМ" },
+[1632]	= { "limansk_to_atp",			"Лиманск - Красный Лес" },
+[1633]	= { "limansk_to_hospital",		"Лиманск - Госпиталь" },
+[1634]	= { "exit_to_limansk_from_hospital",	"Госпиталь - Лиманск" },
+[1635]	= { "red_level_changer_to_atp",		"Красный Лес - АТП" },
+[1636]	= { "red_level_changer_to_limansk",	"Красный Лес - Лиманск" }
+}
+
+
+sim = alife()
+
+function on_info( nfo )	-- создание перехода, info на входе
+	local t = t_lc[nfo]
+	if t then
+		for i, sid in ipairs( t ) do
+			if sim:story_object( sid ) then	-- уже есть, больше ничего создавать не нужно
+			else
+				-- не работает. spawn_story_ids - пустая -- local ssi = spawn_story_ids[sid] or sid
+				local ssi = sid	-- затычка
+				if ssi then
+					local spawn_id = sim:spawn_id( ssi )
+					if spawn_id then
+						local obj = sim:create( spawn_id )
+						if obj then
+							obj = sim:object( obj.id )
+							if obj then
+								local s = t_labels[sid]
+								if s then
+									level.map_add_object_spot_ser( obj.id, "level_changer", s[2] )
+									amk.send_tip("","Новый путь: "..s[2],0,10,"gen_info")
+								else
+									level.map_add_object_spot_ser( obj.id, "level_changer", "куда-то туда" )
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+-- удаление всех переходов
+function clear_all_lc()
+	local lc
+	for i = 1637, 1739 do
+		lc = sim:story_object( i )
+		if lc then
+			sim:release( lc, true )
+		end
+	end
+
+	-- и ВРЕМЕННО установка постоянных меток здесь же.
+	-- todo: заменить на динамические, только без идиотской записи в пстор
+	for k, v in pairs( t_static ) do
+		lc = sim:story_object( k )
+		if lc then
+			level.map_add_object_spot_ser( lc.id, "level_changer", v[2] )
+		end
+	end
+end

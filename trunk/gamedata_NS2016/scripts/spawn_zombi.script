@@ -1,0 +1,653 @@
+-- ОБРАБОТКА взятых предметов (спавн монстров):
+function checking_taken_item(obj)
+
+ -- книга Шахтера (checking_taken_item41)
+  if obj:section()=="book_xabarych" and not has_alife_info("xvatit_spawn6") then
+   alife():create("agr_soldier_regular",vector():set(-215.29968261719,0.81873428821564,-205.69987487793),17147,2882)
+   alife():create("agr_soldier_regular",vector():set(-215.29968261719,0.81873428821564,-205.69987487793),17147,2882)
+   alife():create("agr_soldier_regular",vector():set(-215.29968261719,0.81873428821564,-205.69987487793),17147,2882)
+   alife():create("agr_soldier_regular",vector():set(-190.48176574707,3.8373117446899,-205.54972839355),36394,2882)
+   alife():create("agr_soldier_regular",vector():set(-190.48176574707,3.8373117446899,-205.54972839355),36394,2882)
+   alife():create("agr_soldier_regular",vector():set(-190.48176574707,3.8373117446899,-205.54972839355),36394,2882)
+   alife():create("agr_soldier_veteran",vector():set(-204.25308227539,0.37479916214943,-224.04116821289),25484,2882)
+   alife():create("agr_soldier_veteran",vector():set(-204.25308227539,0.37479916214943,-224.04116821289),25484,2882)
+   arhara_dialog.dell_prohod()
+   db.actor:give_info_portion("xvatit_spawn6") 
+
+ -- Видеорация (checking_taken_item42)                 	
+ elseif obj:section()=="3d_raziy" and not has_alife_info("xvatit_spawn7") then
+   alife():create("bloodsucker_sky",vector():set(-296.89874267578,-22.190504074097,286.92123413086),45801,1833)
+   alife():create("agr_soldier_veteran",vector():set(-279.85797119141,-22.178747177124,295.20132446289),60066,1832)
+   alife():create("agr_soldier_veteran",vector():set(-279.85797119141,-22.178747177124,295.20132446289),60066,1832)
+   alife():create("agr_soldier_veteran",vector():set(-279.85797119141,-22.178747177124,295.20132446289),60066,1832)
+   alife():create("agr_soldier_regular",vector():set(-279.85797119141,-22.178747177124,295.20132446289),60066,1832)
+   db.actor:give_info_portion("xvatit_spawn7") 
+
+ end
+end
+
+
+function spawn_gigant()
+ alife():create("gigant_strong",vector():set(123.00789642334,-2.8396821022034,-265.21520996094),320162,812)
+end
+
+function spawn_krovosos8()
+ alife():create("bloodsucker_strong",vector():set(-17.042646408081,0.34361407160759,-39.846321105957),5037,1960)
+end
+
+function spawn_krovosos9()
+ alife():create("bloodsucker_strong",vector():set(202.84341430664,2.8056454658508,212.30674743652),261166,2219)
+end
+
+function spawn_krovosos10()
+ alife():create("bloodsucker_strong",vector():set(-117.9132232666,1.2031532526016,103.49546813965),7427,2216)
+end
+
+function spawn_krovosos11()
+ alife():create("bloodsucker_strong",vector():set(-118.59702301025,-2.0015077590942,98.689834594727),7412,2216)
+end
+
+function spawn_kontroller()
+ alife():create("controller_normal",vector():set(1.7860032320023,3.3078780174255,-17.679542541504),11207,2027)
+end
+
+function spawn_kontroller2()
+ alife():create("controller_strong",vector():set(161.87483215332,-0.12682989239693,208.54525756836),249970,2219)
+end
+
+function spawn_kontroller3()
+ alife():create("controller_normal",vector():set(-132.71118164063,-2.3125338554382,75.232917785645),4523,2253)
+end
+
+function spawn_scelet()
+ alife():create("scelet_strong",vector():set(-56.409778594971,-18.285701751709,70.902244567871),6297,3850)
+ alife():create("scelet_strong",vector():set(-56.409778594971,-18.285701751709,70.902244567871),6297,3850)
+end
+
+function spawn_poltergeist()
+ alife():create("poltergeist_normal",vector():set(-71.155990600586,-16.205516815186,67.432090759277),4955,3841)
+ alife():create("poltergeist_normal",vector():set(-71.155990600586,-16.205516815186,67.432090759277),4955,3841)
+ alife():create("poltergeist_normal",vector():set(-71.155990600586,-16.205516815186,67.432090759277),4955,3841)
+end
+
+function labx8_sms_gavr()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."ГАВР".."\\n".."%c[255,255,128,128]Стрелок, я знаю что это ты. А ты упрямый, нашёл меня всё-таки. Код от двери тоже нашёл? Может договоримся?".."".."\n", nil, nil, 25000)
+end
+
+function labx8_sms_gg()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Гавр, собственной персоной... Не переживай, дверь я смогу открыть. Я, как ты сказал, упрямый и умею искать, а с такой сволочью, как ты, договоров никаких не будет. Лучше помолись, если умеешь.".."".."\n", nil, nil, 25000)
+end
+
+function labx8_sms_gavr2()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."ГАВР".."\\n".."%c[255,255,128,128]Ну, ну... Так, значит так. Поехали.".."".."\n", nil, nil, 25000)
+end
+
+function sms_dos()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Гавр в спешке потерял ПДА, но информация стёрта. Надо к Доценту сходить, может сможет что-нибудь ещё с этого ПДА вытащить. Неспроста Гавр заказал убить Болта, ради этого ПДА.".."".."\n", nil, nil, 25000)
+db.actor:give_info_portion("bolt_pda_docent")
+end
+
+function have_bolt_pda()
+	return have_GG_item("bolt_pda") ~= false
+end
+
+function bolt_pda_out()
+	out_GG_item("bolt_pda")
+      local resuls = 270 + (math.random()*60)
+      amk.start_timer("timer_bolt_pda",resuls)
+end
+
+function bolt_pda_repair()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."ДОЦЕНТ".."\\n".."%c[255,255,128,128]Стрелок, по поводу инфы с пда, кое-что вытащил. Приходи... и про Колобок не забудь...".."".."\n", nil, nil, 25000)
+db.actor:give_info_portion("bolt_pda_repair")
+end
+
+function have_kolobok()
+	return have_GG_item("af_fuzz_kolobok") ~= false
+end
+
+function kolobok_out()
+	out_GG_item("af_fuzz_kolobok")
+end
+
+function voronin_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."ВОРОНИН".."\\n".."%c[255,255,128,128]Стрелок, будешь в Баре, загляни.".."".."\n", nil, nil, 25000)
+db.actor:give_info_portion("voronin_sms_start")
+end
+
+function have_pushka_matvei()
+return have_GG_item("wpn_pkm") ~= false and have_GG_item("unknown_pda") ~= false and have_GG_item("ammo_7.62x54r") ~= false
+end
+
+
+function pushka_matvei_out(speak,reply)
+	transfer_OUT_sect(speak,reply,"wpn_pkm")
+	transfer_OUT_sect(speak,reply,"ammo_7.62x54r")
+end
+
+function pda_matvei_out()
+	out_GG_item("unknown_pda")
+end
+
+function plichko_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."Пличко".."\\n".."%c[255,255,128,128]Похоже, вторая группа уже там и вступила в бой.".."".."\n", nil, nil, 25000)
+end
+
+function matvei_zakaz()
+	return have_GG_item("wpn_desert_eagle") ~= false and have_GG_item("wpn_raging_bull") ~= false
+end
+
+function matvei_zakaz_out()
+	out_GG_item("wpn_desert_eagle")
+      out_GG_item("wpn_raging_bull")
+end
+
+function matvei_money(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,8000)
+end
+
+function matvei_zakaz2()
+	return have_GG_item("wpn_toz34") ~= false and have_GG_item("wpn_uzi") ~= false
+end
+
+function matvei_zakaz2_out()
+	out_GG_item("wpn_toz34")
+      out_GG_item("wpn_uzi")
+end
+
+function matvei_money2(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,9000)
+end
+
+function matvei_zakaz3()
+	return amk_utils.inventory_search("af_eye_voron",2) ~= false and have_GG_item("wpn_aek971") ~= false
+end
+
+function matvei_zakaz3_out()
+	item_out_rnd("af_eye_voron",2)
+      out_GG_item("wpn_aek971")
+end
+
+function matvei_money3(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,15000)
+end
+
+function matvei_zakaz4()
+	return amk_utils.inventory_search("wpn_vuhlop",2) 
+end
+
+function matvei_zakaz4_out()
+	item_out_rnd("wpn_vuhlop",2)
+end
+
+function matvei_money4(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,20000)
+end
+
+function matvei_zakaz5()
+	return amk_utils.inventory_search("wpn_bm16",3) ~= false and have_GG_item("wpn_awm") ~= false
+end
+
+function matvei_zakaz5_out()
+	item_out_rnd("wpn_bm16",3)
+      out_GG_item("wpn_awm")
+end
+
+function matvei_money5(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,15000)
+end
+
+function matvei_zakaz6()
+	return have_GG_item("wpn_fn2000") ~= false and have_GG_item("wpn_fort") ~= false
+end
+
+function matvei_zakaz6_out()
+	out_GG_item("wpn_fn2000")
+      out_GG_item("wpn_fort")
+end
+
+function matvei_money6(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,20000)
+end
+
+function matvei_zakaz7()
+	return have_GG_item("wpn_hk417_sk1") ~= false and have_GG_item("wpn_ppsh41_sk2") ~= false
+end
+
+function matvei_zakaz7_out()
+	out_GG_item("wpn_hk417_sk1")
+      out_GG_item("wpn_ppsh41_sk2")
+end
+
+function matvei_money7(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,45000)
+end
+
+function saharov_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."ПРОФЕССОР САХАРОВ".."\\n".."%c[255,255,128,128]Стрелок, где вы сейчас находитесь?".."".."\n", nil, nil, 25000)
+end
+
+function saharov_sms_gg()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Профессор, это вы. Я в Восточной Припяти. Вы что-то хотели?".."".."\n", nil, nil, 25000)
+end
+
+function saharov_sms2()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."ПРОФЕССОР САХАРОВ".."\\n".."%c[255,255,128,128]Просто замечательно, какое совпадение. У меня к вам большая просьба, не откажите пожалуйста, так как мне некого больше попросить.".."".."\n", nil, nil, 25000)
+end
+
+function saharov_sms_gg2()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Профессор, я всегда рад вам помочь, чем могу. Говорите.".."".."\n", nil, nil, 25000)
+end
+
+function saharov_sms3()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."ПРОФЕССОР САХАРОВ".."\\n".."%c[255,255,128,128]У нас пропала связь с нашими коллегами с территории Юпитера. Не могли бы вы разузнать, что у них случилось? Вы возьмётесь помочь?".."".."\n", nil, nil, 25000)
+end
+
+function saharov_sms_gg3()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Юпитер говорите... Ладно, говорите как попасть на Юпитер. Попробую разузать, что случилось с вашими учёными.".."".."\n", nil, nil, 25000)
+end
+
+function saharov_sms4()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."ПРОФЕССОР САХАРОВ".."\\n".."%c[255,255,128,128]Очень хорошо, но проблема в том, что я не знаю открытых тропок на Юпитер. Ходят слухи, что есть где-то в Восточной Припяти старый и забытый путь через какой-то путепровод.".."".."\n", nil, nil, 25000)
+end
+
+function saharov_sms_gg4()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Ну профессор, вы меня озадачили. Эх, да где наша не пропадала.., попробую найти этот путь.".."".."\n", nil, nil, 25000)
+end
+
+function saharov_sms5()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."ПРОФЕССОР САХАРОВ".."\\n".."%c[255,255,128,128]Я буду ждать от вас хороших известий. До встречи Стрелок и будьте осторожны.".."".."\n", nil, nil, 25000)
+db.actor:give_info_portion("saharov_poisk_start")
+end
+
+
+
+function spawn_snork()
+ alife():create("snork_strong",vector():set(27.358455657959,7.1865854263306,-146.27642822266),28819,3809)
+ alife():create("snork_strong",vector():set(27.358455657959,7.1865854263306,-146.27642822266),28819,3809)
+end
+
+function spawn_spider()
+ alife():create("spider_strong",vector():set(64.910484313965,3.0943388938904,4.119544506073),39314,3808)
+end
+
+function spawn_spider2()
+ alife():create("spider_strong",vector():set(-54.27751159668,3.2082998752594,-0.11834905296564),330,3775)
+ alife():create("spider_strong",vector():set(-54.27751159668,3.2082998752594,-0.11834905296564),330,3775)
+end
+
+function spawn_spider3()
+ alife():create("spider_strong",vector():set(15.634775161743,1.4341027736664,-16.02946472168),23118,3800)
+end
+
+function spawn_spider4()
+ alife():create("spider_strong",vector():set(25.06056022644,1.0935761928558,81.762336730957),29003,3805)
+ alife():create("spider_strong",vector():set(53.176147460938,0.14994299411774,111.08610534668),36640,3822)
+ alife():create("spider_strong",vector():set(55.585540771484,0.13578906655312,103.26273345947),37356,3819)
+end
+
+function spawn_spider5()
+ alife():create("spider_strong",vector():set(38.048450469971,4.7022857666016,182.35089111328),32009,3814)
+end
+
+function spawn_rat()
+ alife():create("rat_strong",vector():set(-105.71,-16.36,-22.23),928,710)
+ alife():create("rat_strong",vector():set(-105.71,-16.36,-22.23),928,710)
+ alife():create("rat_strong",vector():set(-105.71,-16.36,-22.23),928,710)
+ alife():create("rat_strong",vector():set(-105.71,-16.36,-22.23),928,710)
+ alife():create("rat_strong",vector():set(-105.71,-16.36,-22.23),928,710)
+end
+
+function spawn_scelet2()
+ alife():create("scelet_strong",vector():set(6.44,-16.40,29.76),3674,1159)
+ alife():create("scelet_strong",vector():set(3.15,-14.46,29.59),3317,1157)
+end
+
+function spawn_scelet3()
+ alife():create("scelet_strong",vector():set(8.89,4.18,6.37),4076,1123)
+ alife():create("scelet_strong",vector():set(5.13,4.18,15.94),3462,1121)
+end
+
+function spawn_tarakan()
+ alife():create("tarakan_strong",vector():set(59.33,4.55,-12.09),5620,1538)
+ alife():create("tarakan_strong",vector():set(59.33,4.55,-12.09),5620,1538)
+ alife():create("tarakan_strong",vector():set(59.33,4.55,-12.09),5620,1538)
+ alife():create("tarakan_strong",vector():set(59.33,4.55,-12.09),5620,1538)
+ alife():create("tarakan_strong",vector():set(59.33,4.55,-12.09),5620,1538)
+ alife():create("tarakan_strong",vector():set(59.33,4.55,-12.09),5620,1538)
+ alife():create("tarakan_strong",vector():set(59.33,4.55,-12.09),5620,1538)
+ alife():create("tarakan_strong",vector():set(59.33,4.55,-12.09),5620,1538)
+ alife():create("tarakan_strong",vector():set(59.33,4.55,-12.09),5620,1538)
+end
+
+function spawn_tarakan2()
+ alife():create("tarakan_strong",vector():set(-0.90,-21.90,57.89),5814,2753)
+ alife():create("tarakan_strong",vector():set(-0.90,-21.90,57.89),5814,2753)
+ alife():create("tarakan_strong",vector():set(-0.90,-21.90,57.89),5814,2753)
+ alife():create("tarakan_strong",vector():set(-0.90,-21.90,57.89),5814,2753)
+ alife():create("tarakan_strong",vector():set(-0.90,-21.90,57.89),5814,2753)
+ alife():create("tarakan_strong",vector():set(-0.90,-21.90,57.89),5814,2753)
+ alife():create("tarakan_strong",vector():set(-0.90,-21.90,57.89),5814,2753)
+end
+
+function spawn_rat2()
+ alife():create("rat_strong",vector():set(318.64,-5.72,-294.09),832278,2847)
+ alife():create("rat_strong",vector():set(318.64,-5.72,-294.09),832278,2847)
+ alife():create("rat_strong",vector():set(318.64,-5.72,-294.09),832278,2847)
+ alife():create("rat_strong",vector():set(318.64,-5.72,-294.09),832278,2847)
+ alife():create("rat_strong",vector():set(318.64,-5.72,-294.09),832278,2847)
+ alife():create("rat_strong",vector():set(318.64,-5.72,-294.09),832278,2847)
+ alife():create("rat_strong",vector():set(318.64,-5.72,-294.09),832278,2847)
+end
+
+function matvei_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."МАТВЕЙ".."\\n".."%c[255,255,128,128]Нужна помо... .... в мн...жке, рядом урод... дерево. Остор... хим...ы.".."".."\n", nil, nil, 25000)
+end
+
+function artem_sms_gg()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Артём, я нашёл твоего брата. В Восточной Припяти он сейчас. Не переживай, с ним всё в порядке. Чуть позже, он с тобой сам свяжется.".."".."\n", nil, nil, 25000)
+end
+
+function artem_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."АРТЁМ КУЛИНАР".."\\n".."%c[255,255,128,128]Это хорошие новости Стрелок. Спасибо.".."".."\n", nil, nil, 25000)
+end
+
+function stalker_ranen_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."Димон-Kalter".."\\n".."%c[255,255,128,128]Есть кто поблизости? Я ранен, нужна аптечка.".."".."\n", nil, nil, 25000)
+end
+
+function spawn_tarakan3()
+ alife():create("tarakan_strong",vector():set(-161.85,16.41,-307.77),444364,3710)
+ alife():create("tarakan_strong",vector():set(-161.85,16.41,-307.77),444364,3710)
+ alife():create("tarakan_strong",vector():set(-161.85,16.41,-307.77),444364,3710)
+ alife():create("tarakan_strong",vector():set(-161.85,16.41,-307.77),444364,3710)
+ alife():create("tarakan_strong",vector():set(-161.85,16.41,-307.77),444364,3710)
+end
+
+function serj_sms_gg()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Димон, кажется я нашёл этого сталкера-крысу. Похоже тот ещё тип. Только оторвать ты ему уже ничего не сможешь, кровососы постарались за тебя.".."".."\n", nil, nil, 25000)
+end
+
+function serj_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."Димон-Kalter".."\\n".."%c[255,255,128,128]Туда ему и дорога. Спасибо за новость Стрелок. Увидимся.".."".."\n", nil, nil, 25000)
+end
+
+function sahar_sms_gg()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Профессор, я нашёл ваших учёных. С ними всё в порядке. Они с вами сами свяжутся и всё расскажут. И да, вы бы им хоть какую-то охрану организовали что ли.".."".."\n", nil, nil, 25000)
+end
+
+function sahar_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."САХАРОВ".."\\n".."%c[255,255,128,128]Это хорошие новости Стрелок, спасибо. Насчёт охраны.., я предприму меры.".."".."\n", nil, nil, 25000)
+end
+
+function kostya_sms_gg()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СТРЕЛОК".."\\n".."%c[255,255,128,128]Костя, привет. Мне тут в руки попался интересный пда военных, но инфа закодирована, а ты умеешь такие штуки расковыривать. Думаю, там много интересного. Поможешь?".."".."\n", nil, nil, 25000)
+end
+
+function kostya_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."КОСТЯ".."\\n".."%c[255,255,128,128]Привет Стрелок. Да не вопрос, помогу. Я скоро буду на Юпитере, в лагере сталков на станции. Подходи и приноси свой пда. До встречи.".."".."\n", nil, nil, 25000)
+end
+
+function pda_voyak_est()
+	return have_GG_item("pda_voyak") ~= false
+end
+
+function pda_voyak_out()
+	out_GG_item("pda_voyak")
+      local resuls = 270 + (math.random()*60)
+      amk.start_timer("timer_pda_voyak",resuls)
+end
+
+function pda_voyak_repair()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."КОСТЯ".."\\n".."%c[255,255,128,128]Стрелок подходи, кое-что есть.".."".."\n", nil, nil, 25000)
+db.actor:give_info_portion("pda_voyak_repair")
+end
+
+function kostya_flash_est()
+	return have_GG_item("infa_flash1") ~= false and have_GG_item("infa_flash2") ~= false and have_GG_item("infa_flash3") ~= false
+end
+
+function kostya_flash_out()
+	out_GG_item("infa_flash1")
+      out_GG_item("infa_flash2")
+	out_GG_item("infa_flash3")
+end
+
+function kostya_flash_est2()
+	return have_GG_item("infa_flash4") ~= false and have_GG_item("infa_flash5") ~= false
+end
+
+function kostya_flash_est2_out()
+	out_GG_item("infa_flash4")
+      out_GG_item("infa_flash5")
+end
+
+function kostya_flash_est3()
+	return have_GG_item("infa_flash6") ~= false and have_GG_item("infa_flash7") ~= false
+end
+
+function kostya_flash_est3_out()
+	out_GG_item("infa_flash6")
+      out_GG_item("infa_flash7")
+end
+
+function kostya_flash_est4()
+	return have_GG_item("infa_flash8") ~= false
+end
+
+function kostya_flash_est4_out()
+	out_GG_item("infa_flash8")
+end
+
+function signal_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."МЕЧЕНЫЙ".."\\n".."%c[255,255,128,128]Пуля, Саня, снайпера по периметру убраны. Я пошёл за Боровом, подтягивайтесь на помощь.".."".."\n", nil, nil, 25000)
+end
+
+function pulia_optika_dal()
+	in_GG_item("af_gold_fish")
+end
+
+function gg_open_sms()
+news_manager.send_tip(db.actor, "%c[255,160,160,160]".."МЕЧЕНЫЙ".."\\n".."%c[255,255,128,128]Давайте ребята, выбирайтесь отсюда.".."".."\n", nil, nil, 25000)
+end
+
+function nayka_nabor_spawn()
+ alife():create("m_inventory_box82",vector():set(25.41,-14.22,63.50),5907,1161)
+end
+
+function nayka_nabor_est()
+	return amk_utils.inventory_search("ecolog_outfit",3) ~= false
+end
+
+function nayka_nabor_out()
+	item_out_rnd("ecolog_outfit",3)
+end
+
+function nayka_nabor_money(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,15000)
+end
+
+function nayka_nabor2_spawn()
+ alife():create("m_inventory_box83",vector():set(398.60,41.80,-223.09),1346678,3743)
+end
+
+function nayka_nabor2_est()
+ return have_GG_item("nabor_book") ~= false
+end
+
+function nayka_nabor2_out()
+	out_GG_item("nabor_book")
+end
+
+function nayka_nabor2_money(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,20000)
+end
+
+function nayka_nabor3_est()
+	return have_GG_item("inventory_sakbox_05") ~= false
+end
+
+function nayka_nabor3_out()
+	out_GG_item("inventory_sakbox_05")
+end
+
+function nayka_nabor4_est()
+	return amk_utils.inventory_search("mutant_spider_part",3) ~= false and
+      have_GG_item("af_black_cristall") ~= false
+end
+
+function nayka_nabor4_out()
+	item_out_rnd("mutant_spider_part",3)
+      out_GG_item("af_black_cristall")
+end
+
+function nayka_nabor4_money(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,35000)
+end
+
+function nayka_nabor4_dal()
+	in_GG_item("af_caterpillar")
+end
+
+function nayka_nabor5_spawn()
+ alife():create("m_inventory_box84",vector():set(-89.67,-29.90,81.01),1942,3844)
+end
+
+function nayka_nabor5_est()
+	return amk_utils.inventory_search("detector_simple",4) ~= false
+end
+
+function nayka_nabor5_out()
+	item_out_rnd("detector_simple",4)
+end
+
+function nayka_nabor5_money(speak,reply)
+	ex_all.transfer_money_in_rnd(speak,reply,25000)
+end
+
+
+function spawn_pes_rat1()
+ alife():create("rat_strong",vector():set(-102.14,-1.21,-46.59),15110,2880)
+ alife():create("rat_strong",vector():set(-102.14,-1.21,-46.59),15110,2880)
+ alife():create("rat_strong",vector():set(-102.14,-1.21,-46.59),15110,2880)
+ alife():create("rat_strong",vector():set(-102.14,-1.21,-46.59),15110,2880)
+ alife():create("rat_strong",vector():set(-102.14,-1.21,-46.59),15110,2880)
+end
+
+function spawn_snork_tunnel()
+ alife():create("snork_noantigas",vector():set(-86.76,-17.46,-191.30),9312,1489)
+ alife():create("snork_noantigas",vector():set(-86.76,-17.46,-191.30),9312,1489)
+end
+
+function spawn_kat_rat()
+ alife():create("rat_strong",vector():set(-82.37,-5.54,-70.97),2668,717)
+ alife():create("rat_strong",vector():set(-82.37,-5.54,-70.97),2668,717)
+ alife():create("rat_strong",vector():set(-82.37,-5.54,-70.97),2668,717)
+ alife():create("rat_strong",vector():set(-82.37,-5.54,-70.97),2668,717)
+ alife():create("rat_strong",vector():set(-82.37,-5.54,-70.97),2668,717)
+ alife():create("rat_strong",vector():set(-82.37,-5.54,-70.97),2668,717)
+ alife():create("rat_strong",vector():set(-82.37,-5.54,-70.97),2668,717)
+end
+
+
+function spawn_pes_tushkano()
+ alife():create("tushkano_big_strong",vector():set(-71.98,2.55,15.16),23541,2870)
+ alife():create("tushkano_big_strong",vector():set(-71.98,2.55,15.16),23541,2870)
+ alife():create("tushkano_big_strong",vector():set(-71.98,2.55,15.16),23541,2870)
+ alife():create("tushkano_big_strong",vector():set(-65.27,2.56,-10.80),25469,2875)
+ alife():create("tushkano_big_strong",vector():set(-65.27,2.56,-10.80),25469,2875)
+ alife():create("tushkano_big_strong",vector():set(-65.27,2.56,-10.80),25469,2875)
+ alife():create("tushkano_big_strong",vector():set(-65.27,2.56,-10.80),25469,2875)
+end
+
+function spawn_pes_monstr()
+ alife():create("bloodsucker_red",vector():set(-33.14,-12.68,54.57),30948,2877)
+end
+
+function sviblov_stvol_dal()
+	in_GG_item("wpn_aek973")
+end
+
+function case_drunk_spawn()
+ alife():create("case_wpn",vector():set(462.05,19.16,-294.77),1084818,4435)
+end
+
+function case_drunk_est()
+	return have_GG_item("case_wpn") ~= false
+end
+
+function case_drunk_out()
+	item_out_rnd("case_wpn")
+end
+
+function case_drunk_dal()
+	in_GG_item("af_armor_3")
+	in_GG_item("af_dik_3")
+end
+
+function bochka_box_spawn()
+ alife():create("m_inventory_box98",vector():set(125.34072113037,-0.65856057405472,464.79974365234),219021,3474)
+end
+
+
+--- Вспомогательные функции ---
+function have_GG_item(thing)
+return db.actor and db.actor:object(thing) ~= nil
+end
+
+function in_GG_item(thing)
+	local actor = db.actor
+	local sim = alife()
+	if actor and sim then
+		sim:create(thing,actor:position(),actor:level_vertex_id(),actor:game_vertex_id(),actor:id())
+	end
+	ex_all.news_item_in(actor,thing,1)
+end
+
+function item_out_rnd(thing,min,max)
+	local number = ex_all.thing_min_max(min,max)
+	local count
+	if number ~= 0 and ex_all.have_item_num(thing,number) ~= false then
+		count = 0
+		db.actor:iterate_inventory(function(actor,item)
+			if item:section() == thing and count < number then
+				alife():release(alife():object(item:id()),true)
+				count = count + 1
+			end
+		end, db.actor)
+		ex_all.news_item_out(db.actor,thing,number)
+	end
+end
+
+function out_GG_item(thing)
+	local actor = db.actor
+	local sim = alife()
+	local item = actor:object(thing)
+	if item then
+		local id = item:id() or item.id
+		local sobj = id and sim:object(id)
+		if sobj then
+			sim:release(sobj)
+			ex_all.news_item_out(actor,thing,1)
+		end
+	end
+end
+
+function transfer_OUT_sect(speak,reply,thing,news)
+	local actor,npc = ex_all.actor_barter(speak,reply)
+	local item,sect
+	if type(thing) ~= 'table' then
+		thing = {thing}
+	end
+	for i = 1, #thing do
+		sect = thing[i]
+		item = actor:object(sect)
+		if item then
+			actor:transfer_item(item,npc)
+			if news then
+				ex_all.news_item_out(actor,sect,1)
+			end
+		end
+	end
+end
+--- Вспомогательные функции --- end ---

@@ -1,0 +1,144 @@
+local level_scripts = {
+	escape_tasks,
+	garbage_tasks,
+	agroprom_tasks,
+	darkvalley_tasks,
+	bar_rostok_tasks,
+	yantar_tasks,
+	mil_tasks,
+	radar_tasks,
+	pripyat_tasks
+}
+
+local jump_level_by_name = {
+	l01_escape		= "l02_garbage",
+	l02_garbage		= "l03_agroprom",
+	l03_agroprom		= "l03u_agr_underground",
+	l03u_agr_underground	= "l04_darkvalley",
+	l04_darkvalley		= "l04u_labx18",
+	l04u_labx18		= "l05_bar",
+	l05_bar			= "l06_rostok",
+	l06_rostok		= "l07_military",
+	l07_military		= "l08_yantar",
+	l08_yantar		= "l08u_brainlab",
+	l08u_brainlab		= "l10_radar",
+	l10_radar		= "l10u_bunker",
+	l10u_bunker		= "l11_pripyat",
+	l11_pripyat		= "l12_stancia",
+	l12_stancia		= "l12u_sarcofag",
+	l12u_sarcofag		= "l12u_control_monolith",
+	l12u_control_monolith	= "l12_stancia_2",
+	l12_stancia_2		= "l01_escape"
+}
+
+local always_show_uncond_lc = 0
+
+function proceed()
+	if db.actor then
+		for k, v in pairs( level_scripts ) do v.proceed() end
+		if db.actor:has_info("autojump_enabled") then
+			local jname = jump_level_by_name[level.name()]
+			if jname ~= nil then
+				get_console():execute("jump_to_level "..jname)
+	end	end	end
+end
+
+function autojump()
+	db.actor:give_info_portion("autojump_enabled")
+end
+
+function process_info_portion(info_id)
+	if db.actor == nil or string.sub(info_id, 1, 3) == "ui_" then return end
+	for k, v in pairs( level_scripts ) do
+		if v.process_info_portion(info_id) then	return end
+	end
+end
+
+function add_location(sid, location, hint, persistent)
+	local sim = alife()
+	if sim then
+		local obj = sim:story_object(sid)
+		if obj then
+			if not hint then hint = "" end
+			if persistent then
+				level.map_add_object_spot_ser(obj.id, location, hint)
+			else
+				level.map_add_object_spot(obj.id, location, hint)
+			end
+		end
+	end
+end
+
+function remove_location(sid, location)
+	local sim = alife()
+	if sim then
+		local obj = sim:story_object(sid)
+		if obj and level.map_has_object_spot(obj.id, location) then
+			level.map_remove_object_spot(obj.id, location)
+		end
+	end
+end
+
+function remove_location_safe(sid, location)
+	local sim = alife()
+	if sim then
+		local obj = sim:story_object(sid)
+		if obj then
+		   for a = 1, level.map_has_object_spot(obj.id, location), 1 do
+			   level.map_remove_object_spot(obj.id, location)
+		   end	
+		end
+	end
+end
+
+function is_map_spot_present(sid, location)
+	local sim = alife()
+	if sim then
+		local obj = sim:story_object(sid)
+		if obj and level.map_has_object_spot(obj.id, location) ~= 0 then
+		   return true
+		end
+	end
+	return false
+end
+  
+function add_lchanger_location()
+ local sim = alife()
+ if not sim then  return  end
+
+ local visited = amk.load_table("art_limit")
+ amk.dump_table(visited)
+
+ local obj, lid, show_lc
+ for k,v in pairs(_tbl_lc.lc_table) do
+  if v[3] >= 0 then	-- при -1 переход не показываетс€ никогда
+   -- get_console():execute("load ~ps~: check level lc_sid=["..tostring(k).."] info_portion=["..v[2].."] type=["..tostring(v[3]).."]")
+   obj = sim:story_object(k)
+   if obj then
+    show_lc = true
+    if v[3]==0 then			-- переход доступен всегда
+     if always_show_uncond_lc==0 then	-- если показывать посто€нные переходы только на посещенных локах
+         lid = game_graph():vertex(obj.m_game_vertex_id):level_id()
+         -- √√ был на локации этого перехода ?
+         show_lc = lid and visited[lid]
+     end
+    else				-- переход доступен при наличии инфо-поршн€ - показываем его, если √√ имеет такой инфо-поршень
+         show_lc = db.actor and db.actor:has_info(v[2])
+    end
+    if show_lc then  
+	level.map_add_object_spot(obj.id, "level_changer", v[4])
+	-- get_console():execute("load ~ps~: visible lc_sid=["..tostring(k).."] text=["..v[6].."]")
+    end
+   end
+  end
+ end
+end
+
+function set_task_state(id_state, id_task, id_subtask)
+	if db.actor then
+		db.actor:set_task_state(id_state, id_task, id_subtask)
+	end
+end
+
+function notify_new_task()
+end

@@ -1,0 +1,163 @@
+; Арбалет Нормана
+; модельку выложил nafigator
+
+[wpn_crossbow_m1]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                   	= "weapons\w_crossbow_m1"		
+$npc			 			= on			
+$prefetch 				= 8
+scheduled            		= off         
+cform                    	= skeleton
+class                    	= WP_PM
+min_radius               	= 0
+max_radius               	= 180
+description				= enc_wpn_crossbow-m1
+
+script_binding  = bind_wpn.init
+
+ef_weapon_type				= 8
+
+holder_range_modifier	= 1.0                
+holder_fov_modifier		= 1.0              
+
+cost					    = 6000
+weapon_class		         = sniper_rifle
+ammo_limit		 		= 120
+ammo_current		 		= 96
+ammo_elapsed		 		= 5
+
+ammo_mag_size		 		= 1
+ammo_class		 		= arrow_carbon
+f_mode			          = 1
+
+hand_dependence		 	= 1
+single_handed				= 0
+slot 				 	= 2		
+animation_slot		 		= 2		
+
+inv_name				     = wpn-crossbow-m1
+inv_name_short				= wpn-crossbow-m1
+inv_weight				= 2.3
+
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 5
+inv_grid_y         = 32
+
+kill_msg_x			= 194
+kill_msg_y			= 123
+kill_msg_width		     = 46
+kill_msg_height		= 27
+
+;базовая дисперсия
+fire_dispersion_base		= 0.3
+control_inertion_factor		= 1.1f
+disp_rate		              = 1.85
+
+;отдача
+cam_relax_speed         	= 18.0	
+cam_dispersion          	= 2.0	
+cam_dispersion_inc		= 0.0	
+cam_dispertion_frac		= 1.0	
+cam_max_angle			= 5.0	
+cam_max_angle_horz		= 5.0	
+cam_step_angle_horz		= 0.2	
+
+fire_dispersion_condition_factor 	= 3	 
+misfire_probability 			= 0.01	
+misfire_condition_k			= 0.05 
+condition_shot_dec 			= 0.001  
+
+direction                	= 0, 0, 1
+fire_point			= -0.005000,0.130000,0.220000
+
+rpm_empty_click 	 		= 250
+
+shell_point		 		= 0.0, 0.133, 0.06
+shell_dir		 			= 0.0, 0.0, 0.4
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.1
+PDM_disp_accel_factor 		= 1.1
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power           = 3.4
+hit_impulse		 = 1
+hit_type 			= fire_wound
+
+fire_distance       = 180
+bullet_speed	     = 330			
+rpm                 = 7
+
+use_aim_bullet				= true		
+time_to_aim					= 1
+
+hud                      	= wpn_twinbow_hud
+normal                   	= 0, 1, 0
+position                 	= -0.025, -0.055, -0.485
+orientation              	= 0, 8, 0
+
+startup_ammo             	= 90
+visual                   	= weapons\arbalet_norman\wpn_twinbow.ogf
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.001
+
+ph_mass			 			= 30
+
+;addons
+scope_status				    = 1
+silencer_status				= 1
+grenade_launcher_status			= 0
+
+zoom_enabled				= true
+zoom_hide_crosshair          = true
+scope_texture				= wpn\crosshairs\norman
+scope_zoom_factor	   		= 10
+
+; sounds
+snd_draw					= weapons\twinbow\draw
+snd_draw_empty				= weapons\twinbow\draw
+snd_holster				= weapons\twinbow\holster
+snd_shoot					= weapons\twinbow\shoot
+snd_empty					= weapons\twinbow\empty
+snd_reload				= weapons\twinbow\reload
+snd_close					= weapons\twinbow\holster
+
+[wpn_twinbow_hud]
+shell_point			= -0.000000,0.040000,-0.235000
+fire_point               	= -0.001000,0.056000,-0.200000
+
+fire_bone                	= wpn_body
+orientation              	= 6.2,8,0
+
+position                 	= 0.01,-0.10,0.0
+visual                   	= weapons\arbalet_norman\wpn_twinbow_hud.ogf
+
+anim_holster				= holster
+anim_idle				     = idle
+anim_empty				= empty
+anim_reload				= reload
+anim_reload_empty			= reload
+anim_draw				     = draw
+anim_draw_empty			= draw_empty
+anim_shoot				= shoot
+anim_shot_last				= shoot
+anim_close				= holster
+anim_idle_aim				= idle
+anim_idle_sprint			= sprint
+
+;смещения HUD для режима приближения
+zoom_offset		= -0.119400,0.044400,-0.011400
+zoom_rotate_x		= -0.021800
+zoom_rotate_y		= 0.000500
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2

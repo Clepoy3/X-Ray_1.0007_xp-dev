@@ -1,0 +1,64 @@
+[logic]
+active = {-esc_shustryi_lager} camper1, nil
+combat_ignore = combat_ignore
+danger = danger_condition
+meet = meet
+on_death = death
+
+[camper1]
+path_walk = esc_prisoner_walk
+path_look = esc_prisoner_look
+combat_ignore_cond = always
+def_state_campering = prisoner
+meet = no_meet
+on_info = {=esc_bandits_die -tutorial_wounded_give_info} remark1
+on_info2 = {+tutorial_wounded_give_info} sleeper1
+
+[remark1]
+anim = prisoner
+combat_ignore_cond = always
+meet = no_meet
+snd = esc_shustryi_help
+target = esc_prisoner_look, 0
+on_actor_dist_le = 5| remark3
+on_signal = sound_end| remark2
+
+[remark2]
+anim = prisoner
+combat_ignore_cond = always
+meet = no_meet
+target = esc_prisoner_look, 0
+on_actor_dist_le = 5| remark3
+on_timer = 15000| remark1
+
+[remark3]
+anim = wait
+anim_reset = false
+combat_ignore_cond = always
+meet = no_meet
+snd = esc_shustryi_thanks
+target = esc_prisoner_look, 0
+on_signal = sound_end| remark4
+
+[remark4]
+anim = wait
+anim_reset = false
+combat_ignore_cond = always
+target = actor
+on_info = {+tutorial_wounded_give_info !talking} sleeper1 %+esc_shustryi_lager%
+
+[sleeper1]
+path_main = esc_lager_sleep6
+combat_ignore_cond = always
+
+[meet]
+use = true
+use_wpn = true
+
+[danger_condition]
+ignore_distance = 0
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+
+[death]
+on_info = %+esc_shustryi_umer%

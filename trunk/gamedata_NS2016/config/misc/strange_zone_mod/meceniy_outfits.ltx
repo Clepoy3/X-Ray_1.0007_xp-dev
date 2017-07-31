@@ -1,0 +1,142 @@
+;---------------------------------------------------------------------------------------------
+;		Мас. Халат:Меченый(Стрелок)
+;---------------------------------------------------------------------------------------------
+[meceniy_outfit_new]:outfit_base
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 			= "outfit\meceniy_outfit_new"
+;$prefetch 		= 32
+class			= E_STLK
+cform           = skeleton
+visual          = equipments\exoskelet_holo
+actor_visual	= actors\bandit\stalker_arhara1.ogf
+
+ef_equipment_type	= 4
+
+inv_name			= mas_outfit_name
+inv_name_short		= mas_outfit_name
+description			= mas_outfit_description
+inv_weight			= 8.5
+inv_grid_width     = 2
+inv_grid_height    = 2
+inv_grid_x         = 31
+inv_grid_y         = 11
+full_icon_name		= npc_icon_stalker_arhara_outfit
+
+cost				= 75000
+slot				= 6
+full_scale_icon		= 0,6
+
+bleeding_restore_speed			= -0.006
+
+; NO RESISTANCE
+burn_protection 				= 0.01
+strike_protection 				= 0.01
+shock_protection 				= 0.01
+wound_protection				= 0.01
+radiation_protection 			= 0.0
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.01
+explosion_protection 			= 0.01
+fire_wound_protection  			= 0.02
+
+bones_koeff_protection = armor_helmet_damage
+immunities_sect        = meceniy_outfit_new_immunities
+
+[meceniy_outfit_new_immunities]
+burn_immunity				= 0.04
+strike_immunity				= 0.01
+shock_immunity				= 0.04
+wound_immunity				= 0.025
+radiation_immunity			= 0.00
+telepatic_immunity			= 0.00
+chemical_burn_immunity		= 0.04
+explosion_immunity			= 0.04
+fire_wound_immunity			= 0.015
+
+
+;-----------------------------------------
+;Новый Экзоскелет,прототип СКАТ15-М
+;-----------------------------------------
+[exo_mil_exoskeleton]:outfit_base
+GroupControlSection	= spawn_group
+discovery_dependency = 	
+$spawn						= "outfit\exo_mil_exoskeleton"
+$prefetch 		= 32
+class			= E_STLK
+cform           = skeleton
+visual          = new\nano_exoskel.ogf	
+actor_visual	= new\nano_exoskel_meceniy.ogf
+
+ef_equipment_type	= 5
+
+inv_name					= mil_exoskeleton_name
+inv_name_short				= mil_exoskeleton_name
+description					= mil_exoskeleton_description
+inv_weight			        = 25.0
+slot				= 6
+inv_grid_width     = 2
+inv_grid_height    = 2
+inv_grid_x         = 33
+inv_grid_y         = 11
+
+full_icon_name		= npc_icon_superskat_arhara_outfit
+full_scale_icon		= 10, 6
+
+cost				        = 75000
+
+nightvision_sect	        = effector_nightvision_good
+
+; MEDIUM RESISTANCE
+burn_protection 			= 0.55
+strike_protection 			= 0.55
+shock_protection 			= 0.6
+wound_protection			= 0.65
+radiation_protection 			= 0.6
+telepatic_protection 			= 0.5
+chemical_burn_protection 		= 0.5
+explosion_protection 			= 0.5
+fire_wound_protection  			= 0.55
+
+health_restore_speed		= 0.0007
+immunities_sect			    = sect_mil_exoskeleton
+sprint_allowed				= true
+bones_koeff_protection		= exo_helmet_damage
+additional_inventory_weight	= 60
+additional_inventory_weight2	= 60 
+
+[sect_mil_exoskeleton]
+burn_immunity				= 0.002
+strike_immunity				= 0.001
+shock_immunity				= 0.003
+wound_immunity				= 0.001
+radiation_immunity			= 0.001
+telepatic_immunity			= 0.001
+chemical_burn_immunity		= 0.003
+explosion_immunity			= 0.001
+fire_wound_immunity			= 0.001
+
+
+[exo_mil_exoskeleton_add]:exo_mil_exoskeleton	
+$spawn						= "outfit\exo_mil_exoskeleton_add"
+inv_name					= mil_exoskeleton_name_add
+inv_name_short				= mil_exoskeleton_name_add
+description					= mil_exoskeleton_description_add
+cost				        = 85000
+health_restore_speed		= 0.07
+inv_weight			        = 25.1
+
+
+
+[exo_mil_exoskeleton_addr]:exo_mil_exoskeleton_add
+$spawn						= "outfit\exo_mil_exoskeleton_addr"
+description					= mil_exoskeleton_description_addr
+cost				        = 95000
+inv_weight			        = 25.2
+
+
+[exo_mil_exoskeleton_addrs]:exo_mil_exoskeleton_addr
+$spawn						= "outfit\exo_mil_exoskeleton_addrs"
+description					= mil_exoskeleton_description_addrs
+cost				        = 100000
+inv_weight			        = 25.3

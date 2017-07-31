@@ -1,0 +1,29 @@
+[logic]
+active=camper
+combat_ignore = combat_ignore
+
+[combat_ignore]
+
+[camper]
+sniper = true
+def_state_campering = threat_na
+radius = 5
+path_walk = stalker_rost4_walk1
+path_look = stalker_rost4_look1
+no_move = true
+on_info = {+prizrak_zver_begin} walker1
+
+
+[walker1]
+path_walk = stalker_rost4_walk2
+path_look = stalker_rost4_look2
+def_state_moving1 = run
+team = followers
+radius = 3
+on_info = {+prizrak_zver_have} walker2
+
+[walker2]
+path_walk = stalker_rost4_walk3
+path_look = stalker_rost4_look3
+def_state_moving1 = run
+combat_ignore_cond = always

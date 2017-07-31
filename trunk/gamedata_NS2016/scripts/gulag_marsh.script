@@ -1,0 +1,1139 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+	
+	-- Мстители на хуторе возле перехода на Кордон
+	if type == "marsh_sniper" then
+	    	t = { section = "logic@snip_hu1", idle = 0, prior = 20, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@snip_hu2", idle = 0, prior = 20, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@snip_hu3", idle = 0, prior = 15, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@snip_hu4", idle = 0, prior = 15, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@snip_hu5", idle = 0, prior = 15, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@snip_hu6", idle = 0, prior = 15, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@snip_hu7", idle = 0, prior = 10, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+	end
+	-- Сталкеры и охотники
+	if type == "mar_neutral1" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@mar_neutral1_kamp", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "mar_neutral2" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@mar_neutral2_kamp", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Бандиты в церкви
+	if type == "marsh_church_band" then
+	    t = { section = "logic@marshban1", idle = 0, prior = 20, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@marshban2", idle = 0, prior = 20, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@marshban3", idle = 0, prior = 20, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@marshban_patr", idle = 0, prior = 25, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@marshban_kos1", idle = 0, prior = 10, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@marshban_kos2", idle = 0, prior = 10, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@marshban_kos3", idle = 0, prior = 10, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@marshban_kos4", idle = 0, prior = 10, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+	end
+	 -- Пост чистонебовцев на рыбацком хуторе и за ним	
+	if type == "mar_post_nebo" then
+		--' 9 работ
+		for i = 1, 3 do
+			t = {section = "logic@mar_post_nebo_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@mar_post_nebo_kamp1", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@mar_post_nebo_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- База Чистонебовцев	
+	if type == "marsh_baza_nebo" then
+	    	t = { section = "logic@scy_leader", idle = 0, prior = 30, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "clear_scy_leader"
+						end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ohr_leader", idle = 0, prior = 20, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@chasovoi1", idle = 0, prior = 15, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@chasovoi2", idle = 0, prior = 15, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@chasovoi3", idle = 0, prior = 15, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@patbaz1", idle = 0, prior = 15, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@patbaz2", idle = 0, prior = 10, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@barpos", idle = 0, prior = 15, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kam1", idle = 0, prior = 7, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kam2", idle = 0, prior = 7, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kam3", idle = 0, prior = 7, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kam4", idle = 0, prior = 7, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kam5", idle = 0, prior = 7, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kam6", idle = 0, prior = 7, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@sliper", idle = 0, prior = 5, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@slip", idle = 0, prior = 5, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ucen", idle = 0, prior = 25, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "agr_nebo_trader"
+						end	
+		} 
+		table.insert(sj, t)
+	end
+	-- Зомби на хуторе
+	if type == "marsh_zombi_hutor" then
+		--' 10 работ
+		for t = 1, 10 do
+			t = {section = "logic@marsh_zombi_hutor_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кошки
+	if type == "mar_cat1" then
+		--' 7 работ
+		for t = 1, 3 do
+			t = {section = "logic@mar_cat1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@mar_cat1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "mar_cat2" then
+		--' 7 работ
+		for t = 1, 4 do
+			t = {section = "logic@mar_cat2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@mar_cat2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Библиотекарь
+	if type == "mar_bibliotekar" then
+		--' 1 работа
+		t = {section = "logic@mar_bibliotekar_home", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	-- Свиньи
+	if type == "mar_flesh1" then
+		--' 5 работ
+		for t = 1, 3 do
+			t = {section = "logic@mar_flesh1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@mar_flesh1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "mar_flesh2" then
+		--' 4 работы
+		for t = 1, 2 do
+			t = {section = "logic@mar_flesh2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@mar_flesh2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кровососы на сгоревшем хуторе
+	if type == "mar_bloodsucker" then
+		--' 2 работы
+		for t = 1, 2 do
+			t = {section = "logic@mar_bloodsucker_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Тушканы
+	if type == "mar_tushkano1" then
+		--' 7 работ
+		for t = 1, 4 do
+			t = {section = "logic@mar_tushkano1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@mar_tushkano1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "mar_tushkano2" then
+		--' 5 работ
+		for t = 1, 5 do
+			t = {section = "logic@mar_tushkano2_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Снорки
+	if type == "mar_snork1" then
+		--' 4 работы
+		for t = 1, 2 do
+			t = {section = "logic@mar_snork1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@mar_snork1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "mar_snork2" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@mar_snork2_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "mar_snork3" then
+		--' 6 работ
+		for t = 1, 2 do
+			t = {section = "logic@mar_snork3_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@mar_snork3_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@mar_snork3_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Изломы
+	if type == "mar_fracture" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@mar_fracture_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Слепыши
+	if type == "mar_dog1" then
+		--' 6 работ
+		for t = 1, 3 do
+			t = {section = "logic@mar_dog1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@mar_dog1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "mar_dog2" then
+		--' 5 работ
+		for t = 1, 5 do
+			t = {section = "logic@mar_dog2_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Химеры
+	if type == "mar_chimera" then
+		--' 3 работы
+		for t = 1, 2 do
+			t = {section = "logic@mar_chimera_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 1 do
+			t = {section = "logic@mar_chimera_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Крысюк
+	if type == "mar_krisyk_lager" then
+		-- 1 работа
+		t = {section = "logic@mar_krisyk_lager_kamp", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+	end
+	
+---'''' Гулаги с переменным состоянием ''''---
+
+	-- Кот на болотах	
+	if type == "kot_mar_one" then
+	    	t = { section = "logic@kotsit_of", idle = 0, prior = 30, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)	
+	    	t = { section = "logic@kotsit_centr", idle = 0, prior = 30, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)	
+		 t = { section = "logic@kotsit", idle = 0, prior = 30, state = {2},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)	
+	end
+	-- Кот на базе чистого неба	
+	if type == "kot_mar_two" then
+	    	t = { section = "logic@kotrestr", idle = 0, prior = 30, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)	
+		 t = { section = "logic@kotrestrbar", idle = 0, prior = 30, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)	
+	end
+	-- Дэн и охотники
+    	if type == "marsh_hunters" then
+        	t = { section = "logic@dan_do", idle = 0, prior = 30, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "marsh_dan"
+						end	
+		} 
+		table.insert(sj, t)
+        	t = { section = "logic@oxot1_do", idle = 0, prior = 10, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+        	t = { section = "logic@oxot2_do", idle = 0, prior = 10, state = {0}, 
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+        	t = { section = "logic@oxot3_do", idle = 0, prior = 10, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+        	t = { section = "logic@oxot4_do", idle = 0, prior = 10, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@oxot5_do", idle = 0, prior = 10, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@dan", idle = 0, prior = 30, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "marsh_dan"
+						end	
+		} 
+		table.insert(sj, t)
+        	t = { section = "logic@oxot1", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+        	t = { section = "logic@oxot2", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+        	t = { section = "logic@oxot3", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+        	t = { section = "logic@oxot4", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@oxot5", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+    	end
+	--Калмык и Ко	
+	if type == "kalmyak_marsh" then
+	    	t = { section = "logic@kalmyak_offline", idle = 0, prior = 30, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "kalmyak"
+						end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_napar1_offline", idle = 0, prior = 20, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_napar2_offline", idle = 0, prior = 10, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_napar3_offline", idle = 0, prior = 10, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_wait", idle = 0, prior = 30, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "kalmyak"
+						end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_napar1", idle = 0, prior = 20, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_napar2", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_napar3", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak", idle = 0, prior = 30, state = {2},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "kalmyak"
+						end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_napar1_ohr", idle = 0, prior = 20, state = {2},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_napar2_kam", idle = 0, prior = 10, state = {2},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@kalmyak_napar3_kam", idle = 0, prior = 10, state = {2},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600
+		} 
+		table.insert(sj, t)
+	end
+	--Дьяк и Ко	
+	if type == "marsh_exit_nebo" then
+	    	t = { section = "logic@dyak_wait", idle = 0, prior = 30, state = {0},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "dyak"
+						end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@esc_saha_plen_offline", idle = 0, prior = 30, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info) 
+                       			return obj_info.story_id == 14001
+						 end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ex_nebo_ata1_sit", idle = 0, prior = 10, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ex_nebo_ata2_sit", idle = 0, prior = 10, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ex_nebo_ata3_sit", idle = 0, prior = 10, state = {0},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@dyak_dal", idle = 0, prior = 30, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "dyak"
+						end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@esc_saha_plen", idle = 0, prior = 30, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info) 
+                       			return obj_info.story_id == 14001
+						 end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ex_nebo_ata1", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ex_nebo_ata2", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ex_nebo_ata3", idle = 0, prior = 10, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@dyak", idle = 0, prior = 30, state = {2},
+		  online = true,
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info)
+        					return obj_info.profile_name == "dyak"
+						end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@esc_saha", idle = 0, prior = 30, state = {2},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 600,
+		    predicate = function(obj_info) 
+                       			return obj_info.story_id == 14001
+						 end	
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ex_nebo_ata1_ohr", idle = 0, prior = 20, state = {2},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ex_nebo_ata2_patr", idle = 0, prior = 15, state = {2},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@ex_nebo_ata3_free", idle = 0, prior = 10, state = {2},
+		  in_rest = "", out_rest = "",
+		  position_threshold = 400
+		} 
+		table.insert(sj, t)
+	end
+	-- Контроллёр на хуторе	
+	if type == "marsh_controller_hutor" then
+	    t = { section = "logic@controller_hu_offline", idle = 0, prior = 30, state = {0},
+		  online = false,
+		  in_rest = "", out_rest = ""
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@controller_hu", idle = 0, prior = 30, state = {1},
+		  online = true,
+		  in_rest = "", out_rest = ""
+		} 
+		table.insert(sj, t)
+	end
+	-- Сцена с Халявой - наёмники
+	if type == "mar_killer_xalyava" then
+		--' 0 состояние - 10 работ - ждем в оффлайне
+		for i = 1, 10 do
+			t = {section = "logic@mar_killer_xalyava_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = "",
+				online = false
+			}
+			table.insert(sj, t)
+		end
+		--' 1 состояние - 10 работ - работаем онлайн
+		for i = 1, 10 do
+			t = {section = "logic@mar_killer_xalyava_walker"..i, idle = 0, prior = 6, state = {1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+           end
+	end
+	-- Бандиты на Удава
+	if type == "mar_vert_bandit" then
+		--' 8 работ, сидим в оффлайне
+		for i = 1, 8 do
+			t = {section = "logic@mar_vert_bandit_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = "",
+				online = false
+			}
+			table.insert(sj, t)
+		end
+	--' 1 состояние - 8 работ, работаем онлайн
+	for i = 1, 8 do
+			t = {section = "logic@mar_vert_bandit_walker"..i, idle = 0, prior = 6, state = {1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+end
+
+function load_states(gname,type)
+
+	if type == "kot_mar_one" then
+		return function(gulag)
+			local actor = db.actor
+			if not has_alife_info("dan_about_kot") then
+				return 0 -- оффлайн
+			elseif has_alife_info("kot_need_doc_start") then 
+				return 2 -- работаем
+			else
+				return 1 -- сидим
+			end
+		end
+	end
+	if type == "kot_mar_two" then
+		return function(gulag)
+			local actor = db.actor
+			if not has_alife_info("kot_in_marsh_restr") then
+				return 0 -- идем на рестриктор
+			else
+				return 1 -- в баре
+			end
+		end
+	end
+	if type == "marsh_hunters" then
+		return function(gulag)
+			local actor = db.actor
+			if not has_alife_info("sveeblov_ferma_have") then
+				return 0 -- оффлайн
+			else
+				return 1 -- работаем
+			end
+		end
+	end
+	if type == "marsh_sniper" then
+        	return function(gulag)
+              return 0
+        	end
+      end
+	if type == "kalmyak_marsh" then
+		return function(gulag)
+			local actor = db.actor
+			if not has_alife_info("kalmyak_vstreca_start") then
+				return 0 -- оффлайн
+			elseif has_alife_info("kalmyak_vstreca_begin") then 
+				return 2 -- отдыхаем или мочим игрока
+			else
+				return 1 -- работаем
+			end
+		end
+	end
+	if type == "mar_neutral1" then
+        	return function(gulag)
+              return 0
+        	end
+    	end
+	if type == "mar_neutral2" then
+        	return function(gulag)
+              return 0
+        	end
+    	end
+	if type == "marsh_exit_nebo" then
+		return function(gulag)
+			local actor = db.actor
+			if not has_alife_info("dyak_help_start") then
+				return 0 -- ожидаем игрока
+			elseif has_alife_info("dyak_help_have") then 
+				return 2 -- отдыхаем
+			else
+				return 1 -- работаем
+			end
+		end
+	end
+	if type == "marsh_church_band" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "mar_post_nebo" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "marsh_baza_nebo" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "marsh_controller_hutor" then
+		return function(gulag)
+			local actor = db.actor
+			if not has_alife_info("controller_hutor_start") then
+				return 0 -- оффлайн
+			else
+				return 1 -- работаем
+			end
+		end
+	end
+	if type == "marsh_zombi_hutor" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_cat1" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_cat2" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_bibliotekar" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_flesh1" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_flesh2" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_bloodsucker" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_tushkano1" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_tushkano2" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_snork1" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_snork2" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_snork3" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_fracture" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_dog1" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_dog2" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_chimera" then
+        	return function(gulag)
+            	return 0
+        	end
+    	end
+	if type == "mar_krisyk_lager" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "mar_killer_xalyava" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("xalyava_nebo_start") then
+				return 1 -- онлайн
+			end
+			return 0 -- в оффлайне
+		end
+	end
+	if type == "mar_vert_bandit" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("vert_bandosu_ataks") then
+				return 1 -- работаем онлайн
+			end
+			return 0 -- сидим в оффлайне
+		end
+	end
+	
+end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	if gulag_type == "kot_mar_one" then
+		return sobj:profile_name() == "kot"
+	end
+	if gulag_type == "kot_mar_two" then
+		return sobj:profile_name() == "kot"
+	end
+	if gulag_type == "marsh_hunters" then
+        return npc_community == "green"
+    	end
+	if gulag_type == "marsh_sniper" then
+        return npc_community == "sniper"
+    	end
+	if gulag_type == "kalmyak_marsh" then
+        return npc_community == "stalker"
+      end
+	if gulag_type == "mar_neutral1" then
+        return npc_community == "green" or npc_community == "stalker"
+    	end
+	if gulag_type == "mar_neutral2" then
+        return npc_community == "green" or npc_community == "stalker"
+    	end
+	if gulag_type == "marsh_exit_nebo" then
+        return npc_community == "nebo"
+    	end
+	if gulag_type == "marsh_church_band" then
+        return npc_community == "bandit"
+    	end
+	if gulag_type == "mar_post_nebo" then
+        return npc_community == "nebo"
+    	end
+	if gulag_type == "marsh_baza_nebo" then
+        return npc_community == "nebo"
+    	end
+	if gulag_type == "mar_krisyk_lager" then
+	  return sobj:profile_name() == "val_bandit_krisyk"
+	end
+	if gulag_type == "mar_killer_xalyava" then
+        return npc_community == "killer"
+    end
+	if gulag_type == "mar_vert_bandit" then
+		return npc_community == "bandit"
+	end
+
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+	if gulag_type == "marsh_controller_hutor" then
+		return npc_community == "controller"
+	end
+	if gulag_type == "marsh_zombi_hutor" then
+		return npc_community == "zombie"
+	end
+	if gulag_type == "mar_cat1" then
+		return npc_community == "cat"
+	end
+	if gulag_type == "mar_cat2" then
+		return npc_community == "cat"
+	end
+	if gulag_type == "mar_bibliotekar" then
+		return npc_community == "bibliotekar"
+	end
+	if gulag_type == "mar_flesh1" then
+		return npc_community == "flesh"
+	end
+	if gulag_type == "mar_flesh2" then
+		return npc_community == "flesh"
+	end
+	if gulag_type == "mar_bloodsucker" then
+		return npc_community == "bloodsucker"
+	end
+	if gulag_type == "mar_tushkano1" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "mar_tushkano2" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "mar_snork1" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "mar_snork2" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "mar_snork3" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "mar_fracture" then
+		return npc_community == "fracture"
+	end
+	if gulag_type == "mar_dog1" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "mar_dog2" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "mar_chimera" then
+		return npc_community == "chimera"
+	end
+	
+	return false
+end

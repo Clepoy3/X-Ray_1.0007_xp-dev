@@ -1,0 +1,208 @@
+----------------------------------
+-- made by xStream 03.2008
+----------------------------------
+local table_remove = table.remove
+local table_insert = table.insert
+local math_random = math.random
+local math_floor = math.floor
+local string_find = string.find
+local string_format = string.format
+local string_match = string.match
+
+local convert_npc = {}
+
+local upgrade_delta = 720
+local upgrade_exp = 270
+local upgrade_phase = 0
+local stalkers = {}
+local upgrade_steps = {
+	[0] = { npc_num = 15, prb = 0.6 },
+	[1] = { npc_num = 11, prb = 0.5 },
+	[2] = { npc_num = 10, prb = 0.4 },
+	[3] = { npc_num = 8, prb = 0.4 }}
+
+local auto_upgrades = true
+local visible_auto_upgrades = false
+
+local upgrade_top_lvl = {
+	l01_escape = 1,
+	l02_garbage = 1,
+	l03_agroprom = 1,
+	l03u_agr_underground = 1,
+	l04_darkvalley = 1,
+	l04u_labx18 = 1,
+	l05_bar = 1,
+	la15_darkscape = 1,
+	marsh = 1,
+	peshera = 1,
+	puzir = 1,
+	aver = 2,
+	av_peshera = 2,
+	atp_for_test22 = 2,
+	dead_city = 2,
+	jupiter = 2,
+	jupiter_underground = 2,
+	labx8 = 2,
+	l06_rostok = 2,
+	l07_military = 2,
+	l08_yantar = 2,
+	l08u_brainlab = 2,
+	l10_radar = 2,
+	l10u_bunker = 2,
+	limansk = 2,
+	mine = 2,
+	red_forest = 2,
+	warlab = 2,
+	generators = 3,
+	hospital = 3,
+	l11_pripyat = 3,
+	l12_stancia = 3,
+	l12u_sarcofag = 3,
+	l12u_control_monolith = 3,
+	l12_stancia_2 = 3,
+	lost_village = 3,
+	pripyat = 3,
+	zaton = 4
+}
+
+local upgrade_over_top_chance = 0.1
+
+local t_armor_lv = _tbl_outfits.get_armor_level()
+local suits_to_visuals = _tbl_outfits.get_armor_vis()
+
+
+
+function npc_update( binder )
+	if time_global() < ( binder.armor_check_update or 0 ) then return end
+
+	local npc = binder.object
+	if npc:alive() and npc:story_id() == 4294967296 and string.sub(npc:name(), 1, 4) ~= "aem_" then
+		if npc:critically_wounded() or npc:wounded() then return end
+	else
+		binder.armor_check_update = 2000000000
+		return
+	end
+
+	local com = npc:character_community()
+	local t = suits_to_visuals[com]
+	if t then
+	else
+		binder.armor_check_update = 2000000000
+		return
+	end
+
+	local tt, nn = inv_npc.get_outfit( npc:id() )
+	if tt and nn ~= 0 then
+		r = npc:character_rank()
+		if r < 301 then r = 1
+		elseif r < 601 then r = 2
+		elseif r < 901 then r = 3
+		else
+			binder.armor_check_update = 2000000000	-- неписи с максимальным рангом не переодеваются
+			return
+		end
+	else
+		binder.armor_check_update = time_global() + 7700 + math_random() * 10000
+		return
+	end
+
+	binder.armor_check_update = time_global() + 7700 + math_random() * 10000
+	local item, sect, vis, i_vis
+	local sys_ini = system_ini()
+	for i, v in ipairs( tt ) do
+		v = v.item
+		sect = v:section()
+		if sys_ini:section_exist( sect ) then
+			vis = sys_ini:r_string( sect, "visual" )
+			vis = string_match( vis, "[_.%-%w]*$" )	-- удаляем путь
+			vis = string_match( vis, "[_%-%w]*" )	-- удаляем всякие ".ogf"
+			if ( r < ( t_armor_lv[vis] or 0 ) ) and ( t[vis] ) and ( #t[vis] ~= 0 ) then
+				r = t_armor_lv[vis]
+				item = v
+				i_vis = vis
+	end	end	end
+
+	if item then
+		local st = db.storage[npc:id()]
+		if st then
+			local ini = st.ini
+			local sect = st.section_logic
+			if ini and sect and ini:section_exist( sect )
+			  and ini:line_exist( sect, "trade" ) then	-- торговцы не переодеваются
+				binder.armor_check_update = 2000000000
+				return
+		end	end
+	else return
+	end
+
+	t = t[i_vis]
+	local obj = alife():object( npc:id() )
+	local v = xrs_utils.read_stalker_params( obj )
+	v.visual = "actors\\" .. t[math_random( #t )]
+	r = ( r - 1 ) * 300 + math_random( 1, 50 )
+	xrs_utils.write_stalker_params( v, obj )
+
+	obj:set_rank( r )
+	alife():release( alife():object( item:id() ) )
+
+end
+
+
+local t_npc_vis_lv = {}
+
+function get_npc_current_visual_level( id )
+	local obj = alife():object( id )
+	if obj then
+		local sect, vis = _tbl_outfits.get_npc_outfit( obj )
+
+		local lv = t_npc_vis_lv[ vis ]
+		if lv then return lv end
+		local sys_ini = system_ini()
+		if sect and sys_ini:section_exist( sect ) then
+			local v = string_match( ( sys_ini:r_string( sect, "visual" ) ), "[_.%-%w]*$" )
+			v = string_match( v, "[_%-%w]*" )
+			lv = t_armor_lv[v] or 0
+			t_npc_vis_lv[ v ] = lv
+			return lv
+		end			
+	end
+	return 0
+end
+
+
+
+function change_vis( id, vis, lvl )
+	local obj = alife():object( id )
+	local t = xrs_utils.read_stalker_params( obj )
+	t.visual = vis
+	xrs_utils.write_stalker_params( t, obj )
+	obj:set_rank( upgrade_exp * lvl + math_random( 1, 50 ) )
+end
+
+
+function check_armor( npc, item, just_report )	-- не нужно
+	local sect = item:section()
+	local sys_ini = system_ini()
+	if sys_ini:section_exist( sect ) then
+		local vis = sys_ini:r_string( sect, "visual" )
+		vis = string_match( vis, "[_.%-%w]*$" )	-- удаляем путь
+		vis = string_match( vis, "[_%-%w]*" )	-- удаляем всякие ".ogf"
+		local t = suits_to_visuals[npc:character_community()]
+		if t then
+			t = t[vis]
+			if t and #t ~= 0
+			  and get_npc_current_visual_level( npc:id() ) < t_armor_lv[vis] then
+				if just_report then return true end
+
+				if ( not db.actor:see( npc )
+				  and npc:position():distance_to( db.actor:position() ) >= 1 )
+				  or ( npc:position():distance_to( db.actor:position() ) >= 100 ) then
+					local s = t[math_random( #t )]
+					change_vis( npc:id(), "actors\\" .. s, t_armor_lv[vis], true )
+					alife():release( alife():object( item:id() ) )
+
+				end
+			end
+		end
+	end
+end

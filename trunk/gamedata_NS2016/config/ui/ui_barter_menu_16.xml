@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<barter>	
+	<background x="0" y="0" width="645" height="460" stretch="1">
+		<text x="40" y="12" font="graffiti22" r="238" g="153" b="26" a="255" complex_mode="0">Бартер меню</text>
+		<texture x="16" y="12" width="650" height="400">ui\ui_barter</texture>
+	</background>
+	
+	<menu_frame x="30" y="45" width="265" height="365">
+		<texture>ui\ui_barter_frame</texture>
+		<caption x="7" y="5">
+			<text font="graffiti22" r="240" g="217" b="182" a="255" complex_mode="0">Меню</text>
+		</caption>
+	</menu_frame>
+
+	<desc_frame x="305" y="45" width="325" height="250" stretch="1">
+		<texture>ui\ui_barter_frame</texture>
+		<caption x="7" y="5">
+			<text font="graffiti22" r="240" g="217" b="182" a="255" complex_mode="0">Описание</text>
+		</caption>
+	</desc_frame>
+	
+	<bart_frame x="305" y="300" width="325" height="110">
+		<texture>ui\ui_barter_frame</texture>
+		<caption x="7" y="5">
+			<text font="graffiti22" r="240" g="217" b="182" a="255" complex_mode="0">Бартер</text>
+		</caption>
+		<item_name x="7" y = "23" width="208" height="16" stretch="1">
+			<texture x="6" y="3" width="110" height="25">ui\ui_btn_01_t</texture>
+			<text x="2" y="1" font="letterica16" r="240" g="217" b="182" a="255" complex_mode="0">Наименование</text>
+		</item_name>
+		<item_relation x="216" y = "23" width="102" height="16" stretch="1">
+			<texture x="6" y="3" width="110" height="25">ui\ui_btn_01_t</texture>
+			<text x="2" y="1" font="letterica16" r="240" g="217" b="182" a="255" complex_mode="0">Соотношение</text>
+		</item_relation>
+	</bart_frame>
+	<bart_item>
+		<relation x="210" y="0" width="50" height="16" complex_mode="1">
+			<text x="0" y="0" font="letterica16" r="240" g="217" b="182" a="255" align="c"></text>
+		</relation>
+	</bart_item>
+	
+	<equip_desc_ico_wnd x="10" y="25" width="305" height="100" stretch="1" />
+	<equip_desc_ico x="0" y="0" width="305" height="100" stretch="1">
+		<!--<texture x="340" y="564" width="310" height="150">ui\ui_repair</texture>-->
+	</equip_desc_ico>
+	
+	<equip_desc_top_line x="5" y="138" width="317" height="5" stretch="1">
+		<texture x="5" y="59" width="64" height="5">ui\ui_frame_02_lb</texture>
+	</equip_desc_top_line>
+	
+	<equip_desc_scroll x="7" y="148" width="312" height="85" always_show_scroll="1"/>
+	<equip_desc_txt x="0" y="0" width="295" height="200" stretch="0">
+		<text font="letterica16" r="255" g="255" b="182" align="l" complex_mode="1"></text>
+	</equip_desc_txt>
+	
+	<bart_list x="7" y="39" width="312" height="55" item_height="16" always_show_scroll="1" can_select="1"/>
+	
+	<btn_ok x="515" y="415" width="110" height="26" stretch="0">
+		<text x="5" y="2" font="letterica18" r="240" g="217" b="182" align="c">Обменять</text>
+		<texture_e>ui\ui_btn_01_e</texture_e>
+	    <texture_h>ui\ui_btn_01_h</texture_h>
+	</btn_ok>
+	
+	<btn_cancel x="400" y="415" width="110" height="26" stretch="0">
+		<text x="5" y="2" font="letterica18" r="240" g="217" b="182" align="c">Отмена</text>
+		<texture_e>ui\ui_btn_01_e</texture_e>
+	    <texture_h>ui\ui_btn_01_h</texture_h>
+	</btn_cancel>
+	
+	<result_str x="30" y="420" width="400" height="16" stretch="0" complex_mode="1">
+		<text font="letterica16" r="255" g="255" b="182" align="l">...</text>
+	</result_str>
+</barter>

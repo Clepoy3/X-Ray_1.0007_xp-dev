@@ -1,0 +1,154 @@
+<string id="arena_enemy_stat">
+	<text>Бои на арене</text>
+</string>
+<string id="bandit_stat">
+	<text>Бандиты</text>
+</string>
+<string id="bandos_stat">
+	<text>"Грех"</text>
+</string>
+<string id="dolg_stat">
+	<text>"Долг"</text>
+</string>
+<string id="ecolog_stat">
+	<text>Учёные</text>
+</string>
+<string id="freedom_stat">
+	<text>"Свобода"</text>
+</string>
+<string id="green_stat">
+	<text>Охотники</text>
+</string>
+<string id="killer_stat">
+	<text>Наёмники</text>
+</string>
+<string id="lastday_stat">
+	<text>"Последний день"</text>
+</string>
+<string id="military_stat">
+	<text>Военные</text>
+</string>
+<string id="monolith_stat">
+	<text>"Монолит"</text>
+</string>
+<string id="nebo_stat">
+	<text>"Чистое небо"</text>
+</string>
+<string id="sniper_stat">
+	<text>"Мстители"</text>
+</string>
+<string id="stalker_stat">
+	<text>Сталкеры</text>
+</string>
+<string id="stranger_stat">
+	<text>"Нейтралы"</text>
+</string>
+<string id="trader_stat">
+	<text>Торговцы</text>
+</string>
+<string id="voin_stat">
+	<text>"Миротворцы"</text>
+</string>
+<string id="zombied_stat">
+	<text>Зомбированные</text>
+</string>
+<string id="neutral_stat">
+	<text>Нейтральные</text>
+</string>
+<string id="wounded_stat">
+	<text>Раненные</text>
+</string>
+<string id="experienced_stat">
+	<text>Опытные</text>
+</string>
+<string id="veteran_stat">
+	<text>Ветераны</text>
+</string>
+<string id="master_stat">
+	<text>Мастера</text>
+</string>
+
+<string id="arena_monstr_stat">
+	<text>Бои на арене</text>
+</string>
+<string id="bibliotekar_stat">
+	<text>Библиотекари</text>
+</string>
+<string id="bloodsucker_stat">
+	<text>Кровососы</text>
+</string>
+<string id="boar_stat">
+	<text>Кабаны</text>
+</string>
+<string id="burer_stat">
+	<text>Бюреры</text>
+</string>
+<string id="cat_stat">
+	<text>Коты</text>
+</string>
+<string id="chimera_stat">
+	<text>Химеры</text>
+</string>
+<string id="controller_stat">
+	<text>Контролёры</text>
+</string>
+<string id="dog_stat">
+	<text>Дикие псы</text>
+</string>
+<string id="flesh_stat">
+	<text>Плоти</text>
+</string>
+<string id="fracture_stat">
+	<text>Изломы</text>
+</string>
+<string id="ghoul_stat">
+	<text>Гули</text>
+</string>
+<string id="medwed_stat">
+	<text>Медведи</text>
+</string>
+<string id="poltergeist_stat">
+	<text>Полтергейсты</text>
+</string>
+<string id="pseudo_gigant_stat">
+	<text>Псевдогиганты</text>
+</string>
+<string id="pseudodog_stat">
+	<text>Псевдопсы</text>
+</string>
+<string id="psy_dog_stat">
+	<text>Пси-собаки</text>
+</string>
+<string id="rat_stat">
+	<text>Крысы</text>
+</string>
+<string id="ratlike_stat">
+	<text>Крысоволки</text>
+</string>
+<string id="snork_stat">
+	<text>Снорки</text>
+</string>
+<string id="spider_stat">
+	<text>Пауки</text>
+</string>
+<string id="swamp_stat">
+	<text>Ластоноги</text>
+</string>
+<string id="tarakan_stat">
+	<text>Тараканы</text>
+</string>
+<string id="tushkano_stat">
+	<text>Тушканчики</text>
+</string>
+<string id="zombie_stat">
+	<text>Зомби гражданские</text>
+</string>
+<string id="normal_stat">
+	<text>Опасные</text>
+</string>
+<string id="strong_stat">
+	<text>Очень опасные</text>
+</string>
+<string id="personal_stat">
+	<text>Редкие</text>
+</string>

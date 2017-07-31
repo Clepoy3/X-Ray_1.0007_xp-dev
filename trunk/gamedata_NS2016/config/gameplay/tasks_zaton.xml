@@ -1,0 +1,610 @@
+<!--Найти и побщаться с Бородой-->
+
+<game_task id="idti_k_borode">
+<title>Встретиться с Бородой</title>
+<objective>
+<text>Переговорить с Бородой</text>
+<icon>ui_iconsTotal_found_boroda</icon>
+<infoportion_complete>boroda_say_one_start</infoportion_complete>
+<article>text_boroda_naiti</article>
+</objective>
+<objective>
+<text>Переговорить с Бородой</text>
+<map_location_type hint="Борода">blue_location</map_location_type>
+<object_story_id>zaton_boroda</object_story_id>
+<infoportion_complete>boroda_say_one_start</infoportion_complete>
+</objective>
+</game_task>
+
+<!--<запчасти для антенны на Затоне>-->
+<game_task id="antenna_sbor">
+<title>Добраться до барж</title>
+<objective>
+<text>Узнать о запчастях для антенны</text>
+<icon>ui_iconsTotal_barja</icon>
+<infoportion_complete>boroda_say_tri_start1</infoportion_complete>
+<article>tex_antenna_sbor</article>
+</objective>
+<objective>
+<text>Поговорить с главарём бандитов на барже</text>
+<map_location_type hint="Главарь бандитов">blue_location</map_location_type>
+<object_story_id>skadovsk_ded</object_story_id>
+<infoportion_complete>ded_say_one_start</infoportion_complete> 
+</objective>
+<objective>
+<text>Найти нужные для сбора элементы</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<function_complete>arhara1_dialog1.anten_sbor_have</function_complete>
+<infoportion_set_complete>anten_sbor_have</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести кондёры и транзисторы Киту</text>
+<map_location_type hint="Кит">blue_location</map_location_type>
+<object_story_id>zaton_obmorok_body</object_story_id>
+<infoportion_fail>obmorok_body_dead</infoportion_fail>
+<infoportion_complete>anten_sbor_done</infoportion_complete> 
+</objective>
+<objective>
+<text>Поговорить с Бородой</text>
+<map_location_type hint="Борода">blue_location</map_location_type>
+<object_story_id>zaton_boroda</object_story_id>
+<infoportion_complete>boroda_say_tri_start1</infoportion_complete> 
+</objective>
+</game_task>
+
+
+<!--<Найти и поговорить с Сосоловом>-->
+<game_task id="sosolov_naiti">
+<title>Найти странного Охотника</title>
+<objective>
+<text>Найти странного Охотника</text>
+<map_location_type hint="Охотник на кровососов">blue_location</map_location_type>
+<object_story_id>zaton_krovososolov</object_story_id>
+<icon>ui_iconsTotal_val_sos_help</icon>
+<infoportion_fail>sos_dead</infoportion_fail>
+<infoportion_complete>sos_say_one_start</infoportion_complete>
+<article>tex_sosolov_naiti</article>
+</objective>
+</game_task>
+
+<!--Найти приборчик с датчиком для Сосолова-->
+<game_task id="sosolov_pribor">
+<title>Найти приборчик с датчиком для Кровососолова</title>
+<objective>
+<text>Найти приборчик с датчиком</text>
+<icon>ui_iconsTotal_val_sos_help</icon>
+<infoportion_complete>sosolov_pribor_ok</infoportion_complete>
+<article>tex_sosolov_pribor</article>
+</objective>
+<objective>
+<text>Найти приборчик с датчиком</text>
+<infoportion_complete>sosolov_pribor_have</infoportion_complete>
+</objective>
+<objective>
+<text>Исследовать упавший вертолёт</text>
+<infoportion_complete>elza_dopros</infoportion_complete> 
+</objective>
+<objective>
+<text>Вернуть прибор охотнику на кровососов</text>
+<infoportion_complete>sosolov_pribor_ok</infoportion_complete> 
+</objective>
+</game_task>
+
+
+
+<!--Обследовать баржу-->
+<game_task id="obsled_barza_zaton">
+<title>Обследовать баржу</title>
+<objective>
+<text>Проверить баржу</text>
+<icon>ui_iconsTotal_bathunter</icon>
+<infoportion_complete>bychok_say_two_start</infoportion_complete>
+<article>article_obsled_barza_zaton</article>
+</objective>
+<objective>
+<text>Поговорить с барменом</text>
+<infoportion_complete>bandos_barmen_two_start</infoportion_complete>
+</objective>
+<objective>
+<text>Поговорить с провожатым</text>
+<infoportion_fail>bandos_vhod_dead</infoportion_fail>
+<infoportion_complete>bychok_say_one_start</infoportion_complete>
+</objective>
+<objective>
+<text>Посмотреть что творится на барже недалеко от Скадовска</text>
+<infoportion_complete>mishey_sbito3</infoportion_complete>
+</objective>
+<objective>
+<text>Поговорить с провожатым</text>
+<map_location_type hint="Провожатый">blue_location</map_location_type>
+<object_story_id>skadovsk_bandos_vxod</object_story_id>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_fail>bandos_vhod_dead</infoportion_fail>
+<infoportion_set_complete>bychok_say_two_start</infoportion_set_complete>
+</objective>
+</game_task>
+
+
+<!--<Старая баржа и Вазелин>-->
+<game_task id="staraya_posudina">
+<title>Встретиться с бандитами на старой барже</title>
+<objective>
+<text>Поговорить с главарём бандитов</text>
+<map_location_type hint="Вазелин">blue_location</map_location_type>
+<object_story_id>barzha_vazelin</object_story_id>
+<icon>ui_iconsTotal_found_thing</icon>
+<infoportion_fail>vazelin_dead</infoportion_fail>
+<infoportion_complete>staraya_posudina_done</infoportion_complete>
+<article>vazelin_talk</article>
+</objective>
+</game_task>
+
+<!--<маленькая разборка с бандитами на подстранции Затона>-->
+<game_task id="podst_bandit">
+<title>Разведать обстановку на подстанции</title>
+<objective>
+<text>Навредить бандитам</text>
+<icon>ui_iconsTotal_podst</icon>
+<infoportion_complete>podst_bandi_dead</infoportion_complete>
+<article>tex_podst_bandit</article>
+</objective>
+</game_task>
+
+<!--Обойти Сахаровых.-->
+<game_task id="oboity_saharovih">
+<title>Поработать почтальоном</title>
+<objective>
+<text>Передать новости Сахарову</text>
+<icon>ui_iconsNpc_ucheniy_2</icon>
+<infoportion_complete>skazal_saharu_pro_elza</infoportion_complete>
+<article>article_oboity_saharovih</article>
+</objective>
+<objective>
+<text>Передать Сахарову весточку от жены</text>
+<map_location_type hint="Сахаров">blue_location</map_location_type>
+<object_story_id>yan_general_ecolog</object_story_id>
+<infoportion_complete>skazal_saharu_pro_elza</infoportion_complete>
+</objective>
+</game_task>
+
+
+<!--<найти хозяина мыши>-->
+<game_task id="sos_say">
+<title>Проследить за мышью</title>
+<objective>
+<text>Найти хозяина мыши</text>
+<icon>ui_iconsTotal_rip</icon>
+<!--<infoportion_fail>sos_proval</infoportion_fail>-->
+<infoportion_complete>sos_say_one_done</infoportion_complete>
+<article>tex_sos_say</article>
+</objective>
+<objective>
+<text>Найти хозяина мыши</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<function_complete>arhara1_dialog1.sos_say_one_have</function_complete>
+<infoportion_set_complete>sos_say_one_have</infoportion_set_complete>
+</objective>
+<objective>
+<text>Сообщить о результате охотнику на кровососов</text>
+<map_location_type hint="Охотник на кровососов">blue_location</map_location_type>
+<object_story_id>zaton_krovososolov</object_story_id>
+<infoportion_fail>sos_dead</infoportion_fail>
+<infoportion_complete>sos_say_one_done</infoportion_complete> 
+</objective>
+</game_task>
+
+
+<!--<вор на Затоне>-->
+
+<game_task id="bandbarmen_tri">
+<title>Обнаружить вора</title>
+<objective>
+<text>Обнаружить и выследить воришку</text>
+<icon>ui_iconsTotal_artefact</icon>
+<infoportion_fail>vor_kvest_proval</infoportion_fail>
+<infoportion_complete>spawn_skarabey</infoportion_complete>
+<article>tex_bandbarmen_tri</article>
+</objective>
+<objective>
+<text>Обнаружить и выследить воришку</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_fail>vor_kvest_proval</infoportion_fail>
+<infoportion_complete>vor_prishel</infoportion_complete>
+</objective>
+<objective>
+<text>Расколоть ворюгу</text>
+<infoportion_complete>vor_one_dialog_start</infoportion_complete>
+<infoportion_fail>vor_kvest_proval</infoportion_fail> 
+</objective>
+<objective>
+<text>Рассказать Карагёзу о слежке за вором</text>
+<map_location_type hint="Карагёз">blue_location</map_location_type>
+<object_story_id>karagez</object_story_id>
+<infoportion_complete>spawn_skarabey</infoportion_complete> 
+</objective>
+</game_task>
+
+<!--Колобок для Карагёза.-->
+<game_task id="bandbarmen_five">
+<title>Принести Алмазный колобок Карагёзу</title>
+<objective>
+<text>Принести Алмазный колобок Карагёзу</text>
+<icon>ui_iconsTotal_artefact</icon>
+<infoportion_complete>bandos_barmen_vor_finish</infoportion_complete>
+<article>bandbarmen_five</article>
+</objective>
+<objective>
+<text>Найти Алмазный колобок</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<function_complete>arhara1_dialog1.have_kolobok_karagez</function_complete>
+</objective>
+<objective>
+<text>Принести артефакт Карагёзу</text>
+<map_location_type hint="Карагёз">blue_location</map_location_type>
+<object_story_id>karagez</object_story_id>
+<infoportion_complete>bandos_barmen_vor_finish</infoportion_complete>
+</objective>
+</game_task>
+
+
+<!--<планер на Затоне>-->
+<game_task id="planer">
+<title>Обнаружить и подбить планер</title>
+<objective>
+<text>Найти место падения</text>
+<icon>ui_iconsTotal_planer</icon>
+<infoportion_fail>zaton_amerika_dead</infoportion_fail>
+<infoportion_complete>planer_done</infoportion_complete>
+<article>tex_planer</article>
+</objective>
+<objective>
+<text>Найти информацию с беспилотника</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<function_complete>arhara1_dialog1.planer_have</function_complete>
+<infoportion_set_complete>planer_have</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принять решение о найденной инфе</text>
+<map_location_type hint="Берни">blue_location</map_location_type>
+<object_story_id>zaton_amerika</object_story_id>
+<infoportion_fail>zaton_amerika_dead</infoportion_fail>
+<infoportion_complete>planer_done</infoportion_complete> 
+</objective>
+</game_task>
+	
+
+<!--<Кровососы кровососолова>-->
+<game_task id="sosych_say">
+<title>Найти кровососа</title>
+<objective>
+<text>Устранить кровососа</text>
+<icon>ui_iconsTotal_mil_kill_controller</icon>
+<infoportion_fail>sos_say_tri_proval</infoportion_fail>
+<infoportion_complete>sos_say_four_finish</infoportion_complete>
+<article>tex_sosych_say</article>
+</objective>
+<objective>
+<text>Устранить кровососа</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>sos_say_tri_done</infoportion_complete>
+</objective>
+<objective>
+<text>Рассказать о результате охотнику</text>
+<map_location_type hint="Охотник на кровососов">blue_location</map_location_type>
+<object_story_id>zat_sosolov</object_story_id>
+<infoportion_complete>sos_say_four_finish</infoportion_complete> 
+</objective>
+</game_task>
+
+<!--<Встреча со Скарабеем>-->
+<game_task id="skarabey_naiti">
+<title>Встретится с охотниками</title>
+<objective>
+<text>Встретится с охотниками</text>
+<icon>ui_iconsTotal_hunter</icon>
+<infoportion_fail>skarabey_dead</infoportion_fail>
+<infoportion_complete>skarabey_one_ok</infoportion_complete>
+<article>text_skarabey_naiti</article>
+</objective>
+<objective>
+<text>Найти и поговорить с охотником Скарабеем</text>
+<map_location_type hint="охотник Скарабей">blue_location</map_location_type>
+<object_story_id>zaton_skarabey</object_story_id>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_fail>skarabey_dead</infoportion_fail>
+<infoportion_complete>skarabey_one_ok</infoportion_complete>
+</objective>
+</game_task>
+
+<!--Дед, Бродвей и фото острова-->
+<game_task id="broadway_meet">
+<title>Летающий остров.</title>
+<objective>
+<text>Летающий остров.</text>
+<icon>ui_iconsTotal_ostrov</icon>
+<infoportion_complete>brodway_say_tri_start</infoportion_complete>
+<article>text_broadway_naiti</article>
+</objective>
+<objective>
+<text>Поговорить с Дедом на Скадовске</text>
+<map_location_type hint="Главарь бандитов">blue_location</map_location_type>
+<object_story_id>skadovsk_ded</object_story_id>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>spawn_brodway</infoportion_complete>
+</objective>
+<objective>
+<text>Найти Бродвея</text>
+<map_location_type hint="Бродвей">blue_location</map_location_type>
+<!--<object_story_id>zaton_brodway</object_story_id>-->
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>brodway_say_one_start</infoportion_complete>
+</objective>
+<objective>
+<text>Получить фото с упавшего вертолёта</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>foto_frits_ostrov</infoportion_complete>
+</objective>
+<objective>
+<text>Получить фото с вертолёта разведчика</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>brodway_say_tri_start</infoportion_complete>
+</objective>
+</game_task>
+
+
+<!--Посетить бар "Супер-Хавчик"-->
+
+<game_task id="bar_super_havchik">
+<title>Вернуться в бар на Затоне.</title>
+<objective>
+<text>Зайти в Бар</text>
+<icon>ui_iconsTotal_havchik</icon>
+<infoportion_complete>bandos_barmen_tri_start</infoportion_complete>
+<article>tex_bar_super_havchik</article>
+</objective>
+</game_task>
+
+<!--Встреча на мусорном заводе-->
+
+<game_task id="garbage_factory">
+<title>Исследовать мусорный завод</title>
+<objective>
+<text>Исследовать мусорный завод</text>
+<icon>ui_iconsTotal_garbagefactory</icon>
+<infoportion_complete>dell_sosolov</infoportion_complete>
+<article>tex_garbage_factory</article>
+</objective>
+</game_task>
+
+
+<!--<Освободить пиндоса>-->
+
+<game_task id="berny_free">
+<title>Освободить пленника из-под завала</title>
+<objective>
+<text>Освободить пленника из-под завала</text>
+<icon>ui_iconsTotal_berny</icon>
+<infoportion_fail>zaton_amerika_dead</infoportion_fail>
+<infoportion_complete>planer_start</infoportion_complete>
+<article>tex_berny_free</article>
+</objective>
+<objective>
+<text>Поговорить с Берни</text>
+<map_location_type hint="Берни">blue_location</map_location_type>
+<object_story_id>zaton_amerika</object_story_id>
+<infoportion_complete>planer_start</infoportion_complete>
+</objective>
+</game_task>
+
+
+<!--Гульден-->
+
+<game_task id="gulden_naiti">
+<title>Найти Гульдена</title>
+<objective>
+<text>Найти Гульдена</text>
+<map_location_type hint="Гульден">blue_location</map_location_type>
+<object_story_id>gulden</object_story_id>
+<icon>ui_iconsTotal_gulden</icon>
+<infoportion_fail>zaton_gulden_dead</infoportion_fail>
+<infoportion_complete>gulden_say_one_start</infoportion_complete>
+<article>tex_gulden</article>
+</objective>
+<objective>
+<text>Поговорить с Гульденом о базе Последнего Дня</text>
+<infoportion_complete>gulden_say_one_start</infoportion_complete>
+</objective>
+</game_task>
+
+
+<!--Гульден, Искра и побег с базы последнего дня-->
+<game_task id="iskra_meet">
+<title>Искра. Освобождение.</title>
+<objective>
+<text>Искра. Освобождение.</text>
+<icon>ui_iconsTotal_baza</icon>
+<infoportion_complete>iskra_say_one_start</infoportion_complete>
+<article>text_iskra_meet</article>
+</objective>
+<objective>
+<text>Следовать за Гульденом на базу Последнего Дня</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>othod_iskra</infoportion_complete>
+</objective>
+<objective>
+<text>Прикрыть отход группы</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>liniem_otsyuda</infoportion_complete>
+</objective>
+<objective>
+<text>Найти укрытие для Гульдена</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>doshli_do_negra</infoportion_complete>
+</objective>
+<objective>
+<text>Найти укрытие для Искры</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>iskra_koster</infoportion_complete>
+</objective>
+
+</game_task>
+
+
+<!--<Ноутбук злобного и код в МГ>-->
+
+<game_task id="mg_kod">
+<title>Найти код в комнате управления защиты мёртвого города</title>
+<objective>
+<text>Найти код</text>
+<icon>ui_iconsTotal_artefact</icon>
+<infoportion_complete>mg_kod_done</infoportion_complete>
+<article>tex_mg_kod</article>
+</objective>
+<objective>
+<text>Найти код в комнате управления защиты мёртвого города</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<function_complete>arhara1_dialog1.netbook_est</function_complete>
+<infoportion_set_complete>mg_kod_have</infoportion_set_complete>
+</objective>
+<objective>
+<text>Поговорить с Эльзой</text>
+<map_location_type hint="Эльза Сахарова">blue_location</map_location_type>
+<object_story_id>zaton_elza</object_story_id>
+<infoportion_complete>elza_say_pult_start</infoportion_complete> 
+</objective>
+<objective>
+<text>Попробовать активировать пульт</text>
+<infoportion_complete>mg_kod_done</infoportion_complete> 
+</objective>
+</game_task>
+
+
+<!--Эльза, вторая встреча-->
+
+<game_task id="elza_vstrecha2">
+<title>Поговорить с Эльзой</title>
+<objective>
+<text>Поговорить с Эльзой</text>
+<icon>ui_iconsTotal_elza</icon>
+<infoportion_complete>elza_dopros_ok</infoportion_complete>
+<article>tex_elza</article>
+</objective>
+<objective>
+<text>Поговорить с Эльзой Сахаровой</text>
+<map_location_type hint="Эльза Сахарова">blue_location</map_location_type>
+<object_story_id>zaton_elza</object_story_id>
+<infoportion_complete>elza_dopros_ok</infoportion_complete>
+</objective>
+</game_task>
+
+<!--Встреча со Злобным-->
+
+<game_task id="baza_zlobnuy">
+<title>Встретиться со Злобным.</title>
+<objective>
+<text>Встретиться со Злобным.</text>
+<map_location_type hint="Злобный">blue_location</map_location_type>
+<object_story_id>zaton_zlobnuy</object_story_id>
+<icon>ui_iconsTotal_zlobnyi</icon>
+<infoportion_complete>zaton_zlobnyi_one_start</infoportion_complete>
+<article>tex_baza_zlobnuy</article>
+</objective>
+<objective>
+<text>Встретиться со Злобным.</text>
+<infoportion_complete>zaton_zlobnyi_one_start</infoportion_complete>
+</objective>
+</game_task>
+
+<!--<Поиск военного на Затоне>-->
+<game_task id="amerika_find">
+<title>Найти выживших военных</title>
+<objective>
+<text>Найти выживших военных</text>
+<icon>ui_iconsTotal_found_thing</icon>
+<infoportion_complete>spawn_zaton_amerika</infoportion_complete>
+<article>tex_amerika_find</article>
+</objective>
+</game_task>
+
+<!--Масло для Сержа.-->
+<game_task id="zat_remont">
+<title>Найти масло ремонтнику Сержу</title>
+<objective>
+<text>Найти масло ремонтнику Сержу</text>
+<icon>ui_iconsTotal_found_thing</icon>
+<infoportion_complete>zat_remont2_finish</infoportion_complete>
+<article>zat_remont</article>
+</objective>
+<objective>
+<text>Найти масло</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<function_complete>arhara1_dialog1.maslo_est</function_complete>
+</objective>
+<objective>
+<text>Принести масло Сержу</text>
+<map_location_type hint="Серж">blue_location</map_location_type>
+<object_story_id>zat_remontnik</object_story_id>
+<infoportion_complete>zat_remont2_finish</infoportion_complete>
+</objective>
+</game_task>
+
+<!--Встреча с Блэндом, если в ТД было всё ОК-->
+
+<game_task id="zat_bland">
+<title>Встретиться с Блэндом.</title>
+<objective>
+<text>Встретиться с Блэндом.</text>
+<map_location_type hint="Блэнд">blue_location</map_location_type>
+<object_story_id>zat_bland</object_story_id>
+<icon>ui_iconsTotal_bland</icon>
+<infoportion_complete>bland_razgovor_finish</infoportion_complete>
+<article>zat_bland</article>
+</objective>
+<objective>
+<text>Встретиться с Блэндом.</text>
+<infoportion_complete>bland_razgovor_finish</infoportion_complete>
+</objective>
+</game_task>
+
+<!--Встреча с Клыком на заправке-->
+
+<game_task id="zat_kluk">
+<title>Встретиться с Клыком на заправке.</title>
+<objective>
+<text>Встретиться с Клыком на заправке.</text>
+<map_location_type hint="Клык">blue_location</map_location_type>
+<object_story_id>zat_kluk</object_story_id>
+<icon>ui_iconsTotal_found_thing</icon>
+<infoportion_complete>zat_shturm_start</infoportion_complete>
+<article>zat_kluk</article>
+</objective>
+<objective>
+<text>Встретиться с Клыком.</text>
+<infoportion_complete>zat_shturm_start</infoportion_complete>
+</objective>
+</game_task>
+
+
+<!--<Штурм базы и уничтожение активатора порталов>-->
+
+<game_task id="zat_shturm">
+<title>Покончить с кланом Последний день</title>
+<objective>
+<text>Покончить с кланом Последний день</text>
+<icon>ui_iconsTotal_esc_defend_lager</icon>
+<infoportion_complete>zat_portal_bum</infoportion_complete>
+<article>zat_shturm</article>
+</objective>
+<objective>
+<text>Пробиться к дверям лаборатории</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>a23_code_door_unlocked</infoportion_complete> 
+</objective>
+<objective>
+<text>Уничтожить активатор порталов</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>zat_portal_bum</infoportion_complete>
+</objective>
+</game_task>
+
+

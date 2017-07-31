@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<window>
+	<back_video x="0" y="0" width="1024" height="430">
+		<texture x="0" y="0" width="1024" height="430">ui\ui_mm_window_back_crop</texture>
+	</back_video>
+
+	<background x="0" y="0" width="1024" height="768">
+		<texture>ui\ui_static_mm_back_04</texture>
+	</background>
+
+	<newspaper_video x="137" y="512" width="256" height="256">
+		<texture></texture>
+	</newspaper_video>
+	
+	<form x="300" y="250" width="560" height="560">
+		
+		<caption x="86" y="71" width="500" height="25" complex_mode="0">
+			<text font="graffiti22" r="224" g="215" b="144">ui_mm_save_game</text>
+		</caption>
+		
+		<edit x="230" y="72" width="322" height="23">
+			<texture>ui_linetext_es</texture>
+			
+			<text font="letterica18" r="224" g="215" b="144"/>
+		</edit>
+		
+		<list_frame x="64" y="100" width="488" height="295">
+			<texture>ui_tablist_textboxs</texture>
+		</list_frame>
+		
+		<list x="74" y="131" width="468" height="265" item_height="18"/>
+				
+		<btn_save x="178" y="398" width="123" height="26">
+			<texture>ui_button_s</texture>
+			<text font="graffiti22">ui_mm_save</text>
+			<text_color>
+				<e r="224" g="215" b="144"/> <t r="224" g="215" b="144"/> <d r="224" g="215" b="144"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</btn_save>
+
+		<btn_delete x="303" y="398" width="123" height="26">
+			<texture>ui_button_s</texture>
+			<text font="graffiti22">ui_mm_delete</text>
+			<text_color>
+				<e r="224" g="215" b="144"/> <t r="224" g="215" b="144"/> <d r="224" g="215" b="144"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</btn_delete>
+		
+		<btn_cancel x="428" y="398" width="123" height="26">
+			<texture>ui_button_s</texture>			
+			<text font="graffiti22">ui_mm_cancel</text>
+			<text_color>
+				<e r="224" g="215" b="144"/> <t r="224" g="215" b="144"/> <d r="224" g="215" b="144"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</btn_cancel>		
+	</form>
+
+
+</window>

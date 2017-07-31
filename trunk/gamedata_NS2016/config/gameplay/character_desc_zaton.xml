@@ -1,0 +1,2065 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<xml>
+<!--Ветка Затона-->
+
+<!--<Парфюмер Затон>-->
+
+	<specific_character id="zaton_parfumer" team_default = "1">
+		<name>Парфюмер</name>
+		<icon>ui_npc_parfumer</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zaton_parfumer</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<panic_threshold>-1</panic_threshold>
+		<visual>new\stalk_parfumer</visual>
+		<supplies>
+			[spawn] \n
+			wpn_g36 \n			
+			ammo_5.56x45_ss190 = 1 \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"
+		</supplies>
+        	
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+	   </specific_character>
+
+
+<!--<Парфюмер Затон2>-->
+
+<specific_character id="parfum_zaton_trabl" team_default = "1">
+		<name>Парфюмер</name>
+		<icon>ui_npc_parfumer</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>parfum_zaton_trabl</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<visual>new\stalk_parfumer</visual>
+		<supplies>
+			[spawn] \n
+			wpn_g36 \n			
+			ammo_5.56x45_ss190 = 1 \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"
+		</supplies>
+          
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+   </specific_character>
+
+
+<!--<Парфюмер Затон3>-->
+
+	<specific_character id="parfum_tri" team_default = "1">
+		<name>Парфюмер</name>
+		<icon>ui_npc_parfumer</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>parfum_tri</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<visual>new\stalk_parfumer</visual>
+		<supplies>
+			[spawn] \n
+			wpn_g36 \n			
+			ammo_5.56x45_ss190 = 1 \n
+		#include "gameplay\character_items.xml" \n
+		#include "gameplay\character_food.xml"
+		</supplies>
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+	</specific_character>
+
+
+<!--<Норман Затон>-->
+
+	<specific_character id="zaton_norman" team_default = "1">
+		<name>Норман</name>
+		<icon>ui_arhara_u_kontrik</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zaton_norman</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<panic_threshold>-1</panic_threshold>
+		<visual>new\kontroler_stalk</visual>
+		<supplies>
+			[spawn] \n
+			wpn_uzi = 1 \n
+			ammo_9x19_fmj \n
+		</supplies>
+          
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+	</specific_character>
+
+
+<!--<Норман Затон2>-->
+
+	<specific_character id="norman_zat_trabl" team_default = "1">
+		<name>Норман</name>
+		<icon>ui_arhara_u_kontrik</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>norman_zat_trabl</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<visual>new\kontroler_stalk</visual>
+		<supplies>
+			[spawn] \n
+			wpn_uzi = 1 \n
+			ammo_9x19_fmj \n
+		</supplies>
+          
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+	</specific_character>
+
+
+<!--Робинзон-->
+
+	<specific_character id="robinzon" team_default = "1">
+		<name>Робинзон</name>
+		<icon>ui_arhara_osvedomitel</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_veteran_bio</bio>
+		<class>robinzon</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<money min="200" max="600" infinitive="0" />
+		<rank>826</rank>
+		<reputation>2</reputation>
+	        <snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>-1</crouch_type>
+		<visual>new\robinzon</visual>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+			wpn_binoc = 1 \n               
+		#include "gameplay\character_drugs.xml"
+		#include "gameplay\character_food.xml"	
+		</supplies>
+	<actor_dialog>robinzon_say_one</actor_dialog>
+
+		#include "gameplay\character_criticals_4.xml"
+		#include "gameplay\character_dialogs.xml"			
+	</specific_character>
+
+
+<!--Люди Робинзона-->
+	
+	<specific_character id="zaton_robinzon_stalker1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_arhara_robi_stalker1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_veteran_bio</bio>
+		<class>zaton_robinzon_stalker1</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<money min="200" max="600" infinitive="0" />
+		<rank>826</rank>
+		<reputation>2</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>-1</crouch_type>
+		<visual>new\zaton_prototip</visual>
+		<supplies>
+			[spawn] \n
+			wpn_l85 \n
+			ammo_5.56x45_ss190 = 1 \n
+		#include "gameplay\character_food.xml"
+		</supplies>
+          
+		#include "gameplay\character_criticals_4.xml"
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+	<specific_character id="zaton_robinzon_stalker2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_arhara_robi_stalker2</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zaton_robinzon_stalker2</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<visual>new\zaton_prototip1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pkm \n
+			ammo_7.62x54r = 1 \n
+		#include "gameplay\character_food.xml"	
+		</supplies>
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+<!--Борода на Затоне-->
+	
+	<specific_character id="zaton_boroda" team_default = "1">
+		<name>Борода</name>
+		<icon>ui_arhara_boroda</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zaton_boroda</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<money min="300" max="2000" infinitive="0"></money>
+		<rank>911</rank>
+		<reputation>91</reputation>
+		<visual>new\zaton_boroda</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<supplies>
+			[spawn] \n
+			wpn_winchester_m1 \n
+			ammo_12x70_buck \n
+		</supplies>
+		
+		<start_dialog>boroda_say_one</start_dialog> 
+		<actor_dialog>boroda_say_two</actor_dialog> 
+		<actor_dialog>boroda_say_tri</actor_dialog>       
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>                   
+	</specific_character>
+
+
+<!--ВЭЛ-->
+
+	<specific_character id="zaton_vell" team_default = "1">
+		<name>Вэл</name>
+		<icon>ui_arhara_vell</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_veteran_bio</bio>
+		<class>zaton_vell</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<money min="100000" max="110000" infinitive="1"/>
+		<rank>826</rank>
+		<reputation>2</reputation>
+		<visual>new\vell</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>zaton_vell_one</actor_dialog>
+		<actor_dialog>trade_dialog_doktor</actor_dialog>
+	</specific_character>
+
+
+<!--гулаг Бороды на Затоне-->
+
+<!--Stalker MASTER-->
+
+	<specific_character id="zaton_baza_stalk1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_arhara_zaton_st1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zaton_baza_stalk1</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<visual>new\zaton_maska</visual>
+		<supplies>
+			[spawn] \n
+			wpn_vintorez \n			
+			ammo_9x39_pab9 \n
+			wpn_binoc = 1 \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"	
+		</supplies>
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_2.xml"
+		#include "gameplay\character_dialogs.xml"						
+	</specific_character>
+
+
+	<specific_character id="zaton_baza_stalk2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_arhara_zaton_st2</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zaton_baza_stalk2</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<visual>new\zaton_maska_2</visual>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+			wpn_binoc = 1 \n			
+		#include "gameplay\character_items.xml" \n
+		#include "gameplay\character_food.xml"	
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_2.xml"
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+<!--Stalker VETERAN-->
+
+	<specific_character id="zaton_baza_stalk3" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_arhara_robi_stalker1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_veteran_bio</bio>
+		<class>zaton_baza_stalk3</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>826</rank>
+		<reputation>2</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>-1</crouch_type>
+		<visual>new\zaton_prototip</visual>
+		<supplies>
+			[spawn] \n
+			wpn_m16a2_sk1 \n
+			ammo_5.56x45_ss190 = 1 \n
+			wpn_binoc = 1 \n             
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_drugs.xml"
+		#include "gameplay\character_food.xml"	
+		</supplies>
+		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+	
+	
+<!--Stalker regular-->
+
+	<specific_character id="zaton_baza_stalk4" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_2_mask</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+		<class>zaton_baza_regular</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>423</rank>
+		<reputation>27</reputation>
+		<money min="60" max="500" infinitive="0"></money>
+		<visual>actors\neytral\stalker_2_mask</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_m16a2_sk1 \n
+			ammo_5.56x45_ss190 = 1 \n
+			wpn_binoc = 1 \n
+		#include "gameplay\character_drugs.xml"
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_items.xml"
+		</supplies>
+		#include "gameplay\character_criticals_4.xml"       
+		
+		<start_dialog>dm_hello_dialog</start_dialog>
+		<actor_dialog>dm_cool_info_dialog</actor_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>stalk_garb_treasure_1_dialog</actor_dialog>
+	  </specific_character>
+
+
+	<specific_character id="zaton_baza_stalk5" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_balon_8</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+		<class>zaton_baza_regular</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+    
+		<rank>462</rank>
+		<reputation>42</reputation>
+		<money min="60" max="500" infinitive="0"></money>
+		<visual>actors\neytral\stalker_2_mask</visual>
+		<snd_config>characters_voice\human_02\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_groza \n
+			ammo_9x39_pab9 \n
+			wpn_binoc = 1 \n	
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_items.xml"
+		</supplies>
+		#include "gameplay\character_criticals_4.xml"       
+
+		<start_dialog>dm_hello_dialog</start_dialog>
+		<actor_dialog>dm_cool_info_dialog</actor_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>stalk_garb_treasure_4_dialog</actor_dialog>
+	</specific_character>
+
+
+	<specific_character id="zaton_baza_stalk6" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_balon_8</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+		<class>zaton_baza_regular</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>462</rank>
+		<reputation>42</reputation>
+		<money min="60" max="500" infinitive="0"></money>
+		<visual>actors\neytral\stalker_neytral_balon_8</visual>
+		<snd_config>characters_voice\human_02\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj = 1 \n
+			wpn_binoc = 1 \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_items.xml"
+		</supplies>
+		#include "gameplay\character_criticals_4.xml"       
+
+		<start_dialog>dm_hello_dialog</start_dialog>
+		<actor_dialog>dm_cool_info_dialog</actor_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>stalk_garb_treasure_4_dialog</actor_dialog>
+	</specific_character>
+
+
+<!--Stalker MASTER-->
+	
+	<specific_character id="zaton_baza_oxran" team_default = "1">
+		<name>Герасим</name>
+		<icon>ui_arhara_zaton_st1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zaton_baza_oxran</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<visual>new\zaton_maska</visual>
+		<supplies>
+			[spawn] \n
+			wpn_vintorez \n			
+			ammo_9x39_pab9 \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"	
+		</supplies>
+		#include "gameplay\character_criticals_2.xml"
+		#include "gameplay\character_dialogs.xml"						
+	</specific_character>
+
+<!--Друг Сосолова-->
+	<specific_character id="zaton_green2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_hunter_4_novice</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>		
+		<class>zaton_green2</class>
+		<community>green</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>902</rank>
+		<reputation>70</reputation>
+		<money min="60" max="5000" infinitive="0"/>
+		<visual>actors\hunters\hunter2</visual>
+		<snd_config>characters_voice\human_03\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+		<panic_treshold>0</panic_treshold>
+		<supplies>
+		[spawn] \n
+		wpn_saiga12c = 1 \n
+		ammo_12x70_buck = 1 \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"    
+		</supplies>
+		#include "gameplay\character_criticals_5.xml"
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+<!--Обморок-->
+
+	<specific_character id="zaton_obmorok" team_default="1">
+		<name>Обморок</name>
+		<icon>ui_arhara_u_obmorok</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+		<class>zaton_obmorok</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>903</rank>
+		<reputation>-132</reputation>
+		<visual>new\obmorok</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+		<start_dialog>obmor_bandos_one</start_dialog>
+		<actor_dialog>obmor_bandos_tu</actor_dialog>
+		<actor_dialog>obmor_bandos_tri</actor_dialog>
+		<actor_dialog>hello_dialog</actor_dialog>
+		</specific_character>
+
+<!--Кит телохранитель Обморока-->
+
+	<specific_character id="zaton_obmorok_body" team_default="1">
+		<name>Кит</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+		<class>zaton_obmorok_body</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>908</rank>
+		<reputation>-132</reputation>
+		<visual>actors\bandit\stalker_bandit_master</visual>
+		<snd_config>characters_voice\human_01\stalker_3\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+		#include "gameplay\character_drugs.xml"
+		</supplies>
+		#include "gameplay\character_criticals_4.xml"
+			
+		<start_dialog>kit_antena</start_dialog>
+		<actor_dialog>kit_antena_two</actor_dialog>
+		<actor_dialog>kit_antena_tri</actor_dialog>
+		<actor_dialog>kit_antena_four</actor_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>hello_dialog</actor_dialog>
+	</specific_character>
+
+<!-- СКАДОВСК-->
+
+<!--Дед главарь бандосов-->
+	
+	<specific_character id="skadovsk_ded" team_default="1">
+		<name>Дед</name>
+		<icon>ui_arhara_ded</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+		<class>skadovsk_ded</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>903</rank>
+		<reputation>-132</reputation>
+		<visual>new\skadovsk_ded</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			ammo_7.62x54r = 1 \n
+			wpn_pkm \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"
+		</supplies>
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>ded_say_one</actor_dialog>
+		<actor_dialog>ded_say_two</actor_dialog>
+		<actor_dialog>ded_say_tri</actor_dialog>
+	</specific_character>
+
+
+<!--Карагёз (бармен)-->
+
+	<specific_character id="karagez" team_default = "1">
+		<name>Карагёз</name>
+		<icon>ui_arhara_karagez</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_veteran_bio</bio>
+		<class>karagez</class>
+		<community>trader</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<money min="100000" max="110000" infinitive="1"/>
+		<rank>826</rank>
+		<reputation>2</reputation>
+		<visual>new\stalker_karagez</visual>
+		<snd_config>characters_voice\bandos_zaton\bandit\</snd_config>
+		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<supplies>
+			[spawn] \n
+		#include "gameplay\character_items.xml"
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>bandos_barmen_one</actor_dialog>
+		<actor_dialog>bandos_barmen_two</actor_dialog>
+		<actor_dialog>bandos_barmen_tri</actor_dialog>
+		<actor_dialog>bandos_barmen_four</actor_dialog>
+		<actor_dialog>bandos_barmen_five</actor_dialog>
+		<actor_dialog>bandos_barmen_six</actor_dialog>
+ 		<actor_dialog>bandos_barmen_seven</actor_dialog> 
+	</specific_character>
+
+
+<!-- Скадовск-->
+
+	<specific_character id="skadovsk_bandos1" team_default="1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_veteran</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>sim_bandit_veteran_bio</bio>
+		<class>skadovsk_bandos1</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>806</rank>
+		<reputation>-140</reputation>
+		<visual>actors\bandit\stalker_bandit_veteran</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_abakan \n
+			ammo_5.45x39_fmj = 1 \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"
+		</supplies>
+		#include "gameplay\character_criticals_4.xml"
+		
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+	</specific_character>
+
+	<specific_character id="skadovsk_bandos2" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_ki_mask</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>mil_killer_sniper_bio</bio>
+		<class>skadovsk_bandos2</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<money min="600" max="4000" infinitive="0" />
+		<rank>755</rank>
+		<reputation>-31</reputation>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+  		<crouch_type>-1</crouch_type>
+		<visual>actors\killer\stalker_ki_mask</visual>
+		<supplies>
+			[spawn] \n
+			wpn_mp5 \n
+			ammo_9x19_fmj = 1 \n
+		#include "gameplay\character_items.xml" \n
+		#include "gameplay\character_drugs.xml" \n
+		#include "gameplay\character_food.xml"	
+		</supplies>
+		#include "gameplay\character_criticals_4.xml"
+		#include "gameplay\character_dialogs.xml"				
+	</specific_character>
+
+	<specific_character id="skadovsk_bandos3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_arhara_skad_piyn</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+		<class>skadovsk_bandos3</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<money min="200" max="3500" infinitive="0"></money>
+		<rank>544</rank>
+		<reputation>-138</reputation>
+		<visual>new\zaton_bandos_trezv</visual>
+		<snd_config>characters_voice\bandos_zaton\bandit\</snd_config>
+		<crouch_type>-1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_ak47 \n
+			ammo_7.62x39_fmj = 1 \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"
+		</supplies>
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+	</specific_character>
+
+	<specific_character id="skadovsk_bandos_master" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>sim_bandit_general_bio</bio>
+		<class>skadovsk_bandos_master</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<money min="600" max="4100" infinitive="0"></money>
+    		<rank>458</rank>
+		<reputation>-98</reputation>
+		<visual>actors\bandit\stalker_bandit_master</visual>
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_sig550 = 1 \n
+			ammo_5.56x45_ss190 = 1 \n
+			wpn_binoc = 1 \n
+		#include "gameplay\character_drugs.xml"
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_items.xml"     
+		</supplies>
+		#include "gameplay\character_criticals_3.xml"
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+	<specific_character id="skadovsk_bandos5" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_sv_exoskeleton</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+		<snd_config>characters_voice\human_03\freedom\</snd_config>
+		<crouch_type>0</crouch_type>
+		<class>skadovsk_bandos_master</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<money min="200" max="4600" infinitive="0"></money>
+		<rank>936</rank>
+		<reputation>-87</reputation>
+		<snd_config>characters_voice\bandos_zaton\bandit\</snd_config>
+		<visual>actors\svoboda\stalker_sv_exoskeleton</visual>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n			
+			wpn_lr300 \n
+			ammo_5.56x45_ss190 = 1 \n
+		#include "gameplay\character_items.xml" \n
+		#include "gameplay\character_drugs.xml" \n
+		#include "gameplay\character_food.xml"			
+		</supplies>
+	
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_2.xml"
+		#include "gameplay\character_dialogs.xml"				
+	</specific_character>
+
+
+<!--Бычок охранник бара на Скадовске-->
+
+	<specific_character id="skadovsk_bandos_vxod" team_default = "1">
+		<name>Колька Бычок</name>
+		<icon>ui_npc_u_stalker_bandit_3</icon>
+		<bio>esc_bandit_novice_bio</bio>
+		<class>skadovsk_bandos_vxod</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>32</rank>
+		<reputation>-56</reputation>
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<panic_treshold>0</panic_treshold>
+		<visual>actors\bandit\stalker_bandit_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_tavor \n
+			ammo_5.56x45_ss190 \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_drugs.xml"
+		#include "gameplay\character_food.xml"
+		</supplies>
+		#include "gameplay\character_criticals_3.xml"
+					
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>bychok_say_one</actor_dialog>
+		<actor_dialog>bychok_say_two</actor_dialog>
+
+	</specific_character>
+
+
+<!--Вазелин-->
+
+	<specific_character id="barzha_vazelin" team_default = "1">
+		<name>Вазелин</name>
+		<icon>ui_arhara_vazelin</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>
+        	<class>barzha_vazelin</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>911</rank>
+		<reputation>91</reputation>
+		<money min="1000" max="6000" infinitive="0"/>
+		<visual>new\barzha_vazelin</visual>
+		<snd_config>characters_voice\bandos_zaton\bandit\</snd_config>
+		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_fn2000 = 1 \n
+			ammo_5.56x45_ss190 = 1 \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"
+		</supplies>
+		#include "gameplay\character_criticals_6.xml"
+		#include "gameplay\character_dialogs.xml"
+		
+		<actor_dialog>vazelin_say_one</actor_dialog>
+		<actor_dialog>vazelin_say_two</actor_dialog>
+      </specific_character>
+
+
+<!--Скарабей глава охотников-->
+
+	<specific_character id="zaton_skarabey" team_default = "1">
+		<name>Скарабей</name>
+		<icon>ui_arhara_skarabey</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>		
+		<class>zaton_skarabey</class>
+		<community>green</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>932</rank>
+		<reputation>100</reputation>
+		<money min="60" max="8000" infinitive="0"/>
+		<visual>new\skarabey</visual>
+		<snd_config>characters_voice\human_03\freedom\</snd_config>
+		<crouch_type>-1</crouch_type>
+		<panic_treshold>0</panic_treshold>
+		<supplies>
+			[spawn] \n
+			wpn_aek971 = 1 \n
+			ammo_5.45x39_fmj = 1 \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"    
+		</supplies>
+		
+		<start_dialog>dm_hello_dialog</start_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>skarabey_one</actor_dialog>
+		#include "gameplay\character_criticals_5.xml"
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+<!--бандиты на подстанции Затона-->
+
+	<specific_character id="podstanziy_bandit1" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_3</icon>
+		<bio>sim_bandit_veteran_bio</bio>
+		<class>podstanziy_bandit1</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>808</rank>
+		<reputation>-56</reputation>
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<panic_treshold>0</panic_treshold>
+		<visual>actors\bandit\stalker_bandit_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+			af_electra_moonlight \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_drugs.xml"
+		#include "gameplay\character_food.xml"			
+		</supplies>
+		#include "gameplay\character_criticals_3.xml"
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+	<specific_character id="podstanziy_bandit2" team_default="1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_8</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>sim_bandit_veteran_bio</bio>
+		<class>podstanziy_bandit2</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>808</rank>
+		<reputation>-59</reputation>
+		<visual>actors\bandit\stalker_bandit_8</visual>
+		<snd_config>characters_voice\human_03\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"
+		</supplies>
+		#include "gameplay\character_criticals_4.xml"
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+	<specific_character id="podstanziy_bandit3" team_default="1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>sim_bandit_general_bio</bio>
+		<class>podstanziy_bandit3</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>544</rank>
+		<reputation>-138</reputation>
+		<visual>actors\bandit\stalker_bandit_master</visual>
+		<snd_config>characters_voice\human_03\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+		</supplies>
+		#include "gameplay\character_criticals_4.xml"		
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+	<specific_character id="podstanziy_bandit4" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_hunter_62_novice</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+		<class>podstanziy_bandit4</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>903</rank>
+		<reputation>-138</reputation>
+		<visual>actors\bandit\stalker_bandit_exoskeleton</visual>
+		<snd_config>characters_voice\human_03\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_ak47 \n
+			ammo_7.62x39_fmj = 1 \n
+		#include "gameplay\character_items.xml"
+		</supplies>
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+	<specific_character id="podstanziy_bandit5" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_do_exoskeleton</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+		<class>podstanziy_bandit5</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+  		<crouch_type>0</crouch_type>
+		<rank>932</rank>
+		<reputation>-79</reputation>
+		<panic_threshold>0.0</panic_threshold>
+		<visual>actors\dolg\stalker_do_exoskeleton</visual>
+		<snd_config>characters_voice\human_03\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+			det_artefact_indy \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"
+		</supplies>
+		#include "gameplay\character_dialogs.xml"				
+	</specific_character>
+
+
+	<specific_character id="podstanziy_bandit6" team_default = "1">
+		<name>Тыква</name>
+		<icon>ui_npc_u_stalker_zp_exoskeleton</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+		<class>podstanziy_bandit6</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<money min="200" max="500" infinitive="0"></money>
+    		<rank>909</rank>
+		<reputation>-19</reputation>
+		<visual>actors\soldier\stalker_zp_exoskeleton</visual>   
+		<snd_config>characters_voice\human_03\bandit\</snd_config>
+		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_groza \n
+			ammo_9x39_pab9 \n
+		#include "gameplay\character_food.xml"
+		</supplies> 
+		#include "gameplay\character_criticals_5.xml"
+		#include "gameplay\character_dialogs.xml"   
+    	</specific_character>
+
+
+	<specific_character id="podstanziy_bandit7" team_default="1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_no_avatar</icon>
+		<map_icon x="2" y="0"></map_icon>
+        	<bio>sim_bandit_master_bio</bio>
+		<class>podstanziy_bandit7</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>922</rank>
+		<reputation>-890</reputation>
+		<money min="50" max="730" infinitive="0"></money>
+		<visual>new\supernevidimka</visual>
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+	        <panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_groza \n
+			ammo_9x39_pab9 \n
+		#include "gameplay\character_food.xml"
+		</supplies>		  
+		#include "gameplay\character_criticals_4.xml"
+		#include "gameplay\character_dialogs.xml"
+		</specific_character>
+
+
+	<specific_character id="podstanziy_bandit8" team_default="1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_no_avatar</icon>
+		<map_icon x="2" y="0"></map_icon>
+        	<bio>sim_bandit_master_bio</bio>
+		<class>podstanziy_bandit8</class>
+ 		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>922</rank>
+		<reputation>-890</reputation>
+		<money min="50" max="730" infinitive="0"></money>
+		<visual>new\supernevidimka</visual>
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+		#include "gameplay\character_food.xml"
+		</supplies>		  
+		#include "gameplay\character_criticals_4.xml"
+		#include "gameplay\character_dialogs.xml"
+		</specific_character>
+
+
+	<specific_character id="podstanziy_bandit9" team_default="1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_no_avatar</icon>
+		<map_icon x="2" y="0"></map_icon>
+        	<bio>sim_bandit_master_bio</bio>
+		<class>podstanziy_bandit9</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>922</rank>
+		<reputation>-890</reputation>
+		<money min="50" max="730" infinitive="0"></money>
+		<visual>new\supernevidimka</visual>
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+	        <panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+		#include "gameplay\character_food.xml"
+		</supplies>		  
+		#include "gameplay\character_criticals_4.xml"
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+<!--Эльза на Затоне-->
+
+	<specific_character id="zaton_elza" team_default = "1">
+		<name>Эльза Сахарова</name>
+		<icon>ui_arhara_elza</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>yan_semenov_bio</bio>
+		<class>zaton_elza</class>
+		<community>ecolog</community> <terrain_sect>stalker_ecolog_terrain</terrain_sect>
+		<money min="50" max="100" infinitive="0"></money>
+		<rank>440</rank>
+		<reputation>50</reputation>
+	       	<visual>actors\woman\elza</visual>
+		<snd_config>characters_voice\human_01\woman\</snd_config>
+  		<crouch_type>0</crouch_type>
+        	<panic_treshold>0</panic_treshold>
+		<supplies>
+		</supplies>
+		#include "gameplay\character_dialogs.xml"						
+		
+		<actor_dialog>elza_dialog_one</actor_dialog>
+		<actor_dialog>elza_dopros</actor_dialog>
+		<actor_dialog>elza_dopros_two</actor_dialog>
+		<actor_dialog>elza_say_pult</actor_dialog>
+		<actor_dialog>elza_pult_nerobit</actor_dialog>
+		<actor_dialog>elza_pult_robit</actor_dialog>
+	</specific_character>
+
+
+<!--Америка ниггер на Затоне-->
+
+	<specific_character id="zaton_amerika" team_default = "1">
+		<name>Берни</name>
+        	<icon>ui_arhara_amerika</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zaton_amerika</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<money min="300" max="2000" infinitive="0"></money>
+		<rank>911</rank>
+		<reputation>91</reputation>
+        	<visual>new\amerika</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<supplies>
+			[spawn] \n
+			wpn_m16a2_sk1 \n
+			ammo_5.56x45_ss190 = 1 \n
+		#include "gameplay\character_items.xml"
+		</supplies>
+		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>amerika_one</actor_dialog>
+		<actor_dialog>amerika_two</actor_dialog>
+		<actor_dialog>amerika_goodbay_one</actor_dialog>
+		<actor_dialog>amerika_goodbay_two</actor_dialog>       
+	</specific_character>
+
+
+<!--Хвост воришка на Скадовске-->
+
+	<specific_character id="zaton_vor" team_default = "1">
+		<name>Хвост</name>
+		<icon>ui_npc_u_stalker_bandit_4</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>sim_bandit_general_bio</bio>
+    		<class>zaton_vor</class>
+		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<money min="600" max="2000" infinitive="0"></money>
+		<rank>502</rank>
+		<reputation>-56</reputation>
+		<visual>actors\bandit\stalker_bandit_4</visual>
+		<snd_config>characters_voice\bandos_zaton\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_groza \n
+			ammo_9x39_pab9 \n
+		#include "gameplay\character_drugs.xml" \n
+		#include "gameplay\character_food.xml"
+		</supplies>
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<start_dialog>vor_one_dialog_one</start_dialog>
+	</specific_character>
+
+
+<!--гулаг Послденего Дня на бензоколонке Затона-->
+
+<!-- мастера-->
+	<specific_character id="zapravka_chasovoy1" team_default="1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_lastday_helmet</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>pri_monolith_exo_bio</bio>
+		<class>zapravka_master</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>922</rank>
+		<reputation>-890</reputation>
+		<money min="50" max="730" infinitive="0"></money>
+		<visual>new\ekzo_and_helmet</visual>
+		<snd_config>characters_voice\human_02\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_gauss \n
+			ammo_gauss = 1 \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"
+		</supplies>		  
+		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+
+	<specific_character id="zapravka_chasovoy2" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_mo_exo</icon>
+		<map_icon x="3" y="0"></map_icon>
+		<bio>pri_monolith_exo_bio</bio>
+		<class>zapravka_chasovoy2</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>922</rank>
+		<reputation>-890</reputation>
+		<visual>actors\monolit\stalker_mo_exo</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+	  	<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_groza \n
+			ammo_9x39_pab9 \n
+		#include "gameplay\character_drugs.xml"
+		#include "gameplay\character_items.xml" \n
+		</supplies>
+		#include "gameplay\character_criticals_1.xml"
+		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+	</specific_character>
+
+
+	<specific_character id="zapravka_chasovoy3" team_default="1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_lastday_helmet</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>pri_monolith_exo_bio</bio>
+		<class>zapravka_master</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>922</rank>
+		<reputation>-890</reputation>
+		<money min="50" max="730" infinitive="0"></money>
+		<visual>new\ekzo_and_helmet</visual>
+		<snd_config>characters_voice\human_02\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_aek973 \n
+			ammo_7.62x39_fmj = 1 \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"
+		</supplies>		  
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+<!--ветераны на заправке Затона-->
+	
+	<specific_character id="zapravka_chasovoy4" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_wayt_polumaska</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>rad_monolith_specnaz_bio</bio>
+		<class>zapravka_chasovoy4</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>659</rank>
+		<reputation>-658</reputation>
+		<money min="50" max="1530" infinitive="0"></money>
+		<visual>new\lastday_wayt_polumaska</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			ammo_9x39_pab9 \n
+			wpn_groza \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"
+		</supplies>		  
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+		</specific_character>
+
+
+<!--Бродвей на Затоне-->
+
+	<specific_character id="zaton_brodway" team_default="1">
+		<name>Бродвей</name>
+		<icon>ui_arhara_brodway</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_bandit_master_bio</bio>
+		<class>zaton_brodway</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		<rank>888</rank>
+		<reputation>-132</reputation>
+		<visual>new\brodway</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			ammo_12x70_buck = 1 \n
+			wpn_saiga12c \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"
+		</supplies>
+		<start_dialog>brodway_say_one</start_dialog>
+		<start_dialog>brodway_say_two</start_dialog>
+		<actor_dialog>brodway_say_tri</actor_dialog>		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+	</specific_character>
+
+
+<!--Кровососолов на затоне-->
+
+	<specific_character id="zaton_krovososolov" team_default = "1">
+		<name>Охотник на кровососов</name>
+		<icon>ui_arhara_sosolov</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zaton_krovososolov</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<money min="300" max="1500" infinitive="0"></money>
+		<rank>911</rank>
+		<reputation>91</reputation>
+        	<visual>new\krovososolov</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<supplies>
+			[spawn] \n
+			wpn_saiga12c \n
+			ammo_12x70_buck = 1 \n
+		#include "gameplay\character_items.xml"
+		</supplies>
+		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>sos_say_one</actor_dialog> 
+		<actor_dialog>sos_say_two</actor_dialog>        
+	</specific_character>
+
+<!--Кровососолов2 на затоне-->
+
+	<specific_character id="zat_sosolov" team_default = "1">
+		<name>Охотник на кровососов</name>
+		<icon>ui_arhara_sosolov</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>zat_sosolov</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<money min="300" max="1500" infinitive="0"></money>
+		<rank>911</rank>
+		<reputation>91</reputation>
+        	<visual>new\krovososolov</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<supplies>
+			[spawn] \n
+			wpn_saiga12c \n
+			ammo_12x70_buck = 1 \n
+		#include "gameplay\character_items.xml"
+		</supplies>
+		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>sos_say_tri</actor_dialog>
+		<actor_dialog>sos_say_four</actor_dialog>
+		<actor_dialog>sos_say_five</actor_dialog>
+	</specific_character>
+
+<!--<Гульден-->
+	
+	<specific_character id="gulden" team_default = "1">
+		<name>Гульден</name>
+		<icon>ui_arhara_gulden</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>gulden</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<visual>new\gulden</visual>
+		<supplies>
+			[spawn] \n
+			wpn_aek973 \n			
+			ammo_7.62x39_ap = 1 \n
+		#include "gameplay\character_items.xml" \n
+		#include "gameplay\character_drugs.xml" \n
+		#include "gameplay\character_food.xml"
+		</supplies>          
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>gulden_say_one</actor_dialog>
+		<actor_dialog>gulden_goodbay_one</actor_dialog>
+		<actor_dialog>gulden_goodbay_two</actor_dialog>
+	</specific_character>
+
+
+<!--Охранник Гульдена-->
+	<specific_character id="gulden_oxran" team_default = "1">
+		<name>Шура Бацилла</name>
+		<icon>ui_arhara_zaton_st1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+		<class>gulden_oxran</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<panic_threshold>0.0</panic_threshold>
+		<visual>new\zaton_maska</visual>
+		<supplies>
+			[spawn] \n
+			wpn_abakan \n			
+			ammo_5.45x39_fmj = 1 \n
+		#include "gameplay\character_items.xml" \n
+		#include "gameplay\character_food.xml"	
+		</supplies>
+		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_2.xml"
+		#include "gameplay\character_dialogs.xml"						
+	</specific_character>
+
+
+<!--Искра Затон-->
+
+	<specific_character id="zaton_iskra" team_default = "1">
+		<name>Искра</name>
+		<icon>ui_arhara_iskra</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master</bio>
+		<class>zaton_iskra</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+        	<visual>actors\woman\iskra</visual>
+		<snd_config>characters_voice\human_01\woman\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<panic_treshold>0</panic_treshold>
+		<supplies>
+			[spawn] \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro \n		
+		#include "gameplay\character_items.xml" \n
+		#include "gameplay\character_drugs.xml" \n
+		#include "gameplay\character_food.xml"	
+		</supplies>
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>	
+		<actor_dialog>iskra_say_one</actor_dialog>
+		#include "gameplay\character_criticals_2.xml"
+	</specific_character>
+
+
+<!--Искра2 Затон-->
+	
+	<specific_character id="z_iskra_two" team_default = "1">
+		<name>Искра</name>
+		<icon>ui_arhara_iskra</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master</bio>
+		<class>z_iskra_two</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>924</rank>
+		<reputation>19</reputation>
+        	<visual>actors\woman\iskra</visual>
+		<snd_config>characters_voice\human_01\woman\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<panic_treshold>0</panic_treshold>
+		<supplies>
+			[spawn] \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro \n		
+		#include "gameplay\character_items.xml" \n
+		#include "gameplay\character_drugs.xml" \n
+		#include "gameplay\character_food.xml"	
+		</supplies>
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>	
+		<actor_dialog>iskra_netbuk_one</actor_dialog>	
+		<actor_dialog>iskra_netbuk_two</actor_dialog>	
+		#include "gameplay\character_criticals_2.xml"
+	</specific_character>
+
+
+<!--Преследователи-->
+
+	<specific_character id="presledovatel2" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_helmet</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>pri_monolith_exo_bio</bio>
+		<class>presledovatel2</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>922</rank>
+		<reputation>-890</reputation>
+		<money min="50" max="730" infinitive="0"></money>
+		<visual>new\ekzo_and_helmet</visual>
+		<snd_config>characters_voice\human_02\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+		#include "gameplay\character_items.xml"
+		#include "gameplay\character_food.xml"
+		</supplies>		  
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+	<specific_character id="presledovatel3" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_wayt_maska</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>rad_monolith_specnaz_bio</bio>
+		<class>presledovatel3</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>659</rank>
+		<reputation>-658</reputation>
+		<money min="50" max="530" infinitive="0"></money>
+		<visual>new\lastday_wayt_maska</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_sig550 \n
+			ammo_5.56x45_ss190 = 1 \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"
+		</supplies>		  
+
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+
+	<specific_character id="presledovatel4" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_wayt_polumaska</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>rad_monolith_specnaz_bio</bio>
+		<class>presledovatel4</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>659</rank>
+		<reputation>-658</reputation>
+		<money min="50" max="530" infinitive="0"></money>
+		<visual>new\lastday_wayt_polumaska</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj \n
+		#include "gameplay\character_food.xml"
+		#include "gameplay\character_drugs.xml"
+		</supplies>		  
+		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+
+<!--учёные-зомбари на Затоне-->
+
+	<specific_character id="zaton_perehod_zombied1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_zombied_ekza_skelet</icon>
+		<map_icon x="7" y="0"></map_icon>
+		<bio>rad_zombied_general_bio</bio>
+		<class>zaton_perehod_zombied1</class>
+		<community>zombied</community> <terrain_sect>stalker_zombied_terrain</terrain_sect>
+		<rank>679</rank>
+		<reputation>-452</reputation>
+		<money min="100" max="2000" infinitive="0"/>
+		<visual>new\zombied_ekza_skelet</visual>
+		<snd_config>characters_voice\human_03\zombied\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n			
+			wpn_kriss_super_v \n
+			ammo_11.43x23_fmj \n
+		</supplies>
+		#include "gameplay\character_criticals_1.xml"
+
+		<start_dialog>hello_dialog</start_dialog>
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+	<specific_character id="zaton_perehod_zombied2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_zombied_ekza_skelet</icon>
+		<map_icon x="7" y="0"></map_icon>
+		<bio>rad_zombied_general_bio</bio>
+		<class>zaton_perehod_zombied2</class>
+		<community>zombied</community> <terrain_sect>stalker_zombied_terrain</terrain_sect>
+		<rank>679</rank>
+		<reputation>-452</reputation>
+		<money min="100" max="2000" infinitive="0"/>
+		<visual>new\zombied_ekza_skelet</visual>
+		<snd_config>characters_voice\human_03\zombied\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n			
+			wpn_aek973 \n
+			ammo_7.62x39_fmj = 1 \n
+			af_dummy_pellicle = 1 \n
+		</supplies>
+		#include "gameplay\character_criticals_1.xml"
+		
+		<start_dialog>hello_dialog</start_dialog>
+		#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+
+<!--труп учёного в пещере-->
+
+	<specific_character id="kupol_big_dead4" team_default = "1">
+		<name>Профессор Журбай</name>
+		<icon>ui_npc_u_stalker_ecolog</icon>
+		<map_icon x="0" y="6"></map_icon>
+		<bio>rad_monolith_specnaz_bio</bio>
+		<class>kupol_big_dead4</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>651</rank>
+		<reputation>-50</reputation>
+		<visual>actors\ecolog\stalker_ecolog_2_zombie</visual>
+		<snd_config>characters_voice\human_03\ecolog\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj \n
+		</supplies>
+		#include "gameplay\character_criticals_3.xml"
+	</specific_character>
+
+<!-- Злобный -->
+<specific_character id="zaton_zlobnuy" team_default="1">
+	<name>Злобный</name>
+	<icon>ui_npc_zlobnuy</icon>
+	<map_icon x="2" y="0"></map_icon>
+	<bio>pri_monolith_exo_bio</bio>
+
+	<class>zaton_zlobnuy</class>
+	<community>lastday</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>922</rank>
+	<reputation>-890</reputation>
+
+	<visual>new\zlobnuy</visual>
+	<snd_config>characters_voice\human_03\monolith\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_threshold>0.0</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_m4 \n
+		ammo_5.56x45_ss190 \n
+	</supplies>
+
+	<start_dialog>hello_dialog</start_dialog>
+	<start_dialog>zaton_zlobnyi_one</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+
+</specific_character>
+
+
+<!-- Финальный бой -->
+<!-- lastday_master -->
+	<specific_character id="zat_lastday_master1" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_helmet</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>pri_monolith_exo_bio</bio>
+		<class>zat_lastday_master</class>
+		<community>lastday</community>
+		<terrain_sect>stalker_terrain</terrain_sect>
+		<rank>901</rank>
+		<reputation>0</reputation>
+		<money min="0" max="1" infinitive="0"></money>
+		<visual>new\ekzo_and_helmet</visual>
+		<snd_config>characters_voice\human_01\monolith\</snd_config>
+        	<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_dark_gauss \n
+			ammo_gauss = 1 \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro \n
+		</supplies>		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+	<specific_character id="zat_lastday_master2" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_helmet</icon>
+		<map_icon x="2" y="0"></map_icon>
+	        <bio>pri_monolith_exo_bio</bio>
+		<class>zat_lastday_master</class>
+		<community>lastday</community>
+		<terrain_sect>stalker_terrain</terrain_sect>
+		<rank>901</rank>
+		<reputation>0</reputation>
+		<money min="0" max="1" infinitive="0"></money>
+		<visual>new\ekzo_and_helmet</visual>
+		<snd_config>characters_voice\human_02\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_pkm \n
+			ammo_7.62x54r = 1 \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro \n
+		</supplies>		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+	<specific_character id="zat_lastday_master3" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_helmet</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>pri_monolith_exo_bio</bio>
+		<class>zat_lastday_master</class>
+		<community>lastday</community>
+		<terrain_sect>stalker_terrain</terrain_sect>
+		<rank>901</rank>
+		<reputation>0</reputation>
+		<money min="0" max="1" infinitive="0"></money>
+		<visual>new\ekzo_and_helmet</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+        	<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_xm8_para_sk2 \n
+			ammo_5.56x45_ap = 1 \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro \n
+		</supplies>		
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+<!-- lastday_veteran -->
+	<specific_character id="zat_lastday_veteran1" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_wayt_maska</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>rad_monolith_specnaz_bio</bio>
+		<class>zat_lastday_veteran</class>
+		<community>lastday</community>
+		<terrain_sect>stalker_terrain</terrain_sect>
+		<rank>801</rank>
+		<reputation>0</reputation>
+		<money min="0" max="1" infinitive="0"></money>
+		<visual>new\lastday_wayt_maska</visual>
+		<snd_config>characters_voice\human_01\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_fn2000 \n
+			ammo_5.56x45_ss190 \n
+			wpn_sig220 \n
+			ammo_11.43x23_fmj \n
+		</supplies>		  
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+	<specific_character id="zat_lastday_veteran2" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_wayt_maska</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>rad_monolith_specnaz_bio</bio>
+		<class>zat_lastday_veteran</class>
+		<community>lastday</community>
+		<terrain_sect>stalker_terrain</terrain_sect>
+		<rank>801</rank>
+		<reputation>0</reputation>
+		<money min="0" max="1" infinitive="0"></money>
+		<visual>new\lastday_wayt_maska</visual>
+		<snd_config>characters_voice\human_02\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_g36 \n
+			ammo_5.56x45_ss190 \n
+			wpn_usp \n
+			ammo_11.43x23_fmj \n
+		</supplies>		  
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+	<specific_character id="zat_lastday_veteran3" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_wayt_polumaska</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>rad_monolith_specnaz_bio</bio>
+		<class>zat_lastday_veteran</class>
+		<community>lastday</community>
+		<terrain_sect>stalker_terrain</terrain_sect>
+		<rank>801</rank>
+		<reputation>0</reputation>
+		<money min="0" max="1" infinitive="0"></money>
+		<visual>new\lastday_wayt_polumaska</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn]
+			wpn_fn2000 \n
+			ammo_5.56x45_ss190 \n
+			wpn_usp \n
+			ammo_11.43x23_fmj \n
+		</supplies>		  
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+	<specific_character id="zat_lastday_veteran4" team_default="1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_lastday_wayt_polumaska</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>rad_monolith_specnaz_bio</bio>
+		<class>zat_lastday_veteran</class>
+		<community>lastday</community>
+		<terrain_sect>stalker_terrain</terrain_sect>
+		<rank>801</rank>
+		<reputation>0</reputation>
+		<money min="0" max="1" infinitive="0"></money>
+		<visual>new\lastday_wayt_polumaska</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+		<panic_threshold>0.0</panic_threshold>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn]
+			wpn_g36 \n
+			ammo_5.56x45_ss190 \n
+			wpn_sig220 \n
+			ammo_11.43x23_fmj \n
+		</supplies>		  
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		#include "gameplay\character_criticals_4.xml"
+	</specific_character>
+
+<!--Ремонтник на Скадовске-->
+		<specific_character id="zat_stalker_serj" team_default = "1">
+    		<name>Серж</name>
+    		<icon>ui_npc_u_stalker_lisiy</icon>
+    		<map_icon x="0" y="0"></map_icon>
+    		<bio>sim_stalker_general_bio</bio>
+
+    		<class>zat_stalker_serj</class>
+    		<community>bandos</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+    		<money min="600" max="2000" infinitive="0"></money>
+    
+    		<rank>805</rank>
+    		<reputation>0</reputation>
+ 
+    		<visual>actors\stalker_serget</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_desert_eagle \n
+			ammo_11.43x23_hydro \n
+		</supplies>
+		#include "gameplay\character_criticals_4.xml"
+		
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>zat_remont</actor_dialog>
+		<actor_dialog>zat_remont2</actor_dialog>
+		<actor_dialog>jupiter_rem_repair</actor_dialog>
+		<actor_dialog>jupiter_rem_repair_start_done</actor_dialog>
+
+ 	 </specific_character> 
+
+<!--Блэнд-->
+	<specific_character id="zaton_bland" team_default = "1">
+		<name>Блэнд</name>
+		<icon>ui_npc_lastday_helmet</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>pri_monolith_exo_bio</bio>
+
+        <class>zaton_bland</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+     
+        <rank>922</rank>
+        <reputation>-680</reputation>
+        <money min="50" max="1730" infinitive="0"></money>
+ 
+		<visual>new\ekzo_and_helmet</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_groza \n
+      ammo_9x39_pab9 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"
+    
+    <actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>bland_razgovor</actor_dialog>
+
+ #include "gameplay\character_criticals_6.xml"   
+</specific_character>
+
+<!--Молния-->
+<specific_character id="zaton_molniy" team_default = "1">
+		<name>Молния</name>
+		<icon>ui_npc_molniy</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master</bio>
+
+		<class>zaton_molniy</class>
+		<community>lastday</community> <terrain_sect>stalker_terrain</terrain_sect>
+        <money min="50" max="730" infinitive="0"></money>
+		
+		<rank>924</rank>
+		<reputation>19</reputation>
+
+        	<visual>actors\woman\girl_big_molniy</visual>
+		<snd_config>characters_voice\human_01\woman_03\</snd_config>
+  		<crouch_type>0</crouch_type>
+            <panic_treshold>0</panic_treshold>
+		<supplies>
+			[spawn] \n
+			wpn_fn2000 \n
+                ammo_5.56x45_ss190 = 1 \n
+#include "gameplay\character_items.xml"
+		</supplies>
+         <actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>	
+          <actor_dialog>zat_molniy</actor_dialog>
+	</specific_character>
+
+<!--Призрак на Затоне-->
+<specific_character id="zaton_prizrak" team_default = "1">
+		<name>Призрак</name>
+		<icon>ui_npc_gener_prizrak</icon>
+		<map_icon x="0" y="6"></map_icon>
+		<bio>sim_stalker_veteran_bio</bio>
+
+		<class>zaton_prizrak</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>721</rank>
+		<reputation>50</reputation>
+
+		<visual>actors\neytral\stalker_prizrak</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>1</crouch_type>
+                <panic_treshold>0</panic_treshold>
+
+		<supplies>
+                [spawn] \n
+      		wpn_groza \n
+      		ammo_9x39_pab9 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+                </supplies>
+    <start_dialog>hello_dialog</start_dialog>
+      <actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog> 
+          <actor_dialog>zat_prizrak</actor_dialog>
+#include "gameplay\character_criticals_5.xml"
+
+</specific_character> 
+
+<!--Клык на Затоне-->
+<specific_character id="zaton_kluk" team_default = "1">
+		<name>Клык</name>
+         <icon>ui_npc_u_stalker_kluk</icon>
+         <map_icon x="1" y="0"></map_icon>
+		<bio>mil_Stalker_veteran_bio</bio>
+
+		<class>zaton_kluk</class>
+         <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+   <money min="300" max="2000" infinitive="0"></money>
+				
+		   <rank>911</rank>
+		<reputation>91</reputation>
+        
+    <visual>new\stalker_kluk</visual>
+    <snd_config>characters_voice\human_03\stalker\</snd_config>
+   <crouch_type>0</crouch_type>
+       <panic_threshold>0.0</panic_threshold>
+		<supplies>
+			[spawn] \n
+               wpn_m16a2_sk1 \n
+		    ammo_5.56x45_ss190 = 1 \n
+#include "gameplay\character_items.xml"
+		</supplies>
+    		<start_dialog>hello_dialog</start_dialog>
+          <actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+          <actor_dialog>zat_shturm</actor_dialog>
+#include "gameplay\character_criticals_5.xml"
+	</specific_character>
+
+<!--Архара на Затоне-->
+	<specific_character id="zaton_arhara" team_default = "1">
+		    <name>Архара</name>
+		<icon>ui_npc_arhara</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>mil_Stalker_master_bio</bio>		
+
+        <class>zaton_arhara</class>
+    <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+    <rank>914</rank>
+    <reputation>60</reputation>
+
+    <visual>new\arhara</visual>
+    <snd_config>characters_voice\human_03\freedom\</snd_config>
+    <crouch_type>-1</crouch_type>
+    <panic_treshold>0</panic_treshold>
+    		<supplies>
+    		[spawn] \n
+    		wpn_m4 \n
+    		ammo_5.56x45_ss190 = 1 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+    </supplies>
+          <start_dialog>hello_dialog</start_dialog>
+          <actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+          <actor_dialog>zat_arhara</actor_dialog>
+#include "gameplay\character_criticals_5.xml"      
+</specific_character>
+
+<!--<Пилигрим на Затоне>-->
+<specific_character id="zaton_piligrim" team_default = "1">
+		<name>Пилигрим</name>
+		<icon>ui_npc_u_land_arhara_piligrim</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>zaton_piligrim</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>924</rank>
+		<reputation>19</reputation>
+
+        <snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+
+		<visual>new\stalker_piligrim</visual>
+		<supplies>
+			[spawn] \n
+               wpn_fn2000 \n			
+		ammo_5.56x45_ss190 = 1 \n
+#include "gameplay\character_food.xml"
+		</supplies>
+#include "gameplay\character_dialogs1.xml"						
+          <start_dialog>hello_dialog</start_dialog>
+          <actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>		
+	</specific_character>
+
+
+</xml>
+
+

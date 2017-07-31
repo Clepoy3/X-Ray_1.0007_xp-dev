@@ -1,0 +1,160 @@
+;добавление предметов, если нет, или защита от удаления, если сказано удалять.
+#include "death_items_by_communities.ltx"
+#include "death_items_by_levels.ltx"
+#include "death_items_count.ltx"
+
+[wpn_loaded_by_difficulty]
+; какую часть патронов оставлять в стволах в зависимости от сложности игры
+default = 0.7
+stalker = 0.6
+veteran = 0.5
+master  = 0.4
+
+[item_prob_by_difficulty]
+; вероятность встретить предмет в зависимости от сложности игры, см. также death_items_count.ltx
+default = 0.8
+stalker = 0.7
+veteran = 0.6
+master  = 0.5
+
+[item_cond_by_comms]
+;броня: вероятность, состояние (min, max)
+;Внимание, отсюда же берутся и сообщества вообще
+bandit   = 0.30, 69, 84
+bandos   = 0.25, 73, 86
+dolg     = 0.17, 81, 90
+ecolog   = 0.17, 69, 95
+freedom  = 0.19, 79, 89
+fotoman  = 0.00,  1,  5
+green    = 0.21, 77, 88
+killer   = 0.11, 87, 93
+lastday  = 0.05, 91, 95
+military = 0.27, 71, 85
+monolith = 0.08, 89, 94
+nebo     = 0.23, 75, 87
+sniper   = 0.13, 85, 92
+stalker  = 0.30, 69, 84
+stranger = 0.00,  1,  5
+trader   = 0.00,  1,  5
+voin     = 0.15, 83, 91
+zombied  = 0.00,  1,  5
+
+[item_dependence]
+ammo_5.45x39_fmj   = wpn_abakan, wpn_ak74, wpn_aks74m, wpn_ak74u, wpn_aek971
+ammo_5.56x45_ss190 = wpn_l85, wpn_lr300, wpn_sig550, wpn_fn2000, wpn_g36, wpn_tavor, wpn_sg552_sk1, wpn_famas_p3_sk1, wpn_m16a2_sk1, wpn_m4
+ammo_5.7x28_ss190  = wpn_p90
+
+ammo_7.62x25_p     = wpn_ppsh41_sk2
+ammo_7.62x39_fmj   = wpn_ak47, wpn_aek973
+ammo_7.62x51_fmj   = wpn_hk417_sk1, wpn_sr25_mk11_mod0_sk1
+ammo_7.62x51box    = wpn_mg42
+ammo_7.62x54_7h1   = wpn_svu, wpn_svd, wpn_svd_m1, wpn_svu_m1, wpn_m1891_30_scope, wpn_walther_wa2000
+ammo_7.62x54r      = wpn_pkm
+
+ammo_9x18_fmj      = wpn_bizon, wpn_fort, wpn_pm, wpn_scorpion
+ammo_9x19_fmj      = wpn_beretta, wpn_hpsa, wpn_mp5, wpn_walther, wpn_uzi
+ammo_9x39_pab9     = wpn_groza, wpn_val, wpn_vintorez
+
+ammo_11.43x23_fmj  = wpn_sig220, wpn_colt1911, wpn_usp, wpn_kriss_super_v
+
+ammo_12x70_buck    = wpn_bm16, wpn_m4super90, wpn_saiga12c, wpn_spas12, wpn_wincheaster1300
+ammo_12.7x108      = wpn_b94, wpn_vuhlop
+
+ammo_og-7b         = wpn_rpg7
+ammo_gauss         = wpn_gauss, wpn_dark_gauss
+ammo_vog25         = wpn_groza
+ammo_vog25p        = wpn_groza_m1, wpn_rg6
+ammo_m209          = wpn_fn2000, wpn_rg6_m1
+
+ammo_5.45x39_ap      = wpn_abakan_m1, wpn_ak74_m1, wpn_ak74u_m1, wpn_groza_m1
+ammo_5.56x45_ap      = wpn_l85_m1, wpn_lr300_m1, wpn_g36_m1, wpn_sig_m2, wpn_l85_m2, wpn_sig_m1, wpn_groza_m2, wpn_m16a2_sk12, wpn_xm8_para_sk2, wpn_fn2000_sniper
+ammo_9x18_pbp        = wpn_none
+ammo_9x18_pmm        = wpn_aps_sk1, wpn_bizon1, wpn_fort_m1, wpn_mp5_m1, wpn_oc33, wpn_pb, wpn_walther_m1
+ammo_9x19_pbp        = wpn_beretta_m1, wpn_mp5_m2, wpn_mp5sd, wpn_mp7a3
+ammo_9x39_ap         = wpn_groza
+ammo_9x39_sp5        = wpn_vintorez
+ammo_7.62x25_ps      = wpn_ppsh41_sk2
+ammo_7.62x39_ap      = wpn_aek973
+ammo_7.62x51_ap      = wpn_hk417_sk1, wpn_sr25_mk11_mod0_sk1
+ammo_7.62x54_ap      = wpn_svd_m1, wpn_svu_m1
+ammo_7.62x54_7h14    = wpn_svd_m1, wpn_svu_m1
+ammo_11.43x23_hydro  = wpn_desert_eagle, wpn_colt_m1, wpn_raging_bull
+ammo_12x76_zhekan    = wpn_spas12_m1, wpn_toz34, wpn_winchester_m1
+ammo_12x76_dart      = wpn_spas12_m1, wpn_toz34, wpn_winchester_m1
+ammo_14.5x114_ap     = wpn_none
+ammo_super_gauss     = wpn_none
+ammo_vog25p          = wpn_groza_m1
+ammo_arbolt          = wpn_none
+ammo_igl             = wpn_none
+ammo_minigun         = wpn_none
+
+[keep_items]
+esc_wounded_flash     = true
+quest_case_02         = true
+dar_document4         = true
+kruglov_flash         = true
+lab_x16_documents     = true
+good_psy_helmet       = true
+bad_psy_helmet        = true
+decoder               = true
+dynamite              = true
+quest_case_01         = true
+hunters_toz           = true
+bar_ecolog_flash      = true
+;bar_tiran_pda        = true
+;bar_lucky_pda        = true
+outfit_stalker_m1     = true
+wpn_fort_m1           = true
+outfit_specnaz_m1     = true
+wpn_lr300_m1          = true
+crazy_flash           = true
+biorad_prototip       = true
+fake_wpn_knif2        = true
+fake_wpn_knife_hunter = true
+fake_wpn_knife_n      = true
+
+[delete_items]
+wpn_binoc
+wpn_knife_trade
+fake_wpn_bat_a
+fake_wpn_bat_b
+fake_wpn_crowbar
+fake_wpn_elf
+fake_wpn_knif3
+fake_wpn_knifa
+fake_wpn_knife
+fake_wpn_knife_m
+fake_wpn_knife_new
+fake_knife
+fake_knife_skin
+bolt
+device_pda
+hand_radio
+device_torch
+guitar_a
+harmonica_a
+rx_attach_bandage
+yad
+
+[names_info]
+;Таблица выдачи инфопорций по части имени погибшего непися
+snip_esc1   = snip_esc1_dead
+snip_esc2   = snip_esc2_dead
+snip_esc3   = snip_esc3_dead
+snip_esc4   = snip_esc4_dead
+snip_esc5   = snip_esc5_dead
+snip_esc6   = snip_esc6_dead
+snip_esc7   = snip_esc7_dead
+snip_esc8   = snip_esc8_dead
+snip_esc9   = snip_esc9_dead
+snip_esc10  = snip_esc10_dead
+snip_esc11  = snip_esc11_dead
+snip_esc12  = snip_esc12_dead
+naem_zahar1 = naem_zahar1_dead
+naem_zahar2 = naem_zahar2_dead
+naem_zahar3 = naem_zahar3_dead
+naem_zahar4 = naem_zahar4_dead
+naem_zahar5 = naem_zahar5_dead
+naem_zahar6 = naem_zahar6_dead
+mitya       = mitya_dead
+ecolog_wound_bunker = ucen_talk_est

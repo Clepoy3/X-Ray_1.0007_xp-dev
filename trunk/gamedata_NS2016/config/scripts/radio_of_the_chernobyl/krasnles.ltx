@@ -1,0 +1,10 @@
+[logic]
+active = ph_sound@day
+
+[ph_sound@day]
+snd = radio_krasnles
+on_signal = sound_end| {!is_day} ph_sound@night
+
+[ph_sound@night]
+snd = night_sound
+on_signal = sound_end| {=is_day} ph_sound@day

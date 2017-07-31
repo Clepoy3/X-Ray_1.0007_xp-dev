@@ -1,0 +1,16 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+esc_pantera_stop_sms} sr_idle@time
+
+[sr_idle@time]
+on_timer = 14000 | sr_idle@time1 %=arhara_dialog.pantera_sms_stop1%
+
+[sr_idle@time1]
+on_timer = 6000 | sr_idle@time2 %=arhara_dialog.pantera_sms_stop2%
+
+[sr_idle@time2]
+on_timer = 2000 | sr_idle@nil %=arhara_dialog.sound_deaf_pantera%
+
+[sr_idle@nil]

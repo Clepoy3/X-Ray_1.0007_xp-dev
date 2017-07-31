@@ -1,0 +1,189 @@
+belt = {}
+belt_id = {}
+belt_status = false
+
+local need_update = true
+local inventory_open = false
+local separator_spawned = false
+local separator = "separator"
+local flag
+
+function update()
+	if (need_update == false) then
+		return
+	end
+
+	belt_status = false
+
+	-- Спавним разделяющий элемент
+	if (separator_spawned == false) then
+		alife():create(separator,
+			db.actor:position(),
+			db.actor:level_vertex_id(),
+			db.actor:game_vertex_id(),
+			db.actor:id())
+		separator_spawned = true
+		return
+	end
+
+	belt = {}
+	belt_id = {}
+	flag = 0
+
+	-- Сканируем инвентарь
+	db.actor:inventory_for_each(scan_inv)
+	need_update = false
+
+	-- Удаляем разделяющий елемент
+	db.actor:inventory_for_each(del_separator)
+	separator_spawned = false
+
+	belt_status = true
+
+	remove_duplicate()
+end
+
+-- Перебор предметов инвентаря
+function scan_inv(item)
+	local section = item:section()
+
+	if section == separator then
+		flag = 1
+		return
+	end
+
+	if flag == 1 then
+		if slot_item(item) ~= nil then
+			flag = 2
+		else
+			insert_to_table(belt, section)
+			belt_id[item:id()] = true
+		end
+	end
+end
+
+-- Добавление в таблицу
+function insert_to_table(tbl, section)
+	if tbl[section] == nil then
+		tbl[section] = 1
+	else
+		tbl[section] = tbl[section] + 1
+	end
+end
+
+-- Удаление разделяющего предмета
+function del_separator(item)
+	if item:section() == separator then
+		alife():release(alife():object(item:id()), true)
+	end
+end
+
+-- Определение налечия предмета в одном из слотов
+function slot_item(item)
+	for i=0,12 do
+		local obj = db.actor:item_in_slot(i)
+		if obj and item:id() == obj:id() then
+			return i
+		end
+	end
+
+	return nil
+end
+
+-- Поднятие предмета
+function on_item_take(item)
+	if item:section() == separator then return end
+
+	if (inventory_open == false) then
+		if (separator_spawned == true) then
+			db.actor:inventory_for_each(del_separator)
+			separator_spawned = false
+		end
+
+		need_update = true
+	end
+end
+
+-- Выброс предмета
+function on_item_drop(item)
+	if item:section() == separator then return end
+
+	if (inventory_open == false) then
+		if (separator_spawned == true) then
+			db.actor:inventory_for_each(del_separator)
+			separator_spawned = false
+		end
+
+		need_update = true
+	end
+end
+
+-- Открытие/закрытие инвентаря
+function on_inventory_info(info_id)
+	if info_id == "ui_inventory" then
+		inventory_open = true
+	elseif info_id == "ui_inventory_hide" then
+		inventory_open = false
+		need_update = true
+	end
+end
+
+function check_blood()
+--   if belt_status == true then
+      if belt["af_blood"]~=nil and belt["af_blood"]>0 then -- то есть когда параметр пояса[af_blood] равен 1, 2, 3.. Сколько навесишь Камней.
+             amk.send_tip("Кровь Камня на поясе")
+          end
+--   end
+end
+
+local unique_sect =
+{
+["af_caterpillar"] = true,
+["af_arhara_globus"] = true,
+["af_green"] = true,
+["af_dummy_spring_red"] = true,
+["af_dummy_battery_red"] = true,
+["af_dummy_pellicle_red"] = true,
+["af_babka_3"] = true,
+["af_babka_4"] = true,
+["af_armor_4"] = true,
+["af_cry_3"] = true,
+["af_dik_4"] = true,
+["af_kol_3"] = true,
+["af_kol_4"] = true,
+["af_pudd_4"] = true,
+["af_spirit_3"] = true,
+["af_spirit_4"] = true,
+["af_gold_fish"] = true,
+["af_eye_voron"] = true
+}
+
+--оставляет на поясе по одному(фиг,теперь двум) артефакту каждого вида
+function remove_duplicate()
+	local t = check_duplicate()
+	for k, v in pairs(belt_id) do
+		local sobj = alife():object(k)
+		if sobj then
+		local sect = sobj:section_name()
+		if unique_sect[sect] and t[sect] ~= nil and t[sect] > 0 then
+			alife():release(sobj, true)
+			local text="Убраны лишние артефакты "..game.translate_string(amk.get_inv_name(sect)).." с пояса"
+			news_manager.send_tip(db.actor, text, nil, nil, nil)
+			amk.spawn_item_in_inv(sect, db.actor)
+			t[sect] = t[sect] - 1
+		end
+	end
+end
+end
+
+--собирает инфу о дупликатах на поясе
+--возвращает таблицу вида [секция арта] = <количество лишних артов>
+function check_duplicate()
+	local result = {}
+	for k, v in pairs(belt) do
+		if v > 2 then
+			result[k] = v - 2
+		end
+	end
+	return result
+end

@@ -1,0 +1,1421 @@
+if ( jit == nil ) then
+	profiler.setup_hook()
+end
+
+
+-- ни какой "local" ЗДЕСЬ быть не должно. Это все надо на случай, если забыли или опечатались где-то еще
+
+string_sub, string_gsub = string.sub, string.gsub
+string_find, string_gfind = string.find, string.gfind
+string_match, string_gmatch = string.match, string.gmatch
+string_format, string_char, string_byte = string.format, string.char, string.byte
+string_len = string.len	-- dc: а # - некошерно ?
+
+table_insert, table_remove = table.insert, table.remove
+table_foreach = table.foreach	-- deprecated and removed in lua 5.2; use pairs()
+
+math_random = math.random
+math_sin, math_cos, math_acos = math.sin, math.cos, math.acos
+math_floor, math_ceil = math.floor, math.ceil
+math_mod, math_sqrt = math.mod, math.sqrt
+math_acos, math_cos, math_sin = math.acos, math.cos, math.sin
+
+
+-- тоже на  всякий случай. Поиск по _G - долгий. Дублировать и инлайнить там, где нужны
+
+function log( ct, fmt, ... )	-- src - откуда вызван, если false - не выводится, категория игнорируется
+--	get_console():execute( "load ~" .. ct .. "~ [_g] " .. ( fmt or "" ) )	-- для поиска потерянных аргументов и скрипта, их потерявшего
+--	get_console():execute( "load ~" .. ct .. "~ [_g] " .. ( ( ... and string_format( fmt, ... ) ) or fmt or "" ) )
+end
+
+
+function abort( fmt, ... )	-- тоже "короткий", полный - в утилитах
+	get_console():execute( string_format( "load ~error~: %s", ( ... and string_format( fmt, ... ) ) or fmt or "" ) )
+	get_console():execute( "load ~~~ Обнаружена ошибка. Описание ошибки смотрите выше. Игра остановлена." )
+	get_console():execute( "load ~~~ Пожалуйста, не надо сообщать об ошибке в строке 40." )
+	get_console():execute( "load ~~~ Какую-либо ценность имеют 10 строк ДО этого сообщения." )
+	get_console():execute( "flush" )
+	local error ; error = 1/error; get_console():execute( "quit" )
+	-- Warning ! Может не срабатывать из апдейтов и иже с ними, если это не актор. Используейте watchdog.
+end
+
+
+function round( v )
+	local min = math_floor( v )
+	local max = min + 1
+	-- if value - min > max - v then return max end	-- dc: приведем к "<, ==, >="
+	if ( v - min ) < ( max - v ) then return min end
+	return max
+end
+
+
+function to_str( v )	-- на всякий случай, сокращенный вариант, для совместимости с извращенными скриптами
+	if type( v ) == "userdata" then
+		local n = v.name
+		return ( type( n ) == "function" and ( "userdata[" .. v:name() .. "]" ) )
+			or ( type( n ) == "string" and ( "userdata[" .. n .. "]" ) )
+			or "*userdata*"
+	elseif v == nil then return "<nil>"	-- dc: именно "<nil>" - для извращенцев
+	end
+	return tostring( v )
+end
+
+IAmAStalker, IAmAMonster = {}, {}		-- obsolete
+IAmAWeapon, IAmAWeaponFireOnly = {}, {}		-- аналогично, ибо неправильно разобрано
+IAmAWeaponGrenade = {}
+IAmAOutfit = {}
+IAmAHlam = {}
+-- принудительный оффлайн для неписей и тайников
+force_offline = {}		
+
+function printf()
+end
+
+function dummy_action()
+	return false
+end
+
+function trim( s ) return string_match( s, "^%s*(.*%S)" ) or "" end	-- обрезаем пробелы
+
+
+-- старый вариант
+-- function Parse_StrToTbl( s, div, mode )	-- ( строка, разделитель, [true|число|nil для строк] )
+--	local t = {}
+--	local pattern
+--	if div then pattern = "%s*([^" .. sDiv .. "]+)%s*"
+--	else pattern = "[_%w]+"
+--	end
+--	if mode then
+--		if mode == true then for v in string_gmatch( s, pattern ) do t[v] = true end	-- таблица вида [значение] = true
+--		elseif type( mode ) == "number" then					-- таблица вида [idx] = число
+--			for v in string_gmatch( s, pattern ) do table_insert( t, tonumber( v ) or v ) end
+--		else abort( "Parse_StrToTbl, ivalid mode: %s", tostring( mode ) )
+--		end
+--	else for v in string_gmatch( s, pattern ) do table_insert( t, v ) end
+--	end
+--	return t
+-- end
+
+local cached_Parse_StrToTbl = {}
+local cached_hit_Parse_StrToTbl = 0
+local sysIni = system_ini()
+function Parse_StrToTbl( sStr, sDiv, Mode, strong )
+	local s, s2
+	local typeOfTable = Mode == nil and "nil" or Mode == true and "true" or type( Mode ) == "number"
+		and "number" or "error"
+
+	s = string_sub( tostring( ( type( sDiv ) == "userdata" and "*" ) or sDiv ), 1, 200 )
+	s2 = string_sub( tostring( ( type( sStr ) == "userdata" and "*" ) or sStr ), 1, 200 )
+	sStr = tostring((type(sStr)=="userdata" and "*") or sStr)
+	local key = string_sub( string_format( "%s %s %s", typeOfTable, s, s2 ), 1, 200 )
+
+	if not cached_Parse_StrToTbl[key] then
+		cached_Parse_StrToTbl[key] = {}
+
+		if typeOfTable ~= "error" then
+			local tRet = {}
+			local sPattern = ""
+			if sDiv then sPattern = strong and '[^'..sDiv..']+' or '[^%s%'..sDiv..']+'	-- если divider задан - разделяем по нему
+			else sPattern = '[%w%_]+'	-- разделяем слова
+			end
+
+			if Mode == nil then		-- обычный массив
+				for sValue in sStr:gmatch( sPattern ) do table_insert( tRet, sValue ) end
+			elseif Mode == true then	-- таблица '[значение] = true'
+				for sValue in sStr:gmatch( sPattern ) do tRet[sValue] = true end
+			elseif type( Mode ) == "number" then	-- таблица '[idx] = число или стринг'
+				for sValue in sStr:gmatch( sPattern ) do
+					table_insert( tRet, tonumber( sValue ) or sValue )
+				end
+			-- else	-- тут еще можно что-нить замутить ...
+			end
+			cached_Parse_StrToTbl[key] = tRet
+		end
+	else cached_hit_Parse_StrToTbl = cached_hit_Parse_StrToTbl + 1
+	end
+	return cached_Parse_StrToTbl[key]
+end
+
+-- комментарии в профилях и cd не использовать ! Сохраняются в cd как есть !
+function parse_custom_data( str )
+	local t = {}
+	if str then
+		local ts
+		for sect, data in string_gfind( str, "%s*%[([^%]]*)%]%s*([^%[%z]*)%s*" ) do
+			ts = {}
+			t[sect] = ts
+			for s in string_gfind( data or "", "([^\n]*)\n*" ) do
+				if string_find( s, "=" ) then
+					for k, v in string_gfind( s, "([^=]-)%s*=%s*(.*)" ) do
+						if v then
+							k = string_match( k, "^%s*(.*%S)" )
+							if k and k ~= "" then
+								ts[k] = string_match( v, "^%s*(.*%S)" )
+					end	end	end
+				else
+					local k = string_match( s, "^%s*(.*%S)" )
+					if k and k ~= "" then ts[k] = "<<no_value>>" end
+	end	end	end	end
+	return t
+end
+
+
+function gen_custom_data( t )	-- как и выше - для "мало-ли кого". Копировать из отдельного скрипта локально.
+	local s = ""
+	for k, v in pairs( t ) do
+		s = s .. "[" .. k .. "]\n"
+		for kk, vv in pairs( v ) do
+			if vv ~= "<<no_value>>" then s = s .. kk .. " = " .. vv .. "\n"
+			else s = s .. kk .. "\n"
+	end	end	end
+	return s
+end
+
+
+-- function parse_names( s )
+--	local t, n = {}, 0
+--	for name in string_gfind( s, "([%w%-%._\\]+)[%,%s]*" ) do n = n + 1; t[n] = name end
+--	return t
+-- end
+
+
+local cached_parse_names = {}
+local cached_hit_parse_names = 0
+function parse_names( s )
+	if not cached_parse_names[s] then
+		local t = {}
+		for name in string_gfind( s, "([%w_\\]+)%p*" ) do table_insert( t, name ) end
+		cached_parse_names[s] = t
+	else
+		cached_hit_parse_names = cached_hit_parse_names + 1
+	end
+	return cached_parse_names[s]
+end
+
+
+-- function parse_key_value( s )
+--	if s then
+--		local t = {}
+--		local k
+--		for n in string_gfind( s, "([%w%-%._\\]+)[%,%s]*" ) do
+--			if k then t[k] = n; k = nil
+--    			else k = n
+--		end	end
+--		return t
+--	end
+-- end
+
+
+local cached_parse_key_value = {}
+local cached_hit_parse_key_value = 0
+
+function parse_key_value( s )
+	if s == nil then return nil end
+	if not cached_parse_key_value[s] then
+		local t = {}
+		local key, name
+		for name in string_gfind( s, "([%w_\\]+)%p*" ) do
+			if key == nil then key = name
+			else
+				t[key] = name
+				key = nil
+			end
+		end
+		
+		cached_parse_key_value[s] = t
+	else
+		cached_hit_parse_key_value = cached_hit_parse_key_value + 1
+	end
+	return cached_parse_key_value[s]
+end
+
+
+-- function parse_nums( s )
+--	local t, n = {}, 0
+--	for entry in string_gfind( s, "([%d%.]+)%,*" ) do n = n + 1; t[n] = tonumber( entry ) end
+--	return t
+-- end
+
+
+local cached_parse_nums = {}
+local cached_hit_parse_nums = 0
+
+function parse_nums( s )
+	if not cached_parse_nums[s] then
+		local t = {}
+		for entry in string_gfind( s, "([%d%.]+)%,*" ) do table_insert( t, tonumber( entry ) ) end
+		
+		cached_parse_nums[s] = t
+	else
+		cached_hit_parse_nums = cached_hit_parse_nums + 1
+	end
+	return cached_parse_nums[s]
+end
+
+
+-- ini reading functions by sapsan --
+
+local otherIniFiles = {}
+local valTypesAllowed = {
+	["float"] = true,
+	["u32"] = true,
+	["s32"] = true,
+	["string"] = true,
+	["stringWQ"] = true,
+	["bool"] = true,
+	["clsid"] = true
+}
+
+iniLines = { ["float"]={}, ["u32"]={}, ["string"]={}, ["string_wq"]={}, ["boolean"]={}, ["line"]={} }
+
+sysIniCached = {}
+sysIniLinesCached = {}
+sysIniLinesExistCached = {}
+
+
+function g_ini_file( fileName )
+	if fileName then
+		if not otherIniFiles[fileName] then
+			otherIniFiles[fileName] = ini_file(fileName)
+		end
+		return otherIniFiles[fileName]
+	end
+end
+
+
+function getIniValueSimple(sect, line, valType, default)
+	if not valTypesAllowed[valType] then
+		abort("load error anallowed value type: "..tostring(valType).." for section: "..tostring(sect).." line: "..tostring(line).." default: "..tostring(default))
+	end
+	
+	if sysIniCached[sect] and sysIniCached[sect]["lines"][valType][line] ~= nil then
+		return sysIniCached[sect]["lines"][valType][line]
+	else
+		if iniSectionExistSimple(sect) and iniLineExistSimple(sect, line) then
+			if valType == "float" then
+				sysIniCached[sect]["lines"][valType][line] = sysIni:r_float(sect, line)
+			elseif valType == "u32" then
+				sysIniCached[sect]["lines"][valType][line] = sysIni:r_u32(sect, line)
+			elseif valType == "s32" then
+				sysIniCached[sect]["lines"][valType][line] = sysIni:r_s32(sect, line)
+			elseif valType == "string" then
+				sysIniCached[sect]["lines"][valType][line] = sysIni:r_string(sect, line)
+			elseif valType == "stringWQ" then
+				sysIniCached[sect]["lines"][valType][line] = sysIni:r_string_wq(sect, line)
+			elseif valType == "bool" then
+				sysIniCached[sect]["lines"][valType][line] = sysIni:r_bool(sect, line)
+			elseif valType == "clsid" then
+				sysIniCached[sect]["lines"][valType][line] = sysIni:r_clsid(sect, line)
+			end
+			return sysIniCached[sect]["lines"][valType][line]
+		else
+			return default
+		end
+	end
+end
+
+function getIniValueFloatSimple(sect, line, default)
+	return getIniValueSimple(sect, line, "float", default)
+end
+
+function getIniValueU32Simple(sect, line, default)
+	return getIniValueSimple(sect, line, "u32", default)
+end
+
+function getIniValueS32Simple(sect, line, default)
+	return getIniValueSimple(sect, line, "s32", default)
+end
+
+function getIniValueStringSimple(sect, line, default)
+	return getIniValueSimple(sect, line, "string", default)
+end
+
+function getIniValueStringWQSimple(sect, line, default)
+	return getIniValueSimple(sect, line, "stringWQ", default)
+end
+
+function getIniValueBoolSimple(sect, line, default)
+	return getIniValueSimple(sect, line, "bool", default)
+end
+
+function getIniValueClsidSimple(sect, line, default)
+	return getIniValueSimple(sect, line, "clsid", default)
+end
+
+function getIniLineSimple(sect, lineNumber, defaultKey, defaultValue)
+	if sysIniCached[sect] and sysIniCached[sect]["raw"][line] ~= nil then
+		local result = sysIniCached[sect]["raw"][lineNumber]
+		return result[1], result[2], result[3]
+	else
+		if iniSectionExistSimple(sect) then
+			local result, key, value = sysIni:r_line(sect, lineNumber, defaultKey, defaultValue)
+			sysIniCached[sect]["raw"][lineNumber] = {result, key, value}
+			return result, key, value
+		else
+			return false, defaultKey, defaultValue
+		end
+	end
+end
+
+function iniSectionExistSimple(sect)
+	if sysIniCached[sect] == nil then
+		if sysIni:section_exist(sect) then
+			sysIniCached[sect] = {["raw"]={}, ["lines"] = {["float"]={}, ["u32"]={}, ["s32"]={}, ["string"]={}, ["stringWQ"]={}, ["bool"]={}, ["clsid"]={}}, ["count"] = false}
+		else
+			sysIniCached[sect] = false
+		end
+	end
+	
+	return sysIniCached[sect] ~= false
+end
+
+function iniLineExistSimple(sect, line)
+	if sysIniLinesExistCached[sect] == nil then
+		sysIniLinesExistCached[sect] = {}
+	end
+	if sysIniLinesExistCached[sect][line] == nil then
+		sysIniLinesExistCached[sect][line] = sysIni:line_exist(sect, line)
+	end
+	
+	return sysIniLinesExistCached[sect][line]
+end
+
+function iniLinesCountSimple(sect)
+	if iniSectionExistSimple(sect) then
+		if not sysIniCached[sect]["count"] then
+			sysIniCached[sect]["count"] = sysIni:line_count(sect)
+		end
+		
+		return sysIniCached[sect]["count"]
+	else
+		return 0
+	end
+end
+
+
+-- поехали, собственно оригинал
+
+schemes	= {}	-- соответствие схем модулям
+stypes	= {}	-- типы схем
+
+-- Загружает схему из файла на диске и активирует в мотиваторе.
+
+function load_scheme( filename, scheme, stype )	-- имя файла без расширения
+	schemes[scheme] = filename
+	stypes[scheme] = stype
+end
+
+
+if not time_global then
+	time_global = function() return device():time_global() end
+end
+
+function action( npc, ... )
+	local act = entity_action()
+	for i, v in ipairs( { ... } ) do
+		if v then
+			act:set_action( v )
+		else
+			break
+		end
+	end
+	if npc then
+		npc:command( act, false )
+	end
+	return entity_action( act )
+end
+
+-- Дистанция между объектами
+function distance_between( obj1, obj2 )	
+	return obj1:position():distance_to( obj2:position() )
+end
+
+-- Проверка на инфопоршны, даже если игрока не существует
+function has_alife_info( info_id )
+	local sim = alife()
+	if sim then
+		return sim:has_info( 0, info_id )
+	end
+	return false
+end
+
+-- класс LUA реализующий Finite State Machine для управления персонажами
+
+class 'FSM'
+
+--  инициализация путем задания объекта Non-Player Character
+function FSM:__init( script_name, npc )
+	self.npc = npc				-- указатель на подконтрольный NPC
+	self.script_name = script_name		-- строка - имя скрипта, который запускает игру
+	self.transition_matrix = { [0] = {} }	-- матрица, задающая граф переходов состояний
+	self.current_state = 0			-- номер текущего состояния
+	self.machine_running = true		-- флаг того, что машина включена
+end
+
+function FSM:is_running()
+	return self.machine_running
+end
+
+function FSM:start()
+	self.machine_running = true
+end
+
+function FSM:stop()
+	self.machine_running = false
+	self:reset_script_control()
+end
+
+--  добавление указателя на булеву функцию условия перехода
+function FSM:set_transition( from_state_num, to_state_num, cond_func )
+	if self.transition_matrix[from_state_num] == nil then
+		self.transition_matrix[from_state_num] = { [to_state_num] = cond_func }
+	else
+		self.transition_matrix[from_state_num][to_state_num] = cond_func
+	end
+end
+
+-- единичная проверка FSM
+function FSM:run()
+	local npc = self.npc
+	local transition_vector = self.transition_matrix[self.current_state]
+
+	for k, v in pairs( self.transition_matrix[self.current_state] ) do
+		if v( npc, self ) == true then
+			if k == 0 then
+				self:reset_script_control()
+			end
+			self.current_state = k
+			break
+		end
+	end
+end
+
+-- запуск бесконечного цикла FSM
+function FSM:run_loop()
+	local npc = self.npc
+	while self.machine_running do
+		for k, v in pairs( self.transition_matrix[self.current_state] ) do
+			if v( npc, self ) == true then
+				if k == 0 then
+					self:reset_script_control()
+				end
+				self.current_state = k
+				break
+			end
+		end
+		if not npc:alive() then
+			npc:script( false, self.script_name )
+			return
+		end
+	end
+end
+
+-- взятие под контроль скрипта NPC (переход из нулевого состояния)
+function FSM:set_script_control()
+	self.npc:script( true, self.script_name )
+end
+
+-- отпускание из под контроля скрипта NPC (переход в нулевое состояние)
+function FSM:reset_script_control()
+	self.npc:script( false, self.script_name )
+end
+
+
+function reset_action( npc, script_name )
+	if npc:get_script() then
+		npc:script( false, script_name )
+	end
+	npc:script( true, script_name )
+end
+
+class "script_object"
+
+function script_object:__init( self, name, script, ... )
+	self.action	= action( nil, ... )
+	self.object_name = name
+	self.script_name = script
+	self.object      = nil	
+end
+
+function script_object:update()
+	if self.object then self.object = level.object( self.object_name )
+	else
+		local npc = level.object( self.object_name )
+		if npc then	-- непись или моб вошел в онлайн, сбрасываем все акции (а они были ?)
+			self.object = npc
+			npc:script( true, self.script_name )
+			npc:command( self.action, false )
+	end	end
+end
+
+
+-- Functions and variables added by Zmey
+
+-- задать неограниченное время действия - mob_walker и ph_car
+time_infinite = 100000000
+
+-- скрипт heli_combat
+function random_choice( ... )
+	local t = { ... }
+	return t[math_random( #t )]
+end
+
+function if_then_else( cond, if_true, if_false )
+	if cond then
+		return if_true
+	end
+	return if_false
+end
+
+
+if not editor() then
+
+class "pp_effector" ( effector )
+
+function pp_effector:__init( eff_type, start_time, dest_power, life_time ) super( eff_type, start_time )
+	self.start_time = start_time
+	self.stop_time  = start_time + life_time
+	self.max_power  = dest_power
+end
+
+
+function pp_effector:process( pp )
+	effector.process( self, pp )
+	local curr_time = time_global()
+	local d = 0
+
+	if self.start_time < curr_time then
+		if curr_time < self.stop_time then
+			d = ( curr_time - self.start_time ) / ( self.stop_time - self.start_time )
+		else
+			self.info = self.max_power
+			return true
+	end	end
+
+	local dual	= duality()
+	local noise	= noise()
+	local base	= color()
+	local gray	= color()
+	local add	= color()
+
+	local pw = self.max_power
+	dual.h = pw.dual.h * d
+	dual.v = pw.dual.v * d
+
+	local t = pw.noise
+	noise.grain	= t.grain * d
+	noise.intensity = t.intensity * d
+	noise.fps	= t.fps * d
+
+	t = pw.color_base
+	base.r = t.r * d
+	base.g = t.g * d
+	base.b = t.b * d
+
+	t = pw.color_gray
+	gray.r = t.r * d
+	gray.g = t.g * d
+	gray.b = t.b * d
+
+	t = pw.color_add
+	add.r = t.r * d
+	add.g = t.g * d
+	add.b = t.b * d
+
+	pp.gray = pw.gray * d
+	pp.blur = pw.blur * d
+
+	pp.dual		= dual
+	pp.noise	= noise
+	pp.color_base	= base
+	pp.color_gray	= gray
+	pp.color_add	= add
+
+	self.info	= pp
+	return true
+end
+
+
+function pp_effector:finished()
+	return self.stop_time < time_global()
+end
+
+
+-- postprocess for rainbow
+
+class "pp_linear_lerp" ( effector )
+
+function pp_linear_lerp:__init( eff_type, start_time, life_time, start_power, dest_power ) super( eff_type, start_time )
+	self.start_time = start_time
+	self.stop_time  = start_time + life_time
+	self.min_power  = start_power
+	self.max_power  = dest_power
+end
+
+
+function pp_linear_lerp:process( pp )
+	effector.process( self, pp )
+	local curr_time = time_global()
+	local d = 0
+	if self.start_time < curr_time then
+		if curr_time < self.stop_time then
+			d = ( curr_time - self.start_time ) / ( self.stop_time - self.start_time )
+		else
+			self.info = self.max_power
+			return true
+	end	end
+
+	local dual	= duality()
+	local noise	= noise()
+	local base	= color()
+	local gray	= color()
+	local add	= color()
+
+	local min_pw, max_pw = self.min_power, self.max_power
+
+	local t = min_pw.dual
+	dual.h = t.h + ( max_pw.dual.h - t.h ) * d
+	dual.v = t.v + ( max_pw.dual.v - t.v ) * d
+
+	local t = min_pw.noise
+	noise.grain	= t.grain	+ ( max_pw.noise.grain		- t.grain	) * d
+	noise.intensity	= t.intensity	+ ( max_pw.noise.intensity	- t.intensity	) * d
+	noise.fps	= t.fps		+ ( max_pw.noise.fps		- t.fps		) * d
+
+	local t = min_pw.color_base
+	base.r = t.r + ( max_pw.color_base.r - t.r ) * d
+	base.g = t.g + ( max_pw.color_base.g - t.g ) * d
+	base.b = t.b + ( max_pw.color_base.b - t.b ) * d
+
+	local t = min_pw.color_gray
+	gray.r = t.r + ( max_pw.color_gray.r - t.r ) * d
+	gray.g = t.g + ( max_pw.color_gray.g - t.g ) * d
+	gray.b = t.b + ( max_pw.color_gray.b - t.b ) * d
+
+	local t = min_pw.color_add
+	add.r = t.r + ( max_pw.color_add.r - t.r ) * d
+	add.g = t.g + ( max_pw.color_add.g - t.g ) * d
+	add.b = t.b + ( max_pw.color_add.b - t.b ) * d
+
+	pp.gray = min_pw.gray + ( max_pw.gray - min_pw.gray ) * d
+	pp.blur = min_pw.blur + ( max_pw.blur - min_pw.blur ) * d
+
+	pp.dual		= dual
+	pp.noise	= noise
+	pp.color_base	= base
+	pp.color_gray	= gray
+	pp.color_add	= add
+
+	self.info = pp
+	return true
+end
+
+
+function pp_linear_lerp:finished()
+	return self.stop_time < time_global()
+end
+
+-- end of postprocess for rainbow
+
+
+
+-- Evaluators --
+-- зарезервированы id с номерами от 0 до 256 для создания стандартных эвалуаторов.
+
+
+class "const_evaluator" ( property_evaluator )	-- Constant evaluator
+
+function const_evaluator:__init ( name, value ) super ( nil, name )
+	self.value = value
+end
+
+
+function const_evaluator:evaluate()
+	return self.value
+end
+
+
+
+class "wait_evaluator" ( property_evaluator )	-- Wait evaluator
+
+function wait_evaluator:__init ( wait_time ) super ()
+	self.wait_time = wait_time
+	self.first_call = true
+	self.current_time = 0	-- вообще-то - время СТАРТА получается
+end
+
+
+function wait_evaluator:evaluate()
+	if self.first_call then		-- и на кой такое уежище, если при ините можно сразу вычислить
+		self.first_call = false	-- до какого времени ждать, а здесь просто проверить ?
+		self.current_time = time_global()	-- оставил, как есть, на случай, что кто-то
+		return false				-- полезет за этим самым .current_time
+	end
+
+	-- и на случай, если кто-то решит "перезапустить", обновив self.current_time, м-да...
+	return self.wait_time < ( time_global() - self.current_time ) 	-- если прошло больше - дождались
+end
+
+
+class "enabled_evaluator" ( property_evaluator )
+
+function enabled_evaluator:__init ( name, storage ) super ()
+	self.a = storage
+end
+
+
+function enabled_evaluator:evaluate()
+	return self.a.enabled
+end
+
+end	-- end of editor() == false
+
+
+function str_split( s )	-- а по-моему, оно ни где не используется
+	-- на входе предполагается что-то типа esc_bandit_1_1 (или из олспвавна, или профиль s_s_n_)
+
+	local v1, v2, v3, v4, v5 = string_match( s, "([^_]+)_([^_]+)_([%d]+)_([%d]+)(.?)" )
+	if v5 == "" then return v1, v2, v3 + 0, v4 + 0 end
+
+	return "unknown", "stalker", 0, 0	-- нишмагла
+end
+
+
+function is_object_online( obj_id )
+	if level.object_by_id( obj_id ) then return true end
+	return false
+end
+
+
+function get_clsid( obj )
+	if obj then return obj:clsid() end
+	return nil
+end
+
+
+function yaw( v1, v2 )	-- Вычисляет yaw в радианах
+	return math_acos( ( (v1.x * v2.x ) + ( v1.z * v2.z ) )
+		/ math_sqrt( ( v1.x * v1.x + v1.z * v1.z ) * ( v2.x * v2.x + v2.z * v2.z ) ) )
+end
+
+
+function yaw_degree( v1, v2 )
+	return math_acos( ( ( v1.x * v2.x ) + ( v1.z * v2.z ) )
+		/ math_sqrt( ( v1.x * v1.x + v1.z * v1.z ) * ( v2.x * v2.x + v2.z * v2.z ) ) ) * 57.2957
+end
+
+
+function yaw_degree3d( v1, v2 )
+	return math_acos( ( v1.x * v2.x + v1.y * v2.y + v1.z * v2.z )
+		/ math_sqrt( ( v1.x * v1.x + v1.y * v1.y + v1.z * v1.z )
+			* ( v2.x * v2.x + v2.y * v2.y + v2.z * v2.z ) ) ) * 57.2957
+end
+
+function vector_cross ( v1, v2 )
+	return vector():set(
+		v1.y * v2.z - v1.z * v2.y,
+		v1.z * v2.x - v1.x * v2.z,
+		v1.x * v2.y - v1.y * v2.x )
+end
+
+
+function vector_rotate_y( v, angle )	-- Вращает вектор вокруг оси y против часовой стрелки
+	angle = angle * 0.017453292519943295769236907684886
+	local c = math_cos( angle )
+	local s = math_sin( angle )
+	return vector():set( v.x * c - v.z * s, v.y, v.x * s + v.z * c )
+end
+
+
+function clear_table( t )	-- очистка таблицы, todo: вынести отовсюду эту гадость
+	for i = #t, 1, -1 do table_remove( t, i ) end
+end
+
+
+-- Для монстров. Выбор точки, куда идти в некотором радиусе и чтоб точка была дальше на расстоянии
+-- min_radius от текущей позиции(если это получится). center_id - центр позиции, вокруг которой живем,
+-- position_id - текущая позиция ( lvid, radius - в каком радиусе выбирать точку,
+-- min_radius - минимальное расстояние, от текущей позиции до новой точки
+
+function new_point( center_id, position_id, radius, min_radius )	-- на самом деле - не используется
+
+	local get_lvid = level.vertex_in_direction
+	local get_pos = level.vertex_position
+
+	local r2 = min_radius * min_radius	-- квадрат проверять будем
+
+	local pos = get_pos( position_id )
+	local new_pos = get_pos( get_lvid( center_id,	-- первая попытка выбора позиции 
+		vector():set( math_random( -1000, 1000 ) * 0.001, 0.0001, math_random( -1000, 1000 ) * 0.001 ),
+		radius ) )
+
+	for i = 1, 19 do	-- пробуем улучшить
+		if pos:distance_to_sqr( new_pos ) >= r2 then return new_pos end	-- годится
+
+		new_pos = get_pos( get_lvid( center_id,	-- пробуем более другую
+			vector():set( math_random( -1000, 1000 ) * 0.001, 0.0001, math_random( -1000, 1000 ) * 0.001 ),
+			radius ) )
+	end
+	return new_pos	-- вернули какую попало; внимание: может быть недоступна ! Проверять на доступность
+end
+
+
+function stop_play_sound( npc )
+	if npc.alive and npc:alive() then
+		npc:set_sound_mask( -1 )
+		npc:set_sound_mask( 0 )
+	end
+end
+
+
+-- возвращает позицию произвольной точки пути, у которой установлен бит
+-- old_point - индекс точки, которую не надо выбирать, необязательный
+
+function point_with_bit( patrol_path, bit, old_point )
+	local t, n = {}, 0
+	for i = 0, patrol_path:count() - 1 do	-- Добавляем в таблицу точки с нужным битом
+		if( patrol_path:flag( i, bit ) ) then
+			if old_point ~= i then	-- не совпадает, добавим
+				n = n + 1; t[n] = i
+	end	end	end
+
+	if n == 0 then return nil end
+	if n == 1 then return patrol_path:point( t[1] ) end
+	return patrol_path:point( t[math_random( n )] )
+end
+
+
+-- возвращает lvid произвольной точки пути, у которой установлен бит
+-- old_point - индекс точки, которую не надо выбирать, необязательный
+
+function point_with_bit_id( patrol_path, bit, old_point )
+	local t, n = {}, n
+	for i = 0, patrol_path:count() - 1 do	-- Добавляем в таблицу точки с нужным битом
+		if( patrol_path:flag( i, bit ) ) then
+			if old_point ~= i then
+				n = n + 1; t[n] = i
+	end	end 	end
+
+	if n == 0 then return nil end
+	if n == 1 then return patrol_path:level_vertex_id( t[1] ) end
+	return patrol_path:level_vertex_id( t[math_random( n )] )
+end
+
+
+-- Возвращает индекс самой ближней точки пути с заданым битом, от текущей точки
+
+function near_point_with_bit( pos, patrol_path, bit )
+	local n, dist
+	local n_dist = 100000000
+
+	for i = 0, patrol_path:count() - 1 do
+		if( patrol_path:flag( i, bit ) ) then
+			dist = patrol_path:point( i ):distance_to_sqr( pos )
+			if ( dist < n_dist ) then n, n_dist = i, dist end
+	end	end
+	if n then return n end
+	abort( "near_point_with_bit, no patrol points with bit: %s", tostring( bit ) )
+end
+
+
+function switch_online( id )
+	if id and id ~= -1 then
+		local sim = alife()
+		if sim then
+			sim:set_switch_online( id, true )
+			sim:set_switch_offline( id, false )
+	end	end
+end
+
+
+function switch_offline( npc )	-- только неписи или мобы !
+	if npc and npc.alive and npc:alive() then
+		local sim = alife()
+		if sim then
+			sim:set_switch_online( npc:id(), false )
+			sim:set_switch_offline( npc:id(), true )
+	end	end
+end
+
+
+function get_actor_id()
+	if level.actor() then return 0 end
+	return -1
+end
+
+
+function level_object_by_sid( sid )
+	local sim = alife()
+	local obj = sim and sim:story_object( sid )
+	if obj then return level.object_by_id( obj.id ) end
+end
+
+
+function id_by_sid( sid )
+	local sim = alife()
+	local obj = sim and sim:story_object( sid )
+	if obj then return obj.id end
+end
+
+
+local post_process_ini = {}
+
+function set_postprocess( ltx_name )
+	local ini = post_process_ini[ltx_name]
+	if not ini then
+		ini = ini_file( ltx_name )
+		if ini then post_process_ini[ltx_name] = ini
+		else return
+	end	end
+	bind_stalker.post_process = postprocess.PostProcess( ini )
+end
+
+
+function remove_postprocess()
+	bind_stalker.post_process = nil
+end
+
+
+function set_inactivate_input_time( delta )	-- в bind_stalker это. И сохранять - разницу в секундах
+	local st = db.storage[0]
+	st.disable_input_time = game.get_game_time()
+	st.disable_input_idle = delta
+	level.disable_input()
+end
+
+
+-- пока оставим, иначе уже трое обиженных будет
+function set_sleep_relocate( pos, look, time_mm )	-- Нужно только для сцены с доком на агро
+	local st = db.storage[0]
+	st.sleep_relocate_time = game.get_game_time()
+	st.sleep_relocate_idle = timeout * 60
+	st.sleep_relocate_point = point
+	st.sleep_relocate_look = look
+end
+
+-- function relocate_after_dream( pos, look, time_mm )	-- вот так оно должно быть, в sleep_manager
+--	if time_mm then
+--		if not timer_get_f( "sleep_mgr_rel" ) then
+--			amk_timers.timer_add( "sleep_mgr_rel", relocate_after_dream )
+--		end
+--		local t = { pos.x, pos.y, pos.z }
+--		if look then t[4], t[5], t[6] = look.x, look.y, look.z end
+--		amk_timers.timer_g_start( "sleep_mgr_rel", 0, 0, time_mm, t )
+--		return
+--	end
+--	-- вызвано по таймеру
+--	local p = vector():set( pos[1], pos[2], pos[3] )
+--	actor:set_actor_position( p )
+--	if to[6] then
+--		actor:set_actor_direction( p:sub( vector():set( pos[4], pos[5], pos[6] ) ):getH() )
+--	end
+-- end
+
+
+function odd( x )	-- проверяет целую часть числа на нечётность
+	-- return math_floor( x * 0.5 ) * 2 == math_floor( x )	-- И НЕ РАБОТАЕТ.
+	return math_floor( math_floor( x * 0.5 ) * 2 ) == math_floor( x )
+end
+
+
+-- функции для выдачи ценных советов в начале игры. Вот кроме как здесь - места не нашлось.
+
+function on_actor_critical_power()	-- Усталость
+	if db.actor:dont_has_info( "encyclopedy_tutorial_weakness" ) then
+		if db.actor:has_info( "esc_trader_newbie" ) then game.start_tutorial( "part_11_weakness" ) end
+		db.actor:give_info_portion( "encyclopedy_tutorial_weakness" )
+	end
+end
+
+
+function on_actor_critical_max_power() end	-- рудимент от 1.0000
+
+
+function on_actor_bleeding()	-- Кровотечение
+	if db.actor:dont_has_info( "encyclopedy_tutorial_wound" ) then
+		if db.actor:has_info( "esc_trader_newbie" ) then game.start_tutorial( "part_8_wound" ) end
+		db.actor:give_info_portion( "encyclopedy_tutorial_wound" )
+	end
+end
+
+function on_actor_satiety() end	-- не работает на версиях < 1.0006
+
+
+function on_actor_radiation()	-- Радиация
+	if db.actor:dont_has_info( "encyclopedy_tutorial_radiation" ) then
+		if db.actor:has_info( "esc_trader_newbie" ) then game.start_tutorial( "part_6_radiation" ) end
+		db.actor:give_info_portion( "encyclopedy_tutorial_radiation" )
+	end
+end
+
+
+function on_actor_weapon_jammed()	-- Заклинило оружие
+	if db.actor:dont_has_info( "encyclopedy_tutorial_weapon" ) then
+		if db.actor:has_info( "esc_trader_newbie" ) then game.start_tutorial( "part_9_weapon" ) end
+		db.actor:give_info_portion( "encyclopedy_tutorial_weapon" )
+	end
+end
+
+
+function on_actor_cant_walk_weight()	-- не может ходить из-за веса
+	if db.actor:dont_has_info( "encyclopedy_tutorial_overload" ) then
+		if db.actor:has_info( "esc_trader_newbie" ) then game.start_tutorial( "part_14_overload" ) end
+		db.actor:give_info_portion( "encyclopedy_tutorial_overload" )
+	end
+end
+
+
+function on_actor_psy() end	-- пси воздействие - не имеет смысла.
+
+
+function get_texture_info( id_name, def )
+	local task_info = GetTextureInfo( id_name, def or id_name )
+	local r = task_info:get_rect()
+	r.x2 = r.x2 - r.x1
+	r.y2 = r.y2 - r.y1
+	return task_info:get_file_name(), r
+end
+
+-- DC -- а вот это все - хрень ненужная бесполезная. Все висяки ловить через проверку _G.watchdog
+counter = 0
+local prev_watch, dead_sound = 0, 0
+local dead_time, dead_message = false, false
+function watch_condition()
+	counter = (bind_stalker.watch_value == prev_watch) and (counter + 1) or 0 
+	prev_watch = bind_stalker.watch_value
+	if counter > 20 and db.actor then
+		if not device():is_paused() then
+			if dead_time then
+				if dead_time + 2000 < time_global() then
+					if not dead_message then
+						dead_message = "Похоже, висим... или падаем ? \(".. amk.oau_watchdog .. "\)"
+						amk.send_tip(actor_dead, "собака страшная", 0, 15, "gen_info")
+						-- if bind_stalker.watchdog_stage == 20 then
+						-- actor_dead = "meceni\.utils = " .. tostring(meceniy_utils.watchdog_stage) .. "\n"
+						-- amk.send_tip(actor_dead, "собака страшная", 0, 15, "gen_info")
+						-- end
+					elseif dead_sound < time_global() then
+						local snd_obj = xr_sound.get_safe_sound_object("detectors\\da-2_beep1")
+						snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 2.5)
+						dead_sound = time_global() + 1000
+					end
+				end
+			else dead_time = time_global()
+			end
+		else bind_stalker.game_paused = bind_stalker.game_paused + 100
+		end
+	else dead_time, dead_message = false
+	end
+	return false
+end
+
+
+
+function isWeapon( obj )
+	if obj and IAmAWeapon[obj:clsid()] then return true end
+	return false
+end
+
+
+function isWeaponFireOnly( obj )
+	if obj and IAmAWeaponFireOnly[obj:clsid()] then return true end
+	return false
+end
+
+
+object_type_t = {}
+
+function object_type( obj )
+	if obj then
+		local type = object_type_t[obj:clsid()]
+		if type == "stalker" or type == "monstr" then
+			if obj:alive() then return type end
+			return "corpse"
+		elseif type then return "item"
+	end	end
+	return "none"
+end
+
+
+object_type_m = {}
+
+function is_object_monster( obj )
+	if obj and object_type_m[ obj:clsid()] then return true end
+	return false
+end
+
+
+function IsMonster( obj, cls_id )
+	if IAmAMonster[cls_id or ( obj and obj:clsid() )] then return true end
+	return false
+end
+
+
+function IsStalker( obj, cls_id )
+	if IAmAStalker[cls_id or ( obj and obj:clsid() )] then return true end
+	return false
+end
+
+
+ammo_section = {}
+quest_section = {}
+object_type_i = {}
+npc_by_clsid = {}
+valuable_clsid = {}
+
+
+function start_game_callback()
+
+	math.randomseed( time_global() )
+
+	ammo_section = _g_tables.ammo_section
+	quest_section = _g_tables.quest_section
+	object_type_t = _g_tables.object_type_t
+	object_type_i = _g_tables.object_type_i
+	object_type_i_sect = _g_tables.object_type_i_sect
+	if babah then
+		local explosives = {"bombs", "timeBombs", "mines", "detonators"}
+		for i = 1, #explosives do
+			if babah[explosives] and babah[explosives]["sect"] then
+				for sect, _ in pairs(babah[explosives]["sect"]) do
+					object_type_i_sect[sect] = "explosive"
+				end
+			end
+		end
+	end
+	object_type_m = _g_tables.object_type_m
+	IAmAStalker = _g_tables.IAmAStalker
+	IAmAMonster = _g_tables.IAmAMonster
+	IAmAOutfit = _g_tables.IAmAOutfit
+	IAmAHlam = _g_tables.IAmAHlam
+	IAmAWeapon = _g_tables.IAmAWeapon
+	IAmAWeaponFireOnly = _g_tables.IAmAWeaponFireOnly
+	IAmAWeaponGrenade = _g_tables.IAmAWeaponGrenade
+	valuable_clsid = _g_tbl_valuables.valuable_clsid
+
+	for k,v in pairs(IAmAStalker) do npc_by_clsid[k] = v end
+	for k,v in pairs(IAmAMonster) do npc_by_clsid[k] = v end
+
+	level.add_call(watch_condition, dummy_action)	-- malandrinus
+	task_manager.clear_task_manager()
+	treasure_manager.clear_treasure_manager()
+	xr_sound.clear_all_sound_object()
+	dialog_manager.fill_phrase_table() 
+
+	amk.on_game_start()
+end
+
+local counterStatistic = {}
+function counterAdd(name)
+	counterStatistic[name] = (counterStatistic[name] or 0) + 1
+end
+
+
+function counterPrint()
+	local tg = time_global()/1000
+
+	get_console():execute("load ~~~ ")
+	get_console():execute("load ~~~ cached_hit_Parse_StrToTbl: "..tostring(cached_hit_Parse_StrToTbl))
+	get_console():execute("load ~~~ cached_hit_parse_names: "..tostring(cached_hit_parse_names))
+	get_console():execute("load ~~~ cached_hit_parse_key_value: "..tostring(cached_hit_parse_key_value))
+	get_console():execute("load ~~~ cached_hit_parse_nums: "..tostring(cached_hit_parse_nums))
+	get_console():execute("load ~~~ ")
+	get_console():execute("load ~~~ ")
+	get_console():execute("load ~~~ ")
+	get_console():execute("load ~~~ counterStatistic after "..tostring(tg).." seconds order by name:")
+	get_console():execute(string_format("load ~~~ %60s %10s %15s", string.rep("_", 60 - string.len("name")).."name", string.rep("_", 10 - string.len("count")).."count", string.rep("_", 15 - string.len("per second")).."per second"))
+	local counterStatisticNames = {}
+	for k,_ in pairs(counterStatistic) do
+		table_insert(counterStatisticNames, k)
+	end
+	table.sort(counterStatisticNames)
+	local k, v
+	for i = 1, #counterStatisticNames do
+		k = counterStatisticNames[i]
+		v = counterStatistic[k]
+		get_console():execute(string_format("load ~~~ %60s %10s %15s", string.rep("_", 60 - string.len(k))..k, string.rep("_", 10 - string.len(tostring(v)))..tostring(v), string_gsub(string_format("%015.5f", v/tg), "^0*", function(s) return string.rep("_", string.len(s)) end)))
+	end
+
+	get_console():execute("load ~~~ ")
+	get_console():execute("load ~~~ ")
+	get_console():execute("load ~~~ counterStatistic after "..tostring(tg).." seconds order by count:")
+	get_console():execute(string_format("load ~~~ %60s %10s %15s", string.rep("_", 60 - string.len("name")).."name", string.rep("_", 10 - string.len("count")).."count", string.rep("_", 15 - string.len("per second")).."per second"))
+	local counterStatisticByCount = {}
+	for k,v in pairs(counterStatistic) do
+		table_insert(counterStatisticByCount, {name = k, count = v})
+	end
+	table.sort(counterStatisticByCount, function(v1, v2) return v2.count < v1.count end)
+
+	for i = 1, #counterStatisticByCount do
+		get_console():execute(string_format("load ~~~ %60s %10s %15s", string.rep("_", 60 - string.len(counterStatisticByCount[i]["name"]))..counterStatisticByCount[i]["name"], string.rep("_", 10 - string.len(tostring(counterStatisticByCount[i]["count"])))..tostring(counterStatisticByCount[i]["count"]), string_gsub(string_format("%015.5f", counterStatisticByCount[i]["count"]/tg), "^0*", function(s) return string.rep("_", string.len(s)) end)))
+	end
+	
+	if game_options.hear_and_panic_statistic then
+		local sndInfoTotal
+		for community, communityInfo in pairs(xr_motivator.hearStatistics) do
+
+			communityInfo["total"] = {}
+			
+			for relType, relInfo in pairs(communityInfo) do
+				if relType ~= "total" then
+					for sndType, sndInfo in pairs(relInfo) do
+						sndInfo.count_s = sndInfo.count / tg
+						sndInfo.power_s = sndInfo.power / tg
+						sndInfo.power_count = sndInfo.power / sndInfo.count
+						sndInfo.moraleUp_count = sndInfo.moraleUpCount > 0 and sndInfo.moraleUp / sndInfo.moraleUpCount or 0
+						sndInfo.moraleUp_s = sndInfo.moraleUp / tg
+						sndInfo.moraleDown_count = sndInfo.moraleDownCount > 0 and sndInfo.moraleDown / sndInfo.moraleDownCount or 0
+						sndInfo.moraleDown_s = sndInfo.moraleDown / tg
+						
+						if not communityInfo["total"][sndType] then
+							communityInfo["total"][sndType] = {
+								["count"] = 0,
+								["power"] = 0,
+								["moraleUp"] = 0,
+								["moraleUpCount"] = 0,
+								["moraleDown"] = 0,
+								["moraleDownCount"] = 0
+							}
+						end
+						
+						sndInfoTotal = communityInfo["total"][sndType]
+						sndInfoTotal.count = sndInfoTotal.count + sndInfo.count
+						sndInfoTotal.power = sndInfoTotal.power + sndInfo.power
+						sndInfoTotal.moraleUp = sndInfoTotal.moraleUp + sndInfo.moraleUp
+						sndInfoTotal.moraleUpCount = sndInfoTotal.moraleUpCount + sndInfo.moraleUpCount
+						sndInfoTotal.moraleDown = sndInfoTotal.moraleDown + sndInfo.moraleDown
+						sndInfoTotal.moraleDownCount = sndInfoTotal.moraleDownCount + sndInfo.moraleDownCount
+					end
+				end
+			end
+
+			for sndType, sndInfo in pairs(communityInfo["total"]) do
+				sndInfo.count_s = sndInfo.count / tg
+				sndInfo.power_s = sndInfo.power / tg
+				sndInfo.power_count = sndInfo.power / sndInfo.count
+				sndInfo.moraleUp_s = sndInfo.moraleUp / tg
+				sndInfo.moraleUp_count = sndInfo.moraleUpCount > 0 and sndInfo.moraleUp / sndInfo.moraleUpCount or 0
+				sndInfo.moraleDown_s = sndInfo.moraleDown / tg
+				sndInfo.moraleDown_count = sndInfo.moraleDownCount > 0 and sndInfo.moraleDown / sndInfo.moraleDownCount or 0
+			end
+		end
+		
+		amk.dump_table(xr_motivator.hearStatistics, 1, "xr_motivator.hearStatistics")
+		
+		for community, communityInfo in pairs(xr_motivator.hearStatistics) do
+			get_console():execute("load ~~~ ")
+			get_console():execute("load ~~~ ")
+			get_console():execute("load ~~~ hearStatistics after "..tostring(tg).." seconds for "..community)
+			get_console():execute(string_format("load ~~~ %10s %20s %10s %10s %15s %10s %15s %10s %15s %15s %15s %10s %15s %15s %15s", string.rep("_", 10 - string.len("relation")).."relation", string.rep("_", 20 - string.len("type")).."type", string.rep("_", 10 - string.len("count")).."count", string.rep("_", 10 - string.len("count/s")).."count/s", string.rep("_", 15 - string.len("power")).."power", string.rep("_", 10 - string.len("power/s")).."power/s", string.rep("_", 15 - string.len("power/count")).."power/count", string.rep("_", 10 - string.len("morUpCnt")).."morUpCnt", string.rep("_", 15 - string.len("moraleUp")).."moraleUp", string.rep("_", 15 - string.len("moraleUp/s")).."moraleUp/s", string.rep("_", 15 - string.len("moraleUp/count")).."moraleUp/count", string.rep("_", 10 - string.len("morDownCnt")).."morDownCnt", string.rep("_", 15 - string.len("moraleDown")).."moraleDown", string.rep("_", 15 - string.len("moraleDown/s")).."moraleDown/s", string.rep("_", 15 - string.len("moraleDown/count")).."moraleDown/count"))
+			for relType, relInfo in pairs(communityInfo) do
+				for sndType, sndInfo in pairs(relInfo) do
+					get_console():execute(string_format(
+						"load ~~~ %10s %20s %10s %10s %15s %10s %15s %10s %15s %15s %15s %10s %15s %15s %15s",
+						string.rep("_", 10 - string.len(relType))..relType,
+						string.rep("_", 20 - string.len(sndType))..sndType,
+						string.rep("_", 10 - string.len(tostring(sndInfo.count)))..tostring(sndInfo.count),
+						string_gsub(string_format("%010.5f", sndInfo.count_s), "^0*", function(s) return string.rep("_", string.len(s)) end),
+						string_gsub(string_format("%015.5f", sndInfo.power), "^0*", function(s) return string.rep("_", string.len(s)) end),
+						string_gsub(string_format("%010.5f", sndInfo.power_s), "^0*", function(s) return string.rep("_", string.len(s)) end),
+						string_gsub(string_format("%015.5f", sndInfo.power_count), "^0*", function(s) return string.rep("_", string.len(s)) end),
+						string.rep("_", 10 - string.len(tostring(sndInfo.moraleUpCount)))..tostring(sndInfo.moraleUpCount),
+						string_gsub(string_format("%015.5f", sndInfo.moraleUp), "^0*", function(s) return string.rep("_", string.len(s)) end),
+						string_gsub(string_format("%015.5f", sndInfo.moraleUp_s), "^0*", function(s) return string.rep("_", string.len(s)) end),
+						string_gsub(string_format("%015.5f", sndInfo.moraleUp_count), "^0*", function(s) return string.rep("_", string.len(s)) end),
+						string.rep("_", 10 - string.len(tostring(sndInfo.moraleDownCount)))..tostring(sndInfo.moraleDownCount),
+						string_gsub(string_format("%015.5f", math.abs(sndInfo.moraleDown)), "^0*", function(s) return string.rep("_", string.len(s)-1).."-" end),
+						string_gsub(string_format("%015.5f", math.abs(sndInfo.moraleDown_s)), "^0*", function(s) return string.rep("_", string.len(s)-1).."-" end),
+						string_gsub(string_format("%015.5f", math.abs(sndInfo.moraleDown_count)), "^0*", function(s) return string.rep("_", string.len(s)-1).."-" end)
+					))
+				end
+			end
+		end
+		
+		get_console():execute("load ~~~ hearRankStatistics:")
+		local ranksCount = {}
+		for rank, npcs in pairs(xr_motivator.hearRankStatistics) do
+			ranksCount[rank] = ranksCount[rank] or 0 + 1
+		end
+		amk.dump_table(ranksCount, 1, "ranksCount")
+	end
+end
+
+-- профилирование
+local ts = {}
+
+function t_start(name)
+	if not ts[name] then
+		ts[name] = {["count"] = 0, ["time_spend"] = 0}
+	end
+	
+	local t = ts[name]
+	
+	t.count = t.count + 1
+	t.current = profile_timer()
+	t.current:start()
+end
+
+function t_finish(name)
+	local t = ts[name]
+	t.current:stop()
+	local ts = t.current:time()
+	t.time_spend = t.time_spend + ts
+	t.current = nil
+	get_console():execute("load ~profiling~ TIME SPEND ["..name.."]: "..string_format("%02.4f",ts/1000000).."s, total time: "..string_format("%05.4f",t.time_spend/1000000).."s, count: "..t.count..", average: "..string_format("%02.4f",t.time_spend/1000000/t.count).."s")
+end
+
+
+function table_copy(tbl, simple)
+	if type(tbl) ~= "table" then return tbl end
+	local mt = getmetatable(tbl)
+	local res = {}
+	if simple then
+		local v
+		for i = 1, #tbl do
+			v = tbl[i]
+			-- если значение - таблица
+			if type(v) == "table" then
+				v = table_copy(v, simple)
+			end
+			table_insert(res, v)
+		end
+	else
+		for k,v in pairs(tbl) do
+			-- ключами могут быть и таблицы
+			if type(k) == "table" then
+				k = table_copy(k, simple)
+			end
+			-- если значение - таблица
+			if type(v) == "table" then
+				v = table_copy(v, simple)
+			end
+			res[k] = v
+		end
+	end
+	setmetatable(res, mt)
+	return res
+end
+
+function deepcompare(t1,t2,ignore_mt)
+	local ty1 = type(t1)
+	local ty2 = type(t2)
+	if ty1 ~= ty2 then return false end
+	-- non-table types can be directly compared
+	if ty1 ~= 'table' and ty2 ~= 'table' then return t1 == t2 end
+	-- as well as tables which have the metamethod __eq
+	local mt = getmetatable(t1)
+	if not ignore_mt and mt and mt.__eq then return t1 == t2 end
+	for k1,v1 in pairs(t1) do
+		local v2 = t2[k1]
+		if v2 == nil or not deepcompare(v1,v2) then return false end
+	end
+	for k2,v2 in pairs(t2) do
+		local v1 = t1[k2]
+		if v1 == nil or not deepcompare(v1,v2) then return false end
+	end
+	return true
+end
+
+function sech(x)
+	return 2/(math.exp(x) + math.exp(-x))
+end

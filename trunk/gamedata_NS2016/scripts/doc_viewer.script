@@ -1,0 +1,44 @@
+-- DocViewer for "Authentic documents"
+-- 7.9 (79mxm@rambler.ru)
+local item
+local item_view
+local items_doc_view = {}
+
+function update()
+	if db.actor:active_slot() == 1 then
+		item = db.actor:active_item():section()
+		if items_doc_view[item] == nil then
+			items_doc_view[item] = {["exist"] = iniLineExistSimple(item, "doc_view")}
+		end
+		if items_doc_view[item]["exist"] then
+			if item ~= item_view then doc_view_on(item) end
+		else
+			doc_view_off()
+		end
+	else
+		doc_view_off()
+	end
+end
+
+function doc_view_on(item)
+	if item then
+		if items_doc_view[item]["img_path"] == nil then
+			items_doc_view[item]["img_path"] = getIniValueStringSimple(item,"img_path")
+			if items_doc_view[item]["img_path"] == "auto" then items_doc_view[item]["img_path"] = "docs\\"..item end
+			items_doc_view[item]["pos_x"] = getIniValueS32Simple(item,"pos_x")
+			items_doc_view[item]["pos_y"] = getIniValueS32Simple(item,"pos_y")
+		end
+		X = CUIStatic()
+		X:Init(items_doc_view[item]["img_path"], items_doc_view[item]["pos_x"], items_doc_view[item]["pos_y"], 0, 0)
+		get_hud():AddCustomStatic("doc_viewer", true)
+		get_hud():GetCustomStatic("doc_viewer"):wnd():AttachChild(X)
+		item_view = item
+	end
+end
+
+function doc_view_off()
+	if item_view then
+		get_hud():RemoveCustomStatic("doc_viewer")
+		item_view = nil
+	end
+end

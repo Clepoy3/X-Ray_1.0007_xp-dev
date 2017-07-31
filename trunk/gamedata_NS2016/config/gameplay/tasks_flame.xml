@@ -1,0 +1,36 @@
+<game_task id="flamethrower_quest_task">
+	<title>Найти инструменты для починки огнемёта.</title>
+	<objective>
+		<text>Найти инструменты для починки огнемёта.</text>
+		<icon>amk_ui_flame_quest</icon>
+		<article>mil_screw_flamethrower_descr</article>
+		<infoportion_complete>start_work</infoportion_complete>
+		<infoportion_fail>mil_freedom_member0002_umer</infoportion_fail>
+	</objective>
+	<objective>
+		<text>Найти артефакт "Огненный Шар"</text>
+		<infoportion_complete>flamethrower_quest_fireball</infoportion_complete>
+	</objective>
+	<objective>
+		<text>Найти трубки</text>
+		<infoportion_complete>flamethrower_quest_trubki</infoportion_complete>
+	</objective>
+	<objective>
+		<text>Найти манометр(датчик давления)</text>
+		<infoportion_complete>flamethrower_quest_manometr</infoportion_complete>
+	</objective>
+	<objective>
+		<text>Найти горелку</text>
+		<infoportion_complete>flamethrower_quest_gorelka</infoportion_complete>
+	</objective>
+	<objective>
+		<text>Найти 10 бутылок водки</text>
+		<infoportion_complete>flamethrower_quest_vodka</infoportion_complete>
+	</objective>
+	<objective>
+        <map_location_type hint="mil_Svoboda_engineer">blue_location</map_location_type>
+        <object_story_id>mil_freedom_member0002</object_story_id>
+		<text>Принести части Шурупу.</text>
+		<infoportion_complete>start_work</infoportion_complete>
+	</objective>
+</game_task>

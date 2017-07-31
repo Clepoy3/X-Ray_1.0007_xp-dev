@@ -1,0 +1,872 @@
+--/amk_rel_1/
+--[[
+автор: Диденко Руслан (Stohe)
+
+порядок вызова методов биндера:
+reload
+reinit
+load
+net_spawn
+]]
+
+local table_insert = table.insert
+local table_remove = table.remove
+local string_format = string.format
+
+memtsg = {}	--' временная таблица
+lasthealth = 0
+lastime = nil
+local particles={}
+btrs_friends = {}
+---
+
+local motivator_binder_time = 0
+
+class "motivator_binder" (object_binder)
+
+function motivator_binder:__init (obj) super(obj) counterAdd("xr_motivator.motivator_binder:__init")
+	self.loaded = false
+	self.last_update = 0
+	local difficulty = 4 - level.get_game_difficulty()
+	self.delta_update = math.random(3000 + 500*difficulty, 6000 + 1000*difficulty)
+	self.prev_ammo = -1
+	self.first_update = false
+	--self.treasure_processed = false
+	self.particles = {}
+	self.first_spawn = nil
+end
+
+function motivator_binder:extrapolate_callback(cur_pt) counterAdd("xr_motivator.motivator_binder:extrapolate_callback")
+        if self.object == nil then return false end
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "extrapolate_callback")
+		self.st.move_mgr:extrapolate_callback(self.object)
+	end
+
+	if patrol(self.object:patrol()):flags(cur_pt):get() == 0 then return true end
+	return false
+end
+
+function motivator_binder:reinit() counterAdd("xr_motivator.motivator_binder:reinit")
+        if self.object == nil then return end
+	object_binder.reinit(self)
+
+	-- КОЛЛБЕКИ ЗДЕСЬ СТАВИТЬ НЕЛЬЗЯ! Здесь еще неизвестна активная схема.
+	-- Ставьте коллбеки в методе update в отмеченном комментарием месте.
+	local char_ini = self.object:spawn_ini() or g_ini_file("scripts\\dummy.ltx")
+
+	local id = self.object:id()
+	db.storage[id] = {  followers = {}--[[, treasure_processed = false]] }
+	--if db.storage[id] == nil or db.storage[id].npc_name_for_check ~= self.object:name() then
+	--	db.storage[id] = { npc_name_for_check = self.object:name(), followers = {} }
+	--end
+	self.st = db.storage[id]
+
+	--' Создание менеджера контроля положений тела
+	self.st.state_mgr = state_mgr.bind_manager(self.object)
+	self.st.move_mgr = move_mgr.move_mgr(self.object)
+	self.st.move_mgr:initialize()
+end
+
+
+function motivator_binder:net_spawn(sobject) counterAdd("xr_motivator.motivator_binder:net_spawn")
+	if not object_binder.net_spawn(self, sobject) then return false end
+	local sim = alife()
+	local npc = self.object
+	local alive = npc:alive()
+	local se_npc
+	local npc_id = npc:id()
+	
+	-- Зомбирование контролером без лишних конфигов(Sapsan)
+	local zombiedByController
+	local zombiedVar = xr_logic.pstor_retrieve(npc, "zombied", "")
+	-- для совместимости оставлен старый вариант с распаковкой
+	if type(zombiedVar) == "table" then
+		zombiedByController = zombiedVar
+	else
+		zombiedByController = amk.unpack_array_from_string(zombiedVar)
+	end
+	
+	if zombiedByController["master"] then
+		local se_contr = sim:object(zombiedByController["master"])
+		if se_contr and se_contr:clsid() == clsid.controller_s and (se_contr.alive and not se_contr:alive() or se_contr.position:distance_to_sqr(npc:position()) > 40000) then
+			if amk_mod.dezombify(npc_id, zombiedByController) then
+				xr_logic.pstor_store(npc, "zombied", nil)
+				local contr = level.object_by_id(zombiedByController["master"])
+				if contr then
+					-- для совместимости оставлен старый вариант с распаковкой
+					local zombiedStalkers
+					local zombiesVar = xr_logic.pstor_retrieve(contr, "zombies", "")
+					if type(zombiesVar) == "table" then
+						zombiedStalkers = zombiesVar
+					else
+						zombiedStalkers = amk.unpack_array_from_string(zombiesVar)
+					end
+					
+					for i = 1, #zombiedStalkers do
+						if zombiedStalkers[i] == npc_id then
+							table_remove(zombiedStalkers, i)
+							xr_logic.pstor_store(contr, "zombies", zombiedStalkers)
+							break
+						end
+					end
+				end
+			end
+		elseif not se_contr or se_contr:clsid() ~= clsid.controller_s then
+			if amk_mod.dezombify(npc_id, zombiedByController) then
+				xr_logic.pstor_store(npc, "zombied", nil)
+			end
+		end
+	end
+
+
+	db.add_obj(npc)
+
+	-- Все CALLBACK-и ставить здесь:
+	if alive then
+		npc:set_patrol_extrapolate_callback(motivator_binder.extrapolate_callback, self)
+		npc:set_callback(callback.hit, motivator_binder.hit_callback, self)
+		npc:set_callback(callback.death, motivator_binder.death_callback, self)
+		npc:set_callback(callback.trade_start, self.trade_start, self) -- for game stats
+		npc:set_callback(callback.trade_stop, self.trade_stop, self) -- for game stats
+	end
+	npc:set_callback(callback.use_object, motivator_binder.use_callback, self)
+
+	-- сюжетные не слышат и не боятся звуков
+	if alive then
+		if npc:story_id() == 4294967296 then
+			if game_options.hear_and_panic then
+				npc:set_callback(callback.sound, motivator_binder.hear_callback, self)
+			end
+		--else
+		--	npc:set_custom_panic_threshold(0.0)
+		end
+	end
+
+	--' Загрузка историй для лагеря.
+	if self.loaded == false then
+		local char_ini = npc:spawn_ini() or g_ini_file("scripts\\dummy.ltx")
+		xr_info.loadInfo(npc, char_ini)
+	end
+
+	local sobj = sim:object(npc_id)
+	if sobj then
+		if not sobj.torch_clon_added then
+			local obj = sim:create("device_torch_clon", npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc_id)
+			if obj then
+				sobj.torch_clon_added = true
+			end
+		else
+--			amk.start_timer("enable_attachable_item_for_npc_by_section",1,{npc_id, "device_torch", "[xr_motivator.net_spawn] "..npc:name().." alive: "..tostring(alive)..", torch_clon_added, torch_on:"..tostring(sobj.torch_on)})
+--			amk.start_timer("enable_or_delete_attachable_item_for_npc_by_section",0.2,{npc_id, "device_torch_clon", not alive and not sobj.torch_on, "[xr_motivator.net_spawn] "..npc:name().." alive: "..tostring(alive)..", torch_clon_added, torch_on:"..tostring(sobj.torch_on)})
+		end
+		amk.start_timer("enable_or_delete_attachable_item_for_npc_by_section",0.2,{npc_id, "device_torch_clon", "[xr_motivator.net_spawn] "..npc:name().." alive: "..tostring(alive)..", torch_clon_added, torch_on:"..tostring(sobj.torch_on)})
+
+		local rank = sol_utils.getRankById(npc_id)
+		sobj.night_minutes = math.min(math.floor(rank / 10), 59)
+		sobj.visual = sol_utils.getVisual(npc_id)
+		sobj.torchDisabled = sr_light.noTorchByVisual[visual]
+	end
+	
+	if not alive then
+		sol_utils.minimapSpotResetOne(npc_id)
+		db.storage[npc_id].dead_already = npc:death_time()
+		return true
+	end
+
+	ex_wound_help.auto_revers(npc,npc_id)
+
+	local manager = npc:motivation_action_manager()
+	manager:remove_evaluator(stalker_ids.property_anomaly)
+	manager:add_evaluator(stalker_ids.property_anomaly, property_evaluator_const(false))
+
+	--' загрузка озвучки
+	xr_sound.load_sound(npc)
+		
+	xr_gulag.setup_gulag_and_logic_on_spawn( npc, self.st, sobject, modules.stype_stalker, self.loaded )
+
+	if IAmAStalker[npc:clsid()] and npc:character_community()=="military" then
+			btrs_friends[npc_id] = npc:section()
+	end
+
+	local particle_param = getIniValueStringSimple(npc:section(), "bones_particles", nil)
+
+	if particle_param and iniSectionExistSimple(particle_param) then
+		local tmp=amk.parse_ini_section_to_array_new(nil,particle_param)
+		for k,v in pairs(tmp) do
+			local t = amk.parse_ini_section_to_array_new(nil, v)
+			t.obj = npc
+			if not t.stop_on_death or alive then
+				play_particle(npc, t)
+			end
+		end
+	end
+	
+	return true
+end
+
+function motivator_binder:net_destroy() counterAdd("xr_motivator.motivator_binder:net_destroy")
+
+	if xrs_ai then xrs_ai.npc_net_destroy(self.object) end
+	if rx_ai then rx_ai.npc_switch_offline(self.object) end
+
+	if #self.particles > 0 then
+		for kk,vv in pairs(self.particles) do
+			if not vv:is_finished() then
+				vv:stop()
+				self.particles[kk]=nil
+	
+			end
+		end	
+	end
+
+	-- added by xStream for AMK miniSDK
+	amk.on_npc_go_offline(self.object)
+	-- end of addition
+
+	if self.object == nil then return end
+
+	local st = db.storage[self.object:id()]
+	if st.active_scheme then xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy", self.object) end
+
+	db.del_obj(self.object)
+	--db.storage[self.object:id()] = nil
+	self:clear_callbacks()
+	self.object:set_callback(callback.use_object, nil)
+
+	if btrs_friends[self.object:id()] then
+		btrs_friends[self.object:id()] = nil
+	end
+
+	-- АМК. Очистка рестрикторов
+	local id=self.object:id()
+	object_binder.net_destroy(self)
+	local sobj=alife():object(id)
+	if sobj then
+		local tbl=amk.read_stalker_params(sobj)
+		tbl.crvu32u16u2={}
+		amk.write_stalker_params(tbl,sobj)
+	else
+		-- Выход из игры.
+	end
+	-- packet_table.clear_packet(self.object)
+end
+
+function motivator_binder:clear_callbacks() counterAdd("xr_motivator.motivator_binder:clear_callbacks")
+	if self.object == nil then return end
+	self.object:set_patrol_extrapolate_callback(nil)
+	self.object:set_callback(callback.hit, nil)
+	self.object:set_callback(callback.death, nil)
+	self.object:set_callback(callback.trade_start, nil)
+	self.object:set_callback(callback.trade_stop, nil)
+	--self.object:set_callback(callback.use_object, nil)
+	--if self.object:story_id() == 4294967296 then
+	--	if game_options.hear_and_panic then
+			self.object:set_callback(callback.sound, nil)
+	--	end
+	--end
+end
+
+function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_index) counterAdd("xr_motivator.motivator_binder:hit_callback")
+	if self.object == nil then
+		abort("hit_callback Nil self.object in motivator_binder, obj: "..tostring(obj and obj:name())..", "..tostring(obj and obj.character_name and obj:character_name())..", who: "..tostring(who and who:name())..", "..tostring(who and who.character_name and who:character_name())..", amount: "..tostring(amount)..", bone_index: "..tostring(bone_index))
+		return
+	end
+
+	-- FIXME: коллбеки неплохо было бы регистрировать в общем storage, а не посхемно...
+	-- просто всегда ставить их при включении схемы и снимать при отключении.
+
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+	if self.st.combat_ignore then
+		xr_logic.issue_event(self.object, self.st.combat_ignore, "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+	if self.st.combat then
+		xr_logic.issue_event(self.object, self.st.combat, "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+	if self.st.hit then
+		xr_logic.issue_event(self.object, self.st.hit, "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+	if amount > 0 then
+		sr_territory.issue_event(self.object, "hit_callback", obj, amount, local_direction, who, bone_index)
+		xr_wounded.hit_callback(self.object:id())
+	end
+	if blowout_scheme then blowout_scheme.hit_callback(obj) end
+	if rx_ai then rx_ai.npc_hit(obj,amount,local_direction,who,bone_index,self.object) end
+  
+	amk.on_npc_hit(obj, amount, local_direction, who, bone_index)	-- added by xStream for AMK miniSDK
+
+end
+
+function motivator_binder:death_callback(victim, who) counterAdd("xr_motivator.motivator_binder:death_callback")
+--	if self.object == nil then return end
+	if self.object == nil then abort("death_callback Nil self.object in motivator_binder, victim: "..tostring(victim and victim:name())..", "..tostring(victim and victim.character_name and victim:character_name())..", who: "..tostring(who and who:name())..", "..tostring(who and who.character_name and who:character_name())) return end
+	local npc_id = self.object:id()
+	
+	sol_utils.minimapSpotResetOne(npc_id)
+
+	local zombiedVar = xr_logic.pstor_retrieve(self.object, "zombied", "")
+	local zombiedByController
+	
+	-- для совместимости вариант по-старому с распаковкой
+	if type(zombiedVar) == "table" then
+		zombiedByController = zombiedVar
+	else
+		zombiedByController = amk.unpack_array_from_string(zombiedVar)
+	end
+	
+	if zombiedByController["master"] then
+		xr_logic.pstor_store(self.object, "zombied", nil)
+		
+		local contr = level.object_by_id(zombiedByController["master"])
+		if contr and contr:clsid() == clsid.controller_s and contr:alive() then
+			local zombiedStalkers
+			local zombiesVar = xr_logic.pstor_retrieve(contr, "zombies", "")
+			
+			-- для совместимости вариант по-старому с распаковкой
+			if type(zombiesVar) == "table" then
+				zombiedStalkers = zombiesVar
+			else
+				zombiedStalkers = amk.unpack_array_from_string(zombiesVar)
+			end
+			
+			for i = 1, #zombiedStalkers do
+				if zombiedStalkers[i] == npc_id then
+					table_remove(zombiedStalkers, i)
+					xr_logic.pstor_store(contr, "zombies", zombiedStalkers)
+					break
+				end
+			end
+		end
+	end
+
+	if xrs_ai then xrs_ai.npc_death_callback(self.object) end
+
+	if rx_ai then rx_ai.npc_death(self.object, who) end
+
+	if who:id() == db.actor:id() then xr_statistic.addKillCount(self.object) end
+
+	if self.st.death then
+		xr_logic.issue_event(self.object, self.st.death, "death_callback", victim, who)
+	end
+
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
+	end
+
+	sr_territory.issue_event(self.object, "death_callback", victim, who)
+	--sr_light.check_light(self.object)
+
+	--smart_terrain.on_death(npc_id)
+
+	amk.on_death(victim, who)	-- added by xStream for AMK miniSDK
+
+	death_manager.on_death(npc_id)
+	
+	self:clear_callbacks()
+
+	--' Наносим небольшой импульс вперед.
+	local h = hit()
+	h.draftsman = self.object
+	h.type = hit.fire_wound
+	-- nv 100804 use death instigator "who" instead of db.actor per Cpt. Borovich
+	h.direction = who:position():sub(self.object:position())
+	h:bone("pelvis")
+	h.power = 1
+	h.impulse = 10
+	self.object:hit(h)
+
+	if #self.particles > 0 then
+		for kk,vv in pairs(self.particles) do vv:on_death() end
+	end
+	
+	if btrs_friends[self.object:id()] then
+		btrs_friends[self.object:id()] = nil
+	end
+end
+
+function motivator_binder:trade_start(zone, obj)
+	amk.send_tip("motivator_binder.trade_start")
+end
+
+function motivator_binder:trade_stop()
+	amk.send_tip("motivator_binder.trade_stop")
+end
+
+function motivator_binder:use_callback(obj, who) counterAdd("xr_motivator.motivator_binder:use_callback")
+	if self.object == nil then
+		return
+	end
+	if self.object:alive() then
+		xr_use.notify_on_use(obj, who)
+		if self.st.active_section then
+			xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "use_callback", obj, who)
+		end
+		-- инициализация торговли
+		if who:id() == db.actor:id() and obj:is_talk_enabled() and obj:is_trade_enabled() then
+			trade_manager.trade_prepare(obj)
+		end
+	else
+		--if self.st.treasure_processed == false then
+			treasure_manager:get_treasure_manager():use(self.object)
+		--	self.st.treasure_processed = true
+		--end
+	end
+
+	if game_options.zombie_checkup and string.find(self.object:section(),"zombie", 1) ~= nil
+		and self.object:relation(db.actor) == game_object.enemy
+	then
+		sak.zombie_checkup()
+	end
+	
+	amk.on_use(obj, who)	-- added by xStream for AMK miniSDK
+	watcher_act.onUse(obj)
+end
+
+-- базовые ранги для расчета порога паники
+-- если группировки нет - она не паникует
+local moraleCommunityBaseRank = {
+	["stalker"]     = 150,
+--	["monolith"]    = 50,
+	["military"]    = 100,
+	["killer"]      = 75,
+--	["ecolog"]      = 200,
+	["dolg"]        = 75,
+	["freedom"]     = 75,
+	["bandit"]      = 150,
+--	["zombied"]     = 0.0,
+--	["stranger"]    = 0.0,
+--	["trader"]      = 0.0,
+--	["arena_enemy"] = 0.0,
+	["green"]       = 100,
+--	["lastday"]     = 100,
+--	["fotoman"]     = 0.0,
+	["bandos"]      = 150,
+	["voin"]        = 100,
+}
+
+-- запоминаем установленные ранее значения порогов паники
+local npcPanicThreshold = {}
+
+-- список имён неписей, которым запрещено цеплять фонарик
+local npcsDoNotUseTorch = {
+	["war_ki_pantera"] = true,
+	["vil_pantera"] = true,
+	["war_pantera"] = true,
+	["molniy"] = true,
+	["devchonka"] = true,
+	["muha_hosp_live"] = true
+}
+
+function motivator_binder:update(delta) counterAdd("xr_motivator.motivator_binder:update")
+	local self_object_id = self.object:id()
+	local st = db.storage[self_object_id]
+	if amk.oau_watchdog~=0 then
+		if db.actor and not device():is_paused() then
+			local snd_obj = xr_sound.get_safe_sound_object("detectors\\da-2_beep1")
+			snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 2.5)
+		end
+		abort("Watchdog "..amk.oau_watchdog..".Reason "..amk.oau_reason)
+	end
+	if self.object == nil then return end
+	st.us = 100	
+	object_binder.update(self, delta)
+	st.us = 99
+	if particles[self_object_id] and #particles[self_object_id] > 0 then
+		for kk,vv in pairs(particles[self_object_id]) do
+			table_insert(self.particles,amk_particle.amk_particle(vv))
+			table_remove(particles[self_object_id],kk)
+		end
+	end
+
+	if #self.particles > 0 then
+		for kk,vv in pairs(self.particles) do
+			if vv then
+				if vv:is_finished() then self.particles[kk]=nil
+				else vv:update(delta)
+	end	end	end	end
+
+	st.us = 99001
+	local IAlive = self.object:alive()
+	local zombie = self.object:character_community() == "zombied"
+	if self.first_update == false then
+		-- проверка оружейного слота при загрузке сейва (lsclon)
+		if IAlive and self.loaded then
+			local id,item_slot,sobj
+			for slot = 1,2 do
+				item_slot = self.object:item_in_slot(slot)
+				if item_slot then
+					if not isWeapon(item_slot) then
+						id = (item_slot:id() or item_slot.id)
+						sobj = id and alife():object(id)
+						if sobj then
+							alife():release(sobj,true)
+						end
+					end
+				end
+			end
+		end
+		local se_obj = alife():object(self_object_id)
+		if IAlive == false and se_obj and not se_obj.death_droped then death_manager.on_death(self_object_id) end
+		self.first_update = true
+	end
+	st.us = 99002
+
+	if IAlive and time_global() - self.last_update > self.delta_update then
+		if self.object:relation(db.actor) == game_object.enemy and IAlive and self.object.health>0.01 then
+			if self.object:see(db.actor) then
+				amk.enemy_see_actor(self.object,"npc")
+			end
+			if db.actor:see(self.object) then
+				amk.actor_see_enemy(self.object,"npc")
+			end
+		end
+		if not zombie then
+			if not npcsDoNotUseTorch[self.object:name()] then
+				sr_light.check_light(self.object)
+			end
+			
+			-- разрешение/запрет паники в зависимости от уровня здоровья и ранга
+			-- p = (1 - h) - (1 - 150/r)
+			-- p - порог паники
+			-- h - здоровье
+			-- 150 - ранг, с которым неписи боятся прямо пропорционально здоровью начиная с 1 и ниже
+			-- r - ранг
+			-- сталкеры со стори_ид не паникуют
+			-- порог только повышается от потери здоровья
+			-- максимальный порог - 0.5
+			if game_options.health_panic and self.object:story_id() == 4294967296 then
+				local community = self.object:character_community()
+				if community and moraleCommunityBaseRank[community] then
+					local rank = self.object.character_rank and self.object:character_rank() or self.object.rank and self.object:rank() or 300
+					local custom_panic_threshold = (1 - self.object.health) - (1 - moraleCommunityBaseRank[community] / rank)
+					custom_panic_threshold = math.min(math.max(custom_panic_threshold, 0), 0.5)
+					self.object:set_custom_panic_threshold(custom_panic_threshold)
+					if npcPanicThreshold[self_object_id] == nil or npcPanicThreshold[self_object_id] < custom_panic_threshold then
+						npcPanicThreshold[self_object_id] = custom_panic_threshold
+					end
+				end
+			end
+		end
+		self.last_update = time_global()
+	end
+	st.us = 99003
+	
+	-- чуть раньше отсечем для тех, кто не любит слушать интерактивную музыку (sapsan)
+	if IAlive and game_options.interative_music then
+		local wpn = utils.wpn_info_get(self.object)
+		if wpn["ammo"]~=nil then
+			local enemy = self.object:best_enemy()
+			if enemy and enemy:id() == db.actor:id() and self.object:see(db.actor) and self.prev_ammo>wpn["ammo"] then
+				amk.npc_shot_actor(self.object)
+			end
+		end
+		self.prev_ammo = wpn["ammo"] or 0
+		st.us = 99004
+	end
+
+	--' Апдейт менеджера состояний тела
+	if self.st.state_mgr then
+		if IAlive then
+			self.st.state_mgr:update()
+			-- для тестов - по пропаданию оружия
+			-- проверка оружейного слота при выходе в онлайн (lsclon)
+--[[			if not self.first_spawn and trade_manager.hasTradeDinamic(self.object) then
+				local wpn = (rx_wmgr and rx_wmgr.get_wm(self.object):get_weapon()) or self.object:best_weapon()
+				if not wpn then
+					ex_audit.not_wpn(self.object,true) 
+				end
+			end
+			self.first_spawn = true
+--]]
+		else
+			self.st.state_mgr = nil
+		end
+	end
+	st.us = 99005
+	--' Апдейт саундменеджера
+	if IAlive then xr_sound.update(self.object) end
+	st.us = 99006
+
+	if IAlive then
+		if self.object:is_talk_enabled() then self.object:set_tip_text("character_use")
+		else self.object:set_tip_text("")
+		end
+	else self.object:set_tip_text_default()
+	end
+
+	st.us = 98
+	if IAlive and not zombie and xrs_ai then xrs_ai.npc_update(self) end
+	st.us = 97
+	if IAlive and not zombie and rx_ai then rx_ai.npc_update(self.object,self.st) end
+	st.us = 96
+	
+	-- сюжетные неписи непокобелимы (sapsan)
+	if game_options.health_panic and IAlive and not zombie and self.object:story_id() == 4294967296 then
+		local htime = level.get_time_hours()
+		local indoor = sr_light.indoor_levels[level.name()]
+		if htime <= 5 or htime >= 22 or indoor then
+			if not st.night then
+				st.night = true
+				local rank = self.object.character_rank and self.object:character_rank() or self.object.rank and self.object:rank() or -1
+				self.object:set_sound_threshold(0.5)
+			end
+		elseif st.night then
+			st.night = false
+			self.object:restore_sound_threshold()
+		end
+	end
+	
+	st.us = 0
+end
+
+function motivator_binder:reload(section) counterAdd("xr_motivator.motivator_binder:reload")
+	object_binder.reload(self, section)
+end
+
+function motivator_binder:net_save_relevant() counterAdd("xr_motivator.motivator_binder:net_save_relevant")
+	return true
+end
+
+function motivator_binder:save(packet) counterAdd("xr_motivator.motivator_binder:save")
+	object_binder.save(self, packet)
+	--packet:w_bool(self.st.treasure_processed)
+	xr_logic.save_obj(self.object, packet)
+	dialog_manager.save(self.object, packet)
+	trade_manager.save(self.object, packet)
+end
+
+function motivator_binder:load(reader) counterAdd("xr_motivator.motivator_binder:load")
+	self.loaded = true
+	object_binder.load(self, reader)
+	if reader:r_eof() then
+		abort("SAVE FILE IS CORRUPT motivator_binder:load "..self.object:name())
+		remove_zavis.remove_obj(self.object)
+		if not self.object then return end
+	end
+	--self.st.treasure_processed = reader:r_bool()
+	xr_logic.load_obj(self.object, reader)
+	dialog_manager.load(self.object, reader)
+	trade_manager.load(self.object, reader)
+end
+
+local relationTxt = {
+	[game_object.friend] = "friend",
+	[game_object.neutral] = "neutral",
+	[game_object.enemy] = "enemy",
+}
+
+-- коефициент усиления ( > 1 ) или ослабления ( < 1 ) влияния на мораль по группировкам
+local moraleCommunity = {
+	["stalker"]     = 0.6,
+--	["monolith"]    = 0.1,
+	["military"]    = 0.5,
+	["killer"]      = 0.4,
+--	["ecolog"]      = 1.25,
+	["dolg"]        = 0.6,
+	["freedom"]     = 0.6,
+	["bandit"]      = 1.0,
+--	["zombied"]     = 0.0,
+--	["stranger"]    = 0.0,
+--	["trader"]      = 0.0,
+--	["arena_enemy"] = 0.0,
+	["green"]       = 0.6,
+--	["lastday"]     = 0.5,
+--	["fotoman"]     = 0.0,
+	["bandos"]      = 0.9,
+	["voin"]        = 0.6,
+}
+
+local moraleSound = {
+	--[тип] = {влияние, коефициент нормализации силы}
+	-- нормализация по power/count
+	[snd_type.attack]         = { 0.04, 1/0.44},
+	[snd_type.bullet_hit]     = {-0.04, 1/0.42},
+	[snd_type.die]            = {-0.30, 1/0.41},
+	[snd_type.drop]           = {-0.01, 1/0.50},
+	[snd_type.eat]            = { 0.01, 1/0.50},
+	[snd_type.empty]          = {-0.05, 1/0.50},
+	[snd_type.hide]           = { 0.01, 1/0.28},
+	[snd_type.idle]           = { 0.01, 1/0.50},
+	[snd_type.injure]         = {-0.20, 1/0.41},
+	[snd_type.object_break]   = { 0.02, 1/0.50},
+	[snd_type.object_collide] = { 0.02, 1/0.22},
+	[snd_type.object_explode] = { 0.05, 1/0.50},
+	[snd_type.pick_up]        = { 0.01, 1/0.50},
+	[snd_type.reload]         = { 0.10, 1/0.30},
+	[snd_type.shoot]          = { 0.001, 1/0.44},
+	[snd_type.step]           = { 0.003, 1/0.24},
+	[snd_type.take]           = { 0.02, 1/0.33},
+	[snd_type.talk]           = { 0.02, 1/0.45},
+	[snd_type.use]            = { 0.02, 1/0.50},
+}
+
+local soundTypeNames = {
+	[snd_type.attack]               = "attack",
+	[snd_type.bullet_hit]           = "bullet_hit",
+	[snd_type.die]                  = "die",
+	[snd_type.drop]                 = "drop",
+	[snd_type.eat]                  = "eat",
+	[snd_type.empty]                = "empty",
+	[snd_type.hide]                 = "hide",
+	[snd_type.idle]                 = "idle",
+	[snd_type.injure]               = "injure",
+	[snd_type.object_break]         = "object_break",
+	[snd_type.object_collide]       = "object_collide",
+	[snd_type.object_explode]       = "object_explode",
+	[snd_type.pick_up]              = "pick_up",
+	[snd_type.reload]               = "reload",
+	[snd_type.shoot]                = "shoot",
+	[snd_type.step]                 = "step",
+	[snd_type.take]                 = "take",
+	[snd_type.talk]                 = "talk",
+	[snd_type.use]                  = "use",
+	
+	[snd_type.weapon]               = "weapon",
+	[snd_type.weapon_shoot]         = "weapon_shoot",
+	[snd_type.weapon_empty]         = "weapon_empty",
+	[snd_type.weapon_bullet_hit]    = "weapon_bullet_hit",
+	[snd_type.weapon_reload]        = "weapon_reload",
+	[snd_type.item]                 = "item",
+	[snd_type.item_pick_up]         = "item_pick_up",
+	[snd_type.item_drop]            = "item_drop",
+	[snd_type.item_hide]            = "item_hide",
+	[snd_type.item_take]            = "item_take",
+	[snd_type.item_use]             = "item_use",
+	[snd_type.monster]              = "monster",
+	[snd_type.monster_die]          = "monster_die",
+	[snd_type.monster_injure]       = "monster_injure",
+	[snd_type.monster_step]         = "monster_step",
+	[snd_type.monster_talk]         = "monster_talk",
+	[snd_type.monster_attack]       = "monster_attack",
+	[snd_type.monster_eat]          = "monster_eat",
+	[snd_type.world]                = "world",
+	[snd_type.world_ambient]        = "world_ambient",
+	[snd_type.world_object_break]   = "world_object_break",
+	[snd_type.world_object_collide] = "world_object_collide",
+	[snd_type.world_object_explode] = "world_object_explode",
+	
+	[snd_type.ambient]              = "ambient",
+	[snd_type.anomaly]              = "anomaly",
+	[snd_type.anomaly_idle]         = "anomaly_idle",
+}
+
+--[[hearStatistics = {
+	["friend"] = {},
+	["neutral"] = {},
+	["enemy"] = {},
+	["none"] = {}
+}]]
+hearStatistics = {
+}
+hearRankStatistics = {}
+
+function motivator_binder:hear_callback(self, who, sound_type, sound_position, sound_power) counterAdd("xr_motivator.motivator_binder:hear_callback")
+	if who:id() == self:id() then
+		return 
+	end
+	
+	local self_community = self:character_community()
+	if moraleCommunity[self_community] == nil then return end
+	
+	local whatHear = {}
+	local who_clsid = who:clsid()
+	local who_type = IAmAStalker[who_clsid] and "stalker" or IAmAMonster[who_clsid] and "monster" or "other"
+	local who_relation = who_type == "other" and "none" or relationTxt[self:relation(who)]
+	local who_community = IAmAStalker[who_clsid] and who:character_community() or "none"
+	
+	local moraleBase = self.morale
+	local moraleDelta = 0
+	local moraleDeltaSign = who_relation == "enemy" and -1 or 1
+	
+	local type = "NIL"
+	
+	if bit_and(sound_type, snd_type.attack) == snd_type.attack then type = snd_type.attack whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.bullet_hit) == snd_type.bullet_hit then type = snd_type.bullet_hit whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.die) == snd_type.die then type = snd_type.die whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.drop) == snd_type.drop then type = snd_type.drop whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.eat) == snd_type.eat then type = snd_type.eat whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.empty) == snd_type.empty then type = snd_type.empty whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.hide) == snd_type.hide then type = snd_type.hide whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.idle) == snd_type.idle then type = snd_type.idle whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.injure) == snd_type.injure then type = snd_type.injure whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.object_break) == snd_type.object_break then type = snd_type.object_break whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.object_collide) == snd_type.object_collide then type = snd_type.object_collide whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.object_explode) == snd_type.object_explode then type = snd_type.object_explode whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.pick_up) == snd_type.pick_up then type = snd_type.pick_up whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.reload) == snd_type.reload then type = snd_type.reload whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.shoot) == snd_type.shoot then type = snd_type.shoot whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.step) == snd_type.step then type = snd_type.step whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.take) == snd_type.take then type = snd_type.take whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.talk) == snd_type.talk then type = snd_type.talk whatHear[type] = sound_power end
+	if bit_and(sound_type, snd_type.use) == snd_type.use then type = snd_type.use whatHear[type] = sound_power end
+	
+	if type ~= "NIL" then
+
+		local soundName
+		local whatHearNames = {}
+		for k, v in pairs(whatHear) do
+			if moraleSound[k] ~= nil then
+				moraleDelta = moraleDelta + moraleDeltaSign * moraleSound[k][1] * moraleSound[k][2] * v
+			end
+		end
+		
+		-- влияние моральной устойчивости группировки
+		moraleDelta = moraleDelta * moraleCommunity[self_community]
+		
+		-- влияние ранга слушателя
+		local rank = self.character_rank and self:character_rank() or self.rank and self:rank() or -1
+		if rank > -1 then
+			rank = 1000
+		end
+		moraleDelta = moraleDelta * (1000 / rank)
+		
+		if moraleDelta > 0 then
+			if 1 - self.morale > moraleDelta then
+				self.morale = moraleDelta
+			else
+				self.morale = 1 - self.morale
+			end
+		elseif moraleDelta < 0 then
+			if -self.morale < moraleDelta then
+				self.morale = moraleDelta
+			else
+				self.morale = -self.morale
+			end
+		end
+	end
+end
+
+function AddToMotivator(npc) counterAdd("xr_motivator.AddToMotivator")
+	if alife() then npc:bind_object(this.motivator_binder(npc)) end
+end
+
+-- Эвалюаторы, которые имеют высший приоритет, и, соответственно, перебивают остальные скрипты собой
+function addCommonPrecondition(action) counterAdd("xr_motivator.addCommonPrecondition")
+	--action:add_precondition (world_property(xr_evaluators_id.reaction,false))
+	action:add_precondition (world_property(xr_evaluators_id.stohe_meet_base + 1,false))
+	action:add_precondition (world_property(xr_evaluators_id.sidor_wounded_base + 0,  false))
+	action:add_precondition (world_property(xr_evaluators_id.chugai_heli_hunter_base, false))
+	action:add_precondition (world_property(xr_evaluators_id.abuse_base, false))
+	action:add_precondition (world_property(blowout_scheme.evid_outside, false))
+	action:add_precondition (world_property(blowout_scheme.evid_blowout, false))
+	action:add_precondition (world_property(blowout_scheme.evid_preblowout, false))
+	action:add_precondition(world_property(blowout_scheme.evid_anomaly, false))
+	if ricochet_scheme then action:add_precondition(world_property(ricochet_scheme.evid_ricochet_danger, false)) end
+	if watcher_act then
+		action:add_precondition(world_property(watcher_act.evid_see_stuff, false))
+		action:add_precondition(world_property(watcher_act.evid_near_stuff, false))
+	end
+
+	if xrs_ai then xrs_ai.addCommonPrecondition(action) end
+	if rx_ai then rx_ai.addCommonPrecondition(action) end
+end
+
+function play_particle(obj, params) counterAdd("xr_motivator.play_particle")
+    if obj then
+        local id = obj:id()
+        if not particles[id] then particles[id] = {} end
+        table_insert(particles[id], params)
+        end
+end

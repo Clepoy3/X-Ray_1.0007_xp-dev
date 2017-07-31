@@ -1,0 +1,493 @@
+--[[
+Функции озвучки диалогов и СМС
+]]
+
+local snd_obj
+local npc_play = false
+local npcs = {}
+
+-- очередь для СМС и подобных озвучек, которым нельзя накладываться друг на друга
+local sound_queue = {}
+local sound_queue_play = false -- Вспомогательная переменная для отсечения лишних проверок
+
+-- Вспомогательные функции
+
+-- Получить объект по его ИД. Взято из _g.script и добавлено сообщение об ошибке
+function level_object_by_id(id)
+  local sim = alife()
+
+  if sim then
+    local se_obj = sim:object(id)
+    if se_obj then
+		return level.object_by_id(se_obj.id)
+	else
+		get_console():execute("load ~~~ sol_sound ОБЪЕКТ С ИД "..id.." НЕ НАЙДЕН")
+	end
+  end
+
+  return nil
+end
+
+-- Получить объект по его сториИД. Взято из _g.script и добавлено сообщение об ошибке
+function level_object_by_sid(sid)
+  local sim = alife()
+
+  if sim then
+    local se_obj = sim:story_object(sid)
+    if se_obj then
+		return level.object_by_id(se_obj.id)
+	else
+		get_console():execute("load ~~~ sol_sound ОБЪЕКТ СО СТОРИ_ИД "..sid.." НЕ НАЙДЕН")
+	end
+  end
+
+  return nil
+end
+
+-- Получить объект по его имени
+function level_object_by_name(name)
+	local sim = alife()
+
+	if sim then
+		local se_obj = sim:object(name)
+		if se_obj then
+			return level.object_by_id(se_obj.id)
+		else
+			get_console():execute("load ~~~ sol_sound ОБЪЕКТ С ИМЕНЕМ "..name.." НЕ НАЙДЕН")
+		end
+	end
+
+	return nil
+end
+
+function update()
+	-- отслеживаем положение непися для случая звучания без очереди
+	if npc_play then
+		--get_console():execute("load ~~~ sol_sound.update 1")
+		npc_play = false
+		local npcs_clear = {}
+		for id, npc_sound in pairs(npcs) do
+			if npc_sound and npc_sound["snd_obj"] and npc_sound["snd_obj"]:playing() then
+				--get_console():execute("load ~~~ sol_sound.update 111")
+				local npc = level.object_by_id(id)
+				if npc then
+					npc_sound["snd_obj"]:set_position(npc:position())
+					npc_play = true
+				else
+					--get_console():execute("load ~~~ sol_sound.update 111 opa!!!")
+					table.insert(npcs_clear, id)
+				end
+				--get_console():execute("load ~~~ sol_sound.update 112")
+			else
+				--get_console():execute("load ~~~ sol_sound.update 121")
+				table.insert(npcs_clear, id)
+				--get_console():execute("load ~~~ sol_sound.update 122")
+			end
+		end
+		--get_console():execute("load ~~~ sol_sound.update 2")
+		
+		if #npcs_clear > 0 then
+			for i = 1, #npcs_clear do
+				npcs[npcs_clear[i]] = nil
+			end			
+		end
+		--get_console():execute("load ~~~ sol_sound.update 3")
+		
+		--[[if npc and snd_obj and snd_obj:playing() then
+			snd_obj:set_position(npc:position())
+		else
+			npc_play = false
+			snd_obj = nil
+			npc = nil
+		end]]
+	end
+	
+	-- работа с очередями
+	if sound_queue_play then
+		sound_queue_play = false
+		for qName, qData in pairs(sound_queue) do
+			
+			if qData["snd_obj"] then
+				if not qData["snd_obj"]:playing() then
+					qData["snd_obj"] = nil
+					table.remove(qData["queue"], 1)
+				else
+					sound_queue_play = true
+					if qData["queue"][1]["follow_obj"] then
+						qData["snd_obj"]:set_position(qData["queue"][1]["position"])
+					end
+				end
+			end
+			
+			-- есть ли что следующее играть ?
+			if qData["snd_obj"] == nil and #qData["queue"] > 0 then
+				sound_queue_play = true --даже для случая, когда объект "сбежал" или спёрли звук
+				local sound = qData["queue"][1]
+				local obj = level_object_by_id(sound["obj_id"])
+				--local sobj = alife():object(sound["obj_id"])
+				if obj then
+					qData["snd_obj"] = xr_sound.get_safe_sound_object(sound["sound_name"])
+					if qData["snd_obj"] then
+						qData["snd_obj"]:play_at_pos(obj, sound["position"], sound["timeout"], sound["sound_type"])
+						if sound["follow_obj"] then
+							qData["snd_obj"]:set_position(sound["position"])
+						end
+					else
+						-- кто спёр звуки ?!?!
+						qData["snd_obj"] = nil
+						table.remove(qData["queue"], 1)
+					end
+				else
+					-- объект "сбежал"
+					qData["snd_obj"] = nil
+					table.remove(qData["queue"], 1)
+				end
+			end
+		end
+	end
+end
+
+-- Функции разного способа проигрывания звука
+
+-- Универсальный проигрыватель
+function play_sound(sound_name, obj, position, timeout, sound_type, need_stop, queue_name, follow_obj)
+	if sound_name then
+		if obj then
+			if position then
+				if queue_name ~= nil then
+					if type(queue_name) == "string" then
+						queue_name = string.lower(queue_name)
+					end
+					if need_stop and sound_queue[queue_name] ~= nil and sound_queue[queue_name]["snd_obj"] ~= nil then
+						-- прерываем проигрывание и чистим очередь
+						if sound_queue[queue_name]["snd_obj"]:playing() then
+							sound_queue[queue_name]["snd_obj"]:stop()
+							sound_queue[queue_name]["snd_obj"] = nil
+						end
+						
+					else
+						if sound_queue[queue_name] == nil then
+							sound_queue[queue_name] = {}
+						end
+						if sound_queue[queue_name]["queue"] == nil then
+							sound_queue[queue_name]["queue"] = {}
+						end						
+					end
+					
+					-- просто добавляем в очередь (запуск из апдейтера)
+					-- вместо объекта сохраняем его id, а то ещё сбежит...
+					table.insert(sound_queue[queue_name]["queue"], {["sound_name"] = sound_name, ["obj_id"] = obj:id(), ["position"] = position, ["timeout"] = timeout, ["sound_type"] = sound_type, ["follow_obj"] = follow_obj})
+					sound_queue_play = true
+				else--npcs[i] and npcs[i]["npc"] and npcs[i]["snd_obj"]
+					local id = obj:id()
+					if need_stop and npcs[id] and npcs[id]["snd_obj"] and npcs[id]["snd_obj"]:playing() then
+						npcs[id]["snd_obj"]:stop()
+					end
+					npcs[id]["snd_obj"] = xr_sound.get_safe_sound_object(sound_name)
+					if npcs[id]["snd_obj"] then
+						npcs[id]["snd_obj"]:play_at_pos(obj, position, timeout, sound_type) 
+						--snd_obj.max_distance = 10
+						--snd_obj.min_distance = 20
+					else
+						get_console():execute("load ~~~ sol_sound ЗВУК НЕ НАЙДЕН: "..sound_name)
+					end
+				end
+			else
+				get_console():execute("load ~~~ sol_sound ПОЗИЦИЯ ПРОИГРЫВАНИЯ НЕ ЗАДАНА")
+			end
+		else
+			get_console():execute("load ~~~ sol_sound ОБЪЕКТ ДЛЯ ПРОИГРЫВАНИЯ НЕ ЗАДАН")
+		end
+	else
+		get_console():execute("load ~~~ sol_sound ЗВУК НЕ ЗАДАН")
+	end
+end
+
+-- Играть звук прямо у ГГ в голове
+function play_sound_on_actor(sound_name, timeout, need_stop, queue_name)
+	if queue_name == nil then
+		npc = nil
+		npc_play = false
+		npcs[db.actor:id()] = {}
+	end
+	play_sound(sound_name, db.actor, vector(), timeout, sound_object.s2d, need_stop, queue_name, false)
+end
+
+-- Играть звук со cдвигом относительно ГГ в метрах
+-- x - слева-справа
+-- y - снизу-сверху
+-- z - сверху-снизу
+function play_sound_on_actor_shift(sound_name, timeout, need_stop, queue_name, x, y, z)
+	if x and y and z then
+		if queue_name == nil then
+			npc = nil
+			npc_play = false
+			npcs[db.actor:id()] = {}
+		end
+		play_sound(sound_name, db.actor, vector():set(x, y, z), timeout, sound_object.s2d, need_stop, queue_name, false)
+	else
+		get_console():execute("load ~~~ sol_sound КООРДИНАТЫ ДЛЯ ЗВУКА "..sound_name.." НЕ ЗАДАНЫ")
+	end
+end
+
+-- Играть звук от персонажа по его имени. Нужно точно знать его игровое имя!
+function direct_play_sound_on_npc_by_name(sound_name, timeout, need_stop, queue_name, npc_name)
+	if npc_name then
+		local npc_tmp = level_object_by_name(npc_name)
+		if npc_tmp then
+			if queue_name == nil then
+				npcs[npc_tmp:id()] = {}
+				npc_play = true
+			end
+			play_sound(sound_name, npc_tmp, npc_tmp:position(), timeout, sound_object.s3d, need_stop, queue_name, true)
+		else
+			get_console():execute("load ~~~ sol_sound ПЕРСОНАЖ "..npc_name.." НЕ НАЙДЕН")
+		end
+	else
+		get_console():execute("load ~~~ sol_sound ИМЯ ПЕРСОНАЖА НЕ ЗАДАНО")
+	end
+end
+
+-- Играть звук от персонажа по его стори_ИД.
+function direct_play_sound_on_npc_by_sid(sound_name, timeout, need_stop, queue_name, npc_sid)
+	if npc_sid then
+		local npc_tmp = level_object_by_sid(npc_sid)
+		if npc_tmp then
+			if queue_name == nil then
+				npcs[npc_tmp:id()] = {}
+				npc_play = true
+			end
+			play_sound(sound_name, npc_tmp, npc_tmp:position(), timeout, sound_object.s3d, need_stop, queue_name, true)
+		else
+			get_console():execute("load ~~~ sol_sound ПЕРСОНАЖ СО СТОРИ_ИД "..npc_sid.." НЕ НАЙДЕН")
+		end
+	else
+		get_console():execute("load ~~~ sol_sound СТОРИ_ИД ПЕРСОНАЖА НЕ ЗАДАНО")
+	end
+end
+
+-- Играть звук от персонажа по его ИД.
+function direct_play_sound_on_npc_by_id(sound_name, timeout, need_stop, queue_name, npc_id)
+	if npc_id then
+		local npc_tmp = level_object_by_id(npc_id)
+		if npc_tmp then
+			if queue_name == nil then
+				npcs[npc_id] = {}
+				npc_play = true
+			end
+			play_sound(sound_name, npc_tmp, npc_tmp:position(), timeout, sound_object.s3d, need_stop, queue_name, true)
+		else
+			get_console():execute("load ~~~ sol_sound ПЕРСОНАЖ С ИД "..npc_id.." НЕ НАЙДЕН")
+		end
+	else
+		get_console():execute("load ~~~ sol_sound ИД ПЕРСОНАЖА НЕ ЗАДАНО")
+	end
+end
+
+function play_sound_on_npc_by_name(sound_theme, timeout, need_stop, npc_name)
+	if npc_name then
+		local npc_tmp = level_object_by_name(npc_name)
+		if npc_tmp then
+			xr_sound.set_sound(npc_tmp, sound_theme, need_stop, timeout)
+		else
+			get_console():execute("load ~~~ sol_sound ПЕРСОНАЖ "..npc_name.." НЕ НАЙДЕН")
+		end
+	else
+		get_console():execute("load ~~~ sol_sound ИМЯ ПЕРСОНАЖА НЕ ЗАДАНО")
+	end
+end
+
+-- Играть звук от персонажа по его стори_ИД.
+function play_sound_on_npc_by_sid(sound_theme, timeout, need_stop, npc_sid)
+	if npc_sid then
+		local npc_tmp = level_object_by_sid(npc_sid)
+		if npc_tmp then
+			xr_sound.set_sound(npc_tmp, sound_theme, need_stop, timeout)
+		else
+			get_console():execute("load ~~~ sol_sound ПЕРСОНАЖ СО СТОРИ_ИД "..npc_sid.." НЕ НАЙДЕН")
+		end
+	else
+		get_console():execute("load ~~~ sol_sound СТОРИ_ИД ПЕРСОНАЖА НЕ ЗАДАНО")
+	end
+end
+
+-- Играть звук от персонажа по его ИД.
+function play_sound_on_npc_by_id(sound_theme, timeout, need_stop, npc_id)
+	if npc_id then
+		local npc_tmp = level_object_by_id(npc_id)
+		if npc_tmp then
+			xr_sound.set_sound(npc_tmp, sound_theme, need_stop, timeout)
+		else
+			get_console():execute("load ~~~ sol_sound ПЕРСОНАЖ С ИД "..npc_id.." НЕ НАЙДЕН")
+		end
+	else
+		get_console():execute("load ~~~ sol_sound ИД ПЕРСОНАЖА НЕ ЗАДАНО")
+	end
+end
+
+-- функции работы с очередями
+function queue_clear(queue_name)
+	if queue_name ~= nil then
+		if type(queue_name) == "string" then
+			queue_name = string.lower(queue_name)
+		end
+		if sound_queue[queue_name] and sound_queue[queue_name]["snd_obj"] and sound_queue[queue_name]["snd_obj"]:playing() then
+			sound_queue[queue_name]["snd_obj"]:stop()
+			sound_queue[queue_name] = nil
+		end
+	end
+end
+
+function queue_clear_all()
+	sound_queue_play = false
+	for qName, qData in pairs(sound_queue) do
+		if qData and qData["snd_obj"] and qData["snd_obj"]:playing() then
+			qData["snd_obj"]:stop()
+		end
+	end
+	sound_queue = {}
+end
+
+-- Функция проигрывания СМС с очередью
+function sms(sound_name)
+	if not game_options.sms_sound then return end
+	play_sound_on_actor(sound_name, 0, false, "SMS")
+end
+
+-- Функции проигрывания звука, которые вызываются из диалогов
+
+-- Звездочёт
+function zvezdochet_talk_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	--play_sound_on_actor([[characters_voice\human_03\stalker\talk\leave\leave_5]], 0, true, nil)
+	
+	--примеры других способов проигрывания звуков
+	--play_sound_on_actor_shift([[characters_voice\human_03\stalker\talk\leave\leave_5]], 0, true, nil, 1, 1, 0)
+	--play_sound_on_npc_by_name([[characters_voice\human_03\stalker\talk\dialog\dialog_1]], 0, true, "esc_zvezdochet")
+	--play_sound_on_npc_by_name("esc_zvezdochet_talk_1", 0, true, "esc_zvezdochet")
+	play_sound_on_npc_by_id("esc_zvezdochet_talk_1", 0, true, first_speaker:id())
+	
+	-- очередь
+	--play_sound_on_npc_by_name([[characters_voice\human_03\stalker\talk\dialog\dialog_1]], 0, true, "test", "esc_zvezdochet")
+	--play_sound_on_actor([[characters_voice\human_03\stalker\talk\dialog\dialog_4]], 0, true, "test")
+	
+	--play_sound_on_npc_by_sid([[characters_voice\human_03\stalker\talk\leave\leave_5]], 0, true, nil, 32) --Кузнецов на Кордоне
+end
+function zvezdochet_talk_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	--play_sound_on_npc_by_name("esc_zvezdochet_talk_2", 0, true, "esc_zvezdochet")
+	play_sound_on_npc_by_id("esc_zvezdochet_talk_2", 0, true, first_speaker:id())
+end
+function zvezdochet_talk_5(first_speaker, second_speaker, dialog_id, phrase_id)
+	--play_sound_on_npc_by_name("esc_zvezdochet_talk_3", 0, true, "esc_zvezdochet")
+	play_sound_on_npc_by_id("esc_zvezdochet_talk_3", 0, true, first_speaker:id())
+end
+function zvezdochet_talk1_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	--play_sound_on_npc_by_name("esc_zvezdochet_talk_4", 0, true, "esc_zvezdochet")
+	play_sound_on_npc_by_id("esc_zvezdochet_talk_4", 0, true, first_speaker:id())
+end
+function zvezdochet_aver_talk_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("zvezdochet_aver_talk_1", 0, true, first_speaker:id())
+end
+function zvezdochet_aver_talk_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("zvezdochet_aver_talk_3", 0, true, first_speaker:id())
+end
+function zvezdochet_aver_talk_5(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("zvezdochet_aver_talk_5", 0, true, first_speaker:id())
+end
+function karta_zvez_say_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("karta_zvez_say_1", 0, true, first_speaker:id())
+end
+function karta_zvez_say_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("karta_zvez_say_3", 0, true, first_speaker:id())
+end
+function karta_zvez_say_5(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("karta_zvez_say_5", 0, true, first_speaker:id())
+end
+
+-- Аким
+function escape_meceniy_start_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("esc_akim_talk_1", 0, true, first_speaker:id())
+end
+function escape_meceniy_start_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("esc_akim_talk_3", 0, true, first_speaker:id())
+end
+
+-- Шахтёр
+function arhara_shaxter_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("arhara_shaxter_1", 0, true, first_speaker:id())
+end
+function arhara_shaxter_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("arhara_shaxter_3", 0, true, first_speaker:id())
+end
+function arhara_shaxter_5(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("arhara_shaxter_5", 0, true, first_speaker:id())
+end
+
+-- Адреналин
+function escape_adrenalin_start_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("agr_adrenalin_start_1", 0, true, first_speaker:id())
+end
+function escape_adrenalin_start_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("agr_adrenalin_start_3", 0, true, first_speaker:id())
+end
+function atp_5(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("agr_adrenalin_atp_5", 0, true, first_speaker:id())
+end
+
+-- Отшельник
+function otshelnik_yzik_nayti_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("otshelnik_yzik_nayti_1", 0, true, first_speaker:id())
+end
+function otshelnik_yzik_nayti_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("otshelnik_yzik_nayti_3", 0, true, first_speaker:id())
+end
+function otshelnik_yzik_nayti_5(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("otshelnik_yzik_nayti_5", 0, true, first_speaker:id())
+end
+function otshelnik_yzik_prines_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("otshelnik_yzik_prines_1", 0, true, first_speaker:id())
+end
+function otshelnik_yzik_prines_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("otshelnik_yzik_prines_3", 0, true, first_speaker:id())
+end
+
+-- Боров
+function borov_11_dialog_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("borov_11_dialog_1", 0, true, first_speaker:id())
+end
+function borov_11_dialog_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("borov_11_dialog_3", 0, true, first_speaker:id())
+end
+function borov_11_dialog_5(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("borov_11_dialog_5", 0, true, first_speaker:id())
+end
+
+-- Химера
+function chimaera_zadan_nayti_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("chimaera_zadan_nayti_1", 0, true, first_speaker:id())
+end
+function chimaera_zadan_nayti_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("chimaera_zadan_nayti_3", 0, true, first_speaker:id())
+end
+function chimaera_zadan_nayti_5(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("chimaera_zadan_nayti_5", 0, true, first_speaker:id())
+end
+function chimaera_zadan_prines_1(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("chimaera_zadan_prines_1", 0, true, first_speaker:id())
+end
+function chimaera_zadan_prines_3(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("chimaera_zadan_prines_3", 0, true, first_speaker:id())
+end
+
+--Хабарыч
+function xabaruch_talk_0(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("xabaruch_talk_0", 0, true, first_speaker:id())
+end
+function xabaruch_talk_2(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("xabaruch_talk_2", 0, true, first_speaker:id())
+end
+function xabaruch_talk_4(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("xabaruch_talk_4", 0, true, first_speaker:id())
+end
+function xabaruch_talk_6(first_speaker, second_speaker, dialog_id, phrase_id)
+	play_sound_on_npc_by_id("xabaruch_talk_6", 0, true, first_speaker:id())
+end

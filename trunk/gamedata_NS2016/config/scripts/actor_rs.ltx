@@ -1,0 +1,71 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+esc_pes_sleep} sr_sound@1 %=ex_unload.pes_drug_load%
+
+[sr_sound@1]
+snd = pecshera_zvuk\mamma_sonnim
+position = random
+on_timer = 1000 | sr_sound@2 %=ex_unload.pes_drug_wpn%
+
+[sr_sound@2]
+snd = pecshera_zvuk\shagi
+position = pes_xabaruch_walk1
+on_signal = sound_end| sr_idle@nil
+
+[sr_idle@nil]
+
+
+;agr_u_fade - переход в черный экран
+;alcohol - размытие - двоение - вспышка
+;amk_shoot - покраснение экрана
+;anomaly - размытие - двоение - вспышка
+;bandit - размытие - двоение - вспышка
+;bast - осветление экрана
+;blink - коротка€ вспышка
+;controller_hit - покраснение экрана
+;dead_zone - р€бь
+;deadcity_wake - переход из черного экрана с двоением и покраснением
+;deadcity_wake1 - переход из черного экрана с двоением и покраснением
+;dog - белое с двоением по диагонали
+;dolg - покраснение экрана
+;duality_circle - двоение на весь экран 
+;fire_hit - покраснение экрана 
+;escape - покраснение экрана
+;exo - светлозеленый экран
+;killer - покраснение экрана
+;monolit - покраснение экрана
+;monolith_off - покраснение с переходом в черный экран
+;nano - р€бь
+;new_game_fade - быстрое затухание экрана
+;peace_fade - быстрое затухание экрана
+;proba - размытие - двоение - вспышка/затемнение
+;proba2 - плавный перебор всех цветов радуги
+;proba_test - плавный перебор всех цветов радуги
+;psi - пожелтние с размытием
+;psy_antenna - пожелтение экрана
+;psy_antenna_indoor - посерение экрана
+;psychic - пожелтение экрана
+;radar_psi - небольшое двоение переход€щее в черный экран
+;radar_stop - постепенно становитс€ черным экран
+;radar_wake - переход из черного экрана с двоением
+;snd_shock - очень большое двоение с затуханием
+;stalker - посветление экрана
+;svoboda - двоение на весь экран с р€бью
+;teleport - белый экран
+;vibros - размытие с последующим двоением
+;yantar_underground_psi - небольшое двоение
+
+;punch_effector - плавно в право и вверх
+;dis_consciousness - кружитс€ вокруг своей оси
+;dream - падение назад
+;drunk - покачивание из стороны в сторону
+;earthquake - длительна€ тр€ска
+;fatigue - описывает небольшой круг
+;fusker - немного вверх и вправо
+;head_shot - удар в голову - резкий подъем вверх
+;prison_0 - смотрим в небо
+;prison_1 - смотрим в небо, подъем с поворотом в лево
+;radar_stop - падение после тр€ски - сон в х10
+;shell_shock - коротка€ встр€ска

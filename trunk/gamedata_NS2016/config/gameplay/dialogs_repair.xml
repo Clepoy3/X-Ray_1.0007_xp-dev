@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+ 
+<!-- Сидорович  новый ремонт / апгрейд-->
+<dialog id="sidor_repair">
+   <dont_has_info>sidor_repair_start</dont_has_info>
+   <has_info>news_repair</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_0</text>
+            <give_info>all_tabl_stvol</give_info> 
+			      <give_info>price_upgrade_sidor</give_info>
+            <next>1</next>
+        </phrase>
+        <phrase id="1">
+            <text>generic_repair_1</text>
+            <next>2</next>
+            <next>4</next>
+        </phrase>
+        <phrase id="2">
+            <text>generic_repair_2</text>
+            <next>3</next>
+        </phrase>
+        <phrase id="3">
+            <action>ui_repair_menu.EnableRepairMenu</action>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+        <phrase id="4">
+            <text>generic_repair_4</text>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+    </phrase_list>
+</dialog>
+
+<dialog id="sidor_repair_done">
+    <has_info>sidor_repair_start</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_done_0</text>
+            <next>1</next>
+            <next>2</next>
+        </phrase>
+        <phrase id="1">
+            <precondition>ui_repair_menu.order_ready</precondition>
+            <give_info>sidor_repair_end</give_info>
+            <text>generic_repair_done_1</text>
+            <action>ui_repair_menu.give_order</action>
+            <next>3</next>
+        </phrase>
+        <phrase id="2">
+            <precondition>ui_repair_menu.order_not_ready</precondition>
+            <text>generic_repair_done_2</text>
+        </phrase> 
+        <phrase id="3">
+            <text>generic_repair_done_3</text>
+        </phrase>        
+    </phrase_list>
+</dialog>
+
+<!-- Долговязый  новый ремонт / апгрейд-->
+<dialog id="dolgovyazyj_repair">
+  <dont_has_info>dolgovyazyj_repair_start</dont_has_info>
+  <has_info>price_upgrade_dolgovyazyj</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_0</text>
+			<give_info>all_tabl_stvol</give_info>
+			<give_info>all_tabl_upgrade</give_info>
+            <next>1</next>
+        </phrase>
+        <phrase id="1">
+            <text>generic_repair_1</text>
+            <next>2</next>
+            <next>4</next>
+        </phrase>
+        <phrase id="2">
+            <text>generic_repair_2</text>
+            <next>3</next>
+        </phrase>
+        <phrase id="3">
+            <action>ui_repair_menu.EnableRepairMenu</action>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+        <phrase id="4">
+            <text>generic_repair_4</text>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+    </phrase_list>
+</dialog>
+
+<dialog id="dolgovyazyj_repair_done">
+    <has_info>dolgovyazyj_repair_start</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_done_0</text>
+            <next>1</next>
+            <next>2</next>
+        </phrase>
+        <phrase id="1">
+            <precondition>ui_repair_menu.order_ready</precondition>
+            <give_info>dolgovyazyj_repair_end</give_info>
+            <text>generic_repair_done_1</text>
+            <action>ui_repair_menu.give_order</action>
+            <next>3</next>
+        </phrase>
+        <phrase id="2">
+            <precondition>ui_repair_menu.order_not_ready</precondition>
+            <text>generic_repair_done_2</text>
+        </phrase> 
+        <phrase id="3">
+            <text>generic_repair_done_3</text>
+        </phrase>        
+    </phrase_list>
+</dialog>
+	
+
+
+<!-- Шуруп  новый ремонт / апгрейд-->
+<dialog id="shurup_repair">
+  <dont_has_info>shurup_repair_start</dont_has_info>
+  <has_info>price_upgrade_shurup</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_0</text>
+			<give_info>all_tabl_stvol</give_info>
+			<give_info>all_tabl_upgrade</give_info>
+            <next>1</next>
+        </phrase>
+        <phrase id="1">
+            <text>generic_repair_1</text>
+            <next>2</next>
+            <next>4</next>
+        </phrase>
+        <phrase id="2">
+            <text>generic_repair_2</text>
+            <next>3</next>
+        </phrase>
+        <phrase id="3">
+            <action>ui_repair_menu.EnableRepairMenu</action>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+        <phrase id="4">
+            <text>generic_repair_4</text>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+    </phrase_list>
+</dialog>
+
+<dialog id="shurup_repair_done">
+    <has_info>shurup_repair_start</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_done_0</text>
+            <next>1</next>
+            <next>2</next>
+        </phrase>
+        <phrase id="1">
+            <precondition>ui_repair_menu.order_ready</precondition>
+            <give_info>shurup_repair_end</give_info>
+            <text>generic_repair_done_1</text>
+            <action>ui_repair_menu.give_order</action>
+            <next>3</next>
+        </phrase>
+        <phrase id="2">
+            <precondition>ui_repair_menu.order_not_ready</precondition>
+            <text>generic_repair_done_2</text>
+        </phrase> 
+        <phrase id="3">
+            <text>generic_repair_done_3</text>
+        </phrase>        
+    </phrase_list>
+</dialog>
+	
+
+<!-- Василий  новый ремонт / апгрейд-->
+
+<dialog id="vasiliy_repair">
+  <dont_has_info>vasiliy_repair_start</dont_has_info>
+  <has_info>price_upgrade_vasiliy</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_0</text>
+			<give_info>all_tabl_stvol</give_info>
+			<give_info>all_tabl_upgrade</give_info>
+            <next>1</next>
+        </phrase>
+        <phrase id="1">
+            <text>generic_repair_1</text>
+            <next>2</next>
+            <next>4</next>
+        </phrase>
+        <phrase id="2">
+            <text>generic_repair_2</text>
+            <next>3</next>
+        </phrase>
+        <phrase id="3">
+            <action>ui_repair_menu.EnableRepairMenu</action>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+        <phrase id="4">
+            <text>generic_repair_4</text>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+    </phrase_list>
+</dialog>
+
+<dialog id="vasiliy_repair_done">
+    <has_info>vasiliy_repair_start</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_done_0</text>
+            <next>1</next>
+            <next>2</next>
+        </phrase>
+        <phrase id="1">
+            <precondition>ui_repair_menu.order_ready</precondition>
+            <give_info>vasiliy_repair_end</give_info>
+            <text>generic_repair_done_1</text>
+            <action>ui_repair_menu.give_order</action>
+            <next>3</next>
+        </phrase>
+        <phrase id="2">
+            <precondition>ui_repair_menu.order_not_ready</precondition>
+            <text>generic_repair_done_2</text>
+        </phrase> 
+        <phrase id="3">
+            <text>generic_repair_done_3</text>
+        </phrase>        
+    </phrase_list>
+</dialog>
+	
+<!-- Гектор новый ремонт / апгрейд-->
+<dialog id="petr_repair">
+  <dont_has_info>petr_repair_start</dont_has_info>
+  <has_info>price_upgrade_petr</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_0</text>
+			<give_info>all_tabl_stvol</give_info>
+			<give_info>all_tabl_upgrade</give_info>
+            <next>1</next>
+        </phrase>
+        <phrase id="1">
+            <text>generic_repair_1</text>
+            <next>2</next>
+            <next>4</next>
+        </phrase>
+        <phrase id="2">
+            <text>generic_repair_2</text>
+            <next>3</next>
+        </phrase>
+        <phrase id="3">
+            <action>ui_repair_menu.EnableRepairMenu</action>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+        <phrase id="4">
+            <text>generic_repair_4</text>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+    </phrase_list>
+</dialog>
+
+<dialog id="petr_repair_done">
+    <has_info>petr_repair_start</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_done_0</text>
+            <next>1</next>
+            <next>2</next>
+        </phrase>
+        <phrase id="1">
+            <precondition>ui_repair_menu.order_ready</precondition>
+            <give_info>petr_repair_end</give_info>
+            <text>generic_repair_done_1</text>
+            <action>ui_repair_menu.give_order</action>
+            <next>3</next>
+        </phrase>
+        <phrase id="2">
+            <precondition>ui_repair_menu.order_not_ready</precondition>
+            <text>generic_repair_done_2</text>
+        </phrase> 
+        <phrase id="3">
+            <text>generic_repair_done_3</text>
+        </phrase>        
+    </phrase_list>
+</dialog>
+	
+<!-- Юпитер  новый ремонт / апгрейд-->
+<dialog id="jupiter_rem_repair">
+  <dont_has_info>jupiter_rem_repair_start</dont_has_info>
+  <has_info>price_upgrade_jupiter_rem</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_0</text>
+			<give_info>all_tabl_stvol</give_info>
+			<give_info>all_tabl_upgrade</give_info>
+            <next>1</next>
+        </phrase>
+        <phrase id="1">
+            <text>generic_repair_1</text>
+            <next>2</next>
+            <next>4</next>
+        </phrase>
+        <phrase id="2">
+            <text>generic_repair_2</text>
+            <next>3</next>
+        </phrase>
+        <phrase id="3">
+            <action>ui_repair_menu.EnableRepairMenu</action>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+        <phrase id="4">
+            <text>generic_repair_4</text>
+            <action>dialogs.break_dialog</action>
+        </phrase>
+    </phrase_list>
+</dialog>
+
+<dialog id="jupiter_rem_repair_start_done">
+    <has_info>jupiter_rem_repair_start</has_info>
+    <phrase_list>
+        <phrase id="0">
+            <text>generic_repair_done_0</text>
+            <next>1</next>
+            <next>2</next>
+        </phrase>
+        <phrase id="1">
+            <precondition>ui_repair_menu.order_ready</precondition>
+            <give_info>jupiter_rem_repair_end</give_info>
+            <text>generic_repair_done_1</text>
+            <action>ui_repair_menu.give_order</action>
+            <next>3</next>
+        </phrase>
+        <phrase id="2">
+            <precondition>ui_repair_menu.order_not_ready</precondition>
+            <text>generic_repair_done_2</text>
+        </phrase> 
+        <phrase id="3">
+            <text>generic_repair_done_3</text>
+        </phrase>        
+    </phrase_list>
+</dialog>
+	
+
+
+</game_dialogs>

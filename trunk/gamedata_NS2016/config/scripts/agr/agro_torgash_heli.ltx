@@ -1,0 +1,122 @@
+[logic]
+active = heli_move@hide
+on_hit = hit
+
+[hit]
+on_info = {-agr_sedoy_heli_hit} %+agr_sedoy_heli_hit =arhara_dialog.tu_sdurel_sms%
+
+[heli_move@hide]
+path_move = agro_torgash_heli_hide_move
+combat_enemy = nil
+combat_ignore = true
+default_velocity = 1
+engine_sound = false
+invulnerable = true
+immortal = true
+mute = true
+on_info = {+agr_sedoy_vert_letit} heli_move@srart
+
+[heli_move@srart]
+path_move = agro_torgash_heli_start_move
+path_look = agro_torgash_heli_start_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 45
+default_velocity = 6
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@arrive %-agr_sedoy_vert_letit%
+
+[heli_move@arrive]
+path_move = agro_torgash_heli_arrive_move
+path_look = agro_torgash_heli_arrive_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 34
+default_velocity = 8
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@desant
+
+[heli_move@desant]
+path_move = agro_torgash_heli_desant_move
+path_look = agro_torgash_heli_desant_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 1
+default_velocity = 4
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@stop
+
+[heli_move@stop]
+path_move = agro_torgash_heli_stop_move
+path_look = agro_torgash_heli_stop_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 0
+default_velocity = 1
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@park %+agro_torgash_spawn%
+
+[heli_move@park]
+path_move = agro_torgash_heli_park_move
+path_look = agro_torgash_heli_park_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 0
+default_velocity = 1
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true 
+on_info = {+go_heli_torgash} heli_move@rise
+
+[heli_move@rise]
+path_move = agro_torgash_heli_rise_move
+path_look = agro_torgash_heli_rise_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 1
+default_velocity = 3
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@away %-go_heli_torgash%
+
+[heli_move@away]
+path_move = agro_torgash_heli_away_move
+path_look = agro_torgash_heli_away_look
+combat_enemy = nil
+combat_ignore = true
+combat_safe_altitude = 45
+default_velocity = 20
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_signal = final | heli_move@home
+
+[heli_move@home]
+path_move = agro_torgash_heli_hide_move
+combat_enemy = nil
+combat_safe_altitude = 75
+combat_ignore = true
+default_velocity = 20
+engine_sound = true
+invulnerable = true
+immortal = true
+mute = true
+on_timer = 25000 | nil %=arhara_dialog.dell_torgash_heli =arhara_dialog.delete_agro_mobil_torgash%
+;;;;; Вариант без удаления ;;;;;
+;on_timer = 25000 | heli_move@hide

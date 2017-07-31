@@ -1,0 +1,232 @@
+local table_sort = table.sort
+local table_remove = table.remove
+local table_insert = table.insert
+
+local gvtab ={}
+function GameVertexId()
+    local i = 0
+	local ln
+    while game_graph():valid_vertex_id(i) do
+        ln = alife():level_name(game_graph():vertex(i):level_id())
+        if not gvtab[ln] then
+            gvtab[ln] = {}
+        end
+		table.insert(gvtab[ln], i)
+		i = i+1
+    end
+    amk.dump_table(gvtab)  --вызываем функцию для вывода данных на экран
+end
+
+local lvtab ={}
+function LevelVertexId()
+
+    local i = 0
+	local ln
+	local lv
+    while game_graph():valid_vertex_id(i) do  
+		lv = game_graph():vertex(i):level_vertex_id()  --получаем левел вертекс по гейм вертексу
+         --получаем имя уровня по его номеру из секции в  game_graph
+        ln = alife():level_name(game_graph():vertex(i):level_id())  
+        if not lvtab[ln] then  
+            lvtab[ln] ={}  
+        end
+		table.insert(lvtab[ln], i..":"..lv)   --заполняем таблицу
+		i = i+1
+    end
+	
+	amk.dump_table(lvtab)  --вызываем функцию для вывода данных на экран
+end
+
+function test_r_line()
+	local i, result, section, value
+	local ammo = {}
+	-- отсюда возьмём размеры полных пачек
+	local sys = system_ini()
+	-- список патронов возьмём из "death_generic.ltx"
+	local ini = ini_file("misc\\death_generic.ltx")
+	local n = ini:line_count("ammo_sections")
+	for i=0,n-1 do
+		result, section, value = ini:r_line("ammo_sections",i,"","")
+		ammo[section] = {}
+		ammo[section].repack = false
+		ammo[section].box = sys:r_u32(section, "box_size")
+	end
+	amk.dump_table(ammo)
+	
+	ammo = {}
+	-- отсюда возьмём размеры полных пачек
+	local sys = system_ini()
+	-- список патронов возьмём из "death_generic.ltx"
+	local ini = ini_file("misc\\death_generic.ltx")
+	local n = iniLinesCount("ammo_sections", "misc\\death_generic.ltx")
+	for i=0,n-1 do
+		result, section, value = getIniLine("ammo_sections",i,"","", "misc\\death_generic.ltx")
+		ammo[section] = {}
+		ammo[section].repack = false
+		ammo[section].box = getIniValueFloatSimple(section, "box_size", 1)
+	end
+	amk.dump_table(ammo)
+end
+
+function trim_old (s)
+	return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
+end
+function trim(s)
+  return string.match(s, '^%s*(.*%S)')
+end
+function test_trim()
+	get_console():execute("load ~~~ TIME SPEND trim_old == trim: "..tostring(trim_old("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef") == trim("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef")))
+	get_console():execute("load ~~~ TIME SPEND trim_old == trim: "..tostring(trim_old("  a b c d e f g h i j k l m n o p q r s t u v w x y z A B C ") == trim("  a b c d e f g h i j k l m n o p q r s t u v w x y z A B C ")))
+	get_console():execute("load ~~~ TIME SPEND trim_old == trim: "..tostring(trim_old("   abcdef   ") == trim("   abcdef   ")))
+	local result
+    local t = profile_timer()
+    t:start()
+    for i = 1, 65535 do
+		result = trim_old("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef")
+    end
+    t:stop()
+    get_console():execute("load ~~~ TIME SPEND trim_old1: "..t:time())
+	t = profile_timer()
+    t:start()
+    for i = 1, 65535 do
+		result = trim_old("  a b c d e f g h i j k l m n o p q r s t u v w x y z A B C ")
+    end
+    t:stop()
+    get_console():execute("load ~~~ TIME SPEND trim_old2: "..t:time())
+	t = profile_timer()
+    t:start()
+    for i = 1, 65535 do
+		result = trim_old("   abcdef   ")
+    end
+    t:stop()
+    get_console():execute("load ~~~ TIME SPEND trim_old3: "..t:time())
+	
+	t = profile_timer()
+    t:start()
+    for i = 1, 65535 do
+		result = trim("abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef")
+    end
+    t:stop()
+    get_console():execute("load ~~~ TIME SPEND trim1: "..t:time())
+	t = profile_timer()
+    t:start()
+    for i = 1, 65535 do
+		result = trim("  a b c d e f g h i j k l m n o p q r s t u v w x y z A B C ")
+    end
+    t:stop()
+    get_console():execute("load ~~~ TIME SPEND trim2: "..t:time())
+	t = profile_timer()
+    t:start()
+    for i = 1, 65535 do
+		result = trim("   abcdef   ")
+    end
+    t:stop()
+    get_console():execute("load ~~~ TIME SPEND trim3: "..t:time())
+	
+end
+
+function test_str_explode()
+	local result
+	local str_expl_new = Parse_StrToTbl
+	local str_expl_old = amk.str_explode
+	local str = "mp_wpn_vuhlop, mp_wpn_walther_son, mp_wpn_aks74m, mp_wpn_gauss_krayzis, mp_wpn_gravigun, mp_wpn_bm16, mp_wpn_wincheaster1300, mp_wpn_spas12, mp_wpn_ak74u, mp_wpn_ak74, mp_wpn_mp5, mp_wpn_l85, mp_wpn_lr300, mp_wpn_abakan, mp_wpn_sig550, mp_wpn_groza, mp_wpn_g36, mp_wpn_fn2000, mp_wpn_val, mp_wpn_vintorez, mp_wpn_svd, mp_wpn_svu, mp_wpn_gauss, mp_wpn_rpg7, mp_wpn_rg6, mp_wpn_toz34, mp_wpn_pkm, mp_wpn_p90, mp_wpn_saiga12c, mp_wpn_saiga12c_m1, mp_wpn_dark_gauss, mp_wpn_awm, mp_wpn_crossbow, mp_wpn_crossbow_m1, mp_wpn_aps_sk1, mp_wpn_uzi, mp_wpn_awm_new, mp_wpn_b94, mp_wpn_svd_foto, mp_wpn_m4super90, mp_wpn_m4, mp_wpn_mg42, mp_wpn_mp5sd, mp_wpn_scorpion, mp_wpn_walther_wa2000, mp_wpn_groza_m3, mp_wpn_ak74_kalibr, mp_wpn_ak74u_kalibr, mp_wpn_abakan_kalibr, mp_wpn_bizon_kalibr, mp_wpn_mp5_kalibr, mp_wpn_mp7a3_kalibr, mp_wpn_uzi_kalibr, mp_wpn_ak74_otdaca, mp_wpn_ak74u_otdaca, mp_wpn_abakan_otdaca, mp_wpn_bizon_otdaca, mp_wpn_mp5_otdaca, mp_wpn_mp7a3_otdaca, mp_wpn_uzi_otdaca, mp_wpn_fn2000_otdaca, mp_wpn_g36_otdaca, mp_wpn_lr300_otdaca, mp_wpn_sig550_otdaca, mp_wpn_sg552_sk1_otdaca, mp_wpn_l85_otdaca, mp_wpn_famas_p3_sk1_otdaca, mp_wpn_m16a2_sk1_otdaca, mp_wpn_tavor_otdaca, mp_wpn_ak47_otdaca, mp_wpn_hk417_sk1_otdaca, mp_wpn_sr25_mk11_mod0_sk1_otdaca, mp_wpn_ak74_otdaca_ves, mp_wpn_ak74u_otdaca_ves, mp_wpn_abakan_otdaca_ves, mp_wpn_bizon_otdaca_ves, mp_wpn_mp5_otdaca_ves, mp_wpn_mp7a3_otdaca_ves, mp_wpn_uzi_otdaca_ves, mp_wpn_fn2000_otdaca_ves, mp_wpn_g36_otdaca_ves, mp_wpn_lr300_otdaca_ves, mp_wpn_sig550_otdaca_ves, mp_wpn_sg552_sk1_otdaca_ves, mp_wpn_l85_otdaca_ves, mp_wpn_famas_p3_sk1_otdaca_ves, mp_wpn_m16a2_sk1_otdaca_ves, mp_wpn_tavor_otdaca_ves, mp_wpn_ak47_otdaca_ves, mp_wpn_hk417_sk1_otdaca_ves, mp_wpn_sr25_mk11_mod0_sk1_otdaca_ves, mp_wpn_ak74_ves, mp_wpn_ak74u_ves, mp_wpn_abakan_ves, mp_wpn_bizon_ves, mp_wpn_mp5_ves, mp_wpn_mp7a3_ves, mp_wpn_uzi_ves, mp_wpn_fn2000_ves, mp_wpn_g36_ves, mp_wpn_lr300_ves, mp_wpn_sig550_ves, mp_wpn_sg552_sk1_ves, mp_wpn_l85_ves, mp_wpn_famas_p3_sk1_ves, mp_wpn_m16a2_sk1_ves, mp_wpn_tavor_ves, mp_wpn_ak47_ves, mp_wpn_hk417_sk1_ves, mp_wpn_sr25_mk11_mod0_sk1_ves, mp_wpn_groza_ves, mp_wpn_val_ves, mp_wpn_svd_ves, mp_wpn_svu_ves, mp_wpn_m1891_30_scope_ves, mp_wpn_vintorez_ves, mp_wpn_b94_ves, mp_wpn_awm_ves, mp_wpn_kriss_super_v_ves, mp_wpn_p90_ves, mp_wpn_pkm_ves, mp_wpn_m4_otdaca, mp_wpn_m4_otdaca_ves, mp_wpn_m4_ves, mp_wpn_mp5k_kalibr, mp_wpn_mp5k_otdaca, mp_wpn_mp5k_otdaca_ves, mp_wpn_mp5k_ves, mp_wpn_scorpion_kalibr, mp_wpn_scorpion_otdaca, mp_wpn_scorpion_otdaca_ves, mp_wpn_scorpion_ves, mp_wpn_aks74m_kalibr, mp_wpn_aks74m_otdaca, mp_wpn_aks74m_otdaca_ves, mp_wpn_aks74m_ves, mp_wpn_vuhlop_ves, wpn_oc33_sk1, wpn_oc33_sk1_otdaca"
+    local t = profile_timer()
+    t:start()
+    for i = 1, 65535 do
+		result = str_expl_old(",", str, true)
+    end
+    t:stop()
+    get_console():execute("load ~~~ TIME SPEND str_expl_old: "..t:time())
+	amk.dump_table(result)
+	t = profile_timer()
+    t:start()
+    for i = 1, 65535 do
+		result = str_expl_new(str, ",")
+    end
+    t:stop()
+    get_console():execute("load ~~~ TIME SPEND str_expl_new: "..t:time())
+	amk.dump_table(result)
+end
+
+function restore()
+
+	local parents = {}
+	local items = {}
+	local itemsCount = 0
+	local sim = alife()
+	for i = 1, 65534 do
+		local se_obj = sim:object(i)
+		if se_obj and se_obj:section_name() == "zamok" and se_obj.parent_id and se_obj.parent_id ~= 0 and se_obj.parent_id ~= 65535 then
+			local se_box = sim:object(se_obj.parent_id) -- получаем серверный объект хозяина
+			if se_box then
+
+				if se_box:clsid() == clsid.inventory_box then
+
+					amk_offline_alife.protected.ids[se_box.id] = true
+				end
+			else
+				get_console():execute("load ~~~ FAILED restore protect box id: "..i.." name: "..protected_items.get_obj_name(se_obj))
+			end
+		end
+	end
+end
+
+function restore_single(se_obj, sect)
+	if se_obj and sect == "zamok" and se_obj.parent_id and se_obj.parent_id ~= 0 and se_obj.parent_id ~= 65535 then
+		local se_box = alife():object(se_obj.parent_id) -- получаем серверный объект хозяина
+		if se_box then
+			
+			if se_box:clsid() == clsid.inventory_box then
+			
+				amk_offline_alife.protected.ids[se_box.id] = true
+			end
+		else
+			get_console():execute("load ~~~ FAILED restore protect box id: "..se_obj.id.." name: "..protected_items.get_obj_name(se_obj))
+		end
+	end
+end
+
+function sortItems(t1, t2)
+	return t1[2] > t2[2]
+end
+
+function sortParents(t1, t2)
+	return t1[2]["count"] > t2[2]["count"]
+end
+
+function remove(box, item, skipCheck, quiet)
+	if box and box:clsid() == clsid.inventory_box and item and item.section and item:section() == "zamok" then
+
+		local box_id = box:id()
+		if amk_offline_alife.protected.ids[box_id] then
+			if not skipCheck then
+				-- проверим нет ли в ящике ещё замков
+				local otherZamok = false
+				local sim = alife()
+				local szamok
+				local boxId = box:id()
+				for i = 1, 65534 do
+					szamok = sim:object(i)
+					otherZamok = szamok and szamok:section_name() == "zamok" and szamok.parent_id == boxId
+					if otherZamok then
+						break
+					end
+				end
+				
+				if not otherZamok then
+					amk_offline_alife.protected.ids[box_id] = nil
+					amk_offline_alife.update_tables(level.name())
+					if not quiet then
+						amk.send_tip("С тайника убрали замок.", nil, nil, 5)
+					end
+				end
+			else
+				amk_offline_alife.protected.ids[box_id] = nil
+				amk_offline_alife.update_tables(level.name())
+				if not quiet then
+					amk.send_tip("С тайника убрали замок.", nil, nil, 5)
+				end
+			end
+		end
+	end
+end

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="windows-1251"  ?>
+<game_dialogs>
+
+	<dialog id="doctor_teleport">
+	<dont_has_info>doctor_teleport1</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+				<text>doctor_teleport_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>doctor_teleport_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>doctor_teleport_2</text>
+				<action>sak_dialog.give_doktor_book</action>
+        			<give_info>doktor_book</give_info>
+				<next>3</next>
+            </phrase>
+			<phrase id="3">
+                <text>doctor_teleport_3</text>
+				<next>4</next>
+            </phrase>	
+			<phrase id="4">
+                <text>doctor_teleport_4</text>
+				<next>5</next>
+            </phrase>	
+			<phrase id="5">
+                <text>doctor_teleport_5</text>
+			<action>arhara1_dialog1.sp_listok</action>
+			<give_info>doctor_teleport1</give_info>
+            </phrase>			
+        </phrase_list>
+    </dialog>
+	
+    <dialog id="strelok_pda3_dialog">
+    <precondition>sak_dialog.strelok_pda_have</precondition>
+    <has_info>med_dok_start</has_info>
+    <dont_has_info>strelok_pda_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>strelok_pda3_dialog_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>strelok_pda3_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>strelok_pda3_dialog_2</text>
+			<action>sak_dialog.give_strelok_pda</action>	
+			<give_info>strelok_pda_done</give_info>
+			<action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>

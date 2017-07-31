@@ -1,0 +1,309 @@
+;-- Сталкеры
+[logic@generators_orly_zemlyk]
+active = walker@generators_orly
+
+[walker@generators_orly]
+path_walk = orel_walk
+path_look = orel_look
+on_timer = 270000 | kamp@generators_orly
+
+[kamp@generators_orly]
+center_point  = camp_center1
+path_walk = camp_center1_task
+radius = 2.2 
+on_timer = 120000 | walker@generators_orly
+
+[logic@generators_orly_kamp1]
+active = kamp1@generators_orly
+
+[kamp1@generators_orly]
+center_point  = camp_center1
+path_walk = camp_center1_task
+radius = 2.2
+on_timer = 90000 | kamp7@generators_orly
+
+[kamp7@generators_orly]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.2
+on_timer = 90000 | kamp1@generators_orly
+
+[logic@generators_orly_walker2]
+active = walker2@generators_orly
+
+[walker2@generators_orly]
+path_walk = orel2_walk
+path_look = orel2_look
+on_timer = 100000 | kamp8@generators_orly
+
+[kamp8@generators_orly]
+center_point  = camp_center1
+path_walk = camp_center1_task
+radius = 2.2
+on_timer = 90000 | walker2@generators_orly
+
+[logic@generators_orly_walker3]
+active = walker3@generators_orly
+
+[walker3@generators_orly]
+path_walk = orel3_walk
+path_look = orel3_look
+on_timer = 100000 | kamp9@generators_orly
+
+[kamp9@generators_orly]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.2
+on_timer = 100000 | walker4@generators_orly
+
+[logic@generators_orly_walker4]
+active = walker4@generators_orly
+
+[walker4@generators_orly]
+path_walk = orel4_walk
+path_look = orel4_look
+on_timer = 100000 | kamp10@generators_orly
+
+[kamp10@generators_orly]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.2
+on_timer = 100000 | walker3@generators_orly
+
+[logic@generators_orly_kamp5]
+active = kamp5@generators_orly
+
+[kamp5@generators_orly]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.2
+on_timer = 120000 | kamp11@generators_orly
+
+[kamp11@generators_orly]
+center_point  = camp_center1
+path_walk = camp_center1_task
+radius = 2.2
+on_timer = 110000 | kamp5@generators_orly
+
+[logic@generators_orly_kamp6]
+active = kamp6@generators_orly
+
+[kamp6@generators_orly]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.2
+
+;-- Чёрные сталкеры
+[logic@black_generators_walker1]
+active = walker1@black_generators
+
+[walker1@black_generators]
+path_walk = profi1_walk
+path_look = profi1_look
+meet = no_meet
+
+[logic@black_generators_walker2]
+active = walker2@black_generators
+
+[walker2@black_generators]
+path_walk = profi2_walk
+path_look = profi2_look
+meet = no_meet
+
+[logic@black_generators_walker3]
+active = walker3@black_generators
+
+[walker3@black_generators]
+path_walk = profi3_walk
+path_look = profi3_look
+meet = no_meet
+
+[logic@black_generators_walker4]
+active = walker4@black_generators
+
+[walker4@black_generators]
+path_walk = profi4_walk
+path_look = profi4_look
+meet = no_meet
+
+[logic@black_generators_walker5]
+active = walker5@black_generators
+
+[walker5@black_generators]
+path_walk = profi5_walk
+path_look = profi5_look
+meet = no_meet
+
+[logic@black_generators_walker6]
+active = walker6@black_generators
+
+[walker6@black_generators]
+path_walk = profi6_walk
+path_look = profi6_look
+meet = no_meet
+
+[logic@black_generators_walker7]
+active = walker7@black_generators
+
+[walker7@black_generators]
+path_walk = profi7_walk
+path_look = profi7_look
+meet = no_meet
+
+[logic@black_generators_walker8]
+active = walker8@black_generators
+
+[walker8@black_generators]
+path_walk = profi8_walk
+path_look = profi8_look
+meet = no_meet
+
+[logic@black_generators_walker9]
+active = walker9@black_generators
+
+[walker9@black_generators]
+path_walk = profi9_walk
+path_look = profi9_look
+meet = no_meet
+
+[logic@black_generators_walker10]
+active = walker10@black_generators
+
+[walker10@black_generators]
+path_walk = profi10_walk
+path_look = profi10_look
+meet = no_meet
+
+;-- Свободовцы
+[logic@generators_svoboda_walker1]
+active = walker1@generators_svoboda
+
+[walker1@generators_svoboda]
+path_walk = anarhist1_walk
+path_look = anarhist1_look
+on_timer = 70000 | kamp1@generators_svoboda
+
+[kamp1@generators_svoboda]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0 
+on_timer = 80000 | walker1@generators_svoboda
+
+[logic@generators_svoboda_walker2]
+active = walker2@generators_svoboda
+
+[walker2@generators_svoboda]
+path_walk = anarhis2_walk
+path_look = anarhist2_look
+on_timer = 65000 | kamp2@generators_svoboda
+
+[kamp2@generators_svoboda]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0
+on_timer = 95000 | walker2@generators_svoboda
+
+[logic@generators_svoboda_kamp3]
+active = kamp3@generators_svoboda
+
+[kamp3@generators_svoboda]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0
+
+[logic@generators_svoboda_kamp4]
+active = kamp4@generators_svoboda
+
+[kamp4@generators_svoboda]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0
+
+;-- Свиньи
+[logic@generators_flesh1]
+active = mob_home@generators_flesh1
+
+[mob_home@generators_flesh1]
+path_home = home
+home_min_radius = 35
+home_max_radius = 50
+
+;-- Псевдогигант
+[logic@generators_gigant]
+active = mob_home@generators_gigant
+
+[mob_home@generators_gigant]
+path_home = home
+home_min_radius = 25
+home_max_radius = 40
+
+;-- Тушканы
+[logic@generators_tushkano]
+active = mob_home@generators_tushkano
+
+[mob_home@generators_tushkano]
+path_home = home
+home_min_radius = 30
+home_max_radius = 40
+
+;-- Кабаны
+[logic@generators_kaban]
+active = mob_home@generators_kaban
+
+[mob_home@generators_kaban]
+path_home = home
+home_min_radius = 30
+home_max_radius = 50
+
+;-- Снорки
+[logic@generators_snork]
+active = mob_home@generators_snork
+
+[mob_home@generators_snork]
+path_home = home
+home_min_radius = 25
+home_max_radius = 40
+
+;-- Кабаны с поросятами
+[logic@gener_kaban_two]
+active = mob_home@gener_kaban_two
+
+[mob_home@gener_kaban_two]
+path_home = home
+home_min_radius = 30
+home_max_radius = 50
+
+;-- Химеры
+[logic@generators_chimera]
+active = mob_home@generators_chimera
+
+[mob_home@generators_chimera]
+path_home = home
+home_min_radius = 40
+home_max_radius = 60
+
+;-- Крысоволки
+[logic@gen_ratlike_home1]
+active = mob_home1@gen_ratlike
+
+[mob_home1@gen_ratlike]
+path_home = home1
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@gen_ratlike_home2]
+active = mob_home2@gen_ratlike
+
+[mob_home2@gen_ratlike]
+path_home = home2
+home_min_radius = 20
+home_max_radius = 50
+
+[logic@gen_ratlike_home3]
+active = mob_home3@gen_ratlike
+
+[mob_home3@gen_ratlike]
+path_home = home3
+home_min_radius = 20
+home_max_radius = 50
+

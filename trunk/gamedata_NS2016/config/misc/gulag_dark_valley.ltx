@@ -1,0 +1,1208 @@
+;--' Кровосос Сидора
+[logic@val_smart_bloodsucker_lair_2_home]
+active = mob_home@val_smart_bloodsucker_lair_2
+
+[mob_home@val_smart_bloodsucker_lair_2]
+path_home = home
+home_min_radius = 15
+home_max_radius = 50
+
+;--' Снорки Бармена
+[logic@val_snork_lair_1_home1]
+active = mob_home1@val_snork_lair_1
+
+[mob_home1@val_snork_lair_1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@val_snork_lair_1_home2]
+active = mob_home2@val_snork_lair_1
+
+[mob_home2@val_snork_lair_1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+;--' Кабаны и свинки
+[logic@val_boar_flesh_home1]
+active = mob_home1@val_boar_flesh
+
+[mob_home1@val_boar_flesh]
+path_home = home1
+home_min_radius = 25
+home_max_radius = 60
+
+[logic@val_boar_flesh_home2]
+active = mob_home2@val_boar_flesh
+
+[mob_home2@val_boar_flesh]
+path_home = home2
+home_min_radius = 25
+home_max_radius = 60
+
+[logic@val_boar_flesh_home3]
+active = mob_home3@val_boar_flesh
+
+[mob_home3@val_boar_flesh]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 60
+
+;--' Химеры
+[logic@val_chimera_home]
+active = mob_home@val_chimera
+
+[mob_home@val_chimera]
+path_home = home
+home_min_radius = 15
+home_max_radius = 50
+
+;--' Слепыши
+[logic@val_dog_home1]
+active = mob_home1@val_dog
+
+[mob_home1@val_dog]
+path_home = home1
+home_min_radius = 25
+home_max_radius = 70
+
+[logic@val_dog_home2]
+active = mob_home2@val_dog
+
+[mob_home2@val_dog]
+path_home = home2
+home_min_radius = 25
+home_max_radius = 70
+
+[logic@val_dog_home3]
+active = mob_home3@val_dog
+
+[mob_home3@val_dog]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 70
+
+[logic@val_dog_home4]
+active = mob_home4@val_dog
+
+[mob_home4@val_dog]
+path_home = home4
+home_min_radius = 15
+home_max_radius = 70
+
+;--' Логово кровососов
+[logic@val_bloodsucker_home]
+active = mob_home@val_bloodsucker
+
+[mob_home@val_bloodsucker]
+path_home = home
+home_min_radius = 15
+home_max_radius = 50
+
+;--' Зомби
+[logic@val_zombie_home]
+active = mob_home@val_zombie
+
+[mob_home@val_zombie]
+path_home = home
+home_min_radius = 15
+home_max_radius = 30
+
+;--' Тушканы
+[logic@val_tushkano_home1]
+active = mob_home1@val_tushkano
+
+[mob_home1@val_tushkano]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@val_tushkano_home2]
+active = mob_home2@val_tushkano
+
+[mob_home2@val_tushkano]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@val_tushkano_home3]
+active = mob_home3@val_tushkano
+
+[mob_home3@val_tushkano]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@val_tushkano_home4]
+active = mob_home4@val_tushkano
+
+[mob_home4@val_tushkano]
+path_home = home4
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@val_tushkano_home5]
+active = mob_home5@val_tushkano
+
+[mob_home5@val_tushkano]
+path_home = home5
+home_min_radius = 15
+home_max_radius = 40
+
+;--' Псевдопсы
+[logic@val_pseudodog_home]
+active = mob_home@val_pseudodog
+
+[mob_home@val_pseudodog]
+path_home = home
+home_min_radius = 15
+home_max_radius = 60
+
+;--' Бандиты на фабрике, 0 состояние
+[logic@val_bandit_fabrika_kamp]
+active = kamp@val_bandit_fabrika_kamp
+combat_ignore = combat_ignore
+
+[kamp@val_bandit_fabrika_kamp]
+center_point  = kamp
+path_walk = kamp_task
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker1]
+active = walker1@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker1@val_bandit_fabrika]
+path_walk = walk1
+path_look = look1
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker2]
+active = walker2@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker2@val_bandit_fabrika]
+path_walk = walk2
+;path_look = look2
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker3]
+active = walker3@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker3@val_bandit_fabrika]
+path_walk = walk3
+path_look = look3
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker4]
+active = walker4@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker4@val_bandit_fabrika]
+path_walk = walk4
+path_look = look4
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker5]
+active = walker5@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker5@val_bandit_fabrika]
+path_walk = walk5
+;path_look = look5
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker6]
+active = walker6@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker6@val_bandit_fabrika]
+path_walk = walk6
+path_look = look6
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker7]
+active = walker7@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker7@val_bandit_fabrika]
+path_walk = walk7
+path_look = look7
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker8]
+active = walker8@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker8@val_bandit_fabrika]
+path_walk = walk8
+path_look = look8
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker9]
+active = walker9@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker9@val_bandit_fabrika]
+path_walk = walk9
+path_look = look9
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker10]
+active = walker10@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker10@val_bandit_fabrika]
+path_walk = walk10
+path_look = look10
+combat_ignore_cond = {=check_fighting(422)}
+
+[logic@val_bandit_fabrika_walker11]
+active = walker11@val_bandit_fabrika
+combat_ignore = combat_ignore
+
+[walker11@val_bandit_fabrika]
+path_walk = walk11
+path_look = look11
+combat_ignore_cond = {=check_fighting(422)}
+
+;--' Бандиты на фабрике, 1 состояние
+[logic@val_bandit_fabrika_kamp2]
+active = kamp@val_bandit_fabrika_kamp2
+
+[kamp@val_bandit_fabrika_kamp2]
+center_point  = kamp2
+path_walk = kamp2_task
+
+[logic@val_bandit_fabrika_kamp3]
+active = kamp@val_bandit_fabrika_kamp3
+
+[kamp@val_bandit_fabrika_kamp3]
+center_point  = kamp3
+path_walk = kamp3_task
+
+[logic@val_bandit_fabrika_walker12]
+active = walker12@val_bandit_fabrika
+
+[walker12@val_bandit_fabrika]
+path_walk = walk12
+path_look = look12
+
+[logic@val_bandit_fabrika_walker13]
+active = walker13@val_bandit_fabrika
+
+[walker13@val_bandit_fabrika]
+path_walk = walk13
+;path_look = look13
+
+[logic@val_bandit_fabrika_walker14]
+active = walker14@val_bandit_fabrika
+
+[walker14@val_bandit_fabrika]
+path_walk = walk14
+path_look = look14
+
+[logic@val_bandit_fabrika_walker15]
+active = walker15@val_bandit_fabrika
+
+[walker15@val_bandit_fabrika]
+path_walk = walk15
+path_look = look15
+
+[logic@val_bandit_fabrika_walker16]
+active = walker16@val_bandit_fabrika
+
+[walker16@val_bandit_fabrika]
+path_walk = walk16
+;path_look = look16
+
+[logic@val_bandit_fabrika_sleeper1]
+active = sleeper1@val_bandit_fabrika
+
+[sleeper1@val_bandit_fabrika]
+path_main = sleep1
+wakeable = false
+
+;--' Бандиты на ферме
+[logic@val_bandit_ferma_kamp1]
+active = kamp@val_bandit_ferma_kamp1
+
+[kamp@val_bandit_ferma_kamp1]
+center_point  = kamp1
+path_walk = kamp1_task
+
+[logic@val_bandit_ferma_kamp2]
+active = kamp@val_bandit_ferma_kamp2
+
+[kamp@val_bandit_ferma_kamp2]
+center_point  = kamp2
+path_walk = kamp2_task
+
+[logic@val_bandit_ferma_walker1]
+active = walker1@val_bandit_ferma
+
+[walker1@val_bandit_ferma]
+path_walk = walk1
+path_look = look1
+
+[logic@val_bandit_ferma_walker2]
+active = walker2@val_bandit_ferma
+
+[walker2@val_bandit_ferma]
+path_walk = walk2
+path_look = look2
+
+[logic@val_bandit_ferma_walker3]
+active = walker3@val_bandit_ferma
+
+[walker3@val_bandit_ferma]
+path_walk = walk3
+path_look = look3
+
+[logic@val_bandit_ferma_walker4]
+active = walker4@val_bandit_ferma
+
+[walker4@val_bandit_ferma]
+path_walk = walk4
+path_look = look4
+
+[logic@val_bandit_ferma_walker5]
+active = walker5@val_bandit_ferma
+
+[walker5@val_bandit_ferma]
+path_walk = walk5
+path_look = look5
+
+[logic@val_bandit_ferma_walker6]
+active = walker6@val_bandit_ferma
+
+[walker6@val_bandit_ferma]
+path_walk = walk6
+path_look = look6
+
+[logic@val_bandit_ferma_walker7]
+active = walker7@val_bandit_ferma
+
+[walker7@val_bandit_ferma]
+path_walk = walk7
+path_look = look7
+
+[logic@val_bandit_ferma_walker8]
+active = walker8@val_bandit_ferma
+
+[walker8@val_bandit_ferma]
+path_walk = walk8
+;path_look = look8
+
+[logic@val_bandit_ferma_walker9]
+active = walker9@val_bandit_ferma
+
+[walker9@val_bandit_ferma]
+path_walk = walk9
+;path_look = look9
+
+[logic@val_bandit_ferma_walker10]
+active = walker10@val_bandit_ferma
+
+[walker10@val_bandit_ferma]
+path_walk = walk10
+path_look = look10
+
+;--' Бандиты на базе
+[logic@val_lager_bandits_camper1]
+active = camper1@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper1@val_lager_bandits]
+path_walk = walk1
+path_look = look1
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper2]
+active = camper2@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper2@val_lager_bandits]
+path_walk = walk2
+path_look = look2
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper3]
+active = camper3@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper3@val_lager_bandits]
+path_walk = walk3
+path_look = look3
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper4]
+active = camper4@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper4@val_lager_bandits]
+path_walk = walk4
+path_look = look4
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper5]
+active = camper5@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper5@val_lager_bandits]
+path_walk = walk5
+path_look = look5
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper6]
+active = camper6@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper6@val_lager_bandits]
+path_walk = walk6
+path_look = look6
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper7]
+active = camper7@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper7@val_lager_bandits]
+path_walk = walk7
+path_look = look7
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper8]
+active = camper8@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper8@val_lager_bandits]
+path_walk = walk8
+path_look = look8
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper9]
+active = camper9@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper9@val_lager_bandits]
+path_walk = walk9
+path_look = look9
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper10]
+active = camper10@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper10@val_lager_bandits]
+path_walk = walk10
+path_look = look10
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper11]
+active = camper11@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper11@val_lager_bandits]
+path_walk = walk11
+path_look = look11
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper12]
+active = camper12@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper12@val_lager_bandits]
+path_walk = walk12
+path_look = look12
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper13]
+active = camper13@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper13@val_lager_bandits]
+path_walk = walk13
+path_look = look13
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper14]
+active = camper14@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper14@val_lager_bandits]
+path_walk = walk14
+path_look = look14
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper15]
+active = camper15@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper15@val_lager_bandits]
+path_walk = walk15
+path_look = look15
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper16]
+active = camper16@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper16@val_lager_bandits]
+path_walk = walk16
+path_look = look16
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper17]
+active = camper17@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper17@val_lager_bandits]
+path_walk = walk17
+path_look = look17
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper18]
+active = camper18@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper18@val_lager_bandits]
+path_walk = walk18
+path_look = look18
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper19]
+active = camper19@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper19@val_lager_bandits]
+path_walk = walk19
+path_look = look19
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper20]
+active = camper20@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper20@val_lager_bandits]
+path_walk = walk20
+path_look = look20
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper21]
+active = camper21@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper21@val_lager_bandits]
+path_walk = walk21
+path_look = look21
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper22]
+active = camper22@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper22@val_lager_bandits]
+path_walk = walk22
+path_look = look22
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper23]
+active = camper23@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper23@val_lager_bandits]
+path_walk = walk23
+path_look = look23
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper24]
+active = camper24@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper24@val_lager_bandits]
+path_walk = walk24
+path_look = look24
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper25]
+active = camper25@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper25@val_lager_bandits]
+path_walk = walk25
+path_look = look25
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper26]
+active = camper26@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper26@val_lager_bandits]
+path_walk = walk26
+path_look = look26
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper27]
+active = camper27@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper27@val_lager_bandits]
+path_walk = walk27
+path_look = look27
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper28]
+active = camper28@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper28@val_lager_bandits]
+path_walk = walk28
+path_look = look28
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper29]
+active = camper29@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper29@val_lager_bandits]
+path_walk = walk29
+path_look = look29
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper01]
+active = camper01@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper01@val_lager_bandits]
+path_walk = walk01
+path_look = look01
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper02]
+active = camper02@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper02@val_lager_bandits]
+path_walk = walk02
+path_look = look02
+combat_ignore_cond = {=check_fighting(400:402)}
+
+[logic@val_lager_bandits_camper03]
+active = camper03@val_lager_bandits
+combat_ignore = combat_ignore
+
+[camper03@val_lager_bandits]
+path_walk = walk03
+path_look = look03
+combat_ignore_cond = {=check_fighting(400:402)}
+
+;--' Бандиты на базе, постоянный гулаг
+[logic@val_baza_bandits_kamp1]
+active = kamp@val_baza_bandits_kamp1
+
+[kamp@val_baza_bandits_kamp1]
+center_point  = kamp1
+path_walk = kamp1_task
+
+[logic@val_baza_bandits_kamp2]
+active = kamp@val_baza_bandits_kamp2
+
+[kamp@val_baza_bandits_kamp2]
+center_point  = kamp2
+path_walk = kamp2_task
+
+[logic@val_baza_bandits_kamp3]
+active = kamp@val_baza_bandits_kamp3
+
+[kamp@val_baza_bandits_kamp3]
+center_point  = kamp3
+path_walk = kamp3_task
+
+[logic@val_baza_bandits_kamp4]
+active = kamp@val_baza_bandits_kamp4
+
+[kamp@val_baza_bandits_kamp4]
+center_point  = kamp4
+path_walk = kamp4_task
+
+[logic@val_baza_bandits_walker1]
+active = walker1@val_baza_bandits
+
+[walker1@val_baza_bandits]
+path_walk = walk1
+path_look = look1
+
+[logic@val_baza_bandits_walker2]
+active = walker2@val_baza_bandits
+
+[walker2@val_baza_bandits]
+path_walk = walk2
+path_look = look2
+
+[logic@val_baza_bandits_walker3]
+active = walker3@val_baza_bandits
+
+[walker3@val_baza_bandits]
+path_walk = walk3
+;path_look = look3
+
+[logic@val_baza_bandits_walker4]
+active = walker4@val_baza_bandits
+
+[walker4@val_baza_bandits]
+path_walk = walk4
+;path_look = look4
+
+[logic@val_baza_bandits_walker5]
+active = walker5@val_baza_bandits
+
+[walker5@val_baza_bandits]
+path_walk = walk5
+path_look = look5
+
+[logic@val_baza_bandits_walker6]
+active = walker6@val_baza_bandits
+
+[walker6@val_baza_bandits]
+path_walk = walk6
+path_look = look6
+
+[logic@val_baza_bandits_walker7]
+active = walker7@val_baza_bandits
+
+[walker7@val_baza_bandits]
+path_walk = walk7
+path_look = look7
+
+[logic@val_baza_bandits_walker8]
+active = walker8@val_baza_bandits
+
+[walker8@val_baza_bandits]
+path_walk = walk8
+path_look = look8
+
+[logic@val_baza_bandits_walker9]
+active = walker9@val_baza_bandits
+
+[walker9@val_baza_bandits]
+path_walk = walk9
+path_look = look9
+
+[logic@val_baza_bandits_walker10]
+active = walker10@val_baza_bandits
+
+[walker10@val_baza_bandits]
+path_walk = walk10
+path_look = look10
+
+[logic@val_baza_bandits_walker11]
+active = walker11@val_baza_bandits
+
+[walker11@val_baza_bandits]
+path_walk = walk11
+path_look = look11
+
+[logic@val_baza_bandits_walker12]
+active = walker12@val_baza_bandits
+
+[walker12@val_baza_bandits]
+path_walk = walk12
+;path_look = look12
+
+[logic@val_baza_bandits_walker13]
+active = walker13@val_baza_bandits
+
+[walker13@val_baza_bandits]
+path_walk = walk13
+path_look = look13
+
+[logic@val_baza_bandits_walker14]
+active = walker14@val_baza_bandits
+
+[walker14@val_baza_bandits]
+path_walk = walk14
+path_look = look14
+
+[logic@val_baza_bandits_walker15]
+active = walker15@val_baza_bandits
+
+[walker15@val_baza_bandits]
+path_walk = walk15
+path_look = look15
+
+[logic@val_baza_bandits_walker16]
+active = walker16@val_baza_bandits
+
+[walker16@val_baza_bandits]
+path_walk = walk16
+;path_look = look16
+
+[logic@val_baza_bandits_sleeper1]
+active = sleeper1@val_baza_bandits
+
+[sleeper1@val_baza_bandits]
+path_main = sleep1
+wakeable = false
+
+[logic@val_baza_bandits_sleeper2]
+active = sleeper2@val_baza_bandits
+
+[sleeper2@val_baza_bandits]
+path_main = sleep2
+wakeable = false
+
+;--' Рейд спецназа
+[logic@val_raid_soldiers_camper1]
+active = camper1@val_raid_soldiers
+
+[camper1@val_raid_soldiers]
+path_walk = walk1
+path_look = look1
+
+[logic@val_raid_soldiers_camper2]
+active = camper2@val_raid_soldiers
+
+[camper2@val_raid_soldiers]
+path_walk = walk2
+path_look = look2
+
+[logic@val_raid_soldiers_camper3]
+active = camper3@val_raid_soldiers
+
+[camper3@val_raid_soldiers]
+path_walk = walk3
+path_look = look3
+
+[logic@val_raid_soldiers_camper4]
+active = camper4@val_raid_soldiers
+
+[camper4@val_raid_soldiers]
+path_walk = walk4
+path_look = look4
+
+[logic@val_raid_soldiers_camper5]
+active = camper5@val_raid_soldiers
+
+[camper5@val_raid_soldiers]
+path_walk = walk5
+path_look = look5
+
+[logic@val_raid_soldiers_camper6]
+active = camper6@val_raid_soldiers
+
+[camper6@val_raid_soldiers]
+path_walk = walk6
+path_look = look6
+
+[logic@val_raid_soldiers_camper7]
+active = camper7@val_raid_soldiers
+
+[camper7@val_raid_soldiers]
+path_walk = walk7
+path_look = look7
+
+[logic@val_raid_soldiers_camper8]
+active = camper8@val_raid_soldiers
+
+[camper8@val_raid_soldiers]
+path_walk = walk8
+path_look = look8
+
+[logic@val_raid_soldiers_camper9]
+active = camper9@val_raid_soldiers
+
+[camper9@val_raid_soldiers]
+path_walk = walk9
+path_look = look9
+
+[logic@val_raid_soldiers_camper10]
+active = camper10@val_raid_soldiers
+
+[camper10@val_raid_soldiers]
+path_walk = walk10
+path_look = look10
+
+[logic@val_raid_soldiers_camper11]
+active = camper11@val_raid_soldiers
+
+[camper11@val_raid_soldiers]
+path_walk = walk11
+path_look = look11
+
+[logic@val_raid_soldiers_camper12]
+active = camper12@val_raid_soldiers
+
+[camper12@val_raid_soldiers]
+path_walk = walk12
+path_look = look12
+
+[logic@val_raid_soldiers_camper13]
+active = camper13@val_raid_soldiers
+
+[camper13@val_raid_soldiers]
+path_walk = walk13
+path_look = look13
+
+[logic@val_raid_soldiers_camper14]
+active = camper14@val_raid_soldiers
+
+[camper14@val_raid_soldiers]
+path_walk = walk14
+path_look = look14
+
+[logic@val_raid_soldiers_camper15]
+active = camper15@val_raid_soldiers
+
+[camper15@val_raid_soldiers]
+path_walk = walk15
+path_look = look15
+
+[logic@val_raid_soldiers_camper16]
+active = camper16@val_raid_soldiers
+
+[camper16@val_raid_soldiers]
+path_walk = walk16
+path_look = look16
+
+[logic@val_raid_soldiers_camper17]
+active = camper17@val_raid_soldiers
+
+[camper17@val_raid_soldiers]
+path_walk = walk17
+path_look = look17
+
+[logic@val_raid_soldiers_camper18]
+active = camper18@val_raid_soldiers
+
+[camper18@val_raid_soldiers]
+path_walk = walk18
+path_look = look18
+
+;--' Рейд спецназа на выходе на свалку
+[logic@val_exit_raid_soldiers_camper1]
+active = camper1@val_exit_raid_soldiers
+
+[camper1@val_exit_raid_soldiers]
+path_walk = walk1
+path_look = look1
+
+[logic@val_exit_raid_soldiers_camper2]
+active = camper2@val_exit_raid_soldiers
+
+[camper2@val_exit_raid_soldiers]
+path_walk = walk2
+path_look = look2
+
+[logic@val_exit_raid_soldiers_camper3]
+active = camper3@val_exit_raid_soldiers
+
+[camper3@val_exit_raid_soldiers]
+path_walk = walk3
+path_look = look3
+
+[logic@val_exit_raid_soldiers_camper4]
+active = camper4@val_exit_raid_soldiers
+
+[camper4@val_exit_raid_soldiers]
+path_walk = walk4
+path_look = look4
+
+[logic@val_exit_raid_soldiers_camper5]
+active = camper5@val_exit_raid_soldiers
+
+[camper5@val_exit_raid_soldiers]
+path_walk = walk5
+path_look = look5
+
+[logic@val_exit_raid_soldiers_camper6]
+active = camper6@val_exit_raid_soldiers
+
+[camper6@val_exit_raid_soldiers]
+path_walk = walk6
+path_look = look6
+
+[logic@val_exit_raid_soldiers_camper7]
+active = camper7@val_exit_raid_soldiers
+
+[camper7@val_exit_raid_soldiers]
+path_walk = walk7
+path_look = look7
+
+;--' Долговцы
+[logic@val_dolg_kamp]
+active = kamp@val_dolg_kamp
+
+[kamp@val_dolg_kamp]
+center_point  = kamp
+path_walk = kamp_task
+
+[logic@val_dolg_walker1]
+active = walker1@val_dolg
+
+[walker1@val_dolg]
+path_walk = walk1
+path_look = look1
+
+[logic@val_dolg_walker2]
+active = walker2@val_dolg
+
+[walker2@val_dolg]
+path_walk = walk2
+path_look = look2
+
+[logic@val_dolg_walker3]
+active = walker3@val_dolg
+
+[walker3@val_dolg]
+path_walk = walk3
+path_look = look3
+
+[logic@val_dolg_walker4]
+active = walker4@val_dolg
+
+[walker4@val_dolg]
+path_walk = walk4
+path_look = look4
+
+[logic@val_dolg_walker5]
+active = walker5@val_dolg
+
+[walker5@val_dolg]
+path_walk = walk5
+path_look = look5
+
+;--' Снайпера на базе бандитов
+[logic@val_lager_sniper_camper1]
+active = camper1@val_lager_sniper
+
+[camper1@val_lager_sniper]
+path_walk = walk1
+path_look = look1
+sniper = true
+def_state_campering = threat
+def_state_campering_fire = threat_sniper_fire
+
+[logic@val_lager_sniper_camper2]
+active = camper2@val_lager_sniper
+
+[camper2@val_lager_sniper]
+path_walk = walk2
+path_look = look2
+sniper = true
+def_state_campering = threat
+def_state_campering_fire = threat_sniper_fire
+
+[logic@val_lager_sniper_camper3]
+active = camper3@val_lager_sniper
+
+[camper3@val_lager_sniper]
+path_walk = walk3
+path_look = look3
+sniper = true
+def_state_campering = threat
+def_state_campering_fire = threat_sniper_fire
+
+[logic@val_lager_sniper_camper4]
+active = camper4@val_lager_sniper
+
+[camper4@val_lager_sniper]
+path_walk = walk4
+path_look = look4
+sniper = true
+def_state_campering = threat
+def_state_campering_fire = threat_sniper_fire
+
+[logic@val_lager_sniper_camper5]
+active = camper5@val_lager_sniper
+
+[camper5@val_lager_sniper]
+path_walk = walk5
+path_look = look5
+sniper = true
+def_state_campering = threat
+def_state_campering_fire = threat_sniper_fire
+
+[logic@val_lager_sniper_camper6]
+active = camper6@val_lager_sniper
+
+[camper6@val_lager_sniper]
+path_walk = walk6
+path_look = look6
+sniper = true
+def_state_campering = threat
+def_state_campering_fire = threat_sniper_fire
+
+;--' Наёмники Блэнда
+[logic@val_bland_killer_walker1]
+active = walker1@val_bland_killer
+
+[walker1@val_bland_killer]
+path_walk = walk1
+path_look = look1
+
+[logic@val_bland_killer_walker2]
+active = walker2@val_bland_killer
+
+[walker2@val_bland_killer]
+path_walk = walk2
+path_look = look2
+
+[logic@val_bland_killer_walker3]
+active = walker3@val_bland_killer
+
+[walker3@val_bland_killer]
+path_walk = walk3
+path_look = look3
+
+[logic@val_bland_killer_walker4]
+active = walker4@val_bland_killer
+
+[walker4@val_bland_killer]
+path_walk = walk4
+path_look = look4
+
+[logic@val_bland_killer_walker5]
+active = walker5@val_bland_killer
+
+[walker5@val_bland_killer]
+path_walk = walk5
+path_look = look5
+
+[logic@val_bland_killer_walker6]
+active = walker6@val_bland_killer
+
+[walker6@val_bland_killer]
+path_walk = walk6
+path_look = look6
+
+[logic@val_bland_killer_walker7]
+active = walker7@val_bland_killer
+
+[walker7@val_bland_killer]
+path_walk = walk7
+path_look = look7
+
+[logic@val_bland_killer_walker8]
+active = walker8@val_bland_killer
+
+[walker8@val_bland_killer]
+path_walk = walk8
+path_look = look8
+
+[logic@val_bland_killer_walker9]
+active = walker9@val_bland_killer
+
+[walker9@val_bland_killer]
+path_walk = walk9
+path_look = look9
+
+[logic@val_bland_killer_walker10]
+active = walker10@val_bland_killer
+
+[walker10@val_bland_killer]
+path_walk = walk10
+path_look = look10
+

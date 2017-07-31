@@ -1,0 +1,47 @@
+[logic]
+active = {-sos_say_tri_start} walker, kamp
+on_death = death
+
+[walker]
+path_walk = zat_sosolov_walk
+path_look = zat_sosolov_look
+on_timer = 9000 | remark@anim
+
+[remark@anim]
+anim = dynamite
+snd = nil
+;target = actor 
+combat_ignore_cond = always
+on_signal = anim_end | walker1
+on_timer = 10000 | walker1
+meet = no_meet
+
+[walker1]
+path_walk = zat_sosolov1_walk
+path_look = zat_sosolov1_look
+on_info = {+sos_say_tri_start} kamp
+meet = meet
+danger = danger_ignore
+
+[kamp]
+center_point = krovososolov_camp_center
+path_walk = krovososolov_camp_center_task
+radius = 2.4
+meet = meet
+danger = danger_ignore
+;on_timer = 200000 | kamp1
+
+[death]
+on_info = %+sos_dead%
+
+[danger_ignore]
+ignore_distance = 0
+ignore_distance_corpse	= 0
+ignore_distance_hit	 = 20
+ignore_distance_sound	= 0
+danger_inertion_time_ricochet = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true

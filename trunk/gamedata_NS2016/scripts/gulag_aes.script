@@ -1,0 +1,299 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+	 
+	-- Собаки
+	if type == "aes_dog1" then
+		--' 10 работ
+		for t = 1, 3 do
+			t = {section = "logic@aes_dog1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@aes_dog1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@aes_dog1_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "aes_dog2" then
+		--' 15 работ
+		for t = 1, 5 do
+			t = {section = "logic@aes_dog2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@aes_dog2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@aes_dog2_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Тушканы
+	if type == "aes_tushkano" then
+		--' 15 работ
+		for t = 1, 3 do
+			t = {section = "logic@aes_tushkano_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@aes_tushkano_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@aes_tushkano_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@aes_tushkano_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@aes_tushkano_home5", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Крысы
+	if type == "aes_rat1" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@aes_rat1_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "aes_rat2" then
+		--' 20 работ
+		for t = 1, 4 do
+			t = {section = "logic@aes_rat2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@aes_rat2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@aes_rat2_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@aes_rat2_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@aes_rat2_home5", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Химеры
+	if type == "aes_chimera1" then
+		--' 5 работ
+		for t = 1, 2 do
+			t = {section = "logic@aes_chimera1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 1 do
+			t = {section = "logic@aes_chimera1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@aes_chimera1_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Псевдогиганты
+	if type == "aes_pseudo_gigant" then
+		--' 4 работы
+		for t = 1, 2 do
+			t = {section = "logic@aes_pseudo_gigant_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@aes_pseudo_gigant_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Псевдособаки
+	if type == "aes_pseudodog" then
+		--' 8 работ
+		for t = 1, 4 do
+			t = {section = "logic@aes_pseudodog_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@aes_pseudodog_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Изломы
+	if type == "aes_fracture" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@aes_fracture_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+---'''' Гулаги с переменным состоянием ''''---
+
+end
+
+function load_states(gname,type)
+
+	if type == "aes_dog1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes_dog2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes_tushkano" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes_rat1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes_rat2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes_chimera1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes_pseudo_gigant" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes_pseudodog" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "aes_fracture" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+   end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+      if gulag_type == "aes_dog1" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "aes_dog2" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "aes_tushkano" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "aes_rat1" then
+		return npc_community == "rat"
+	end
+	if gulag_type == "aes_rat2" then
+		return npc_community == "rat"
+	end
+	if gulag_type == "aes_chimera1" then
+		return npc_community == "chimera"
+	end
+	if gulag_type == "aes_pseudo_gigant" then
+		return npc_community == "pseudo_gigant"
+	end
+	if gulag_type == "aes_pseudodog" then
+		return npc_community == "pseudodog"
+	end
+	if gulag_type == "aes_fracture" then
+		return npc_community == "fracture"
+	end
+
+	return false
+end

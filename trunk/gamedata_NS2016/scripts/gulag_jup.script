@@ -1,0 +1,731 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_jup]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+	-- Наёмники на заводе
+	if type == "jup_killer1" then
+		--' 14 работ
+		for i = 1, 14 do
+			t = {section = "logic@jup_killer1_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Наёмники 2 на заводе
+	if type == "jup_killer2" then
+		--' 16 работ
+		for i = 1, 16 do
+			t = {section = "logic@jup_killer2_walker"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Вояки
+	if type == "jup_military" then
+		--' 8 работ
+		for i = 1, 6 do
+			t = {section = "logic@jup_military_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_military_sleeper"..i, idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "jup_military2" then
+		--' 8 работ
+		for i = 1, 4 do
+			t = {section = "logic@jup_military2_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 4 do
+			t = {section = "logic@jup_military2_kamp", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "jup_military3" then
+		--' 9 работ
+		for i = 1, 3 do
+			t = {section = "logic@jup_military3_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@jup_military3_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@jup_military3_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "jup_military4" then
+		--' 12 работ
+		for i = 1, 12 do
+			t = {section = "logic@jup_military4_walker"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	 -- Бандиты
+	if type == "jup_bandit" then
+		--' 11 работ
+		for i = 1, 9 do
+			t = {section = "logic@jup_bandit_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_bandit_kamp", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "jup_bandit2" then
+		--' 15 работ
+		for i = 1, 13 do
+			t = {section = "logic@jup_bandit2_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_bandit2_sleeper"..i, idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	 -- Сталкеры
+	if type == "jup_stalker" then
+		--' 15 работ
+		for i = 1, 13 do
+			t = {section = "logic@jup_stalker_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_stalker_sleeper"..i, idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Костя на Юпитере
+	if type == "jup_kostya" then
+		-- 1 работа
+		t = {section = "logic@jup_kostya_walker", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	 -- Зомби
+	if type == "jup_zombie" then
+		--' 11 работ
+		for i = 1, 3 do
+			t = {section = "logic@jup_zombie_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_zombie_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_zombie_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 4 do
+			t = {section = "logic@jup_zombie_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	 -- Собаки
+	if type == "jup_dogs" then
+		--' 10 работ
+		for i = 1, 10 do
+			t = {section = "logic@jup_dogs_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "jup_dog_pseudodog" then
+		--' 10 работ
+		for i = 1, 10 do
+			t = {section = "logic@jup_dog_pseudodog_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	 -- Снорки
+	if type == "jup_snork" then
+		--' 15 работ
+		for i = 1, 4 do
+			t = {section = "logic@jup_snork_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_snork_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@jup_snork_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@jup_snork_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@jup_snork_home5", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "jup_snork2" then
+		--' 5 работ
+		for i = 1, 3 do
+			t = {section = "logic@jup_snork2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_snork2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "jup_snork3" then
+		--' 10 работ
+		for i = 1, 10 do
+			t = {section = "logic@jup_snork3_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	 -- Псевдогиганты
+	if type == "jup_gigant" then
+		--' 4 работы
+		for i = 1, 2 do
+			t = {section = "logic@jup_gigant_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_gigant_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	 -- Кровососы
+	if type == "jup_bloodsucker" then
+		--' 6 работ
+		for i = 1, 2 do
+			t = {section = "logic@jup_bloodsucker_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+		table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_bloodsucker_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@jup_bloodsucker_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Библиотекари
+	if type == "jup_bibliotekar" then
+		--' 2 работы
+		for i = 1, 2 do
+			t = {section = "logic@jup_bibliotekar_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кабаны и свинки
+	if type == "jup_boar" then
+		--' 7 работ
+		for i = 1, 7 do
+			t = {section = "logic@jup_boar_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Бюреры
+	if type == "jup_burer" then
+		--' 3 работы
+		for i = 1, 3 do
+			t = {section = "logic@jup_burer_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Тушканы
+	if type == "jup_tushkano" then
+		--' 7 работ
+		for i = 1, 7 do
+			t = {section = "logic@jup_tushkano_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 7 do
+			t = {section = "logic@jup_tushkano_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 5 do
+			t = {section = "logic@jup_tushkano_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Крысоволки
+	if type == "jup_ratlike" then
+		--' 12 работ
+		for i = 1, 4 do
+			t = {section = "logic@jup_ratlike_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 4 do
+			t = {section = "logic@jup_ratlike_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 4 do
+			t = {section = "logic@jup_ratlike_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "jup_ratlike2" then
+		--' 7 работ
+		for i = 1, 4 do
+			t = {section = "logic@jup_ratlike2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@jup_ratlike2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	 -- Химеры
+	if type == "jup_chimera" then
+		--' 5 работ
+		for i = 1, 2 do
+			t = {section = "logic@jup_chimera_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@jup_chimera_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Изломы
+	if type == "jup_fracture" then
+		--' 5 работ
+		for i = 1, 2 do
+			t = {section = "logic@jup_fracture_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@jup_fracture_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	 -- Контрик
+	if type == "jup_controller" then
+		--' 1 работа
+		t = {section = "logic@jup_controller_home", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	-- Ластоноги
+	if type == "jup_swamp" then
+		--' 6 работ
+		for i = 1, 6 do
+			t = {section = "logic@jup_swamp_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "jup_swamp2" then
+		--' 12 работ
+		for i = 1, 6 do
+			t = {section = "logic@jup_swamp2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 6 do
+			t = {section = "logic@jup_swamp2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Долговцы, охрана бункера учёных
+	if type == "jup_dolg" then
+		--' 5 работ
+		for i = 1, 3 do
+			t = {section = "logic@jup_dolg_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "jup_bunker_restrictor", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@jup_dolg_kamp", idle = 0, prior = 4, state = {0},
+				in_rest = "jup_bunker_restrictor", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+---'''' Гулаги с переменным состоянием ''''---
+
+end
+
+function load_states(gname,type)
+
+	if type == "jup_zombie" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_dogs" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_dog_pseudodog" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_killer1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_snork" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_snork2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_snork3" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_gigant" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_bloodsucker" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_bibliotekar" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_boar" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_burer" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_tushkano" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_ratlike" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_ratlike2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_killer2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_military" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_military2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_military3" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_military4" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_chimera" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_fracture" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_controller" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_bandit" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_bandit2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_stalker" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_kostya" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_swamp" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_swamp2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "jup_dolg" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	if gulag_type == "jup_killer1" then
+		return npc_community == "killer"
+	end
+	if gulag_type == "jup_killer2" then
+		return npc_community == "killer"
+	end
+	if gulag_type == "jup_military" then
+		return npc_community == "military"
+	end
+	if gulag_type == "jup_military2" then
+		return npc_community == "military"
+	end
+	if gulag_type == "jup_military3" then
+		return npc_community == "military"
+	end
+	if gulag_type == "jup_military4" then
+		return npc_community == "military"
+	end
+	if gulag_type == "jup_bandit" then
+		return npc_community == "bandit"
+	end
+	if gulag_type == "jup_bandit2" then
+		return npc_community == "bandit"
+	end
+	if gulag_type == "jup_stalker" then
+		return npc_community == "stalker"
+	end
+	if gulag_type == "jup_kostya" then
+		return npc_community == "stalker"
+	end
+	if gulag_type == "jup_dolg" then
+		return npc_community == "dolg"
+	end
+
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+	if gulag_type == "jup_zombie" then
+		return npc_community == "zombie"
+	end
+	if gulag_type == "jup_dogs" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "jup_dog_pseudodog" then
+		return npc_community == "dog" or npc_community == "pseudodog"
+	end
+	if gulag_type == "jup_snork" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "jup_snork2" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "jup_snork3" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "jup_gigant" then
+		return npc_community == "pseudo_gigant"
+	end
+	if gulag_type == "jup_bloodsucker" then
+		return npc_community == "bloodsucker"
+	end
+	if gulag_type == "jup_bibliotekar" then
+		return npc_community == "bibliotekar"
+	end
+	if gulag_type == "jup_boar" then
+		return npc_community == "boar"
+	end
+	if gulag_type == "jup_burer" then
+		return npc_community == "burer"
+	end
+	if gulag_type == "jup_tushkano" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "jup_ratlike" then
+		return npc_community == "ratlike"
+	end
+	if gulag_type == "jup_ratlike2" then
+		return npc_community == "ratlike"
+	end
+	if gulag_type == "jup_chimera" then
+		return npc_community == "chimera"
+	end
+	if gulag_type == "jup_fracture" then
+		return npc_community == "fracture"
+	end
+	if gulag_type == "jup_controller" then
+		return npc_community == "controller"
+	end
+	if gulag_type == "jup_swamp" then
+		return npc_community == "swamp"
+	end
+	if gulag_type == "jup_swamp2" then
+		return npc_community == "swamp"
+	end
+
+	return false
+end

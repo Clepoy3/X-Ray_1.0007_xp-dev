@@ -1,0 +1,15 @@
+--Vergas ogg-player
+snd_obj = {}
+snd_obj = xr_sound.get_safe_sound_object([[soundtrack\escape_theme]])
+function s_stop()
+	if snd_obj:playing()==true then 
+		snd_obj:stop() 
+	end
+end
+function s_play(path)
+s_stop()
+snd_obj = xr_sound.get_safe_sound_object(path)
+snd_obj:play_at_pos(db.actor, vector ():set (0, 0, 0), 0, sound_object.s2d)
+end
+
+-------------------

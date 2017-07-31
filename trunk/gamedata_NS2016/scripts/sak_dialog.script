@@ -1,0 +1,744 @@
+--------------------------------------------------------------------------------------------------------
+-- Сяковы диалоги 
+-------------------------------------------------------------------------------------------------------
+function repair_box_not_have()
+	return not amk_utils.inventory_search("sh_remnabor",1)
+end
+function give_10conserva(first_speaker, second_speaker)
+	sol_utils.delete_item_count("conserva",10)
+end
+function give_3drink(first_speaker, second_speaker)
+	sol_utils.delete_item_count("energy_drink",3)
+end
+function give_10bread(first_speaker, second_speaker)
+	sol_utils.delete_item_count("bread",10)
+end
+function drink3_have()
+  	return amk_utils.inventory_search("energy_drink",3) 
+end
+function bread10_have()
+  	return amk_utils.inventory_search("bread",10) 
+end
+function have_krysyk_goods()
+  	return	amk_utils.inventory_search("af_electra_moonlight",3) and 
+		amk_utils.inventory_search("af_dummy_glassbeads",1)
+end
+function give_krysyk_goods()
+	sol_utils.delete_item_count("af_electra_moonlight",3)
+	sol_utils.delete_item_count("af_dummy_glassbeads",1)
+end
+function have_repair_box()
+  	return amk_utils.inventory_search("sh_remnabor",1)
+end
+function add_repair_box(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "sh_remnabor", "in")
+end
+function take_fox_spot()
+	sak.add_spot_of_docent(5)
+end
+function take_shustryi_spot()
+	sak.add_spot_of_docent(4)
+end
+function take_wolf_spot()
+	sak.add_spot_of_docent(6)
+end
+function take_provodnik_spot()
+	sak.add_spot_of_docent(92)
+end
+function take_yrik_spot() 
+	sak.add_spot_of_docent(104)
+end
+function take_bes_spot() 
+	sak.add_spot_of_docent(107)
+end
+function take_krot_spot() 
+	sak.add_spot_of_docent(302)
+end
+function take_krisyk_spot() 
+	sak.add_spot_of_docent(9508)
+end
+function give_docent_5pda(first_speaker, second_speaker)
+	sol_utils.delete_item_count("device_pda_npc",5)
+end
+function docent_5pda_have()
+  	return amk_utils.inventory_search("device_pda_npc",5)
+end
+function give_docent_hand_kontroler(first_speaker, second_speaker)
+	sol_utils.delete_item_count("mutant_hand_kontroler",1)
+	sol_utils.delete_item_count("device_pda_npc",30)
+end
+function docent_hand_kontroler_have()
+  	return amk_utils.inventory_search("mutant_hand_kontroler",1) and amk_utils.inventory_search("device_pda_npc",30)
+end
+function give_docent_psevdogigant_hand(first_speaker, second_speaker)
+	sol_utils.delete_item_count("mutant_psevdogigant_hand",2)
+	sol_utils.delete_item_count("device_pda_npc",15)
+end
+function docent_psevdogigant_hand_have()
+  	return amk_utils.inventory_search("mutant_psevdogigant_hand",2) and amk_utils.inventory_search("device_pda_npc",15)
+end
+function give_docent_krovosos_jaw(first_speaker, second_speaker)
+	sol_utils.delete_item_count("mutant_krovosos_jaw",2)
+	sol_utils.delete_item_count("device_pda_npc",20)
+end
+function docent_krovosos_jaw_have()
+  	return amk_utils.inventory_search("mutant_krovosos_jaw",2) and amk_utils.inventory_search("device_pda_npc",20)
+end
+function docent_have_done()
+	if (db.actor:has_info("docent_detector1_done")) and (db.actor:has_info("docent_detector2_done")) and (db.actor:has_info("docent_detector3_done")) then
+	  	return false
+	else
+		return true
+	end 
+end
+function docent_have_have()
+	if db.actor:has_info("sak_gold_fish_have") or db.actor:has_info("sak_find_seif_have") or db.actor:has_info("sak_repair_box_have") or db.actor:has_info("sak_reward_outfit_have") then
+	  	return true
+	else
+		return false
+	end 
+end
+function give_medkit_scientic(first_speaker, second_speaker)
+	sol_utils.delete_item_count("medkit_scientic", 1)
+end
+function medkit_scientic_have()
+	return amk_utils.inventory_search("medkit_scientic",1)
+end
+function give_medkit_army(first_speaker, second_speaker)
+	sol_utils.delete_item_count("medkit_army", 1)
+end
+function medkit_army_have()
+	return amk_utils.inventory_search("medkit_army",1)
+end
+function give_2medkit(first_speaker, second_speaker)
+	sol_utils.delete_item_count("medkit",2)
+end
+function medkit2_have()
+	return amk_utils.inventory_search("medkit",2)
+end
+function medkit_have()
+	return amk_utils.inventory_search("medkit",1)
+end
+function give_antirad(first_speaker, second_speaker)
+	sol_utils.delete_item_count("antirad", 1)
+end
+function antirad_have()
+	return amk_utils.inventory_search("antirad",1)
+end
+function give_dummy_pellicle(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_dummy_pellicle", 1)
+end
+function dummy_pellicle_have()
+	return amk_utils.inventory_search("af_dummy_pellicle",1)
+end
+function give_dummy_battery(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_dummy_battery", 1)
+end
+function dummy_battery_have()
+	return amk_utils.inventory_search("af_dummy_battery",1)
+end
+function give_dummy_dummy(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_dummy_dummy", 1)
+end
+function dummy_dummy_have()
+	return amk_utils.inventory_search("af_dummy_dummy",1)
+end
+function give_dummy_spring(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_dummy_spring", 1)
+end
+function fireball2_have()
+	return amk_utils.inventory_search("af_fireball",2)
+end
+function fireball_have()
+	return amk_utils.inventory_search("af_fireball",1)
+end
+function electra_sparkler_have()
+	return amk_utils.inventory_search("af_electra_sparkler",1)
+end 
+function fox_pay_money(actor, npc)
+	treasure_manager.get_treasure_manager():give_treasure("esc_secret_truck_goods", npc)
+end
+function give_2vodka()
+	sol_utils.delete_item_count("vodka",2)
+end
+function give_6vodka()
+	sol_utils.delete_item_count("vodka",6)
+end
+function give_10vodka()
+	sol_utils.delete_item_count("vodka",10)
+end
+function give_40vodka()
+	sol_utils.delete_item_count("vodka",40)
+end
+function have_vodka()
+	return amk_utils.inventory_search("vodka",1)
+end
+function have_2vodka()
+	return amk_utils.inventory_search("vodka",2)
+end
+function have_6vodka()
+	return amk_utils.inventory_search("vodka",6)
+end
+function have_40vodka()
+	return amk_utils.inventory_search("vodka",40)
+end
+function give_10medusa(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_medusa", 10)
+end
+function medusa10_have()
+	return amk_utils.inventory_search("af_medusa",10)
+end
+function give_7medusa(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_medusa", 7)
+end
+function medusa7_have()
+	return amk_utils.inventory_search("af_medusa",7)
+end
+function add_ammo_7_62_ap2(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_ap", "in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_ap", "in")
+end
+function give_strelok_pda(first_speaker, second_speaker) 
+	sol_utils.delete_item_count("strelok_pda",1)
+	sol_utils.delete_item_count("pri_decoder_documents",1)
+end
+
+function strelok_pda_have()
+	return amk_utils.inventory_search("strelok_pda",1) 
+end
+function give_bar_ivancov_playboy(first_speaker, second_speaker) 
+	sol_utils.delete_item_count("playboy10",1) 
+end
+function bar_ivancov_playboy_have()
+	return amk_utils.inventory_search("playboy10",1)
+end
+function give_five_teil(first_speaker, second_speaker) 
+	sol_utils.delete_item_count("mutant_dog_tail",5) 
+end
+function five_teil_have()
+	return amk_utils.inventory_search("mutant_dog_tail",5)
+end
+function escape_lager_volk_document_have()
+	return amk_utils.inventory_search("sak_document2",1)
+end
+function give_sescape_lager_volk_document(first_speaker, second_speaker)
+	sol_utils.delete_item_count("sak_document2", 1)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+function take_agr_saiga(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "wpn_ppsh41_sk2","in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x25_ps","in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x25_ps","in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x25_p","in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x25_p","in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x25_p","in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x25_p","in")
+end
+
+function mil_volk_resiver_have()
+	return amk_utils.inventory_search("sak_resiver",1)
+end
+function give_mil_volk_resiver(first_speaker, second_speaker)
+	sol_utils.delete_item_count("sak_resiver", 1)
+end
+
+function give_doktor_book(first_speaker, second_speaker)
+	sol_utils.delete_item_count("sak_book4", 1)
+end
+function take_sescape_lager_volk_ak(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "wpn_ak74u", "in")
+end
+function esc_petruha_toz_have()      -- P.S. - функция в <function_complete> задания, проверка с кондицией будет тормозить
+	return amk_utils.inventory_search("wpn_toz34",1)
+end
+function give_esc_petruha_toz(first_speaker, second_speaker)
+	sol_utils.delete_item_count("wpn_toz34", 1, 0.95)
+        amk.spawn_item_in_inv("wpn_toz34",second_speaker)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+function give_yan_kruglov_green_art(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_green", 1)
+end
+function take_new_decoder(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "detector_elite_sak", "in")
+end
+
+function yan_kruglov_green_art_have()
+	return amk_utils.inventory_search("af_green",1)
+end
+
+function give_esc_shustryi_medusa(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_medusa", 1)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+function esc_shustryi_medusa_have()
+	return amk_utils.inventory_search("af_medusa",1)
+end
+function gar_dram_novice_mp5_m1_have()     -- P.S. - функция в <function_complete> задания, проверка с кондицией будет тормозить
+	return amk_utils.inventory_search("wpn_mp5_m1",1)
+end
+
+function gar_dram_novice_burer_hand_have()
+	return amk_utils.inventory_search("mutant_burer_hand",1)
+end
+function give_gar_dram_novice_burer_hand(first_speaker, second_speaker)
+	sol_utils.delete_item_count("mutant_burer_hand", 1)
+end
+function gar_hellcar_outfit_have()
+	return amk_utils.inventory_search("oceanic815",5)
+end
+function give_gar_hellcar_outfit(first_speaker, second_speaker)
+	sol_utils.delete_item_count("oceanic815", 5)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+function agr_krot_PDA_have()
+	return amk_utils.inventory_search("agroprom_pda",1)
+end
+function give_agr_krot_PDA(first_speaker, second_speaker)
+	sol_utils.delete_item_count("agroprom_pda", 1)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+
+function gar_dolg_flesh_eye_have()
+	return amk_utils.inventory_search("mutant_flesh_eye",4)
+end
+
+function give_gar_dolg_flesh_eye(first_speaker, second_speaker)
+	sol_utils.delete_item_count("mutant_flesh_eye",4)
+	dialogs.relocate_item_section(first_speaker, "wpn_m1891_30_scope", "in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_7h14", "in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_7h14", "in")
+	dialogs.relocate_item_section(first_speaker, "ammo_7.62x54_7h14", "in")
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+
+function gar_dolg_krovosos_jaw_have()
+	return amk_utils.inventory_search("mutant_krovosos_jaw",3)
+end
+
+function give_gar_dolg_krovosos_jaw(first_speaker, second_speaker)
+	sol_utils.delete_item_count("mutant_krovosos_jaw",3)
+end
+
+function gar_dolg_psevdodog_tail_have()
+	return amk_utils.inventory_search("mutant_psevdodog_tail",5)
+end
+
+function give_gar_dolg_psevdodog_tail(first_speaker, second_speaker)
+	sol_utils.delete_item_count("mutant_psevdodog_tail",5)
+	dialogs.relocate_item_section(first_speaker, "af_babka_3", "in")
+end
+
+function bar_dolg_base_guard_art_have()
+	return amk_utils.inventory_search("af_green",1)
+end
+
+function give_bar_dolg_base_guard_art(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_green",1)
+	dialogs.relocate_item_section(first_speaker, "af_spirit_4", "in")
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+
+function esc_fox_medkit_have()
+	return amk_utils.inventory_search("medkit",10)
+end
+function give_esc_fox_medkit(first_speaker, second_speaker)
+	sol_utils.delete_item_count("medkit",10)
+end
+----------------------------**********************************43
+function take_mil_Svoboda_trader_ammo(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_05", "in")
+end
+
+function give_esc_trader_ammo(first_speaker, second_speaker)
+	sol_utils.delete_item_count("inventory_sakbox_05", 1)
+	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_01", "in")
+end
+
+function give_mil_Svoboda_trader_ammo(first_speaker, second_speaker)
+	sol_utils.delete_item_count("inventory_sakbox_01", 1)
+end
+
+function esc_trader_ammo_have()
+  	return amk_utils.inventory_search("inventory_sakbox_05",1)
+end
+
+function mil_Svoboda_trader_ammo_have()
+  	return amk_utils.inventory_search("inventory_sakbox_01",1)
+end
+----------------------------**********************************45
+function give_ratcatcher_food(first_speaker, second_speaker)
+	sol_utils.delete_item_count("bread",20)
+	sol_utils.delete_item_count("conserva",20)
+	sol_utils.delete_item_count("kolbasa",20)
+	sol_utils.delete_item_count("vodka",5)
+	--second_speaker:set_relation(game_object.friend, first_speaker)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+
+function give_mil_Svoboda_trader_plan(first_speaker, second_speaker)
+	sol_utils.delete_item_count("ratcatcher_infa", 1)
+end
+
+function ratcatcher_food_have()
+  	return amk_utils.inventory_search("bread",20) and amk_utils.inventory_search("conserva",20) and amk_utils.inventory_search("vodka",5) and amk_utils.inventory_search("kolbasa",20)
+end
+
+function mil_Svoboda_trader_plan_have()
+  	return amk_utils.inventory_search("ratcatcher_infa",1)
+end
+
+function ratcatcher_infa_dal(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "ratcatcher_infa", "in")
+end
+
+--------------------**********************************************41
+function mil_Svoboda_trader_outfit_have()  -- P.S. - функция в <function_complete> задания, проверка с кондицией будет тормозить
+	return amk_utils.inventory_search("soldier_outfit", 2)
+end
+
+function give_mil_Svoboda_trader_outfit(first_speaker, second_speaker)
+	sol_utils.delete_item_count("soldier_outfit", 1, 0.95)
+end
+-------------------**********************************************42
+function give_gar_hellcar_ammo(first_speaker, second_speaker)
+	sol_utils.delete_item_count("inventory_sakbox_01", 1)
+end
+
+function val_pula_ammo_have()
+  	return amk_utils.inventory_search("inventory_sakbox_01",1)
+end
+
+-------------------**********************************************83
+function give_val_pula_boar_leg(first_speaker, second_speaker)
+	sol_utils.delete_item_count("mutant_boar_leg",8)
+	sol_utils.delete_item_count("vodka",8)
+	dialogs.relocate_item_section(first_speaker, "af_dummy_pellicle_red", "in")
+end
+
+function val_pula_boar_leg_have()
+  	return amk_utils.inventory_search("mutant_boar_leg",8) and amk_utils.inventory_search("vodka",8)
+end
+
+-------------------**********************************************84
+function give_ratcatcher_order(first_speaker, second_speaker)
+	sol_utils.delete_item_count("rad_document7",1)
+	dialogs.relocate_item_section(first_speaker, "af_dummy_battery_red", "in")
+end
+
+function ratcatcher_order_have()
+  	return amk_utils.inventory_search("rad_document7",1)
+end
+-------------------**********************************************46
+
+function val_escort_PDA_have()
+	return amk_utils.inventory_search("und_pda",1)
+end
+
+function give_val_escort_PDA(first_speaker, second_speaker)
+	sol_utils.delete_item_count("und_pda",1)
+	--second_speaker:set_relation(game_object.friend, first_speaker)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+-------------------**********************************************35
+
+function bar_dolg_petrenko_gaussgan_have() -- P.S. - функция в <function_complete> задания, проверка с кондицией будет тормозить
+	return amk_utils.inventory_search("wpn_gungauss",1)
+end
+
+function give_bar_dolg_petrenko_gaussgan(first_speaker, second_speaker)
+	sol_utils.delete_item_count("wpn_gungauss", 1, 0.05)
+	--second_speaker:set_relation(game_object.friend, first_speaker)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+-------------------**********************************************55
+function bar_dolg_petrenko_electra_flash_have()
+	return amk_utils.inventory_search("af_electra_flash",1)
+end
+
+function give_bar_dolg_petrenko_electra_flash(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_electra_flash",1)
+end
+----------------------------**********************************66
+function take_bar_dolg_petrenko_exo(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_05", "in")
+end
+
+function give_yan_scientist_exo(first_speaker, second_speaker)
+	sol_utils.delete_item_count("inventory_sakbox_05", 1)
+	dialogs.relocate_item_section(first_speaker, "exo_outfit", "in")
+	dialogs.relocate_item_section(first_speaker, "exo_outfit", "in")
+end
+
+function give_bar_dolg_petrenko_exo(first_speaker, second_speaker)
+	sol_utils.delete_item_count("exo_outfit",2)
+end
+
+function yan_scientist_exo_have()
+  	return amk_utils.inventory_search("inventory_sakbox_05",1)
+end
+
+function bar_dolg_petrenko_exo_have()
+  	return amk_utils.inventory_search("exo_outfit",2)
+end
+----------------------------**********************************52
+function take_sak_repair_box(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_05", "in")
+end
+
+function give_esc_trader_sak_repair(first_speaker, second_speaker)
+	sol_utils.delete_item_count("inventory_sakbox_05", 1)
+	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_02", "in")
+end
+
+function give_sak_repair_box(first_speaker, second_speaker)
+	sol_utils.delete_item_count("inventory_sakbox_02", 1)
+	dialogs.relocate_item_section(first_speaker, "strelok_outfit", "in")
+end
+
+function esc_trader_repair_box_have()
+  	return amk_utils.inventory_search("inventory_sakbox_05",1)
+end
+
+function sak_repair_box_have()
+  	return amk_utils.inventory_search("inventory_sakbox_02",1)
+end
+-------------------**********************************************63
+function sak_find_seif_have()
+	return amk_utils.inventory_search("inventory_sakbox_03",1)
+end
+
+function give_sak_find_seif(first_speaker, second_speaker)
+	sol_utils.delete_item_count("inventory_sakbox_03", 1)
+end
+-------------------**********************************************56
+function sak_gold_fish_have()
+	return amk_utils.inventory_search("af_gold_fish",1)
+end
+
+function give_sak_gold_fish(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_gold_fish", 1)
+end
+-------------------**********************************************65
+
+function take_sak_reward_outfit(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "quest_manycase_01", "in")
+end
+function mil_trader_sak_reward_outfit_have()
+  	return amk_utils.inventory_search("quest_manycase_01",1)
+end
+function give_mil_trader_sak_reward_outfit(first_speaker, second_speaker)
+	sol_utils.delete_item_count("quest_manycase_01", 1)
+	dialogs.relocate_item_section(first_speaker, "militaryspec_outfit", "in")
+end
+function sak_reward_outfit_have()
+  	return sol_utils.check_item_count("militaryspec_outfit", 1, 0.95)==1
+end
+function give_sak_reward_outfit(first_speaker, second_speaker)
+	sol_utils.delete_item_count("militaryspec_outfit", 1, 0.95)
+end
+
+function sak_have_start()
+	if db.actor:has_info("sak_gold_fish_start") or db.actor:has_info("sak_find_seif_start") or db.actor:has_info("sak_repair_box_start") or db.actor:has_info("sak_reward_outfit_start") then
+	  	return true
+	else
+		return false
+	end 
+end
+function sak_have_have()
+	if db.actor:has_info("sak_gold_fish_have") or db.actor:has_info("sak_find_seif_have") or db.actor:has_info("sak_repair_box_have") or db.actor:has_info("sak_reward_outfit_have") then
+	  	return true
+	else
+		return false
+	end 
+end
+function yan_scientist_books_have()
+	return amk_utils.inventory_search("sak_book1",1) and amk_utils.inventory_search("sak_book2",1) and amk_utils.inventory_search("sak_book3",1)
+end
+function give_yan_scientist_books(first_speaker, second_speaker)
+	sol_utils.delete_item_count("sak_book1",1)
+	sol_utils.delete_item_count("sak_book2",1)
+	sol_utils.delete_item_count("sak_book3",1)
+end
+function yan_kruglov_decoder_have()
+	return amk_utils.inventory_search("decoder1",1)
+end
+function give_yan_kruglov_decoder(first_speaker, second_speaker)
+	sol_utils.delete_item_count("decoder1",1)
+end
+function take_yan_kruglov_art(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "inventory_sakbox_05", "in")
+end
+function give_esc_trader_yan_kruglov_art(first_speaker, second_speaker)
+	sol_utils.delete_item_count("inventory_sakbox_05", 1)
+	dialogs.relocate_item_section(first_speaker, "quest_manycase_01", "in")
+end
+function give_yan_kruglov_art(first_speaker, second_speaker)
+	sol_utils.delete_item_count("quest_manycase_01", 1)
+end
+function esc_trader_yan_kruglov_art_have()
+  	return amk_utils.inventory_search("inventory_sakbox_05",1)
+end
+function yan_kruglov_art_have()
+  	return amk_utils.inventory_search("quest_manycase_01",1)
+end
+
+function take_bar_ivancov_rg6(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "wpn_rg6", "in")
+end
+function give_mil_trader_bar_ivancov_rg6(first_speaker, second_speaker)
+	sol_utils.delete_item_count("wpn_rg6", 1, 0.95)
+	dialogs.relocate_item_section(first_speaker, "quest_manycase_01", "in")
+end
+function give_bar_ivancov_rg6(first_speaker, second_speaker)
+	sol_utils.delete_item_count("quest_manycase_01", 1)
+	--second_speaker:set_relation(game_object.friend, first_speaker)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+function mil_trader_bar_ivancov_rg6_have()
+  	return sol_utils.check_item_count("wpn_rg6", 1, 0.95)==1
+end
+function bar_ivancov_rg6_have()
+  	return amk_utils.inventory_search("quest_manycase_01",1) ~= false
+end
+function take_blockpost_case(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "quest_case_01", "in")
+end
+function give_blockpost_case(first_speaker, second_speaker)
+	sol_utils.delete_item_count("quest_case_01", 1)
+end
+function blockpost_case_have()
+  	return amk_utils.inventory_search("quest_case_01",1)
+end
+function esc_find_groza_have()  -- P.S. - функция в <function_complete> задания, проверка с кондицией будет тормозить
+  	return amk_utils.inventory_search("wpn_groza",1)
+end
+function give_find_groza(first_speaker, second_speaker)
+	sol_utils.delete_item_count("wpn_groza", 1, 0.95)
+        amk.spawn_item_in_inv("wpn_groza",first_speaker)
+--	dialogs.relocate_item_section(first_speaker, "wpn_groza", "out")
+	--second_speaker:set_relation(game_object.friend, first_speaker)
+	sol_utils.setRelation(second_speaker, game_object.friend, first_speaker)
+end
+function give_find_af_dummy_glassbeads(first_speaker, second_speaker)
+	sol_utils.delete_item_count("af_babka_3", 1)
+end
+function yan_scientist_find_af_dummy_glassbeads_have()
+  	return amk_utils.inventory_search("af_babka_3",1)
+end
+function give_find_dinamit(first_speaker, second_speaker)
+	sol_utils.delete_item_count("dynamite", 1)	
+end
+function mil_lukash_find_dinamit_have()
+  	return amk_utils.inventory_search("dynamite",1)
+end
+function give_find_case(first_speaker, second_speaker)
+	sol_utils.delete_item_count("quest_case_06", 1)	
+end
+function yan_scientist_find_case_have()
+  	return amk_utils.inventory_search("quest_case_06",1)
+end
+function give_find_2case(first_speaker, second_speaker)
+	sol_utils.delete_item_count("quest_case_05", 1)	
+end
+function bar_dolg_leader_find_case_have()
+  	return amk_utils.inventory_search("quest_case_05",1)
+end
+local armor_profit_margin = 5
+function sak_repair_precond(trader, actor)
+	local item_in_slot_6 = db.actor:item_in_slot(6)
+	if item_in_slot_6 ~= nil and 1 > item_in_slot_6:condition() + 0.01 then 
+		 return true
+	else return false
+	end	 
+end
+function sak_check_money_s6(trader, actor)
+	local item_in_slot = db.actor:item_in_slot(6)
+	if item_in_slot ~= nil then 
+		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
+		if item_repair_cost > 0 and db.actor:money() >= item_repair_cost and 1 > item_in_slot:condition() then
+			return true
+		end 
+	end
+	return false
+end
+function sak_repiar_armor_s6(trader, actor)
+	local item_in_slot = db.actor:item_in_slot(6)
+	if item_in_slot ~= nil then
+		local item_repair_cost = math.floor( (1-item_in_slot:condition()) * item_in_slot:cost() * armor_profit_margin )
+		amk_mod.repair_armor(1)
+		dialogs.relocate_money(actor, item_repair_cost, 1)
+	end	
+end
+
+function actor_has_money_30000()
+  return db.actor:money()>=30000
+end
+
+function actor_has_money_50000()
+  return db.actor:money()>=50000
+end
+
+function give_money_30000(t1,t2)
+  local npc=t1
+  if npc:id()==db.actor:id() then
+    npc=t2
+  end
+  relocate_money(npc,30000,1)
+end
+
+function give_money_50000(t1,t2)
+  local npc=t1
+  if npc:id()==db.actor:id() then
+    npc=t2
+  end
+  relocate_money(npc,50000,1)
+end
+
+function relocate_money(victim, num, type)
+	if db.actor and victim then
+		if type == "in" then
+			db.actor:give_money(num)
+			game_stats.money_quest_update (num) 
+		elseif type == 1 then
+			db.actor:give_money(-num)
+			game_stats.money_quest_update (-num) 
+		end
+		news_manager.relocate_money(db.actor, type, num)
+	end
+end
+
+-- Гарик --
+function sweetness_gariku_have()
+	return amk_utils.inventory_search("sweetness",2)
+end
+function baltika_gariku_have()
+	return amk_utils.inventory_search("beer_a",2)
+end
+function pivo_gariku_have()
+	return amk_utils.inventory_search("oceanic815",2)
+end
+
+function give_sweetness_gariku(first_speaker, second_speaker)
+	sol_utils.delete_item_count("sweetness", 2)
+end
+function give_baltika_gariku(first_speaker, second_speaker)
+	sol_utils.delete_item_count("beer_a", 2)
+end
+function give_pivo_gariku(first_speaker, second_speaker)
+	sol_utils.delete_item_count("oceanic815", 2)
+end
+
+-- Прапор --
+
+function prapor_nagrada(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "treasure_item", "in")
+	dialogs.relocate_item_section(first_speaker, "treasure_item", "in")
+	dialogs.relocate_item_section(first_speaker, "grenade_f1", "in")
+	dialogs.relocate_item_section(first_speaker, "grenade_f1", "in")
+	dialogs.relocate_item_section(first_speaker, "grenade_f1", "in")
+	dialogs.relocate_item_section(first_speaker, "grenade_f1", "in")
+	dialogs.relocate_item_section(first_speaker, "grenade_f1", "in")
+end
+
+

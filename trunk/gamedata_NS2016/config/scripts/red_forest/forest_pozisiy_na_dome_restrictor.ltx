@@ -1,0 +1,19 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+lesnik_say_snip_start} sr_idle@time 
+single = true
+
+[sr_idle@time]
+on_timer = 3000 | sr_idle@time1 %=arhara_dialog.forest_pozisiy_na_dome_sms%
+single = true
+
+[sr_idle@time1]
+on_timer = 5000 | sr_idle@last %=arhara_dialog.forest_pozisiy_na_dome_sms1%
+single = true
+
+[sr_idle@last]
+on_timer = 35000 | sr_idle@nil %+spawn_lastday_snip1%
+
+[sr_idle@nil]

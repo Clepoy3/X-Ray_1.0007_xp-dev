@@ -1,0 +1,603 @@
+
+local table_insert = table.insert
+local string_find = string.find
+
+function init()
+end
+
+--------------------------------------ini---------------------------------------
+--[[function read_from_ini(ini,sec,lin,def,typ)
+	if not ini then
+		ini = system_ini()
+	end
+	if sec and lin and ini:section_exist(sec) and ini:line_exist(sec,lin) then
+		if typ == 0 then
+			return ini:r_bool(sec,lin)
+		elseif typ == 1 then
+			return ini:r_string(sec,lin)
+		elseif typ == 2 then
+			return ini:r_string_wq(sec,lin)
+		else
+			return ini:r_float(sec,lin)
+		end
+	else
+		return def
+	end
+end]]
+
+local read_from_ini_new_cached = {}
+function read_from_ini_new(iniFileName,sec,lin,def,typ) counterAdd("rx_utils.read_from_ini_new")
+	--if sec and lin and ini:section_exist(sec) and ini:line_exist(sec,lin) then
+	local iniName = iniFileName or "system_ini"
+	
+	if read_from_ini_new_cached[iniName] and
+		read_from_ini_new_cached[iniName][sec] and
+		read_from_ini_new_cached[iniName][sec][lin] then
+		
+		return read_from_ini_new_cached[iniName][sec][lin]
+	end
+	
+	local ini
+	if not iniFileName then
+		ini = system_ini()
+	else
+		ini = g_ini_file(iniFileName)
+	end
+	
+	if read_from_ini_new_cached[iniName] == nil then
+		read_from_ini_new_cached[iniName] = {}
+	end
+	
+	if sec and lin then
+	
+		if read_from_ini_new_cached[iniName][sec] == nil then
+			read_from_ini_new_cached[iniName][sec] = {}
+		elseif read_from_ini_new_cached[iniName][sec] == false then
+			return def
+		end
+		
+		if not ini:section_exist(sec) then
+			read_from_ini_new_cached[iniName][sec] = false
+			return def
+		end
+		
+		if not ini:line_exist(sec,lin) then
+			return def
+		end
+		
+		if typ == 0 then
+			read_from_ini_new_cached[iniName][sec][lin] = ini:r_bool(sec,lin)
+			--return getIniValueBool(sec,lin,def,iniFileName)
+		elseif typ == 1 then
+			read_from_ini_new_cached[iniName][sec][lin] = ini:r_string(sec,lin)
+			--return getIniValueString(sec,lin,def,iniFileName)
+		elseif typ == 2 then
+			read_from_ini_new_cached[iniName][sec][lin] = ini:r_string_wq(sec,lin)
+			--return getIniValueStringWQ(sec,lin,def,iniFileName)
+		else
+			read_from_ini_new_cached[iniName][sec][lin] = ini:r_float(sec,lin)
+			--return getIniValueFloat(sec,lin,def,iniFileName)
+		end
+		
+		return read_from_ini_new_cached[iniName][sec][lin]
+	else
+		return def
+	end
+end
+
+--[[function collect_sections(ini,sections)
+	local r,p = {},{}
+	for k,v in ipairs(sections) do
+		if ini:section_exist(v) then
+			local n = ini:line_count(v)
+			if n > 0 then
+				for i = 0,n-1 do
+					local res,id,val = ini:r_line(v,i,"","")
+					if r[id] == nil then
+						r[id] = val
+					end
+				end
+			end
+			p[k] = n
+		else
+			p[k] = 0
+		end
+	end
+	return r,p
+end]]
+
+function collect_sections_new(iniFileName,sections) counterAdd("rx_utils.collect_sections_new")
+	
+	local r,p = {},{}
+	local v, n
+	local res,id,val
+	local ini = g_ini_file(iniFileName)
+	for i = 1, #sections do
+		v = sections[i]
+		if ini:section_exist(v) then
+			n = ini:line_count(v)
+			if n > 0 then
+				for i = 0,n-1 do
+					res,id,val = ini:r_line(v,i,"","")
+					if r[id] == nil then
+						r[id] = val
+					end
+				end
+			end
+			p[i] = n
+		else
+			p[i] = 0
+		end
+	end
+	return r,p
+end
+
+--[[function parse_list(ini,sec,val,convert)
+	local tmp = Parse_StrToTbl(read_from_ini(ini,sec,val,"",1),",")
+	if convert and #tmp ~= 0 then
+		local t = {}
+		for i,v in ipairs(tmp) do
+			t[v] = true
+		end
+		return t
+	end
+	return tmp
+end]]
+
+function parse_list_new(iniFileName,sec,val,convert) counterAdd("rx_utils.parse_list_new")
+	local tmp = Parse_StrToTbl(read_from_ini_new(iniFileName,sec,val,"",1),",")
+	if convert and #tmp ~= 0 then
+		local t = {}
+		for i = 1, #tmp do
+			t[tmp[i]] = true
+		end
+		return t
+	end
+	return tmp
+end
+
+--------------------------------------str---------------------------------------
+--[[function trim(s)
+	return (string.gsub(s,"^%s*(.-)%s*$","%1"))
+end]]
+
+--[[function str_explode(div,str,clear)
+	local t = {}
+	local cpt = string_find(str,div,1,true)
+	if cpt then
+		repeat
+			if clear then
+				table_insert(t,trim(string.sub(str,1,cpt-1)))
+			else
+				table_insert(t,string.sub(str,1,cpt-1))
+			end
+			str = string.sub(str,cpt+string.len(div))
+			cpt = string_find(str,div,1,true)
+		until cpt == nil
+	end
+	if clear then
+		table_insert(t,trim(str))
+	else
+		table_insert(t,str)
+	end
+	return t
+end]]
+
+function vec_to_str(vec) counterAdd("rx_utils.vec_to_str")
+	if vec == nil then return "nil" end
+	return string.format("[%d:%d:%d]",vec.x,vec.y,vec.z)
+end
+
+--------------------------------------class---------------------------------------
+item_is_fa = isWeaponFireOnly
+IAmAWeaponFA = IAmAWeaponFireOnly
+
+--[[function item_is_fa(o,c)
+	if not c then
+		c = o and o:clsid()
+	end
+	local t = {
+	[clsid.wpn_pm_s] = true,
+	[clsid.wpn_walther_s] = true,
+	[clsid.wpn_usp45_s] = true,
+	[clsid.wpn_hpsa_s] = true,
+	[clsid.wpn_bm16_s] = true,
+	[clsid.wpn_shotgun_s] = true,
+	[clsid.wpn_ak74_s] = true,
+	[clsid.wpn_lr300_s] = true,
+	[clsid.wpn_groza_s] = true,
+	[clsid.wpn_val_s] = true,
+	[clsid.wpn_vintorez_s] = true,
+	[clsid.wpn_svu_s] = true,
+	[clsid.wpn_svd_s] = true,
+	[clsid.wpn_rg6_s] = true,
+	[clsid.wpn_rpg7_s] = true,
+	[clsid.wpn_knife_s] = true}
+	if c and t[c] then
+		return true
+	end
+	return false
+end
+IAmAWeaponFA = {}
+function IAmAWeaponFAInit()
+	IAmAWeaponFA = {
+		[clsid.wpn_pm_s] = true,
+		[clsid.wpn_walther_s] = true,
+		[clsid.wpn_usp45_s] = true,
+		[clsid.wpn_hpsa_s] = true,
+		[clsid.wpn_bm16_s] = true,
+		[clsid.wpn_shotgun_s] = true,
+		[clsid.wpn_ak74_s] = true,
+		[clsid.wpn_lr300_s] = true,
+		[clsid.wpn_groza_s] = true,
+		[clsid.wpn_val_s] = true,
+		[clsid.wpn_vintorez_s] = true,
+		[clsid.wpn_svu_s] = true,
+		[clsid.wpn_svd_s] = true,
+		[clsid.wpn_rg6_s] = true,
+		[clsid.wpn_rpg7_s] = true,
+		[clsid.wpn_knife_s] = true
+	}
+end]]
+
+actor_clsid = clsid.actor
+function is_actor(o,c) counterAdd("rx_utils.is_actor")
+	if not c then
+		c = o and o:clsid()
+	end
+	return c == actor_clsid
+end
+
+-- похоже, что не используется
+--[[restrictor_clsid = 115
+function is_restrictor(o,c)
+	if not c then
+		c = o and o:clsid()
+	end
+	return c == restrictor_clsid
+end]]
+--------------------------------------sch---------------------------------------
+function add_anim(npc,anim,move) counterAdd("rx_utils.add_anim")
+	if anim then
+		npc:add_animation(anim)
+	end
+end
+
+function get_sound(snd) counterAdd("rx_utils.get_sound")
+	if snd then
+		return xr_sound.get_safe_sound_object(snd)
+	end
+end
+
+--------------------------------------net------------------------------------------
+function get_weapon_data(sobj) counterAdd("rx_utils.get_weapon_data")
+	if not sobj then
+		return {}
+	end
+	local stpk = net_packet()
+	sobj:STATE_Write(stpk)
+	local size = stpk:w_tell()
+	stpk:r_seek(0)
+	local t = {}
+	parse_object_packet(t,stpk)
+	parse_visual_packet(t,stpk)
+	parse_item_packet(t,stpk)
+	parse_item_weapon_packet(t,stpk)
+	return t
+end
+
+function get_restrictor_data(sobj) counterAdd("rx_utils.get_restrictor_data")
+	local stpk = net_packet()
+	sobj:STATE_Write(stpk)
+	local size = stpk:w_tell()
+	stpk:r_seek(0)
+	local t = {}
+	parse_object_packet(t,stpk)
+	parse_shape_packet(t,stpk)	
+	t.restrictor_type = stpk:r_u8()
+	return t
+end
+
+function parse_object_packet(ret,stpk) counterAdd("rx_utils.parse_object_packet")
+	ret.gvid = stpk:r_u16()
+	ret.obf32u1 = stpk:r_float()
+	ret.obs32u2 = stpk:r_s32()
+	ret.lvid = stpk:r_s32()
+	ret.oflags = stpk:r_s32()
+	ret.custom = stpk:r_stringZ()
+	ret.sid = stpk:r_s32()
+	ret.obs32u3 = stpk:r_s32()
+	return ret
+end
+
+function parse_visual_packet(ret,stpk) counterAdd("rx_utils.parse_visual_packet")
+	ret.visual = stpk:r_stringZ()
+	ret.vsu8u1 = stpk:r_u8()
+	return ret
+end
+
+function parse_item_packet(ret,stpk) counterAdd("rx_utils.parse_item_packet")
+	ret.condition = stpk:r_float()
+	return ret
+end
+
+function parse_item_weapon_packet(ret,stpk) counterAdd("rx_utils.parse_item_weapon_packet")
+	ret.ammo_current = stpk:r_u16()
+	ret.ammo_elapsed = stpk:r_u16()
+	ret.weapon_state = stpk:r_u8()
+	ret.addon_flags = stpk:r_u8()
+	ret.ammo_type = stpk:r_u8()
+	return ret
+end
+
+function parse_shape_packet(t,stpk) counterAdd("rx_utils.parse_shape_packet")
+	local shape_count = stpk:r_u8()
+	t.shapes = {}
+	local shape_type
+	for i=1,shape_count do
+		shape_type = stpk:r_u8()
+		t.shapes[i] = {}
+		t.shapes[i].shtype = shape_type
+		if shape_type == 0 then
+			t.shapes[i].center = stpk:r_vec3()
+			t.shapes[i].radius = stpk:r_float()
+		else
+			t.shapes[i].v1 = stpk:r_vec3()
+			t.shapes[i].v2 = stpk:r_vec3()
+			t.shapes[i].v3 = stpk:r_vec3()
+			t.shapes[i].offset = stpk:r_vec3()
+		end
+	end
+end
+
+function readvu8uN(packet,n) counterAdd("rx_utils.readvu8uN")
+	local v = {}
+	for i=1,n do
+		table_insert(v,packet:r_u8())
+	end
+	return v
+end
+
+function set_weapon_data(t,sobj) counterAdd("rx_utils.set_weapon_data")
+	if sobj then
+		local stpk = net_packet()
+		fill_object_packet(t,stpk)
+		fill_visual_packet(t,stpk)
+		fill_item_packet(t,stpk)
+		fill_item_weapon_packet(t,stpk)	
+		local size = stpk:w_tell()
+		stpk:r_seek(0)
+		sobj:STATE_Read(stpk,size)
+	end
+end
+
+function set_restrictor_data(t,sobj) counterAdd("rx_utils.set_restrictor_data")
+	local stpk = net_packet()
+	fill_object_packet(t,stpk)
+	fill_shape_packet(t,stpk)
+	stpk:w_u8(t.restrictor_type)
+	local size = stpk:w_tell()
+	stpk:r_seek(0)
+	sobj:STATE_Read(stpk,size)
+end
+
+function fill_object_packet(ret,stpk) counterAdd("rx_utils.fill_object_packet")
+	stpk:w_u16(ret.gvid)
+	stpk:w_float(ret.obf32u1)
+	stpk:w_s32(ret.obs32u2)
+	stpk:w_s32(ret.lvid)
+	stpk:w_s32(ret.oflags)
+	stpk:w_stringZ(ret.custom)
+	stpk:w_s32(ret.sid)
+	stpk:w_s32(ret.obs32u3)
+end
+
+function fill_visual_packet(ret,stpk) counterAdd("rx_utils.fill_visual_packet")
+	stpk:w_stringZ(ret.visual)
+	stpk:w_u8(ret.vsu8u1)
+end
+
+function fill_item_packet(ret,stpk) counterAdd("rx_utils.fill_item_packet")
+	stpk:w_float(ret.condition)
+	return ret
+end
+
+function fill_item_weapon_packet(ret,stpk) counterAdd("rx_utils.fill_item_weapon_packet")
+	stpk:w_u16(ret.ammo_current)
+	stpk:w_u16(ret.ammo_elapsed)
+	stpk:w_u8(ret.weapon_state)
+	stpk:w_u8(ret.addon_flags)
+	stpk:w_u8(ret.ammo_type)
+	return ret
+end
+
+function fill_shape_packet(t,stpk) counterAdd("rx_utils.fill_shape_packet")
+	stpk:w_u8(#t.shapes)
+	for i=1,#t.shapes do
+		stpk:w_u8(t.shapes[i].shtype)
+		if t.shapes[i].shtype == 0 then
+			stpk:w_vec3(t.shapes[i].center)
+			stpk:w_float(t.shapes[i].radius)
+		else
+			stpk:w_vec3(t.shapes[i].v1)
+			stpk:w_vec3(t.shapes[i].v2)
+			stpk:w_vec3(t.shapes[i].v3)
+			stpk:w_vec3(t.shapes[i].offset)
+		end
+	end
+end
+
+function writevu8uN(pk,v) counterAdd("rx_utils.writevu8uN")
+	for i=1,#v do
+		pk:w_u8(v[i])
+	end
+end
+
+--------------------------------------addons---------------------------------------
+local adt = {}
+
+function get_addon_status(wpn,addon) counterAdd("rx_utils.get_addon_status")
+	local go = wpn and wpn.fov and true or false
+	local sec = go and wpn:section() or wpn:section_name()
+	if not adt[sec] then
+		adt[sec] = {}
+	end
+	if not adt[sec][addon] then
+		local ast = {sc = "scope_status",sl = "silencer_status",gl = "grenade_launcher_status"}
+		adt[sec][addon] = read_from_ini_new(nil,sec,ast[addon],0)
+	end
+	return adt[sec][addon]
+end
+
+local rep_mem = {}
+
+function get_addon_flag(wpn,with_int) counterAdd("rx_utils.get_addon_flag")
+	local go = wpn and wpn.fov and true or false
+	local id,tg = go and wpn:id() or wpn.id, time_global()
+	if tg == rep_mem.tg and rep_mem.id == id and rep_mem.wi == with_int then
+		return rep_mem.fl
+	else
+		local flag = get_weapon_data(go and alife():object(id)).addon_flags or wpn.addon_flags or 0
+		if with_int then
+			if get_addon_status(wpn,"sc") == 1 then
+				flag = flag+1
+			end
+			if get_addon_status(wpn,"sl") == 1 then
+				flag = flag+4
+			end
+			if get_addon_status(wpn,"gl") == 1 then
+				flag = flag+2
+			end
+		end
+		rep_mem = {tg = tg,id = id,wi = with_int,fl = flag}
+		return flag
+	end
+end
+
+local ft = {sc = {[1] = true,[3] = true,[5] = true,[7] = true},
+			sl = {[4] = true,[5] = true,[6] = true,[7] = true},
+			gl = {[2] = true,[3] = true,[6] = true,[7] = true}}
+function addon_attached(wpn,addon,flag) counterAdd("rx_utils.addon_attached")
+	if ft[addon] then
+		return ft[addon][flag or get_addon_flag(wpn,true)] == true
+	end
+	return false
+end
+
+--------------------------------------ai-----------------------------------------
+function npc_in_cover(npc) counterAdd("rx_utils.npc_in_cover")
+	local st = rx_ai.get_storage(npc:id(),"in_cover")
+	local tg = time_global()
+	if (st.wait or 0) < tg then
+		st.wait = tg+300
+		local be = npc:best_enemy()
+		local enemies = {}
+		if be and not xr_wounded.is_wounded(be) then
+			--enemies[1] = be
+			table_insert(enemies,be)
+		else
+			st.evn = true
+			return st.evn
+		end
+		local tt = {}
+		local obj
+		local id
+		for o in npc:memory_visible_objects() do
+			obj = o:object()
+			if obj and (IAmAStalker[obj:clsid()] or IAmAMonster[obj:clsid()]) and obj:alive() and npc:relation(obj) == game_object.enemy and not xr_wounded.is_wounded(obj) then
+				table_insert(enemies,obj)
+				tt[obj:id()] = true
+			end
+		end
+		for o in npc:memory_sound_objects() do
+			obj = o:object()
+			if obj then
+				if not tt[obj:id()] then
+					if (IAmAStalker[obj:clsid()] or IAmAMonster[obj:clsid()]) and obj:alive() and npc:relation(obj) == game_object.enemy and not xr_wounded.is_wounded(obj) then
+						table_insert(enemies,obj)
+					end
+				end
+			end
+		end
+		local npc_pos = npc:position()
+		local lvl_v = npc:level_vertex_id()
+		local enemy
+		local enemy_pos
+		local dist
+		local seez
+		local cover
+		for i = 1, #enemies do
+			enemy = enemies[i]
+			enemy_pos = enemy:position()
+			dist = npc_pos:distance_to_sqr(enemy_pos)
+			seez = enemy:see(npc) or npc:see(enemy)
+			cover = level.cover_in_direction(lvl_v,enemy_pos:sub(npc_pos))
+			if dist < 25 or (seez and (dist < 80 or cover > 0.4 or (cover > 0.2 and dist < 600))) then
+				st.evn = false
+				st.wait = tg+2000
+				return st.evn
+			end
+		end
+		st.evn = true
+	end
+	return st.evn
+end
+
+function eat_medkit(npc,medkit) counterAdd("rx_utils.eat_medkit")
+	npc:eat(medkit)
+end
+
+function IsTrader(npc)
+	if npc then
+		local cls_id = npc:clsid()
+		if cls_id == clsid.script_stalker or cls_id == clsid.script_trader then
+			local st = db.storage[npc:id()]
+			if st then
+				local ini = st.ini
+				local sect = st.section_logic
+				if ini and sect and ini:section_exist(sect) and ini:line_exist(sect, "trade") then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+--------------------------------------output---------------------------------------
+function give_game_news(t,d) counterAdd("rx_utils.give_game_news")
+	if db.actor then
+		db.actor:give_game_news(t,"ui\\ui_iconsTotal",Frect():set(0,235,83,47),0,d)
+	end
+end
+
+--------------------------------------weapon---------------------------------------
+function get_weapon(npc) counterAdd("rx_utils.get_weapon")
+	return rx_wmgr and rx_wmgr.get_wm(npc):get_weapon() or npc:best_weapon()
+end
+
+--------------------------------------switch---------------------------------------
+function switch_online(id) counterAdd("rx_utils.switch_online")
+	if id == -1 then return end
+	local sim = alife()
+	if sim then
+		sim:set_switch_online(id,true)
+		sim:set_switch_offline(id,false)
+	end
+end
+
+function switch_offline(id) counterAdd("rx_utils.switch_offline")
+	local sim = alife()
+	if sim then
+		sim:set_switch_online(id,false)
+		sim:set_switch_offline(id,true)
+	end
+end
+
+function switch_online_offline(id) counterAdd("rx_utils.switch_online_offline")
+	local sim = alife()
+	if sim then
+		sim:set_switch_online(id,true)
+		sim:set_switch_offline(id,true)
+	end
+end

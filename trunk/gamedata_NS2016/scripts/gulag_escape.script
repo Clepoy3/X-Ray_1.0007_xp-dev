@@ -1,0 +1,1425 @@
+
+local string_format = string.format
+local table_insert = table.insert
+
+local lname, current_lv	-- level.name() не работает. скрипт дергается из xr_gulag в момент, когда level нет
+local gg, sim
+
+local actor	-- инитить из функций, пока с bind_stalker не порешали
+
+local t = {}
+
+
+function get_current_lv()
+	if not actor then
+		if db.actor then actor = db.actor
+		else return
+	end	end
+
+	if not gg then gg = game_graph()
+	else return
+	end
+
+	local gvid = actor:game_vertex_id()
+	if gg:valid_vertex_id( gvid ) then
+		current_lv = gg:vertex( gvid ):level_id()
+		lname = level.name()
+	end
+	return current_lv
+end
+
+
+function gulag_level( g )	-- гулаг на активной локации
+	return ( current_lv or get_current_lv() ) == g.lvlid
+end
+
+
+function ret0() return 0 end
+
+
+function load_job( sj, gname, gtype, squad, groups )	-- Загрузка работ
+
+	-- Гулаги с постоянным состоянием
+
+	if gtype == "esc_ambush" then	-- Бандиты на переходе Кордон-Свалка
+		for i = 1, 6 do table_insert( sj,
+			{ ["section"] = "logic@esc_ambush_walker"..i,
+			["idle"] = 0, ["prior"] = 2, ["state"] = { 0 },
+			["in_rest"] = "", ["out_rest"] = "" } )
+		end
+		table_insert( sj,
+			{ ["section"] = "logic@esc_ambush_kamp",
+			["idle"] = 0, ["prior"] = 1, ["state"] = { 0 },
+			["in_rest"] = "", ["out_rest"] = "" } )
+		table_insert( sj,
+			{ ["section"] = "logic@esc_ambush_kamp",
+			["idle"] = 0, ["prior"] = 1, ["state"] = { 0 },
+			["in_rest"] = "", ["out_rest"] = "" } )
+
+	elseif gtype == "esc_flesh_ferma" then	-- Хрюшки на заброшенной ферме
+		table_insert( sj,
+			{ ["section"] = "logic@esc_flesh_ferma_home1",
+			["idle"] = 0, ["prior"] = 1, ["state"] = { 0 },
+			["in_rest"] = "", ["out_rest"] = "" } )
+		table_insert( sj,
+			{ ["section"] = "logic@esc_flesh_ferma_home1",
+			["idle"] = 0, ["prior"] = 1, ["state"] = { 0 },
+			["in_rest"] = "", ["out_rest"] = "" } )
+		table_insert( sj,
+			{ ["section"] = "logic@esc_flesh_ferma_home2",
+			["idle"] = 0, ["prior"] = 1, ["state"] = { 0 },
+			["in_rest"] = "", ["out_rest"] = "" } )
+		table_insert( sj,
+			{ ["section"] = "logic@esc_flesh_ferma_home2",
+			["idle"] = 0, ["prior"] = 1, ["state"] = { 0 },
+			["in_rest"] = "", ["out_rest"] = "" } )
+
+	elseif gtype == "esc_small_home3" then	-- Слепышы [3508]
+		for t = 1, 3 do
+			t = {section = "logic@esc_small_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_small_home5" then	-- Слепышы [3509]
+		for t = 1, 2 do
+			t = {section = "logic@esc_small_home5", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_small_home1" then	-- Кабаны [3536]
+		for t = 1, 2 do
+			t = {section = "logic@esc_small_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_small_home4" then	-- Слепышы [3568]
+		for t = 1, 2 do
+			t = {section = "logic@esc_small_home4", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc2_dogs2_exit" then
+		for t = 1, 5 do
+			t = {section = "logic@esc2_dogs2_exit_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_boars_flesh" then	-- Свинки и кабаны
+		for t = 1, 2 do
+			t = {section = "logic@esc_boars_flesh_home1", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@esc_boars_flesh_home2", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_rat_svalka" then	-- Крысы
+		-- 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@esc_rat_svalka_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_rat_melnisa" then
+		for t = 1, 5 do
+			t = {section = "logic@esc_rat_melnisa_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_tushkano_exit" then	-- Тушканы
+		for t = 1, 7 do
+			t = {section = "logic@esc_tushkano_exit_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_tushkano_kamaz" then
+		for t = 1, 5 do
+			t = {section = "logic@esc_tushkano_kamaz_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_tushkano_zatunel" then
+		for t = 1, 7 do
+			t = {section = "logic@esc_tushkano_zatunel_home1", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@esc_tushkano_zatunel_home2", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_pseudodog" then	-- Псевдопсы
+		for t = 1, 3 do
+			t = {section = "logic@esc_pseudodog_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_cat" then	-- Кошки
+		for t = 1, 3 do
+			t = {section = "logic@esc_cat_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_new_lager" then	-- Костя на Кордоне [3866]
+		t = {section = "logic@esc_new_lager_esc_kostya", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+
+	elseif gtype == "svalka_lager" then	-- Костя на Свалке [4158]
+		t = {section = "logic@svalka_lager_esc_kostya", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+
+	elseif gtype == "bar_lager" then	-- Костя в Баре [6934]
+		t = {section = "logic@bar_lager_esc_kostya", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+
+	elseif gtype == "rost_naem_koster" then	-- Гулаг наёмников на ростке у костра [7485]
+		for i = 1, 3 do
+			t = {section = "logic@rost_naem_koster_kamp"..i, idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "as_lager" then	-- Костя на АС [7952]
+		t = {section = "logic@as_lager_esc_kostya", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+
+	elseif gtype == "esc2_dogs_lair" then	 -- Собаки возле тунелля
+		for t = 1, 5 do
+			t = {section = "logic@esc2_dogs_lair_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc2_dogs_zamost" then	-- Собаки возле насыпи
+		for t = 1, 3 do
+			t = {section = "logic@esc2_dogs_zamost_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@esc2_dogs_zamost_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@esc2_dogs_zamost_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_bandit_parovoz" then	-- Бандиты возле паровоза
+		for i = 1, 2 do
+			t = {section = "logic@esc_bandit_parovoz_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@esc_bandit_parovoz_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@esc_bandit_parovoz_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@esc_bandit_parovoz_kamp3", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+
+	-- Гулаги с переменным состоянием
+
+	elseif gtype == "esc2_dogs_exit" then
+		for t = 1, 8 do
+			t = {section = "logic@esc2_dogs_exit_home2", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 8 do
+			t = {section = "logic@esc2_dogs_exit_home1", idle = 0, prior = 5, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		end
+
+
+	elseif gtype == "esc_factory" then	-- Доктор и Звездочет
+		for t = 1, 2 do
+			t = {section = "logic@esc_factory_kamp", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		t = { section = "logic@esc_factory_kamp1", idle = 0, prior = 5, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+			            	return obj_info.name == "esc_zvezdochet1"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_factory_kamp2", idle = 0, prior = 5, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+			            	return obj_info.name == "esc_doktor"
+			            end
+		}
+		table.insert(sj, t)
+
+	elseif gtype == "esc_bridge" then	-- Солдаты под мостом и на насыпи [3224]
+		-- 11 работ - день
+		-- часовые
+		t = { section = "logic@esc_bridge_post1", idle = 0, prior = 7, state = {0},
+			in_rest = "", out_rest = "esc_bridge_sr",
+			predicate = function(obj_info)
+			            	return obj_info.name == "esc_kuznetsov"
+			            end
+		}
+		table.insert(sj, t)
+		for i = 2, 6 do
+			t = {section = "logic@esc_bridge_post"..i, idle = 0, prior = 7-i, state = {0},
+				in_rest = "", out_rest = "esc_bridge_sr"
+			}
+		table.insert(sj, t)
+		end
+		t = { section = "logic@esc_bridge_post11", idle = 0, prior = 7, state = {0},
+			in_rest = "", out_rest = "esc_bridge_sr",
+			predicate = function(obj_info)
+			            	return obj_info.rank >= 601 and has_alife_info("esc_demob_done")
+			            end
+		}
+		table.insert(sj, t)
+
+		-- снайпер на насыпи
+		t = { section = "logic@esc_bridge_camper", idle = 0, prior = 6, state = {0},
+			in_rest = "", out_rest = "esc_bridge_sr",
+			predicate = function(obj_info)
+			            	return obj_info.is_sniper
+			            end
+		}
+		table.insert(sj, t)
+	
+		-- на насыпи
+		for i = 1, 4 do
+			t = {section = "logic@esc_bridge_walker"..i, idle = 0, prior = i, state = {0},
+				in_rest = "", out_rest = "esc_bridge_sr"
+			}
+		table.insert(sj, t)
+		end
+
+		-- 11 работ - ночь
+		-- на посту
+		for i = 7, 10 do
+			t = {section = "logic@esc_bridge_post"..i, idle = 0, prior = 14-i, state = {1},
+				in_rest = "", out_rest = "esc_bridge_sr"
+			}
+		table.insert(sj, t)
+		end
+
+		-- патрульный
+		t = { section = "logic@esc_bridge_patrol", idle = 0, prior = 3, state = {1},
+			in_rest = "", out_rest = "esc_bridge_sr"
+		}
+		table.insert(sj, t)
+
+		-- у костра
+		t = { section = "logic@esc_bridge_kamp1", idle = 0, prior = 9, state = {1},
+			in_rest = "", out_rest = "esc_bridge_sr",
+			predicate = function(obj_info)
+			            	return obj_info.name == "esc_kuznetsov" or (obj_info.rank >= 601 and has_alife_info("esc_demob_done"))
+			            end
+		}
+		table.insert(sj, t)
+
+		for t = 1, 2 do
+			t = {section = "logic@esc_bridge_kamp2", idle = 0, prior = 2, state = {1},
+				in_rest = "", out_rest = "esc_bridge_sr"
+			}
+		table.insert(sj, t)
+		end
+
+		-- спящие
+		t = { section = "logic@esc_bridge_sleeper1", idle = 0, prior = 8, state = {1},
+			in_rest = "", out_rest = "esc_bridge_sr",
+			predicate = function(obj_info)
+			            	return obj_info.is_sniper
+			            end
+		}
+		table.insert(sj, t) 
+		for i = 2, 3 do
+			t = {section = "logic@esc_bridge_sleeper"..i, idle = 0, prior = 1, state = {1},
+				in_rest = "", out_rest = "esc_bridge_sr"
+			}
+		table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_assault" then	-- Петруха и Ко [3335]
+		-- 0 состояние 2 работы + 1 экс - в оффлайне
+		t = {section = "logic@esc_petruha", idle = 0, prior = 4, state = {0},
+			in_rest = "", out_rest = "",
+			online = false,
+			predicate = function(obj_info)
+							return obj_info.name == "esc_petruha"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_assault1", idle = 0, prior = 2, state = {0},
+			in_rest = "", out_rest = "",
+			online = false
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_assault2", idle = 0, prior = 2, state = {0},
+			in_rest = "", out_rest = "",
+			online = false
+		}
+		table.insert(sj, t)
+		-- 1 состояние 2 работы + 1 экс - ждем сигнала к атаке
+		t = {section = "logic@esc_petruha", idle = 0, prior = 4, state = {1},
+			in_rest = "", out_rest = "",
+			online = true,
+			predicate = function(obj_info)
+							return obj_info.name == "esc_petruha"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_assault1", idle = 0, prior = 2, state = {1},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_assault2", idle = 0, prior = 2, state = {1},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+		-- 2 состояние 2 работы + 1 экс - атака
+		t = {section = "logic@petruha_fight", idle = 0, prior = 4, state = {2},
+			in_rest = "", out_rest = "",
+			online = true, position_threshold = 120,
+			predicate = function(obj_info)
+							return obj_info.name == "esc_petruha"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_assault1_fight", idle = 0, prior = 2, state = {2},
+			in_rest = "", out_rest = "",
+			online = true, position_threshold = 120
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_assault2_fight", idle = 0, prior = 2, state = {2},
+			in_rest = "", out_rest = "",
+			online = true, position_threshold = 120
+		}
+		table.insert(sj, t)
+		-- 3 состояние 2 работы + 1 экс - Рапортуюем
+		t = {section = "logic@esc_assault_home_leader", idle = 0, prior = 4, state = {3},
+			in_rest = "", out_rest = "",
+			online = true,
+			predicate = function(obj_info)
+							return obj_info.name == "esc_petruha"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_assault_home1", idle = 0, prior = 2, state = {3},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_assault_home2", idle = 0, prior = 2, state = {3},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+		-- 4 состояние 3 работы - сидим у костра
+		for t = 1, 3 do
+			t = {section = "logic@esc_assault_kamp", idle = 0, prior = 6, state = {4},
+				in_rest = "", out_rest = "",
+				position_threshold = 150
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_fabrika_bandit" then	-- Бандиты на фабрике [3199]
+		-- 0,2  - общие
+		t = {section = "logic@esc_fabrika_bandit_walker4", idle = 5, prior = 10, state = {0,2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor",
+			predicate = function(obj_info)
+							return obj_info.name == "esc_factory_prisoner_guard"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "camper@esc_fabrika_bandit_walker7", idle = 0, prior = 7, state = {0,2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+
+		-- state 0 - 5
+		t = {section = "logic@esc_fabrika_bandit_walker1", idle = 0, prior = 5, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_fabrika_bandit_walker2", idle = 0, prior = 5, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_fabrika_bandit_walker3", idle = 0, prior = 5, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+
+		t = {section = "logic@esc_fabrika_bandit_kamp", idle = 0, prior = 5, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+
+		t = {section = "logic@esc_fabrika_bandit_kamp", idle = 0, prior = 5, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+
+
+		-- state 2 - 5
+		t = {section = "camper@esc_fabrika_bandit_walker1", idle = 0, prior = 5, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = {section = "camper@esc_fabrika_bandit_walker2", idle = 0, prior = 5, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = {section = "camper@esc_fabrika_bandit_walker3", idle = 0, prior = 5, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+
+		t = {section = "camper@esc_fabrika_bandit_walker5", idle = 0, prior = 5, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = {section = "camper@esc_fabrika_bandit_walker6", idle = 0, prior = 5, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+
+	elseif gtype == "esc_specnaz" then	-- Спецназ на блокпосту [3247]
+		--' 0 состояние - 6 работ - сидим курим
+		for t = 1, 6 do
+			t = {section = "logic@esc_specnaz_kamp", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = "", online = false
+			}
+		table.insert(sj, t)
+		end
+		--' 1 состояние - 6 работ - идем в рейд
+		t = {section = "logic@esc_specnaz_raid1", idle = 0, prior = 7, state = {1},
+			in_rest = "", out_rest = "", online = true
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_specnaz_raid2", idle = 0, prior = 7, state = {1},
+			in_rest = "", out_rest = "", online = true
+		}
+		table.insert(sj, t)
+		for i = 1, 4 do
+			t = {section = "logic@esc_specnaz_follower"..i, idle = 0, prior = 5, state = {1},
+				in_rest = "", out_rest = "", online = true
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_blokpost" then	-- Блокпост на Кордоне [3248]
+
+		-- командир
+		table_insert( sj, { section = "logic@esc_blockpost_commander_day",
+			idle = 0, prior = 20, state = { 0 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100,
+			predicate = function( info ) return info.rank >= 901 end } )
+
+		-- пост
+		table_insert( sj, { section = "logic@esc_blockpost_post1",
+			idle = 0, prior = 6, state = { 0 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_post2",
+			idle = 0, prior = 6, state = { 0 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		-- патрульный
+		table_insert( sj, { section = "logic@esc_blockpost_patrol_yard",
+			idle = 0, prior = 7, state = { 0 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		-- снайпер
+		table_insert( sj, { section = "logic@esc_blockpost_camper_day",
+			idle = 0, prior = 8, state = { 0 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100,
+			predicate = function(obj_info)
+			            	return obj_info.is_sniper
+			            end } )
+
+		-- патруль, 3 человека
+		table_insert( sj, { section = "logic@esc_blockpost_patrol1",
+			idle = 0, prior = 10, state = { 0,1 },
+			in_rest = "", out_rest = "esc_blockpost_patrol_restrictor,escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_follower1",
+			idle = 0, prior = 9, state = { 0,1 },
+			in_rest = "", out_rest = "esc_blockpost_patrol_restrictor,escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_follower2",
+			idle = 0, prior = 9, state = { 0,1 },
+			in_rest = "", out_rest = "esc_blockpost_patrol_restrictor,escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		-- и два телезрителя
+
+		table_insert( sj, { section = "logic@esc_blockpost_watch_tv1",
+			idle = 0, prior = 5, state = { 0 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_watch_tv2",
+			idle = 0, prior = 5, state = { 0 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+		-- =10
+
+		-- командир
+		table_insert( sj, { section = "logic@esc_blockpost_kamp1",
+			idle = 0, prior = 20, state = { 1 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100,
+			predicate = function( info ) return info.rank >= 901 end } )
+
+		-- и двое с ним у костра
+		table_insert( sj, { section = "logic@esc_blockpost_kamp1",
+			idle = 0, prior = 5, state = { 1 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_kamp1",
+			idle = 0, prior = 5, state = { 1 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		-- пост
+		table_insert( sj, { section = "logic@esc_blockpost_post1",
+			idle = 0, prior = 6, state = { 1 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_post2",
+			idle = 0, prior = 6, state = { 1 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		-- патрульный во дворе
+		table_insert( sj, { section = "logic@esc_blockpost_patrol_yard",
+			idle = 0, prior = 7, state = { 1 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		-- четверо спящих
+		table_insert( sj, { section = "logic@esc_blockpost_sleep1",
+			idle = 0, prior = 5, state = { 1 },
+			in_rest = "", out_rest = "",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+		-- =10
+
+		-- командир и охранники
+		table_insert( sj, { section = "logic@esc_blockpost_commander_day",
+			idle = 0, prior = 20, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100,
+			predicate = function( info ) return info.rank >= 901 end } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_comander_guard1",
+			idle = 0, prior = 9, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_comander_guard2",
+			idle = 0, prior = 9, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_camper_day",
+			idle = 0, prior = 8, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_camper1",
+			idle = 0, prior = 6, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_camper2",
+			idle = 0, prior = 6, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_post1",
+			idle = 0, prior = 6, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_post2",
+			idle = 0, prior = 6, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_alarm_patrol1",
+			idle = 0, prior = 5, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+
+		table_insert( sj, { section = "logic@esc_blockpost_alarm_patrol2",
+			idle = 0, prior = 5, state = { 2 },
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			group = 1, squad = 1, online = true,
+			position_threshold = 100 } )
+		-- =10
+
+
+	elseif gtype == "esc_killers" then	-- Наемники, атакующие новичков [3251]
+		--' 0 состояние - 7 работ + 1 экс - ждем в оффлайне
+		t = {section = "logic@esc_killer_kamp_offline", idle = 0, prior = 20, state = {0},
+			in_rest = "", out_rest = "",
+			online = false,
+			predicate = function(obj_info)
+							return obj_info.rank >= 901
+						end
+		}
+		table.insert(sj, t)
+		for t = 1, 7 do
+			t = {section = "logic@esc_killer_kamp_offline", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = "",
+				online = false
+			}
+		table.insert(sj, t)
+		end
+	--' 1 состояние - 7 работ + 1 экс - ждем сигнала к атаке
+		t = {section = "logic@esc_killer_kamp_wait", idle = 0, prior = 20, state = {1},
+			in_rest = "", out_rest = "",
+			online = true, position_threshold = 400,
+			predicate = function(obj_info)
+							return obj_info.rank >= 901
+						end
+		}
+		table.insert(sj, t)
+		for t = 1, 4 do
+			t = {section = "logic@esc_killer_kamp_wait", idle = 0, prior = 5, state = {1},
+				in_rest = "", out_rest = "",
+				online = true, position_threshold = 400
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@esc_killer_kamp_guard"..i, idle = 0, prior = 5, state = {1},
+				in_rest = "", out_rest = "",
+			online = true, position_threshold = 400
+			}
+			table.insert(sj, t)
+		end
+	--' 2 состояние - 7 работ + 1 экс - идем на деревню
+		t = {section = "logic@esc_killer_leader_raid", idle = 0, prior = 20, state = {2},
+			in_rest = "", out_rest = "",
+			online = true,
+			predicate = function(obj_info)
+							return obj_info.rank >= 901
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_killer1_raid", idle = 0, prior = 6, state = {2},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_killer2_raid", idle = 0, prior = 6, state = {2},
+			in_rest = "", out_rest = "",
+			online = true
+		}
+		table.insert(sj, t)
+		for t = 1, 5 do
+			t = {section = "logic@esc_killer1_follower", idle = 0, prior = 5, state = {2},
+				in_rest = "", out_rest = "",
+				online = true
+			}
+			table.insert(sj, t)
+		end
+	--' 3 состояние - 8 работ - атака
+		for t = 1, 8 do
+			t = {section = "logic@esc_killer_fight", idle = 0, prior = 5, state = {3},
+				in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+				online = true, position_threshold = 400
+			}
+		table.insert(sj, t)
+		end
+	--' 4 состояние - 8 работ - победа
+		for t = 1, 8 do
+			t = {section = "logic@esc_killer_kamp", idle = 0, prior = 5, state = {4},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_dogs_swarm" then	-- Слепышы [3263]
+		--' 0 состояние 5 работы
+		for t = 1, 5 do
+			t = {section = "logic@esc_dogs_swarm1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@esc_dogs_swarm2", idle = 0, prior = 5, state = {1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@esc_dogs_swarm3", idle = 0, prior = 5, state = {2},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+	elseif gtype == "esc_stalker_camp" then	-- Лис и Проводник [3338]
+		-- 0 состояние + 2 экс
+		t = {section = "logic@esc_stalker_camp_provodnik", idle = 0, prior = 10, state = {0},
+			in_rest = "", out_rest = "",
+			online = false,
+			predicate = function(obj_info)
+							return obj_info.profile_name == "esc_provodnik"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_stalker_fox", idle = 0, prior = 10, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.profile_name == "esc_fox"
+						end
+		}
+		table.insert(sj, t)
+		-- 1 состояние + 1 работа + 1 экс
+		t = {section = "logic@esc_stalker_camp_provodnik", idle = 0, prior = 10, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.profile_name == "esc_provodnik"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@esc_stalker_camp1", idle = 0, prior = 5, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+
+
+	elseif gtype == "esc_lager" then	-- Лагерь новичков на Escape
+		-- 0 - состояние - 12 работ до фабрика_килл
+		-- 1 - ночь; 2 - с 12 до 16; 3 - с 4 до 12 и  с 16 до 22
+
+
+		table_insert( sj, {	-- охранники
+			["section"] = "logic@esc_lager_zoneguard1",
+			["idle"] = 0, ["prior"] = 8, ["state"] = { 0, 1 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {	-- охранники
+			["section"] = "logic@esc_lager_zoneguard1",
+			["idle"] = 0, ["prior"] = 10, ["state"] = { 2, 3 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+
+		table_insert( sj, {
+			["section"] = "logic@esc_lager_zoneguard2",
+			["idle"] = 0, ["prior"] = 8, ["state"] = { 0, 1 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {
+			["section"] = "logic@esc_lager_zoneguard2",
+			["idle"] = 0, ["prior"] = 10, ["state"] = { 2, 3 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+
+		table_insert( sj, {
+			["section"] = "logic@esc_lager_walker1",
+			["idle"] = 0, ["prior"] = 6, ["state"] = { 0, 1 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {
+			["section"] = "logic@esc_lager_walker1",
+			["idle"] = 0, ["prior"] = 8, ["state"] = { 2, 3 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		-- 3
+
+
+		table_insert( sj, {	-- у костра днем
+			["section"] = "logic@esc_lager_kamp1",
+			["idle"] = 0, ["prior"] = 4, ["state"] = { 0 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {	-- охранник ночью
+			["section"] = "logic@esc_lager_zoneguard3",
+			["idle"] = 0, ["prior"] = 8, ["state"] = { 1 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {	-- днем - у костра под мостом
+			["section"] = "logic@esc_lager_kamp2",
+			["idle"] = 0, ["prior"] = 6, ["state"] = { 2, 3 },
+			["in_rest"] = "", ["out_rest"] = ""
+			} )
+
+		table_insert( sj, {	-- у костра днем
+			["section"] = "logic@esc_lager_kamp1",
+			["idle"] = 0, ["prior"] = 4, ["state"] = { 0, 2, 3 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {	-- охранник ночью
+			["section"] = "logic@esc_lager_zoneguard4",
+			["idle"] = 0, ["prior"] = 8, ["state"] = { 1 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		-- + 2 = 5
+
+		table_insert( sj, {	-- у костра днем и ночью
+			["section"] = "logic@esc_lager_kamp1",
+			["idle"] = 0, ["prior"] = 4, ["state"] = { 0, 1, 2, 3 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+
+		table_insert( sj, {
+			["section"] = "logic@esc_lager_kamp1",
+			["idle"] = 0, ["prior"] = 4, ["state"] = { 0, 1, 2, 3 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		-- + 2 = 7
+
+
+		table_insert( sj, {	-- спящие
+			["section"] = "logic@esc_lager_sleeper1",
+			["idle"] = 0, ["prior"] = 2, ["state"] = { 0, 1, 3 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {	-- пошли под мост
+			["section"] = "logic@esc_lager_zoneguard5",
+			["idle"] = 0, ["prior"] = 6, ["state"] = { 2 },
+			["in_rest"] = "", ["out_rest"] = ""
+			} )
+
+		table_insert( sj, {
+			["section"] = "logic@esc_lager_sleeper2",
+			["idle"] = 0, ["prior"] = 2, ["state"] = { 0, 1, 3 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {	-- пошли под мост
+			["section"] = "logic@esc_lager_zoneguard6",
+			["idle"] = 0, ["prior"] = 6, ["state"] = { 2 },
+			["in_rest"] = "", ["out_rest"] = ""
+			} )
+
+		table_insert( sj, {
+			["section"] = "logic@esc_lager_sleeper3",
+			["idle"] = 0, ["prior"] = 2, ["state"] = { 0, 1, 2, 3 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+
+		table_insert( sj, {
+			["section"] = "logic@esc_lager_sleeper4",
+			["idle"] = 0, ["prior"] = 2, ["state"] = { 0, 1, 2 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {	-- пошли под мост
+			["section"] = "logic@esc_lager_zoneguard5",
+			["idle"] = 0, ["prior"] = 6, ["state"] = { 3 },
+			["in_rest"] = "", ["out_rest"] = ""
+			} )
+
+		table_insert( sj, {
+			["section"] = "logic@esc_lager_sleeper5",
+			["idle"] = 0, ["prior"] = 2, ["state"] = { 0, 1, 2 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		table_insert( sj, {	-- пошли под мост
+			["section"] = "logic@esc_lager_zoneguard6",
+			["idle"] = 0, ["prior"] = 6, ["state"] = { 3 },
+			["in_rest"] = "", ["out_rest"] = ""
+			} )
+		-- + 5 = 12
+
+		for i = 1, 12 do table_insert( sj, {	-- защита лагеря
+			["section"] = "logic@esc_lager_defend" .. i,
+			["idle"] = 0, ["prior"] = 13 - i, ["state"] = { 4 },
+			["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+			} )
+		end
+
+
+		-- for i = #sj, 59 do table_insert( sj, {	-- у костра днем и ночью
+		--	["section"] = "logic@esc_lager_kamp1",
+		--	["idle"] = 0, ["prior"] = 1, ["state"] = { 0, 1, 2, 3 },
+		--	["in_rest"] = "", ["out_rest"] = "esc_lager_guard_kill_zone"
+		--	} )
+		-- end
+	end
+end
+
+
+function load_states(gname,type)
+
+	if type == "esc_ambush" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "aver_kaban_gulag" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "esc_flesh_ferma" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "esc_small_home3" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "esc_small_home5" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "esc_small_home1" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "esc_small_home4" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_new_lager" then
+		return function (gulag)
+			return 0
+		end
+
+	elseif type == "svalka_lager" then
+		return function (gulag)
+			return 0
+		end
+
+	elseif type == "bar_lager" then
+		return function (gulag)
+			return 0
+		end
+
+	elseif type == "rost_naem_koster" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "as_lager" then
+		return function (gulag)
+			return 0
+		end
+
+	elseif type == "esc2_dogs_lair" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc2_dogs_zamost" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc2_dogs2_exit" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_rat_svalka" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_rat_melnisa" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_tushkano_exit" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_tushkano_kamaz" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_tushkano_zatunel" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_pseudodog" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_cat" then
+		return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_bandit_parovoz" then
+		return function (gulag)
+			return 0
+		end
+
+	elseif type == "esc_factory" then
+		return function(gulag)
+			if has_alife_info("gar_hellcar_dialog_end") or has_alife_info("gar_hellcar_death") then
+				return 0
+			end
+			return 1
+		end
+
+	elseif type == "esc_bridge" then
+		return function(gulag)
+			local hour = level.get_time_hours()
+			if hour >=5 and hour <= 21 then
+				return 0  -- день
+			end
+			return 1  -- ночь
+		end
+
+	elseif type == "esc_fabrika_bandit" then
+		return function(gulag)
+			local game_time = game.get_game_time()
+			if not gulag.alarm_start then
+				for k,v in pairs(gulag.Object) do
+					if v ~= true and v:best_enemy() then
+						gulag.alarm_start = game_time
+						return 2 -- Тревога
+					end
+				end
+				return 0 -- Работаем
+			else
+				if game_time:diffSec(gulag.alarm_start) > 300 then
+					gulag.alarm_start = nil
+					return 0
+				end
+				return 2
+			end
+		end
+
+	elseif type == "esc_specnaz" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("esc_raid1_start") then
+				return 1 -- Идем в рейд
+			end
+			return 0 -- Курим бамбук
+		end
+
+	elseif type == "esc_blokpost" then
+		return function (gulag)
+			for k, v in pairs( gulag.Object ) do
+				local enemy
+				if v and v ~= true then
+					enemy = v:best_enemy()
+					if enemy and v:see( enemy ) then
+						gulag.alarm_start = game.get_game_time()
+						return 2 -- тревога
+			end	end	end
+
+			if gulag.alarm_start then
+				if game.get_game_time():diffSec( gulag.alarm_start ) < 300 then
+					return 2
+				else gulag.alarm_start = nil
+			end	end
+
+			local tm = level.get_time_hours()
+			if tm >= 5 and tm < 22 then return 0 end -- день
+			return 1 -- ночь
+		end
+
+
+	elseif type == "esc_killers" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("escape_lager_spawn_killers") then
+				if has_alife_info("esc_killers_raid") then
+					if has_alife_info("esc_open_killer_fire") then
+						if xr_gulag.getGulagPopulationComed("esc_lager") <= 0 then
+							return 4 -- победа
+						end
+						return 3 -- атакуем
+					end
+					return 2 -- идем в деревню новичков
+				end
+				return 1 -- ждем сигнала к походу
+			end
+			return 0 -- в оффлайне
+		end
+
+	elseif type == "esc2_dogs_exit" then
+		return function(gulag)
+			local game_time = game.get_game_time()
+			if game_time:diffSec(gulag.stateBegin) > 1800 then
+				if gulag.state == 0 then
+					return 1
+				elseif gulag.state == 1 then
+					return 0
+				end
+			end
+			return gulag.state
+		end
+
+	elseif type == "esc_dogs_swarm" then
+		return function(gulag)
+			local game_time = game.get_game_time()
+			if game_time:diffSec(gulag.stateBegin) > 900 then
+				if gulag.state == 0 then
+					return 1
+				elseif gulag.state == 1 then
+					return 2
+				elseif gulag.state == 2 then
+					return 0
+				end
+			end
+			return gulag.state
+		end
+
+	elseif type == "esc_boars_flesh" then
+	    return function(gulag)
+			return 0
+		end
+
+	elseif type == "esc_assault" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("esc_kill_bandits_quest_have") then
+				if not has_alife_info("esc_kill_bandits_quest_done") then
+					if not has_alife_info("esc_kill_bandits_quest_kill") then
+						if not has_alife_info("esc_assault_start") then
+							return 1 -- На холме в онлайне
+						end
+						return 2 -- Атакуют фабрику
+					end
+					return 3 -- Рапортуют
+				end
+				return 4 -- У костра на фабрике
+			end
+			return 0 -- Сидят в оффлайне
+		end
+
+	elseif type == "esc_stalker_camp" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("yan_provodnik_spawn") then
+				return 1 -- Проводник
+			end
+			return 0 -- Лис
+		end
+
+	elseif type == "esc_lager" then
+		return function(gulag)
+			local level_hours = level.get_time_hours()
+			if (has_alife_info("escape_lager_help") and not has_alife_info("escape_lager_killers_die")) or has_alife_info("esc_lager_alarm") then
+				return 4 -- оборона лагеря
+			elseif not has_alife_info("esc_kill_bandits_quest_done") or (has_alife_info("esc_fanat_spawn") and not has_alife_info("escape_lager_help")) then
+				return 0 -- все в лагерь
+			elseif level_hours >= 22 or level_hours < 4 then
+				return 1
+			elseif level_hours >= 10 and level_hours < 16 then
+				return 2
+			end
+			return 3
+		end
+	end
+end
+
+
+function load_ltx() return nil end
+
+
+local t_npc_comm = {
+["esc_ambush"]		= "bandit",
+["rost_naem_koster"]	= "killer",
+["esc_bridge"]		= "military",
+["esc_assault"]		= "stalker",
+["esc_fabrika_bandit"]	= "bandit",
+["esc_blokpost"]	= "military",
+["esc_killers"]		= "killer",
+["esc_stalker_camp"]	= "stalker",
+["esc_lager"]		= "stalker",
+["esc_bandit_parovoz"]	= "bandit"
+}
+
+local t_npc_profile = {
+["esc_new_lager"]	= "esc_kostya",
+["svalka_lager"]	= "esc_kostya",
+["bar_lager"]		= "esc_kostya",
+["as_lager"]		= "esc_kostya",
+["esc_specnaz"]		= "esc_soldier_specnaz"
+}
+
+function checkStalker( comm, gtype, rank, obj )
+	local v = t_npc_comm[gtype]
+	if v then return v == comm end
+
+	v = t_npc_profile[gtype]
+	if v then return v == obj:profile_name() end
+
+	if gtype == "esc_factory" then	-- смарт на элеваторе, до свалки сидят зведочет и док
+		if has_alife_info( "gar_hellcar_dialog_end" )	-- после - просто крутые сталки
+		  or has_alife_info( "gar_hellcar_death" ) then
+			return ( comm == "stalker" and obj:rank() >= 900 )
+		end
+		return obj:name() == "esc_zvezdochet1" or obj:name() == "esc_doktor"
+	end
+
+	return false
+end
+
+
+local t_mobs = {
+["aver_kaban_gulag"]	= "boar",
+["esc_flesh_ferma"]	= "flesh",
+["esc_small_home3"]	= "dog",
+["esc_small_home5"]	= "dog",
+["esc_small_home1"]	= "boar",
+["esc_small_home4"]	= "dog",
+["esc_dogs_swarm"]	= "dog",
+["esc2_dogs_lair"]	= "dog",
+["esc2_dogs_zamost"]	= "dog",
+["esc2_dogs_exit"]	= "dog",
+["esc2_dogs2_exit"]	= "dog",
+["esc_rat_svalka"]	= "rat",
+["esc_rat_melnisa"]	= "rat",
+["esc_tushkano_exit"]	= "tushkano",
+["esc_tushkano_kamaz"]	= "tushkano",
+["esc_tushkano_zatunel"]= "tushkano",
+["esc_pseudodog"]	= "pseudodog",
+["esc_cat"]		= "cat"
+}
+
+function checkMonster( comm, gtype )
+	local v = t_mobs[gtype]
+	if v then return v == comm end
+	if gtype == "esc_boars_flesh" then
+		return ( comm == "flesh" ) or ( comm == "boar" )
+	end
+	return false
+end

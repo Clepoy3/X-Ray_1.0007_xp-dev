@@ -1,0 +1,79 @@
+local math_random = math.random
+local string_gfind = string.gfind
+
+local sim = alife()
+
+_tbl_deathmgr.init()
+
+local t_items = _tbl_deathmgr.get_tbox_items()
+local t_map, t_cnt
+
+
+function spawn_items( box )
+	local ini = box:spawn_ini()
+
+	local k, v
+	local t, n = {}, 0
+	local s = ini:line_exist( "drop_box", "items" ) and ini:r_string( "drop_box", "items" )
+	if s then
+		for d in string_gfind( s, "([%w_%-.\\]+)[%p%s]*" ) do	-- выделяем то, что между запятыми/пробелами
+			if k then	-- если уже прочитан ключ, возможно, сейчас считали число
+				n = n + 1		-- но в таблицу что-то добавим по-любому
+				v = tonumber( d )
+				if v then		-- таки число
+					t[n] = { k, v }	-- кладем в таблицу
+					k = false	-- следующее, что получим - точно key
+				else			-- если это не число, значит - key
+					t[n] = { k, 1 } -- а key уже есть, берем дефолт
+					k = d		-- полученное сохраняем как новый key
+				end
+			else k = d	-- ключа нет, значит именно его сейчас и получили
+		end	end
+		if k then n = n + 1; t[n] = { k, 1 } end
+	end
+
+	local pos = box:position()
+	local lvid, gvid = box:level_vertex_id(), box:game_vertex_id()
+
+	for i = 1, n do	-- спавним то, что прочитали из ini
+		v = t[i]
+		s = v[1]
+		for ii = 1, v[2] do
+			sim:create( s, pos, lvid, gvid )
+	end	end
+
+	local btype = ini:line_exist( "drop_box", "community" ) and ini:r_string( "drop_box", "community" )
+	if btype and t_items[btype] then t = t_items[btype]	-- спавним рандомные предметы
+	else return
+	end
+
+	local def = t_items.default
+	local p
+	for k, v in pairs( t_map ) do
+		if v ~= 0 then
+			p = t[k] or def[k] or 0
+			if p ~= 0 and math_random() < v * p then
+				v = t_cnt[k]
+				if v[2] then n = math_random( v[1], v[2] )
+				else n = v[1]
+				end
+				for i = 1, n do
+					sim:create( k, pos, lvid, gvid )
+	end	end	end	end
+end	
+
+
+function init()
+	local lname = level.name()
+	t_map = _tbl_deathmgr.get_tbox_map( lname ) or _tbl_deathmgr.get_tbox_map( "l01_escape" )
+	local df = level.get_game_difficulty()
+	t_cnt = _tbl_deathmgr.get_tbox_cnt( df + 1 )
+	if df ~= 0 then
+		for k, v in pairs( _tbl_deathmgr.get_tbox_cnt( 1 ) ) do
+			if not t_cnt[k] then t_cnt[k] = v end
+	end	end
+	return true
+end
+
+init()
+

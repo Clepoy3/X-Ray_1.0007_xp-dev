@@ -1,0 +1,58 @@
+--\\ћодуль*Ѕатарейки ƒл€ оружи€*..ћеченый(—трелок)..
+--нафиг все переписано кроме невидимости by Monnoroch
+local last_time
+local full_charge = 700
+local last_charge
+--\\Minigan
+
+local t_upd = 0
+local t_upd_delta = 1000
+
+function on_actor_update()
+	if t_upd > time_global() then return end --сама€ многоотсекающа€ проверка
+	
+	t_upd = time_global() + t_upd_delta
+	local wpn = db.actor:item_in_slot(2)
+	if not wpn or wpn:section() ~= "wpn_m_134" then
+		last_time = nil -- если не сделать, то при вз€тии в руки минигана врем€ использовани€ аккумул€тора будет считатьс€ с момента его прошлого использовани€
+		return
+	end
+	
+	minigan_update(wpn)
+end
+
+function minigan_update(item)
+	local acumm = db.actor:object("acumm")
+	if not acumm then
+		local patronov = item:get_ammo_in_magazine()	-- вариант 2
+		local cond = item:condition()
+		local new_wpn = alife():create(item:section(), db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(), db.actor:id())
+		amk.start_timer("set_condition", 0.2, {new_wpn.id, cond * 100})
+		amk.start_timer("set_patroni", 0.2, {new_wpn.id, patronov})
+
+		alife():release(alife():object(item:id()))
+		last_time = nil -- если не сделать, то при по€влении в инвентаре нового аккумул€тора, будет считатьс€ что он использовалс€ со времени разр€дки последнего аккумул€тора
+		return
+	end
+	
+	if not last_time then -- только-только одновременно имеетс€ аккумул€тор и миниган в руках
+		last_time = game.get_game_time()
+		last_charge = amk.load_variable("accum_charge", full_charge)
+		return
+	end
+	
+	local tm_diff = game.get_game_time():diffSec(last_time)
+	if tm_diff > 0 then
+		last_time = game.get_game_time()
+		last_charge = last_charge - tm_diff * 0.1
+		amk.save_variable("accum_charge", last_charge)
+		if last_charge <= 0 then
+			last_charge = full_charge
+			amk.save_variable("accum_charge", last_charge)
+			local se_acumm = alife():object(acumm:id())
+			if se_acumm then
+				alife():release(se_acumm, true)
+			end
+		end
+	end
+end

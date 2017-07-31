@@ -1,0 +1,214 @@
+; Пистолет Кольт М1911А1
+[wpn_colt1911]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                   	= "weapons\colt1911"					
+$npc			 			= on				
+$prefetch 					= 8
+scheduled            		= off              
+cform                    	= skeleton
+class                    	= WP_PM
+min_radius               	= 0
+max_radius               	= 30
+description					= enc_weapons1_wpn-colt1911
+
+script_binding  = bind_wpn.init
+
+ef_weapon_type				= 5
+
+holder_range_modifier	= 1.0                
+holder_fov_modifier		= 1.0              
+
+cost					 	= 1100
+
+ammo_limit		 			= 120
+ammo_current		 		= 90
+ammo_elapsed		 		= 12
+
+f_mode				= 1
+
+ammo_mag_size		 		= 7
+ammo_class		 			= ammo_11.43x23_fmj, ammo_11.43x23_hydro
+
+hand_dependence		 		= 1
+single_handed				= 1
+
+slot 				 		= 1		
+animation_slot		 		= 1		
+
+inv_name					= wpn-colt1911
+inv_name_short				= wpn-colt1911
+inv_weight					= 1.1
+
+inv_grid_width     = 2
+inv_grid_height    = 1
+inv_grid_x         = 37
+inv_grid_y         = 36
+
+kill_msg_x			= 161
+kill_msg_y			= 153
+kill_msg_width		= 37
+kill_msg_height		= 24
+
+;базовая дисперсия
+fire_dispersion_base		= 0.22	
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         	= 8
+cam_dispersion          	= 1.5	
+cam_dispersion_inc		= 0.0	
+cam_dispertion_frac		= 1.0	
+cam_max_angle			= 20.0	
+cam_max_angle_horz		= 10.0	
+cam_step_angle_horz		= 0.6	
+
+fire_dispersion_condition_factor = 3	 
+misfire_probability 		= 0.003	 
+misfire_condition_k			= 0.1
+condition_shot_dec			= 0.0004 
+
+direction                	= 0, 0, 1
+fire_point			= 0.000000,0.130000,0.185000
+
+flame_particles		   		= weapons\generic_weapon03
+smoke_particles		   		= weapons\generic_shoot_00
+rpm_empty_click 	 		= 200
+
+shell_point		 			= 0.0, 0.127, 0.05
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles	 			= weapons\shells_r_ns_9mm
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.9
+PDM_disp_accel_factor 		= 0.9
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        		= 0.75
+hit_impulse		 	    = 3
+hit_type 			    = fire_wound
+hit_rate	            = 1.85
+fire_distance           = 50
+bullet_speed			= 253
+rpm                     = 250
+
+use_aim_bullet				= true		
+time_to_aim					= 1.0	
+
+silencer_hit_power       	= 0.72
+silencer_hit_impulse	 	= 2
+silencer_fire_distance   	= 45
+silencer_bullet_speed	 	= 240
+
+hud                      	= wpn_colt1911_hud
+normal                   	= 0, 1, 0
+position                 	= -0.021, -0.092, 0.0
+orientation              	= 0, 0, 0
+
+startup_ammo             	= 90
+visual                   	= weapons\colt1911\wpn_colt1911.ogf
+
+
+ph_mass			 			= 1
+
+;addons
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor	    	= 55
+
+;звуки
+snd_draw					= weapons\colt\colt_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\colt\colt1911_shoot 
+snd_shoot1					= weapons\colt\colt1911_shoot1
+snd_shoot2					= weapons\colt\colt1911_shoot2 
+snd_shoot3					= weapons\colt\colt1911_shoot3         
+snd_empty					= weapons\colt\colt_empty
+snd_reload					= weapons\colt\colt_reload, 0.8
+snd_close					= weapons\colt\colt_close
+snd_silncer_shot				= weapons\colt\colt_shot_sil
+
+silencer_name  				= wpn_tgp_silencer		
+silencer_x 					= 72
+silencer_y 					= -10
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 3
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_colt1911_hud]
+shell_point			= 0.060000,0.060000,-0.420000
+fire_point			= 0.050000,0.060000,-0.335000
+
+fire_bone                	= wpn_body
+orientation              	= 0,0,0
+position                 	= 0,0,0
+visual                   	= weapons\colt1911\wpn_colt1911_hud.ogf
+
+anim_holster				= holster
+anim_idle					= idle
+anim_empty					= empty
+anim_reload					= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot
+anim_shot_last				= shoot_last
+anim_close					= holster
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.176600,0.067000,-0.244100
+zoom_rotate_x		= -0.008400
+zoom_rotate_y		= -0.000500
+
+zoom_hide_crosshair	= true						
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2
+
+; Уники
+
+[wpn_colt_m1]:wpn_colt1911	;Модифицированный кольт
+$spawn             				= "weapons\uniq\wpn_colt_m1"	
+description						= enc_weapons1_wpn-colt_m1
+inv_name						= wpn-colt_m1
+inv_name_short					= wpn-colt_m1
+silencer_status					= 1
+hit_power           = 0.7
+bullet_speed			= 250
+silencer_bullet_speed	 	= 250
+
+condition_shot_dec 				= 0.0003
+inv_grid_width     = 2
+inv_grid_height    = 1
+inv_grid_x         = 36
+inv_grid_y         = 34
+
+ammo_mag_size			= 10
+inv_weight				= 1.45
+smoke_particles 				= weapons\generic_shoot_00
+flame_particles					= 
+light_disabled					= true
+
+snd_shoot			= weapons\colt\colt_m1_shot
+snd_shoot1			= weapons\colt\colt_m1_shot
+snd_shoot2			= weapons\colt\colt_m1_shot
+snd_shoot3			= weapons\colt\colt_m1_shot

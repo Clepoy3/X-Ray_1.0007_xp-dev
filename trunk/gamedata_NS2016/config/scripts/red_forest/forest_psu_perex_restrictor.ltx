@@ -1,0 +1,15 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+forest_psu_perex} sr_idle@time
+
+[sr_idle@time]
+on_timer = 200 | sr_idle@time1 %=arhara_dialog.spawn_dog_to_red_forest%
+single = true
+
+[sr_idle@time1]
+on_timer = 12000 | sr_idle@nil %=arhara_dialog.spawn_mina_forest%
+single = true
+
+[sr_idle@nil] 

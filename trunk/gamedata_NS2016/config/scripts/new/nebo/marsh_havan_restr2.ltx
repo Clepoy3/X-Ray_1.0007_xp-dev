@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle@one
+
+[sr_idle@one]
+on_actor_inside = {-kalmyak_need_start} sr_idle@two %=braad_test.ograblen_kalm%
+
+[sr_idle@two]
+on_timer = 5000 | nil
+

@@ -1,0 +1,304 @@
+;---''' CAT '''---
+[m_cat_e]:monster_base
+GroupControlSection = spawn_group
+SpaceRestrictionSection = space_restrictor,zone_mosquito_bald,zone_witches_galantine,zone_burning_fuzz1,zone_mincer,zone_gravi_zone
+$npc      = on
+
+cform          = skeleton
+class          = SM_CAT_S
+script_binding = bind_monster.bind
+visual         = monsters\cat\cat
+corpse_visual  = monsters\cat\cat
+icon           = ui_npc_monster_cat
+
+ef_creature_type = 2
+ef_weapon_type   = 2
+ef_detector_type = 1
+panic_threshold  = 0
+
+bone_torso   = bip01_spine1
+bone_head    = bip01_head
+bone_fire    = bip01_head
+weapon_usage = 0
+
+distance_to_corpse = 1.5
+DynamicObjectsCount = 32
+Spawn_Inventory_Item_Section = mutant_tail_cat
+Spawn_Inventory_Item_Probability_onDeath = 0.7
+
+;--' Offline Alife '--
+Scheduled = on
+Human     = off
+Health    = 400
+
+MinSpeed     = 1.0
+MaxSpeed     = 5.5
+going_speed  = 1.0
+search_speed = 0.5
+MaxHealthValue = 200
+
+DayTime_Begin = 4
+DayTime_End   = 18
+terrain       = cat_terrain
+smart_terrain_choose_interval = 00:15:00
+
+;--' Physics '--
+ph_box0_center = 0.0, 0.3, 0
+ph_box0_size   = 0.3, 0.3, 0.30
+ph_box1_center = 0.0, 0.3, 0
+ph_box1_size   = 0.3, 0.3, 0.30
+
+ph_crash_speed_min         = 10
+ph_crash_speed_max         = 30
+ph_collision_damage_factor = 0.01
+ph_mass                    = 15
+
+destroyed_vis_name = physics\dead_body\skelet_crash_monster
+
+ph_skeleton_airr_lin_factor = 2
+ph_skeleton_airr_ang_factor = 0
+ph_skeleton_hinger_factor1  = 1
+ph_skeleton_ddelay          = 15
+
+ph_skel_fatal_impulse_factor   = 6
+ph_after_death_velocity_factor = 0.75
+ph_skel_shot_up_factor         = 0.25
+
+;--' Movement '--
+Velocity_Stand          = 0.00, 2.00, 2.00, 1.00, 1
+Velocity_WalkFwdNormal  = 2.45, 3.00, 3.00, 0.20, 1.5
+Velocity_WalkFwdDamaged = 2.30, 1.00, 1.00, 0.20, 1
+Velocity_RunFwdNormal   = 9.00, 2.60, 2.60, 0.22, 1
+Velocity_RunFwdDamaged  = 6.00, 1.50, 1.50, 0.20, 1
+Velocity_Drag           = 0.80, 2.14, 2.14, 1.00, 1
+Velocity_Steal          = 1.30, 2.14, 2.14, 1.00, 1
+
+Accel_Generic    = 1.5
+Accel_Calm       = 2.5
+Accel_Aggressive = 7.5
+
+;--' Attack '--
+MinAttackDist = 1.4
+MaxAttackDist = 2.0
+as_min_dist   = 0.3
+as_step       = 0.4
+
+hit_type  = strike
+
+squad_attack_algorithm = 1
+attack_effector        = cat_attack_effector
+attack_params          = cat_attack_params
+
+;--' Conditions '--
+satiety_v          = 0.00001
+radiation_v        = 0.00001
+satiety_power_v    = 0.005
+satiety_health_v   = 0.001
+satiety_critical   = -1
+radiation_health_v = 0.01
+morale_v           = 0.01
+health_hit_part    = 1
+power_hit_part     = 1
+psy_health_v       = 0.1
+
+immunities_sect = cat_immunities
+
+bleeding_v          = 0.001
+wound_incarnation_v = 0.05
+min_wound_size      = 0.01
+
+sleep_health     = 1
+sleep_power      = 1
+sleep_satiety    = 1
+sleep_radiation  = 1
+sleep_psy_health = 1
+
+eat_freq         = 5
+eat_slice        = 0.01
+eat_slice_weight = 10
+
+Min_Satiety = 0.4
+Max_Satiety = 1
+satiety_threshold = 0.5
+
+;--' Sounds '--
+sound_idle           = monsters\cat\idle
+sound_eat            = monsters\cat\2
+sound_aggressive     = monsters\cat\3
+sound_attack_hit     = monsters\cat\attack_hit
+sound_take_damage    = monsters\cat\take_damage
+sound_die            = monsters\cat\die
+sound_threaten       = monsters\cat\7
+sound_landing        = monsters\cat\8
+sound_steal          = monsters\cat\9
+sound_panic          = monsters\cat\10
+sound_growling       = monsters\cat\11
+sound_die_in_anomaly = monsters\cat\12
+
+killer_clsids = Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
+
+idle_sound_delay   = 55000
+eat_sound_delay    = 3000
+attack_sound_delay = 6000
+
+sound_distant_idle       = monsters\cat\1
+distant_idle_sound_delay = 80000
+distant_idle_sound_range = 100
+
+SoundThreshold = 0.06
+max_hear_dist  = 60
+material       = creatures\medium
+
+;--' Vision '--
+eye_fov    = 110
+eye_range  = 40
+
+min_view_distance       = 0.7
+max_view_distance       = 1
+visibility_threshold    = 100
+always_visible_distance = 0.4
+time_quant              = 0.001
+decrease_value          = 0.01
+velocity_factor         = 0.25
+luminocity_factor       = 0.25
+transparency_threshold  = 0.25
+
+;--' Morale '--
+Morale_Hit_Quant             = 0.1
+Morale_Attack_Success_Quant  = 0.1
+Morale_Take_Heart_Speed      = 0.1
+Morale_Despondent_Speed      = 0.1
+Morale_Stable_Speed          = 0.05
+Morale_Despondent_Threashold = 0.5
+
+;--' Damages '--
+damage           = cat_damage
+DamagedThreshold = 0.2
+
+critical_wound_threshold      = 0.4
+critical_wound_decrease_quant = 0
+
+;--' Species '--
+species   = cat
+rank      = 101
+spec_rank = weak
+community = cat
+
+;--' Other '--
+LegsCount   = 4
+step_params = cat_step_params
+
+Anomaly_Detect_Radius        = 20
+Anomaly_Detect_Time_Remember = 20000
+
+;--' selector '--
+selector_cover        = 20, -1000,   30, 0,     0, 100000, 100000, 1000
+selector_free_hunting = 20,    20, 1000, 0, 10000,   1000,  10000
+selector_hear_sound   = 20,     1, 1000, 0,     0,   1000,  10000
+selector_getaway      = 20,    20, 1000, 0, 10000,   1000,  10000
+selector_approach     = 20,     1, 1000, 0,     0,   1000,  10000
+selector_walk_around  = 20,     6, 1000, 4,  5000,      8,   5000
+
+;--' jump --
+jump_delay               = 3000
+jump_factor              = 2
+jump_ground_trace_range  = 0.8
+jump_hit_trace_range     = 1
+jump_build_line_distance = 0
+jump_min_distance        = 3.5
+jump_max_distance        = 6
+jump_max_angle           = 0.6
+
+;--' Sections '--
+[cat_attack_effector]
+duality_h       = 0.01
+duality_v       = 0.01
+blur            = 0.01
+gray            = 0.5
+noise_intensity = 0
+noise_grain     = 1
+noise_fps       = 30
+color_base      = 0.65, 0.15, 0.1
+color_gray      = 0.333, 0.333, 0.333
+color_add       = 0, 0, 0
+time            = 0.3
+time_attack     = 0.05
+time_release    = 0.25
+
+ce_time          = 0.45
+ce_amplitude     = -10
+ce_period_number = 2
+ce_power         = 1.5
+
+[cat_attack_params]
+stand_attack_0     = 0.25, 0.10, 15, 0,  0.5, 1, -1.2, 1.2, -1.2, 1.2, 2.5
+stand_attack_1     = 0.30, 0.10, 20, 0,  0.5, 1, -1.2, 1.2, -1.2, 1.2, 3.5
+stand_attack_rat_0 = 0.40, 0.15, 30, 0, -0.5, 1, -0.6, 0.6, -1.6, 0.6, 2
+jump_attack_2      = 0.50, 0.20, 50, 0, -0.5, 1, -0.6, 0.6, -1.6, 0.6, 2
+
+[cat_damage]
+default      = 0.9, -1, 0.1
+bip01_spine  = 0.9, -1, 0.05
+bip01_spine1 = 0.9, -1, 0.05
+bip01_neck   = 0.9, -1, 0.05
+bip01_head   = 0.9, -1, 0.3
+
+[cat_immunities]
+burn_immunity          = 0.8
+strike_immunity        = 0.8
+shock_immunity         = 0.8
+wound_immunity         = 0.5
+radiation_immunity     = 0.001
+telepatic_immunity     = 0
+chemical_burn_immunity = 0.8
+explosion_immunity     = 0.8
+fire_wound_immunity    = 0.9
+
+[cat_step_params]
+stand_walk_fwd_0 = 8, 0.2, 1, 0.25, 0.7, 0.5, 1, 0.7, 1
+stand_walk_dmg_0 = 7, 0.2, 1, 0.25, 0.7, 0.5, 1, 0.7, 1
+stand_run_0      = 6, 0.2, 1, 0.25, 0.7, 0.5, 1, 0.7, 1
+stand_run_dmg_0  = 6, 0.2, 1, 0.25, 0.7, 0.7, 1, 0.7, 1
+stand_steal_0    = 1, 0.2, 1, 0.25, 0.7, 0.7, 1, 0.7, 1
+stand_drag_0     = 1, 0.2, 1, 0.25, 0.7, 0.7, 1, 0.7, 1
+
+[cat_terrain]
+255,000,255,255
+001,002,000,000 ;Кордон
+008,001,000,000 ;Бар
+010,001,000,000 ;Янтарь
+012,001,000,000 ;Миллитари
+
+;---'' BASE PROFILES ''---
+[cat_weak]:m_cat_e
+$spawn = "monsters\cats\cat_weak"
+
+[cat_normal]:m_cat_e
+$spawn = "monsters\cats\cat_normal"
+rank = 301
+spec_rank = normal
+
+[cat_strong]:m_cat_e
+$spawn = "monsters\cats\cat_strong"
+visual = monsters\cat\gib
+rank = 601
+spec_rank = strong
+
+;---'' HORROR ''---
+[horror_cat_weak]:cat_weak
+$spawn = "monsters\cats\horror_cat_weak"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24
+
+[horror_cat_normal]:cat_normal
+$spawn = "monsters\cats\horror_cat_normal"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24
+
+[horror_cat_strong]:cat_strong
+$spawn = "monsters\cats\horror_cat_strong"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24

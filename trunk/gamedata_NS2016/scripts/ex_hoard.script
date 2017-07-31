@@ -1,0 +1,638 @@
+		---- *** Поиск тайников Монолита *** ----
+--[[	Таблицы:
+desc_tab - названия тасков(в порядке получения)
+hoard - координаты тайников(в порядке спавна)
+hoard_koef - коэфициент в зависимости от сложности игры
+	Общие функции:
+block_teleport - блокирование телепорта, при неправильном использовании
+cipher_arts - проверка использования артов
+death_spawn - очистка таблицы 'заспавнившихся Монолитовцев', при убийстве(запуск из логики - секция on_death)
+dell_spawn - удаление оставшихся в живых 'заспавнившихся Монолитовцев'(запуск из логики - on_actor_dist_ge_nvis = 100)
+dell_teleport - удаление телепорта, при неправильном использовании
+hoard_restrictor - спавн рестриктора в тайнике(запуск в amk_mod.first_run)
+hoard_spawn - спавн тайников, работа с тасками и инфопоршнями(запуск в bind_stalker.actor_binder:on_item_take)
+hoard_teleport - работа телепорта(запуск через таймер в amk.func_by_string)
+point_stack - выбор позиции спавна Монолитовцев
+restrictor_timer - работа рестриктора в тайнике(запуск из логики рестриктора)
+spawn_Лока_... - спавн пнс или живности при спавна тайника(1) или взятии записки(2)
+	Поддержка диалога:
+arts_out - отдаем арты Сахарову
+cipher..._teleport - кодирование телепорта
+have_arts - проверка наличия нужных артефактов
+have_..._money - проверка наличия финансов
+have_cipher2 - проверка, отсутствия второй кодировки
+have_teleport - проверка на наличие телепорта у ГГ или оппонента
+money_..._out - отдача денег
+--]]
+
+--- Таблицы и переменные --------------------------------------------------
+local desc_tab={
+'Харона',
+'на АТП',
+'в Тёмной долине',
+'на ЧАЭС1',
+'в лаборатории X-16',
+'в Красном лесу',
+'на Дикой территории',
+'в Старой деревне',
+'в Лиманске',
+'на ЧАЭС2',
+'с телепортом',
+'Монолита'
+}
+
+local hoard={
+--[[ Заполнение:
+	{координаты - X, Y, Z, level_vertexes, game_vertexes}
+--]]
+{
+	{44.31,69.03,39.84,6048,2417},
+	{60.86,53.80,21.07,9788,2417},
+	{63.68,73.08,46.22,6048,2417},
+	{50.64,48.86,-18.57,8810,2417}
+},
+{
+	{115.85,-6.95,-38.30,542877,2830},
+	{95.86,1.64,-27.96,517198,2823},
+	{111.93,-2.05,-24.45,539883,2823}
+},
+{
+	{143.89,0.60,-227.87,344430,958},
+	{12.90,-5.01,-288.20,194885,842},
+	{27.65,9.04,-68.35,206923,1101},
+	{23.45,0.18,-24.80,209458,1046}
+},
+{
+	{1011.70,0.28,42.35,454248,2278},
+	{840.59,0.05,-35.57,365230,2296},
+	{935.86,1.66,-107.95,412933,2275},
+	{822.68,29.86,50.31,357080,2296}
+},
+{
+	{-102.99,24.35,-39.70,422,1529},
+	{-46.45,19.18,9.80,2316,1530},
+	{111.55,35.29,-16.00,7080,1544},
+	{-131.10,22.50,-28.75,14,1529}
+},
+{
+	{-159.87,4.82,-27.51,5320,3240},
+	{23.77,1.70,50.57,79914,3263},
+	{-75.32,-5.20,-162.68,16685,3241}
+},
+{
+	{-115.10,3.80,128.99,43638,1315},
+	{-224.39,4.07,157.74,23045,1364},
+	{-214.70,8.76,36.48,21751,1390},
+	{-246.78,-0.00,21.90,11836,1394}
+},
+{
+	{8.20,9.00,-34.60,16032,3329},
+	{-68.42,2.35,-6.71,3780,3326},
+	{42.28,3.99,69.65,26087,3331}
+},
+{
+	{25.40,0.51,137.96,34969,3010},
+	{24.59,-4.96,-91.58,39946,3005},
+	{33.64,1.04,52.01,42705,3015}
+},
+{
+	{180.06,26.39,143.95,72477,2568},
+	{215.20,70.15,119.15,76261,2573},
+	{86.80,43.36,133.17,83791,2577}
+},
+{
+	{727.43,24.57,108.27,197396,2633}
+},
+{
+	{467.77,31.71,417.59,136487,2586},
+	{469.15,31.71,417.59,136487,2586},
+	{468.36,31.70,406.75,136487,2586},
+	{467.00,31.70,406.75,136487,2586}
+}
+}
+
+local hoard_koef={
+[0]=0.5,
+[1]=1.0,
+[2]=1.5,
+[3]=2
+}
+
+local info = 'ex_hoard_info'
+local tally = #hoard 
+--- Таблицы и переменные ------------------------------------------ end ---
+
+--- Общие функции ---------------------------------------------------------
+function block_teleport()
+	local actor = db.actor
+	amk.save_table('hoard_point',{0})
+	actor:give_info_portion(info..'_block_teleport')
+	news_manager.send_tip(actor,'%c[255,160,160,160]'..'СИСТЕМА:'..'\\n'..'%c[255,255,128,128]Телепорт заблокирован.',nil,nil,10000)
+end
+
+function cipher_arts()
+	local actor = db.actor
+	local arts = true
+	if actor:has_info(info..'_arts') then
+		if not actor:object('af_cry_3') or not actor:object('af_electra_sparkler') then
+			news_manager.send_tip(actor,'%c[255,160,160,160]'..'СИСТЕМА:'..'\\n'..'%c[255,255,128,128]Для работы телепорта недостаточно энергии.',nil,nil,10000)
+			arts = false
+		end
+	end
+	return arts
+end
+
+function death_spawn()
+	local sim = alife()
+	local npc_spawn = amk.load_table('spawn_hoard_npc')
+	local count = #npc_spawn
+	local obj, sobj, sobj_id
+	for key = 1, count do
+		sobj_id = npc_spawn[key]
+		sobj = sim:object(sobj_id)
+		if sobj and string.find(sobj:name(),'ex_hoard_19401'..sobj_id) and not sobj:alive() then
+			table.remove(npc_spawn,key)
+			if count == 1 then
+				amk.del_variable('spawn_hoard_npc')
+				news_manager.send_tip(db.actor,'%c[255,160,160,160]'..'Закрытый канал:'..'\\n'..'%c[255,255,128,128]Группа захвата! Вы где там? Черт! Кто нибудь ответит?',nil,nil,10000)
+			else
+				amk.save_table('spawn_hoard_npc',npc_spawn)
+			end
+		end
+	end
+end
+
+function dell_GG_item(thing)
+	local sim = alife()
+	local item = db.actor:object(thing)
+	local id = item and (item:id() or item.id)
+	local sobj = id and sim:object(id)
+	if sobj then
+		sim:release(sobj)
+	end
+end
+
+function dell_GG_sect(tabl)
+	local actor = db.actor
+	local sim = alife()
+	local id,item,sobj
+	for i = 1, #tabl do
+		item = actor:object(tabl[i])
+		id = item and (item:id() or item.id)
+		sobj = id and sim:object(id)
+		if sobj then
+			sim:release(sobj,true)
+		end
+	end
+end
+
+function dell_spawn()
+	local actor = db.actor
+	local sim = alife()
+	local npc_spawn = amk.load_table('spawn_hoard_npc')
+	local count = #npc_spawn
+	local obj, sobj, sobj_id, sobj_pos
+	for key = 1, count do
+		sobj_id = npc_spawn[key]
+		sobj = sim:object(sobj_id)
+		if sobj and string.find(sobj:name(),'ex_hoard_19401'..sobj_id) and sobj.position:distance_to(actor:position()) > 102 then
+			table.remove(npc_spawn,key)
+			if count == 1 then
+				amk.del_variable('spawn_hoard_npc')
+				news_manager.send_tip(actor,'%c[255,160,160,160]'..'Закрытый канал:'..'\\n'..'%c[255,255,128,128]Сталкер ушел от преследования. Телепортируемся на базу.',nil,nil,10000)
+			else
+				amk.save_table('spawn_hoard_npc',npc_spawn)
+			end
+			amk_particle.amk_particle({particle = 'anomaly2\\teleport_out_00', pos = sobj.position, sound = 'anomaly\\electra_idle1'})
+			obj = level.object_by_id(sobj.id)
+			if obj then
+				obj:kill(obj)
+			end
+			sim:release(sobj,true)
+		end
+	end
+end
+
+function dell_teleport(sect)
+	local dell = false
+	local heap = amk.load_table('hoard_point')
+	-- Если нет данных - удалим:
+	if not heap[1] then
+		news_manager.send_tip(db.actor,'%c[255,160,160,160]'..'СИСТЕМА:'..'\\n'..'%c[255,255,128,128]Самоуничтожение телепорта.',nil,nil,20000)
+		dell_GG_item(sect)
+		dell = true
+	end
+	return dell
+end
+
+function hoard_restrictor()
+	local obj = alife():create('space_restrictor',vector():set(468.5,31.71,412.0),136487,2586)
+	local custom = '[logic]\ncfg = scripts\\ex_logic\\restrictor\\ex_hoard_restrictor.ltx'
+	spawn_restrictor.rewrite_restrictor(obj,custom,8.0)
+end
+
+function hoard_spawn(obj)
+	local actor = db.actor
+	local sect = obj:section()
+	local tip = 'ex_hoard_tip'
+	-- Если нет нашей записки - выход:
+	if not string.find(sect,tip) or actor:has_info(info..'_done') then return end
+	-- Если есть - узнаем номер записки:
+	local sense = 0
+	if string.sub(sect,1,12) == tip then
+		sense = tonumber(string.sub(sect,13))
+	end
+	if sense == tally and dell_teleport(sect) then return end
+	local sim = alife()
+	-- Запустим проверку на наличие инфопоршня для данной секции:
+	if not actor:has_info(info..sense) and sect == (tip..sense) then
+		actor:give_info_portion(info..sense)
+		local key = 0
+		local tab = {}
+		local obj_box
+		-- Заспавним ящики в тайнике:
+		if sense == tally then
+			spawn_19_3()
+			for key,tab in pairs(hoard[sense]) do
+				obj_box = ex_all.spawn_valid_obj('ex_hoard_box'..sense..'_'..key,vector():set(tab[1],tab[2],tab[3]),tab[4],tab[5])
+			end
+		else
+			-- Заполним таблицу телепорта и выдадим инфу для диалога
+			if sense == tally-1 then
+				spawn_19_2()
+				local heap = {1,19,1,465,31.71,410,145700,2608}
+				amk.save_table('hoard_point',heap)
+				actor:give_info_portion(info..'_arts')
+				actor:give_info_portion(info..'_zukerman_art')
+				actor:give_info_portion(info..'_zukerman_first')
+			end
+			if sense == tally-2 then
+				spawn_19_1()
+			end
+			-- Заспавним рюкзак:
+			key = math.random(1,#hoard[sense])
+			tab = hoard[sense][key]
+			obj_box = ex_all.spawn_valid_obj('ex_hoard_box'..sense,vector():set(tab[1],tab[2],tab[3]),tab[4],tab[5])
+		end
+		-- Выдадим задание:
+		local task = CGameTask()
+		local desc = desc_tab[sense]
+		local title = 'Тайник '..desc
+		local text = 'Найти тайник '..desc
+		local complete_info = info..tostring(sense+1)
+		if sense == tally then
+			complete_info = info..'_done'
+		end
+		local article = 'ex_hoard_article'..sense
+		if sense ~= 1 and sense < tonumber(tally-1) then
+			article = 'ex_hoard_article'..sense..'_'..key
+		else
+			article = article
+		end
+		task:load('ex_hoard_task')
+		task:set_title(title)
+		local objective0 = task:get_objective(0)
+		local objective = SGameTaskObjective(task,1)
+		objective0:add_complete_info(complete_info)
+		objective0:set_article_id(article)
+		objective:set_description(text)
+		task:add_objective(objective)
+		actor:give_task(task,nil,false)
+	end
+	-- Удалим предыдущую записку и ненужный инфопоршень:
+	local note = tip..tostring(sense-1)
+	local dis_info = info..tostring(sense-1)
+	if actor:has_info(dis_info) then
+		actor:disable_info_portion(dis_info)
+	end
+	if sense > 1 then
+		dell_GG_item(note)
+	end
+end
+
+function hoard_teleport()
+	local actor = db.actor
+	alife():create('ex_hoard_tip12',actor:position(),actor:level_vertex_id(),actor:game_vertex_id(),actor:id())
+	local heap = amk.load_table('hoard_point')
+	local cipher = heap[1]
+	-- Если телепорт заблокирован - выход:
+	if cipher == 0 then
+		block_teleport()
+		return
+	end
+	-- Проверка использования артов:
+	if cipher_arts() == false then return end
+	local gg = game_graph()
+	local gv = actor:game_vertex_id()
+	local gv_heap = heap[8]
+	local key = heap[3]
+	local lid = gg:vertex(gv):level_id()
+	local lid_heap = gg:vertex(gv_heap):level_id()
+	local lid_new = heap[2]
+	local lv = actor:level_vertex_id()
+	local lv_heap = heap[7]
+	local pos = actor:position()
+	local pos_new = vector():set(465,31.71,410)
+	if heap[4] and heap[5] and heap[6] then
+		pos_new = vector():set(heap[4],heap[5],heap[6])
+	end
+	local space_out = vector():set(468.5,31.71,412.0)
+	if heap[9] and heap[10] and heap[11] then
+		space_out = vector():set(heap[4],heap[5],heap[6])
+	end	
+	-- Первая кодировка - телепортации в тайник только с определенной зоны:
+	if cipher == 1 then
+		-- Мы зоне действия телепорта:
+		if lid == lid_new and pos:distance_to(vector():set(725.8,23.8,106.5)) <= 5 then
+			-- Если ушли с тайника другим телепортом - забъем в таблицу дефолтные значения:
+			if key == 0 then
+				pos_new = vector():set(465,31.71,410)
+			end
+			ex_all.tabl_update(heap,_,_,0,pos.x,pos.y,pos.z)
+		-- Мы в тайнике Монолита
+		elseif lid == lid_new and pos:distance_to(space_out) <= 8 then
+			ex_all.tabl_update(heap,_,_,1,pos.x,pos.y,pos.z)
+		-- Если пытаемся запустить вне зоны действия:
+		else
+			news_manager.send_tip(actor,'%c[255,160,160,160]'..'Закрытый канал:'..'\\n'..'%c[255,255,128,128]Засечена попытка несанкционированного использования спецтелепорта. Группе перехвата телепортироваться в зону использования.',nil,nil,10000)
+			point_stack()
+			block_teleport()
+			return
+		end
+	-- Вторая кодировка - дает возможность телепортации в тайник из любой точки:
+	elseif cipher == 2 then
+		-- Мы в тайнике Монолита
+		if lid == lid_new and pos:distance_to(space_out) <= 8 then
+			ex_all.tabl_update(heap,_,_,1,pos.x,pos.y,pos.z,lv,gv)
+		-- Бывали и снова в тайник Монолита:
+		else
+			-- Если ушли с тайника другим телепортом - забъем в таблицу дефолтные значения:
+			if key == 0 then
+				lid_heap = lid_new
+				lv_heap = 145700
+				gv_heap = 2608
+				pos_new = vector():set(465,31.71,410)
+			end
+			ex_all.tabl_update(heap,_,_,0,pos.x,pos.y,pos.z,lv,gv)
+		end
+	-- Третья кодировка - дает возможность телепортации в первую запомненную точку:
+	elseif cipher == 3 then
+		-- Если в первый раз - запомним положение:
+		if not lid_new then
+			news_manager.send_tip(actor,'%c[255,160,160,160]'..'СИСТЕМА:'..'\\n'..'%c[255,255,128,128]Новая позиция сохранена.',nil,nil,20000)
+			ex_all.tabl_update(heap,_,lid,1,pos.x,pos.y,pos.z,lv,gv,pos.x,pos.y,pos.z,lv,gv)
+		-- Если в памяти есть положение:
+		else
+			-- Мы на месте:
+			if lid == lid_new and pos:distance_to(space_out) <= 3 then
+				if key == 0 then
+					ex_all.tabl_update(heap,_,_,1)
+				else
+					news_manager.send_tip(actor,'%c[255,160,160,160]'..'СИСТЕМА:'..'\\n'..'%c[255,255,128,128]Вы на позиции.',nil,nil,20000)
+					return
+				end
+			else
+				if key == 0 then
+					lid_heap = lid_new
+					lv_heap = heap[12]
+					gv_heap = heap[13]
+				end
+				pos_new = space_out
+				ex_all.tabl_update(heap,_,_,0)
+			end
+		end
+	end
+	amk.save_table('hoard_point',heap)
+	if not lid_new then return end
+	-- Все готово - запускаем телепортацию:
+	if lid == lid_heap then
+		level.add_pp_effector('teleport.ppe',1524,false)
+		actor:set_actor_position(pos_new)
+	else
+		local lvl_name = ex_level.lid_lname[lid]
+		spawn_level_changer.create_level_changer(99999,pos,lv,gv,lv_heap,gv_heap,pos_new,vector():set(0,0,1),lvl_name,1)
+	end
+end
+
+function point_stack()
+	local actor = db.actor
+	local gg = game_graph()
+	local koef = hoard_koef[level.get_game_difficulty()]
+	local max_cnt = math.random(koef*2,koef*4)
+	local point_cnt = 1
+	while point_cnt <= max_cnt do
+		--Запускаем цикл генерации новой координаты с проверкой на пригодность
+		local gv = actor:game_vertex_id()
+		local lid = gg:vertex(gv):level_id()
+		local gv_min = ex_level.vertex_setting[lid][1]
+		local gv_max = ex_level.vertex_setting[lid][2]
+		local lv_max = ex_level.vertex_setting[lid][3]
+		local new_gv, gv_pos, new_lv, lv_pos = 0,0,0,0
+		repeat
+			--Переменная остановки цикла
+			local stop = 0
+			--Новая координата
+			local gvm_dist = 300
+			local lv_stack = 50000
+			local actor_pos = actor:position()
+			local actor_lv = actor:level_vertex_id()
+			local npc_spawn = amk.load_table('spawn_hoard_npc')
+			local min_lv = actor_lv - lv_stack
+			if min_lv < 0 then min_lv = 0 end
+			local max_lv = actor_lv + lv_stack
+			if max_lv > lv_max then max_lv = lv_max end
+			--Находим левел вертекс
+			local lv = math.random(min_lv, max_lv)
+			lv_pos = level.vertex_position(lv)
+			if lv_pos:distance_to(actor_pos) < 20 or lv_pos:distance_to(actor_pos)>40 then
+				stop = 0
+			else
+				new_lv = lv
+				local new_pos = level.vertex_position(new_lv)
+				--Находим гейм вертекс
+				for gv = gv_min, gv_max do
+					gv_pos = gg:vertex(gv):level_point()
+					if gv_pos:distance_to(new_pos) < gvm_dist then
+					gvm_dist = gv_pos:distance_to(new_pos)
+					new_gv = gv
+					end
+				end
+				--Запускаем проверки
+				if not gg:valid_vertex_id(new_gv) then
+					stop = 0
+				else
+					--Есть все данные - можно спавнить:
+					local obj = ex_all.spawn_valid_obj('ex_hoard_19401',new_pos,new_lv,new_gv)
+					table.insert(npc_spawn,point_cnt,obj.id)
+					amk.save_table('spawn_hoard_npc',npc_spawn)
+					amk_particle.amk_particle({particle = 'anomaly2\\teleport_out_00',pos = new_pos,sound = 'anomaly\\electra_idle1'})
+					stop = 1
+				end
+			end
+		until stop == 1
+		point_cnt = point_cnt + 1
+	end
+end
+
+function restrictor_timer()
+	local actor = db.actor
+	local heap = amk.load_table('hoard_point')
+	local key = heap[3]
+	if not actor:has_info(info..'_restrictor') then
+		actor:give_info_portion(info..'_restrictor')
+		if not actor:has_info(info..'_done') and have_teleport() and key == 0 then
+			actor:give_info_portion(info..'_done')
+			actor:disable_info_portion(info..tally)
+		else
+			if not have_teleport() or (have_teleport() and key ~= 0) then
+				if have_teleport() then
+					block_teleport()
+				end
+				amk.start_timer('timer_hoard_restrictor',2)
+				actor:set_actor_position(vector():set(990.5,-0.00862804055213928,382.899993896484))
+				news_manager.send_tip(actor,'%c[255,160,160,160]'..'СИСТЕМА:'..'\\n'..'%c[255,255,128,128]Активация защиты.',nil,nil,20000)
+			end
+		end
+	end		
+end
+
+function spawn_19_1()
+	ex_all.spawn_valid_obj('ex_hoard_19101',vector():set(11.900001525879,4.7310795783997,118.30000305176),29819,2528)
+	ex_all.spawn_valid_obj('ex_hoard_19102',vector():set(24.5,4.9016661643982,108.5),35746,2528)
+	ex_all.spawn_valid_obj('ex_hoard_19103',vector():set(12.599998474121,4.5993609428406,130.89999389648),30169,2528)
+	ex_all.spawn_valid_obj('ex_hoard_19104',vector():set(8.4000015258789,4.5086698532104,130.89999389648),28178,2528)
+	ex_all.spawn_valid_obj('ex_hoard_19105',vector():set(136.5,30.812429428101,149.79998779297),64754,2561)
+	ex_all.spawn_valid_obj('ex_hoard_19106',vector():set(313.59997558594,12.099760055542,102.19999694824),106064,2593)
+	ex_all.spawn_valid_obj('ex_hoard_19107',vector():set(578.90002441406,43.344043731689,130.89999389648),174186,2629)
+	ex_all.spawn_valid_obj('ex_hoard_19108',vector():set(406.0,16.752016067505,437.5),138319,2608)
+	ex_all.spawn_valid_obj('ex_hoard_19109',vector():set(215.59997558594,50.004463195801,134.39999389648),79983,2573)
+	ex_all.spawn_valid_obj('ex_hoard_19110',vector():set(533.40002441406,18.199838638306,270.19998168945),163590,2614)
+	ex_all.spawn_valid_obj('ex_hoard_19111',vector():set(562.79998779297,18.199838638306,289.10000610352),167546,2613)
+	ex_all.spawn_valid_obj('ex_hoard_19112',vector():set(560.70001220703,18.199838638306,291.19998168945),167126,2613)
+	ex_all.spawn_valid_obj('ex_hoard_19113',vector():set(560.70001220703,18.199838638306,287.0),167120,2613)
+end
+
+function spawn_19_2()
+	ex_all.spawn_valid_obj('ex_hoard_19201',vector():set(258.29998779297,50.004463195801,86.800003051758),92057,2575)
+	ex_all.spawn_valid_obj('ex_hoard_19202',vector():set(487.89999389648,27.411499023438,284.89999389648),156134,2616)
+	ex_all.spawn_valid_obj('ex_hoard_19203',vector():set(516.60003662109,27.411499023438,284.89999389648),161720,2616)
+	ex_all.spawn_valid_obj('ex_hoard_19204',vector():set(550.90002441406,28.212606430054,289.79998779297),165761,2615)
+	ex_all.spawn_valid_obj('ex_hoard_19205',vector():set(512.40002441406,18.199838638306,269.5),161308,2617)
+end
+
+function spawn_19_3()
+	ex_all.spawn_valid_obj('ex_hoard_19301',vector():set(870.10003662109,17.908330917358,121.79999542236),226296,2635)
+	ex_all.spawn_valid_obj('ex_hoard_19302',vector():set(905.79998779297,18.546409606934,123.19999694824),238970,2636)
+	ex_all.spawn_valid_obj('ex_hoard_19303',vector():set(889.0,15.094737052917,119.0),233075,2635)
+	ex_all.spawn_valid_obj('ex_hoard_19304',vector():set(883.40002441406,15.094737052917,119.0),230904,2635)
+	ex_all.spawn_valid_obj('ex_hoard_19305',vector():set(902.29998779297,8.21946144104,160.29998779297),237820,2536)
+	ex_all.spawn_valid_obj('ex_hoard_19306',vector():set(898.79998779297,8.21946144104,210.0),236577,2644)
+	ex_all.spawn_valid_obj('ex_hoard_19307',vector():set(903.70001220703,11.166933059692,182.69998168945),238316,2637)
+	ex_all.spawn_valid_obj('ex_hoard_19308',vector():set(899.5,8.21946144104,210.0),236826,2644)
+	ex_all.spawn_valid_obj('ex_hoard_19309',vector():set(871.5,8.21946144104,203.0),226851,2638)
+	ex_all.spawn_valid_obj('ex_hoard_19310',vector():set(871.5,8.21946144104,207.89999389648),226858,2638)
+	ex_all.spawn_valid_obj('ex_hoard_19311',vector():set(886.90002441406,8.2216205596924,140.69999694824),232314,2636)
+	ex_all.spawn_valid_obj('ex_hoard_19312',vector():set(889.0,8.2216205596924,142.79998779297),233104,2636)
+end
+--- Общие функции ------------------------------------------------- end ---
+
+--- Поддержка диалога -----------------------------------------------------
+function arts_out()
+	local arts = {'af_cry_3','af_electra_sparkler'}
+	dell_GG_sect(arts)
+end
+
+function cipher1_teleport()
+	local heap = amk.load_table('hoard_point')
+	heap = {}
+	ex_all.tabl_update(heap,1,19,0,465,31.71,410,145700,2608)
+	amk.save_table('hoard_point',heap)
+end
+
+function cipher2_teleport()
+	local heap = amk.load_table('hoard_point')
+	heap = {}
+	ex_all.tabl_update(heap,2,19,0,465,31.71,410,145700,2608)
+	amk.save_table('hoard_point',heap)
+end
+
+function cipher3_teleport()
+	local heap = amk.load_table('hoard_point')
+	heap = {}
+	ex_all.tabl_update(heap,3,_,0)
+	amk.save_table('hoard_point',heap)
+end
+
+function have_30000_money()
+	return have_GG_money(30000) ~= false
+end
+
+function have_50000_money()
+	return have_GG_money(50000) ~= false
+end
+
+function have_80000_money()
+	return have_GG_money(80000) ~= false
+end
+
+function have_100000_money()
+	return have_GG_money(100000) ~= false
+end
+
+function have_130000_money()
+	return have_GG_money(150000) ~= false
+end
+
+function have_arts()
+	local arts = {'af_cry_3','af_electra_sparkler'}
+	return have_GG_sect(arts) ~= false
+end
+
+function have_cipher2()
+	local heap = amk.load_table('hoard_point')
+	return heap[1] ~= 2
+end
+
+function have_GG_money(money)
+	return db.actor and db.actor:money() >= money
+end
+
+function have_GG_sect(tabl)
+	local flag = true
+	local item
+	for i = 1, #tabl do
+		item = db.actor:object(tabl[i])
+		if not item then
+			flag = false
+			break
+		end
+	end
+	return flag
+end
+
+function have_teleport()
+	local tip = 'ex_hoard_tip'
+	local sect = tip..tally
+	return db.actor and db.actor:object(sect) ~= nil
+end
+
+function money_30000_out(speak,reply)
+	ex_all.transfer_money_out_rnd(speak,reply,30000)
+end
+
+function money_50000_out(speak,reply)
+	ex_all.transfer_money_out_rnd(speak,reply,50000)
+end
+
+function money_80000_out(speak,reply)
+	ex_all.transfer_money_out_rnd(speak,reply,80000)
+end
+
+function money_100000_out(speak,reply)
+	ex_all.transfer_money_out_rnd(speak,reply,100000)
+end
+
+function money_130000_out(speak,reply)
+	ex_all.transfer_money_out_rnd(speak,reply,150000)
+end
+--- Поддержка диалога --------------------------------------------- end ---

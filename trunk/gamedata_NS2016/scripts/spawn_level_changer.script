@@ -1,0 +1,349 @@
+local places = {
+["exit_kordon"] = { sid = 15000, lv = 312314, gv = 3, pos = {31.3994522094727, 16.5561962127686, 677.265319824219}, view = {-1.1717250458787, -3.09718561172485, -2.19056900618853}, lvl = "l01_escape"},
+["exit_kordon1"] = { sid = 15001, lv = 15143, gv = 67, pos = {-241.12390136719, -0.71582686901093, 11.030144691467}, view = {0.0,0.0,0.0}, lvl = "l01_escape"},
+["exit_kordon2"] = { sid = 15002, lv = 587230, gv = 2, pos = {345.363067626953, 15.0583877563477, -26.5997104644775}, view = {0.0075098886154592, 1.03138911724091, -0.000671439804136753}, lvl = "l01_escape"},
+["exit_kordon3"] = { sid = 15003, lv = 16577, gv = 37, pos = {-238.379791259766, -30.0500144958496, -323.527984619141}, view = {0.0,0.0,0.0}, lvl = "l01_escape"},
+["exit_svalka"] = { sid = 15004, lv = 209876, gv = 253, pos = {36.4117431640625, 0.481237411499023, -305.824523925781}, view = {0.0111562451347709, -0.000250374461757019, 0.0224392339587212}, lvl = "l02_garbage"},
+["exit_svalka1"] = { sid = 15005, lv = 2051, gv = 259, pos = {-282.724639892578, 3.48910522460938, -26.2287101745605}, view = {-0.30377271771431, -1.11198627948761, 0.0966827943921089}, lvl = "l02_garbage"},
+["exit_svalka2"] = { sid = 15006, lv = 379374, gv = 257, pos = {277.649993896484, 1.44000005722046, 147.889999389648}, view = {0, 1.35651981830597, 0}, lvl = "l02_garbage"},
+["exit_svalka3"] = { sid = 15007, lv = 161495, gv = 258, pos = {-18.3297462463379, 0.471820831298828, 275.6416015625}, view = {-0.000931352318730205, -3.05429196357727, 0.0253302715718746}, lvl = "l02_garbage"},
+["exit_agroprom"] = { sid = 15008, lv = 432735, gv = 693, pos = {273.589294433594, 0.312782287597656, 0.272092819213867}, view = {0.0002013473858824, 2.00711727142334, -0.00200603087432683}, lvl = "l03_agroprom"},
+["exit_agroprom1"] = { sid = 15009, lv = 401305, gv = 692, pos = {187.071746826172, 0.281237423419952, -237.873458862305}, view = {0, 1.13999998569489, 0}, lvl = "l03_agroprom"},
+["exit_agroprom2"] = { sid = 15010, lv = 117966, gv = 520, pos = {-122.430000305176, 11.3800001144409, 185.539993286133}, view = {0, -2.6800000667572, 0}, lvl = "l03_agroprom"},
+["exit_underground"] = { sid = 15011, lv = 4722, gv = 724, pos = {-38.9849090576172, -3.89549875259399, 38.022346496582}, view = {0.0484474264085293, -3.13716673851013, -0.0293180756270885}, lvl = "l03u_agr_underground"},
+["exit_td"] = { sid = 15012, lv = 1321, gv = 813, pos = {-188.877655029297, 3.94756889343262, -193.695678710938}, view = {0, -1.12671363353729, 0}, lvl = "l04_darkvalley"},
+["exit_td1"] = { sid = 15013, lv = 122613, gv = 815, pos = {-44.3800010681152, 0.431097418069839, -541.469970703125}, view = {0.0203107371926308, 0, 0.999793708324432}, lvl = "l04_darkvalley"},
+["exit_td2"] = { sid = 15014, lv = 356118, gv = 919, pos = {155.206939697266, -3.89723777770996, -100.161758422852}, view = {0, -1.94888961315155, 0}, lvl = "l04_darkvalley"},
+["exit_td3"] = { sid = 15015, lv = 339085, gv = 911, pos = {141.0124206543,-2.0455784797668,85.587753295898}, view = {0.0,0.0,0.0}, lvl = "l04_darkvalley"},
+["exit_x18"] = { sid = 15016, lv = 2180, gv = 1166, pos = {-3.90555477142334, 9.39593982696533, -7.34671688079834}, view = {-0.0308679100126028, 0.000815188395790756, 0.0264069885015488}, lvl = "l04u_labx18"},
+["exit_bar"] = { sid = 15017, lv = 84429, gv = 1289, pos = {380.079986572266, 8.89000034332275, -443.269989013672}, view = {0.0,0.0,0.0}, lvl = "l05_bar"},
+["exit_bar1"] = { sid = 15018, lv = 17458, gv = 1246, pos = {-5.52177238464355, -5.55837154388428, 353.289276123047}, view = {0, -2.29999995231628, 0}, lvl = "l05_bar"},
+["exit_dt"] = { sid = 15020, lv = 67363, gv = 1412, pos = {31.4319934844971, -0.632162094116211, 140.407974243164}, view = {0.0120739890262485, 1.57078814506531, -2.82886571767449}, lvl = "l06_rostok"},
+["exit_dt2"] = { sid = 15021, lv = 372, gv = 1360, pos = {-288.556365966797, 0.0107336426153779, 103.335578918457}, view = {1.47868323326111, -1.53888964653015, 0.2942935526371}, lvl = "l06_rostok"},
+["exit_dt1"] = { sid = 15022, lv = 36926, gv = 1434, pos = {-156.874282836914, -11.2775774002075, -286.141815185547}, view = {0.271879106760025, 0, 0.962331414222717}, lvl = "l06_rostok"},
+["exit_yantar"] = { sid = 15023, lv = 136760, gv = 1459, pos = {195.41227722168, 5.87823486328125, -245.030059814453}, view = {-0.0813582167029381, 1.53351366519928, -0.0476411543786526}, lvl = "l08_yantar"},
+["exit_yantar1"] = { sid = 15024, lv = 132440, gv = 1521, pos = {176.820007324219, 14.039999961853, 81.3199996948242}, view = {0, 2.07999992370605, 0}, lvl = "l08_yantar"},
+["exit_yantar2"] = { sid = 15025, lv = 15229, gv = 1487, pos = {-68.1646423339844, 1.66910517215729, -357.075866699219}, view = {0.219999998807907, -0.349999994039536, 0.620000004768372}, lvl = "l08_yantar"},
+["exit_yantar3"] = { sid = 15026, lv = 41756, gv = 1525, pos = {5.00410509109497, -1.26622402667999, -13.9639358520508}, view = {0, 1.59660005569458, 0}, lvl = "l08_yantar"},
+["exit_to_brinlab"] = { sid = 15027, lv = 7724, gv = 1541, pos = {146.51416015625, 36.6499366760254, -13.2845802307129}, view = {0, 1.59660005569458, 0}, lvl = "l08u_brainlab"},
+["exit_to_brinlab1"] = { sid = 15028, lv = 1102, gv = 1535, pos = {-67.0451354980469, 3.46724462509155, -13.7109031677246}, view = {0.999534547328949, 0, 0.0305071342736483}, lvl = "l08u_brainlab"},
+["exit_as"] = { sid = 15029, lv = 16231, gv = 1546, pos = {-334.578491210938, -25.5103607177734, 45.0102348327637}, view = {0, -0.698128044605255, 0}, lvl = "l07_military"},
+["exit_as1"] = { sid = 15030, lv = 420, gv = 1848, pos = {-381.285461425781, -14.0342149734497, 398.200408935547}, view = {0, -1.81352233886719, 0}, lvl = "l07_military"},
+["exit_as2"] = { sid = 15031, lv = 413062, gv = 1812, pos = {138.671539306641, -8.00795650482178, 432.7919921875}, view = {2.21463084220886, 1.7449015378952, 2.91233563423157}, lvl = "l07_military"},
+["exit_radar"] = { sid = 15032, lv = 199539, gv = 1868, pos = {568.326354980469, -53.4707336425781, -408.685577392578}, view = {0.0186832379549742, -0.353888958692551, 0.0474293567240238}, lvl = "l10_radar"},
+["exit_radar1"] = { sid = 15033, lv = 115746, gv = 1866, pos = {386.262176513672, -35.238338470459, 130.827255249023}, view = {-0.108723349869251, -3.0281457901001, -0.0564291141927242}, lvl = "l10_radar"},
+["exit_radar2"] = { sid = 15034, lv = 794, gv = 1959, pos = {-30.9628868103027, 2.09963011741638, -91.593376159668}, view = {0, -0.860876739025116, 0}, lvl = "l10_radar"},
+["exit_radar3"] = { sid = 15035, lv = 227065, gv = 1915, pos = {660.5458984375, -43.8782920837402, 169.952621459961}, view = {0.00477866875007749, 0, 0.999988555908203}, lvl = "l10_radar"},
+["exit_bunker"] = { sid = 15036, lv = 5824, gv = 2790, pos = {0.0540957450866699, -7.38650894165039, -82.571418762207}, view = {0.0,0.0,0.0}, lvl = "l10u_bunker"},
+["exit_bunker1"] = { sid = 15037, lv = 7992, gv = 2773, pos = {10.1433982849121, -23.5278415679932, 19.0020484924316}, view = {-0.00754000013694167, 0, -0.999971508979797}, lvl = "l10u_bunker"},
+["exit_pripyat"] = { sid = 15038, lv = 145458, gv = 2269, pos = {34.8646354675293, -2.15999984741211, -290.553436279297}, view = {-2.49865606747335, 1.60740029811859, -1.28936753753806}, lvl = "l11_pripyat"},
+["exit_pripyat1"] = { sid = 15039, lv = 6976, gv = 2258, pos = {-119.42231750488,-2.2102024555206,-61.909927368164}, view = {0.0,0.0,0.0}, lvl = "l11_pripyat"},
+["exit_pripyat2"] = { sid = 15040, lv = 145458, gv = 2269, pos = {31.5, 1.60000002384186, 424}, view = {-2.49865606747335, 3.14000010490417, -1.28936753753806}, lvl = "l11_pripyat"},
+["exit_stancia"] = { sid = 15041, lv = 404957, gv = 2401, pos = {919.089599609375, 0.000268459320068359, -292.599273681641}, view = {0.0,0.0,0.0}, lvl = "l12_stancia"},
+["exit_stancia1"] = { sid = 15042, lv = 161393, gv = 2384, pos = {374.820770263672,-0.00515031814575195,33.345085144043}, view = {-0.819603800773621, 0, 0.572930634021759}, lvl = "l12_stancia"},
+["exit_sarcofag"] = { sid = 15043, lv = 85, gv = 2403, pos = {-28.5984325408936, 0.232765197753906, 46.6375045776367}, view = {0, 1.603799700737, 0}, lvl = "l12u_sarcofag"},
+["exit_sarcofag1"] = { sid = 15044, lv = 6321, gv = 2417, pos = {97.6601715087891, 59.6261558532715, 35.3776397705078}, view = {0, 0, 0}, lvl = "l12u_sarcofag"},
+["exit_sarcofag2"] = { sid = 15045, lv = 9864, gv = 2402, pos = {60.308162689209, 16.6591758728027, 28.0453128814697}, view = {0, 1.55340099334717, 0}, lvl = "l12u_sarcofag"},
+["exit_to_control_monolith"] = { sid = 15046, lv = 1068, gv = 2469, pos = {-18.212703704834, -34.5734100341797, -4.92962646484375}, view = {0, -2.17800045013428, 0}, lvl = "l12u_control_monolith"},
+["exit_to_control_monolith1"] = { sid = 15047, lv = 3844, gv = 2467, pos = {36.4172897338867, -34.9982414245605, 19.1866474151611}, view = {0, -3.13138699531555, 0}, lvl = "l12u_control_monolith"},
+["exit_stancia2_1"] = { sid = 15048, lv = 76262, gv = 2573, pos = {210.38436889648,79.390335083008,120.03535461426}, view = {0.0,0.0,0.0}, lvl = "l12_stancia_2"},
+["exit_stancia2_2"] = { sid = 15049, lv = 25534, gv = 2659, pos = {2.70751976966858, 5.41002607345581, 64.4426574707031}, view = {0, 0.754199862480164, 0}, lvl = "l12_stancia_2"},
+["exit_stancia2_4"] = { sid = 15051, lv = 249018, gv = 2651, pos = {937.517,-0.003,358.504}, view = {0.0,0.0,0.0}, lvl = "l12_stancia_2"},
+["exit_pes1"] = {sid = 15052, lv = 32198, gv = 2880, pos = {-6.29998779296875,-2.37639427185059,0}, view = {0.0,90.87833,0.0}, lvl = "peshera"},
+["exit_pes2"] = {sid = 15053, lv = 458, gv = 2863, pos = {-186.899993896484,-9.67567825317383,0}, view = {0.0,2.7318,0.0}, lvl = "peshera"},
+["exit_marsh"] = { sid = 15054, lv = 512019, gv = 3567, pos = {558.07275390625,2.14040803909302,-180.6494140625}, view = {-0.932900846004486, 0, 0.36013326048851}, lvl = "marsh"},
+["exit_marsh2"] = { sid = 15056, lv = 240843, gv = 3487, pos = {175.568878173828,9.51223564147949,584.19873046875}, view = {0.0,0.0,0.0}, lvl = "marsh"},
+["exit_puzir"] = { sid = 15057, lv = 362244, gv = 2884, pos = {218.703109741211, 3.47043108940125, -210.750091552734}, view = {0.0,0.0,0.0}, lvl = "puzir"},
+["exit_puzir1"] = { sid = 15058, lv = 18731, gv = 2881, pos = {-214.357009887695, -1.90878963470459, 211.931533813477}, view = {0.0,0.0,0.0}, lvl = "puzir"},
+["exit_atp"] = { sid = 15059, lv = 1005985, gv = 2860, pos = {438.18887329102,-4.8551049232483,-25.454574584961}, view = {0.0,0.0,0.0}, lvl = "atp_for_test22"},
+["exit_atp1"] = { sid = 15060, lv = 47405, gv = 2796, pos = {-227.107009887695, 2.50016307830811, -30.0546684265137}, view = {0.0,0.0,0.0}, lvl = "atp_for_test22"},
+["exit_to_nz"] = { sid = 15061, lv = 1413799, gv = 2904, pos = {306.57635498047,-35.242961883545,411.81045532227}, view = {0.0,0.0,0.0}, lvl = "aver"},
+["exit_to_nz1"] = { sid = 15062, lv = 312637, gv = 2890, pos = {-324.740173339844, 2.25374460220337, -379.899841308594}, view = {0.0,0.0,0.0}, lvl = "aver"},
+["exit_to_nz2"] = { sid = 15063, lv = 1666096, gv = 2907, pos = {439.0671081543,-5.4025197029114,-319.01373291016}, view = {0.0,0.0,0.0}, lvl = "aver"},
+["exit_to_war"] = { sid = 15064, lv = 4607, gv = 3210, pos = {0.656152606010437, 10.4297342300415, 22.8888702392578}, view = {0.0,0.0,0.0}, lvl = "warlab"},
+["exit_av_peshera"] = { sid = 15065, lv = 166306, gv = 2985, pos = {89.1712188720703, 31.5283241271973, 405.419311523438}, view = {0, -3, 0}, lvl = "av_peshera"},
+["exit_av_peshera1"] = { sid = 15066, lv = 7429, gv = 2912, pos = {-372.685272216797, 84.8979263305664, 203.72314453125}, view = {0.0,0.0,0.0}, lvl = "av_peshera"},
+["exit_av_peshera2"] = { sid = 15067, lv = 149189, gv = 2974, pos = {-123.502487182617, 15.6420574188232, 360.670593261719}, view = {0.0,0.0,0.0}, lvl = "av_peshera"},
+["exit_red_forest"] = { sid = 15068, lv = 57550, gv = 3278, pos = {-12.0748300552368, 0.833330512046814, -429.453979492188}, view = {0.138911306858063, 0, 0.990304827690125}, lvl = "red_forest"},
+["exit_red_forest1"] = { sid = 15069, lv = 25085, gv = 3253, pos = {-57.729415893555,-0.00033676624298096,98.161499023438}, view = {0.0,0.0,0.0}, lvl = "red_forest"},
+["exit_red_forest2"] = { sid = 15070, lv = 151798, gv = 3319, pos = {247.68930053711,2.9433665275574,96.14575958252}, view = {0.0,0.0,0.0}, lvl = "red_forest"},
+["exit_limansk"] = { sid = 15071, lv = 29058, gv = 3006, pos = {7.51474475860596, -0.0114807188510895, -383.431213378906}, view = {0.0,0.0,0.0}, lvl = "limansk"},
+["exit_limansk1"] = { sid = 15072, lv = 55456, gv = 3025, pos = {60.8930549621582, 3.30022954940796, 352.758514404297}, view = {0.0,0.0,0.0}, lvl = "limansk"},
+["exit_hospital"] = { sid = 15073, lv = 6195, gv = 3065, pos = {-79.0620193481445, 32.4903526306152, 854.795227050781}, view = {0.0,0.0,0.0}, lvl = "hospital"},
+["exit_generators"] = { sid = 15074, lv = 600896, gv = 3147, pos = {228.940963745117, 18.8561363220215, -105.261764526367}, view = {0.0,0.0,0.0}, lvl = "generators"},
+["exit_generators1"] = { sid = 15075, lv = 91933, gv = 3081, pos = {-211.884765625, 52.2750091552734, -520.895385742188}, view = {0.0,0.0,0.0}, lvl = "generators"},
+["exit_to_village"] = { sid = 15076, lv = 28593, gv = 3331, pos = {49.356128692627, 4.22816610336304, 94.2022323608398}, view = {0, -3.20000004768372, 0}, lvl = "lost_village"},
+["exit_dead_city"] = { sid = 15078, lv = 100962, gv = 3593, pos = {-239.388763427734, -2.03212594985962, 300.589019775391}, view = {0, -2.5, 0}, lvl = "dead_city"},
+["exit_dead_city1"] = { sid = 15079, lv = 479934, gv = 3654, pos = {142.059371948242, 1.22716426849365, -135.111358642578}, view = {0.0,0.0,0.0}, lvl = "dead_city"},
+["exit_to_newpripyat"] = { sid = 15080, lv = 415468, gv = 3765, pos = {185.554824829102, -27.7250671386719, -259.768981933594}, view = {-0.000807437056209892, 0, 0.999999701976776}, lvl = "pripyat"},
+["exit_to_newpripyat1"] = { sid = 15081, lv = 1039, gv = 3748, pos = {-242.639007568359, -0.507852852344513, -242.289443969727}, view = {0.999912440776825, 0, 0.0132351946085691}, lvl = "pripyat"},
+["exit_to_newpripyat2"] = { sid = 15082, lv = 485919, gv = 3769, pos = {326.330200195313, -5.26787710189819, 243.598693847656}, view = {0.3901327252388, 0, 0.920758605003357}, lvl = "pripyat"},
+["exit_to_jupiter1"] = { sid = 15084, lv = 8921, gv = 3701, pos = {-430.361999511719, 12.7151346206665, 303.319458007813}, view = {0.978526592254639, 0, -0.206120535731316}, lvl = "jupiter"},
+["exit_to_jupiter2"] = { sid = 15085, lv = 1232500, gv = 3745, pos = {322.039276123047, 20.1564388275146, -329.669006347656}, view = {0.993493854999542, 0, 0.11388573795557}, lvl = "jupiter"},
+["exit_zaton"] = { sid = 15086, lv = 129942, gv = 3660, pos = {-433.71075439453,2.6899619102478,7.8667712211609}, view = {0.0,0.0,0.0}, lvl = "zaton"},
+["exit_to_jupit_under"] = { sid = 15089, lv = 1233, gv = 3772, pos = {-47.0398483276367, 8.00780868530273, 451.177307128906}, view = {0.0505578331649303, 0, -0.998721122741699}, lvl = "jupiter_underground"},
+["exit_to_jupit_under1"] = { sid = 15090, lv = 40628, gv = 3827, pos = {80.7687301635742, 4.02071332931519, -222.480377197266}, view = {-0.995311915874481, 0, -0.0967171341180801}, lvl = "jupiter_underground"},
+["exit_to_labx8"] = { sid = 15091, lv = 3760, gv = 3838, pos = {-77.9532699584961, -7.77182149887085, 98.3349380493164}, view = {0, 0, 1}, lvl = "labx8"},
+["exit_to_mine"] = { sid = 15092, lv = 10231, gv = 3852, pos = {35.4093742370605, 2.31477212905884, -36.0613250732422}, view = {0,0,3.14159}, lvl = "mine"},
+["exit_to_mine1"] = { sid = 15093, lv = 12957, gv = 4150, pos = {134.032135009766, -6.76066207885742, 173.071578979492}, view = {0,1.73000001907349,0}, lvl = "mine"},
+["exit_to_darkscape"] = { sid = 15094, lv = 61282, gv = 4172, pos = {-464.55645751953,16.272197723389,611.46759033203}, view = {0.0,0.0,0.0}, lvl = "la15_darkscape"},
+["exit_to_darkscape1"] = { sid = 15095, lv = 994849, gv = 4414, pos = {409.294921875,24.3604946133647,277.17895507813}, view = {0.0,0.0,0.0}, lvl = "la15_darkscape"},
+["exit_to_darkscape2"] = { sid = 15096, lv = 1307, gv = 4165, pos = {-745.36547851563,12.020583152771,-287.81771850586}, view = {0.0203,0,0.999}, lvl = "la15_darkscape"},
+}
+
+function create_level_changer(
+	p_story_id,	-- STORY_ID нового level_changer (понадобится нам позже)
+	p_position,	-- вектор, координаты точки, в которой будет располагаться центр нового level_changer
+	p_lvertex_id,	-- level_vertext_id  - идентифицируют уровень, на котором будет создан level_changer
+	p_gvertex_id,	-- game_vertext_id   	
+ 
+	p_dest_lv,	-- level_vertex_id   - идентифицируют уровень, на который level_changer будет перебрасывать игрока 
+	p_dest_gv,	-- game_vertex_id
+	p_dest_pos,	-- координаты точки, в которой на новом уровне окажется игрок
+	p_dest_dir,	-- направрение взгляда игрока
+	p_dest_level,	-- название уровня, например "L11_Pripyat"
+	p_silent	-- следует задать 1, чтобы подавить вопрос о смене уровня (автоматический переход)
+)
+	local sim = alife()
+	local obj = sim:create("level_changer", p_position, p_lvertex_id, p_gvertex_id)
+ 
+	level.map_add_object_spot(obj.id, "level_changer", "")
+ 
+	local packet = net_packet()
+	obj:STATE_Write(packet)
+ 
+	-- свойства cse_alife_object
+	local game_vertex_id 			= packet:r_u16()
+	local cse_alife_object__unk1_f32 	= packet:r_float()
+	local cse_alife_object__unk2_u32 	= packet:r_u32()
+	local level_vertex_id 			= packet:r_u32()
+	local object_flags 			= packet:r_u32()
+	local custom_data 			= packet:r_stringZ()
+	local story_id 				= packet:r_u32()
+	local spawn_story_id			= packet:r_u32()
+ 
+	-- свойства cse_shape
+	local shape_count 			= packet:r_u8()
+	for i=1,shape_count do
+		local shape_type 		= packet:r_u8()
+		if shape_type == 0 then
+			-- sphere
+			local center 		= packet:r_vec3()
+			local radius 		= packet:r_float()
+		else
+			-- box
+			local axis_x_x = packet:r_float()
+			local axis_x_y = packet:r_float()
+			local axis_x_z = packet:r_float()
+			local axis_y_x = packet:r_float()
+			local axis_y_y = packet:r_float()
+			local axis_y_z = packet:r_float()
+			local axis_z_x = packet:r_float()
+			local axis_z_y = packet:r_float()
+			local axis_z_z = packet:r_float()
+			local offset_x = packet:r_float()
+			local offset_y = packet:r_float()
+			local offset_z = packet:r_float()
+		end
+	end
+ 
+	-- свойства cse_alife_space_restrictor
+	local restrictor_type 			= packet:r_u8()
+ 
+	-- свойства cse_level_changer
+	local dest_game_vertex_id		= packet:r_u16()  
+	local dest_level_vertex_id 		= packet:r_u32()  
+	local dest_position 			= packet:r_vec3()
+	local dest_direction 			= packet:r_vec3()
+	local dest_level_name 			= packet:r_stringZ()
+	local dest_graph_point 			= packet:r_stringZ()
+	local silent_mode 			= packet:r_u8()
+ 
+ 
+	packet:w_begin(game_vertex_id)			-- game_vertex_id
+	packet:w_float(cse_alife_object__unk1_f32)
+	packet:w_u32(cse_alife_object__unk2_u32) 
+	packet:w_u32(level_vertex_id)			-- level_vertex_id
+	packet:w_u32( bit_not(193) )			-- object_flags = -193 = 0xFFFFFF3E
+	packet:w_stringZ(custom_data)
+	packet:w_u32(p_story_id)			-- story_id
+	packet:w_u32(spawn_story_id)
+ 
+	packet:w_u8(1)			-- количество фигур
+--		packet:w_u8(0)			-- тип фигуры: сфера
+--		packet:w_vec3(vector():set(0, 0, 0))  -- sphere_center
+--		packet:w_float(3.0)
+	packet:w_u8(1)			-- тип фигуры: box
+	packet:w_float(2)	   -- axis_x_x
+	packet:w_float(0)	   -- axis_x_y
+	packet:w_float(0)	   -- axis_x_z
+	packet:w_float(0)	   -- axis_y_x
+	packet:w_float(4)	   -- axis_y_y
+	packet:w_float(0)	   -- axis_y_z
+	packet:w_float(0)	   -- axis_z_x
+	packet:w_float(0)	   -- axis_z_y
+	packet:w_float(4)	   -- axis_z_z
+	packet:w_float(0)	   -- offset_x
+	packet:w_float(0)	   -- offset_y
+	packet:w_float(0)          -- offset_z
+ 
+	packet:w_u8(3)	 	   -- restrictor_type
+ 
+	packet:w_u16(p_dest_gv)			-- destination game_vertex_id
+	packet:w_s32(p_dest_lv)			-- destination level_vertex_id
+	packet:w_vec3(p_dest_pos)		-- destination position
+	packet:w_vec3(p_dest_dir)		-- destination direction (направление взгляда)
+	packet:w_stringZ(p_dest_level)		-- destination level name
+	packet:w_stringZ("start_actor_02")	-- some string, always const
+	packet:w_u8(p_silent)			-- 1 for silent level changing
+ 
+	packet:r_seek(0)
+	obj:STATE_Read(packet, packet:w_tell())
+ level.add_pp_effector ("teleport.ppe", 2006, false)
+ 
+end
+
+function jumpTo(where)
+ local actor = db.actor
+ local place = places[where]
+ create_level_changer(place.sid, actor:position(), actor:level_vertex_id(), actor:game_vertex_id(),
+  place.lv,
+  place.gv,
+  vector():set(place.pos[1],place.pos[2],place.pos[3]),
+  vector():set(place.view[1],place.view[2],place.view[3]),
+  place.lvl,
+  1)
+end
+
+-- таблица телепортов
+-- art - требуемый арт для телепортации (если задан - отберётся у ГГ)
+-- keep - оставлять ли телепорт
+-- goto_func - список вариантов заброски телепортом
+local teleports = {
+	["science_teleport"] = {
+		art = "af_electra_moonlight",
+		sjedobniy = true,
+		goto_func = {
+			"exit_kordon",
+			"exit_kordon1",
+			"exit_kordon2",
+			"exit_kordon3"
+		}
+	},
+	["science_teleport2"] = {
+		art = "af_electra_moonlight",
+		sjedobniy = true,
+		goto_func = {
+			"exit_bar",
+			"exit_bar1",
+		}
+	},
+	["science_teleport3"] = {
+		art = "af_electra_moonlight",
+		sjedobniy = true,
+		goto_func = {
+			"exit_yantar",
+			"exit_yantar1",
+			"exit_yantar2",
+			"exit_yantar3"
+		}
+	},
+	["science_teleport4"] = {
+		art = "af_electra_moonlight",
+		sjedobniy = true,
+		goto_func = {
+			"exit_yantar"
+		}
+	},
+	["arhara_obman"] = {
+		keep = true,
+		sjedobniy = true,
+		goto_func = {
+			"exit_as"
+		}
+	}
+}
+
+function checking_droped_obj(obj)
+	local actor = db.actor
+	local obj_sect = obj:section()
+	if not teleports[obj_sect] then return end -- не наш "клиент"
+	
+	-- если арт не нужен или он есть у ГГ
+	if not teleports[obj_sect].art or actor:object(teleports[obj_sect].art) then
+		-- отправляем телепорт на экспертизу
+		-- узнаем не съели ли его или выложили в нычку
+		local tbl		= {}
+		tbl.obj_id		= obj:id()
+		tbl.obj_sect	= obj_sect
+		-- amk.start_timer("timer_drop_obj_teleport", 0.2, amk.pack_array_to_string(tbl))
+		amk.start_timer("timer_drop_obj_teleport", 0.2, tbl)
+	end
+end
+
+function teleport_start(obj_sect, obj_id, sjeli)
+	local sim = alife()
+	local actor = db.actor
+	if sjeli and teleports[obj_sect].sjedobniy or 
+		not sjeli and not teleports[obj_sect].sjedobniy then
+	-- вызываем случайную функцию для данного телепорта
+	-- teleports[obj_sect].goto_func[math.random(#(teleports[obj_sect].goto_func))]()
+		jumpTo(teleports[obj_sect].goto_func[math.random(#(teleports[obj_sect].goto_func))])
+	-- отбираем арт у ГГ, если нужно отобрать
+		if teleports[obj_sect].art then
+			local art = actor:object(teleports[obj_sect].art)
+			if art then
+				local se_art = sim:object(art:id())
+				if se_art then
+					sim:release(se_art)
+				end
+			end
+		end
+	
+		-- убираем телепорт, если не сказано оставить или его уже не съели/использовали
+		if not teleports[obj_sect].keep and not teleports[obj_sect].sjedobniy then
+			sim:release(sim:object(obj_id))
+		elseif teleports[obj_sect].keep and teleports[obj_sect].sjedobniy then -- вернуть телепорт в рюкзак
+			amk.spawn_item_in_inv(obj_sect)
+		end
+	end
+end
+
+function remove_old_teleport()
+	local sim = alife()
+	for nam,tbl in pairs(places) do
+		local se_obj = sim:story_object(tbl.sid)
+		if se_obj then
+			sim:release(se_obj, true)
+		end
+	end
+end
+
+function export_places()
+	local table_insert = table.insert
+	local tbl = {}
+	for k,v in pairs(places) do
+		local name_level = v.lvl
+		if not tbl[name_level] then
+			tbl[name_level] = {}
+		end
+		local tmptbl = {}
+		tmptbl.pic = k
+		tmptbl.pos_x = v.pos[1]
+	    tmptbl.pos_y = v.pos[2]
+	    tmptbl.pos_z = v.pos[3]
+	    tmptbl.lvid = v.lv
+	    tmptbl.gvid = v.gv
+		table_insert(tbl[name_level], tmptbl)
+	end
+	return tbl
+end
+function export_places1()
+	local table_insert = table.insert
+	local tbl = {}
+	for k,v in pairs(places) do
+		v.name = k
+		table_insert(tbl, v)
+	end
+	return tbl
+end

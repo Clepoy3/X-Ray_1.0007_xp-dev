@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+molniy_sey_tri_start} sr_idle@time
+
+[sr_idle@time]
+on_timer = 18000 | sr_idle@time1 %=arhara_dialog.poslednie_sms_pantera%
+
+[sr_idle@time1]
+on_timer = 10000 | sr_idle@nil %=arhara_dialog.poslednie_sms_pantera1%
+
+[sr_idle@nil]

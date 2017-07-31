@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="windows-1251"  ?>
+<game_dialogs>
+
+<!--Хабарыч-->
+<dialog id="pes_xabaruch_talk">
+	<dont_has_info>pes_xabaruch_done</dont_has_info>
+	<phrase_list>
+		<phrase id="0">
+			<text>pes_xabaruch_talk_0</text>
+			<give_info>pes_xabaruch_start</give_info>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>pes_xabaruch_talk_1</text>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>pes_xabaruch_talk_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>pes_xabaruch_talk_3</text>
+			<give_info>pes_xabaruch_done</give_info>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+</game_dialogs>

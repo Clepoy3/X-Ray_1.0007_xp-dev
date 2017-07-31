@@ -1,0 +1,264 @@
+; ---''' SWAMP '''---
+; --'' РОТАН (автор - goroff, перенос на ТЧ - Artem_K) ''--
+[m_swamp_e]:monster_base
+GroupControlSection     = spawn_group
+SpaceRestrictionSection = space_restrictor,zone_mosquito_bald,zone_witches_galantine,zone_burning_fuzz1,zone_mincer,zone_gravi_zone
+$npc      = on
+$prefetch = 16
+cform     = skeleton
+class     = SM_TUSHK
+
+Scheduled = on
+Human     = off
+Health    = 100
+
+MinSpeed     = 1.0
+MaxSpeed     = 5.0
+going_speed  = 4.5
+search_speed = 1.5
+current_level_going_speed = 1
+
+visual        = monsters\swamp\swamp
+corpse_visual = monsters\swamp\swamp_dead
+icon          = ui_npc_monster_swamp
+MaxHealthValue = 100
+DynamicObjectsCount = 32
+smart_terrain_choose_interval = 00:15:00
+
+ef_creature_type = 2
+ef_weapon_type   = 2
+ef_detector_type = 1
+panic_threshold  = 0.4
+
+bone_torso   = bip01_spine1
+bone_head    = bip01_head
+bone_fire    = bip01_head
+weapon_usage = 0
+
+Spawn_Inventory_Item_Section = mutant_swamp_heart
+Spawn_Inventory_Item_Probability_onDeath = 0.6
+
+ph_box0_center     = 0.0,  0.9,  0.0
+ph_box0_size       = 0.35, 0.9,  0.35
+ph_box1_center     = 0.0,  0.6,  0.0
+ph_box1_size       = 0.4,  0.6,  0.4
+ph_crash_speed_min = 10
+ph_crash_speed_max = 30
+ph_collision_damage_factor = 0.1
+ph_mass = 80
+
+actor_restrictor   = medium_monster
+destroyed_vis_name = physics\Dead_Body\trupik_crash
+script_binding     = bind_monster.bind
+
+ph_skeleton_airr_lin_factor =  2.0
+ph_skeleton_airr_ang_factor =  0.0
+ph_skeleton_hinger_factor1  =  1.0
+ph_skeleton_ddelay          = 15.0
+
+ph_skel_fatal_impulse_factor   = 6.0
+ph_after_death_velocity_factor = 0.75
+ph_skel_shot_up_factor         = 0.25
+
+SoundThreshold =  0.06
+max_hear_dist  = 50
+hit_power      =  1.0
+ImpulseMin     = 20.0
+ImpulseMax     = 35.0 
+
+Velocity_Stand          = 0.0, 3.5, 3.5, 1.0,  1.0
+Velocity_WalkFwdNormal  = 1.0, 7.5, 7.5, 0.02, 1.8
+Velocity_RunFwdNormal   = 5.0, 3.5, 3.5, 0.3,  1.0
+Velocity_WalkFwdDamaged = 1.0, 4.5, 4.5, 0.2,  1.8
+Velocity_RunFwdDamaged  = 3.0, 3.0, 3.0, 0.5,  1.0
+Velocity_Drag           = 1.0, 3.0, 3.0, 1.0,  1.0
+Velocity_Steal          = 1.5, 3.0, 3.0, 1.0,  1.0
+
+Accel_Generic    = 1.5
+Accel_Calm       = 2.5
+Accel_Aggressive = 7.5
+
+MinAttackDist = 1.0
+MaxAttackDist = 2.2
+as_min_dist   = 0.9
+as_step       = 0.1
+
+DayTime_Begin =  0
+DayTime_End   = 24
+Min_Satiety   = 0.4
+Max_Satiety   = 1.0
+distance_to_corpse = 1.2
+
+eye_fov   = 110
+eye_range = 30
+
+min_view_distance       = 0.7
+max_view_distance       = 1.0
+visibility_threshold    = 100.0
+always_visible_distance = 0.4
+time_quant              = 0.001
+decrease_value          = 0.01
+velocity_factor         = 0.5
+luminocity_factor       = 0.5
+transparency_threshold  = 0.25
+
+terrain  = swamp_terrain
+hit_type = wound
+
+satiety_v          = 0.00001
+radiation_v        = 0.00001
+satiety_power_v    = 0.005
+satiety_health_v   = 0.0001
+satiety_critical   = -1.0
+radiation_health_v = 0.01
+morale_v           = 0.01
+health_hit_part    = 1.0
+power_hit_part     = 1.0
+psy_health_v       = 0.1
+
+bleeding_v          = 0.03
+wound_incarnation_v = 0.05
+min_wound_size      = 0.01
+
+sleep_health     = 1.0
+sleep_power      = 1.0
+sleep_satiety    = 1.0
+sleep_radiation  = 1.0
+sleep_psy_health = 1.0
+
+eat_freq          = 5.0
+eat_slice         = 0.01
+eat_slice_weight  = 10.0
+satiety_threshold = 0.5
+
+Morale_Hit_Quant             = 0.1
+Morale_Attack_Success_Quant  = 0.1
+Morale_Take_Heart_Speed      = 0.1
+Morale_Despondent_Speed      = 0.1
+Morale_Stable_Speed          = 0.05
+Morale_Despondent_Threashold = 0.5
+
+sound_idle           = monsters\swamp\idle_
+sound_eat            = monsters\swamp\eat_
+sound_aggressive     = monsters\swamp\idle_0
+sound_attack_hit     = monsters\poltergeist\attack_2
+sound_take_damage    = monsters\swamp\idle_0
+sound_die            = monsters\swamp\attack_1
+sound_threaten       = monsters\swamp\attack_0
+sound_landing        = monsters\biting\def_
+sound_steal          = monsters\biting\def_
+sound_panic          = monsters\biting\def_
+sound_growling       = monsters\biting\def_
+sound_die_in_anomaly = monsters\poltergeist\attack_2
+
+killer_clsids = Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
+
+idle_sound_delay   = 80000
+eat_sound_delay    = 4000
+attack_sound_delay = 8000
+
+sound_distant_idle       = monsters\rotan\idle_
+distant_idle_sound_delay = 80000
+distant_idle_sound_range = 100.0
+
+DamagedThreshold              = 0.4
+critical_wound_threshold      = -1
+critical_wound_decrease_quant = 0.0
+
+material               = creatures\medium
+DynamicObjectsCount    = 32
+squad_attack_algorithm = 1
+attack_effector        = small_monster_attack_effector
+LegsCount              = 2
+
+immunities_sect = m_swamp_immunities
+attack_params   = m_swamp_attack_params
+step_params     = m_swamp_step_params
+damage          = m_swamp_damage
+
+species   = snork
+rank      = 101
+spec_rank = weak
+community = swamp
+
+[m_swamp_damage]
+;bone_name     = <hit_scale>,-1,<wound_scale>
+;<hit_scale>   - коэфф. изменения хита (уменьшения здоровья) 
+;<wound_scale> - коэфф. изменения величины открытой раны
+
+default      = 1.0, -1, 0.3
+bip01_pelvis = 1.0, -1, 0.5
+bip01_spine  = 1.0, -1, 0.5
+bip01_spine1 = 1.0, -1, 0.5
+bip01_neck   = 1.0, -1, 1.5
+bip01_head   = 2.0, -1, 0.5, 10
+
+[swamp_terrain]
+255,000,255,255
+001,002,000,000 ;Кордон
+008,001,000,000 ;Бар
+010,001,000,000 ;Янтарь
+012,001,000,000 ;Миллитари
+
+[m_swamp_attack_params]
+stand_attack_0 = 0.30, 0.25, 20, 0.0, 1.0, 0.0, -1.2, 1.2, -1.6, 1.6, 1.0
+stand_attack_1 = 0.35, 0.30, 25, 0.0, 1.0, 0.0, -1.2, 1.2, -1.6, 1.6, 1.0
+stand_attack_2 = 0.40, 0.35, 30, 0.0, 1.0, 0.0, -1.2, 1.2, -1.6, 1.6, 1.0
+
+[m_swamp_step_params]
+stand_walk_fwd_0 = 1, 0.60, 0.2, 0.70, 0.4,
+stand_run_0      = 1, 0.65, 0.4, 0.55, 0.6,
+
+[m_swamp_immunities]
+burn_immunity          = 0.1
+strike_immunity        = 0.4
+shock_immunity         = 0.4
+wound_immunity         = 0.6
+radiation_immunity     = 0.0
+telepatic_immunity     = 0.0
+chemical_burn_immunity = 0.2
+explosion_immunity     = 0.6
+fire_wound_immunity    = 0.4
+
+;---'' BASE PROFILES ''---
+;--' weak '--
+[swamp_weak]:m_swamp_e
+$spawn = "monsters\swamps\swamp_weak"
+
+;--' normal '--
+[swamp_normal]:m_swamp_e
+$spawn = "monsters\swamps\swamp_normal"
+rank = 301
+spec_rank = normal
+panic_threshold = 0.02
+immunities_sect = swamp_immunities_normal
+attack_params = swamp_attack_params_normal
+
+[swamp_immunities_normal]:m_swamp_immunities 
+strike_immunity        = 0.35
+explosion_immunity     = 0.4
+fire_wound_immunity    = 0.25
+
+[swamp_attack_params_normal]
+stand_attack_0 = 0.40, 0.35, 30, 0.0, 1.0, 0.0, -1.2, 1.2, -1.6, 1.6, 1.0
+stand_attack_1 = 0.45, 0.40, 35, 0.0, 1.0, 0.0, -1.2, 1.2, -1.6, 1.6, 1.0
+stand_attack_2 = 0.50, 0.45, 40, 0.0, 1.0, 0.0, -1.2, 1.2, -1.6, 1.6, 1.0
+
+;--' strong '--
+[swamp_strong]:m_swamp_e
+$spawn = "monsters\swamps\swamp_strong"
+rank = 601
+spec_rank = strong
+panic_threshold = 0.00
+immunities_sect = swamp_immunities_strong
+attack_params = swamp_attack_params_strong
+
+[swamp_immunities_strong]:m_swamp_immunities
+strike_immunity        = 0.3
+explosion_immunity     = 0.2
+fire_wound_immunity    = 0.1
+
+[swamp_attack_params_strong]
+stand_attack_0 = 0.50, 0.45, 40, 0.0, 1.0, 0.0, -1.2, 1.2, -1.6, 1.6, 1.0
+stand_attack_1 = 0.55, 0.50, 45, 0.0, 1.0, 0.0, -1.2, 1.2, -1.6, 1.6, 1.0
+stand_attack_2 = 0.60, 0.55, 50, 0.0, 1.0, 0.0, -1.2, 1.2, -1.6, 1.6, 1.0

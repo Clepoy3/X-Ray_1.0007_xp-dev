@@ -1,0 +1,224 @@
+[wpn_scorpion]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                  	= "weapons\scorpion"	
+$npc			 			= on		
+$prefetch 		 		= 8
+scheduled               	= off           
+cform                   	= skeleton
+class                   	= WP_LR300
+min_radius              	= 0
+max_radius              	= 40
+description				= enc_weapons_wpn-scorpion
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7		
+
+weapon_class				= assault_rifle
+
+cost						= 3200
+
+ammo_limit		 		= 256
+ammo_current				= 64
+ammo_elapsed		 		= 32
+
+ammo_mag_size		 		= 20
+ammo_class		 		= ammo_9x18_fmj, ammo_9x18_pmm
+fire_modes				= 1, 2, 3, -1
+
+hand_dependence		 	= 1
+single_handed				= 0
+
+inv_name					= wpn-scorpion
+inv_name_short				= wpn-scorpion
+inv_weight				= 1.3
+
+inv_grid_width     = 2
+inv_grid_height    = 1
+inv_grid_x         = 15
+inv_grid_y         = 39
+
+kill_msg_x					= 72
+kill_msg_y					= 82
+kill_msg_width				     = 56
+kill_msg_height				= 23
+
+slot 						= 1		
+animation_slot				     = 1		
+
+;базовая дисперсия
+fire_dispersion_base		= 0.35		
+control_inertion_factor		= 1.11f
+
+;отдача
+cam_relax_speed        		= 3.5		
+cam_dispersion         		= 0.9		
+cam_dispersion_inc			= 0.22		
+cam_dispertion_frac			= 0.8		
+cam_max_angle				= 30		
+cam_max_angle_horz			= 25		
+cam_step_angle_horz			= 1.8		
+
+fire_dispersion_condition_factor = 3		 
+misfire_probability 		= 0.0023		 
+misfire_condition_k			= 0.07
+condition_shot_dec 			= 0.0002		
+
+direction               	= 0, 0, 1
+
+fire_point              	= 0.0, 0.18, 0.28
+
+flame_particles			= weapons\generic_weapon05
+smoke_particles         	= weapons\generic_shoot_00
+
+shell_point		 		= 0.0, 0.188, 0.082
+shell_dir		 			= 0.0, 1.0, 0.0
+shell_particles	 		= weapons\shells_r_ns_9mm
+
+rpm_empty_click 	 		= 200
+
+PDM_disp_base 				= 1.0
+PDM_disp_vel_factor 		= 0.9
+PDM_disp_accel_factor 		= 0.9
+PDM_crouch	 			= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+; ttc
+hit_power        			= 0.6
+hit_impulse		 		= 2
+hit_type 					= fire_wound
+
+fire_distance          		= 85
+bullet_speed				= 400			
+rpm                    	 	= 840
+
+use_aim_bullet				= true			
+time_to_aim				= 0.95	
+
+hud                     	= wpn_scorpion_hud
+normal                   	= 0, 1, 0
+position                 	= -0.012, -0.13, 0.0
+orientation              	= 0, 0, 0
+
+; под мишкой
+strap_position         		= -0.02,-0.27,0			
+strap_orientation      		= -10,-5,-33					
+strap_bone0				= bip01_spine1
+strap_bone1				= bip01_spine
+
+startup_ammo            	= 1000
+visual                  	= weapons\scorpion\wpn_scorpion.ogf
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 5
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 3
+
+;addons
+scope_status				= 0
+silencer_status			= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor	    	     = 40
+
+;звуки
+snd_draw					= weapons\pm_draw, 0.5
+snd_holster				= weapons\generic_holster, 0.5
+snd_shoot					= weapons\scorpion\scorpion_shot
+snd_empty					= weapons\pistol_empty, 0.5
+snd_reload				= weapons\pm_reload, 0.8
+snd_close					= weapons\generic_close, 0.5
+
+[wpn_scorpion_hud]
+shell_point				= -0.425000,-0.005000,0.060000
+shell_dir		 			= 0.0, 1.0, 0.0
+
+fire_point               	= -0.3, 0.0, 0.06
+fire_bone                	= wpn_body
+orientation              	= 0, 0, 0
+position                 	= 0, 0, 0
+
+visual                  	= weapons\scorpion\wpn_scorpion_hud.ogf
+
+anim_holster				= holster
+anim_idle					= idle
+anim_empty				= empty
+anim_reload				= reload_full
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty			= draw_empty
+anim_shoot				= shoot
+anim_shot_last				= shoot_last
+anim_close				= close
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset				= -0.144, 0.04, -0.1
+zoom_rotate_x				= -0.0097
+zoom_rotate_y				= -0.0035
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2
+
+;апгрейды
+
+; Смена калибра с 9х18 на 9х19
+[wpn_scorpion_kalibr]:wpn_scorpion
+$spawn             		= "weapons\scorpion\wpn_scorpion_kalibr"
+ammo_class		 	= ammo_9x19_fmj, ammo_9x19_pbp
+inv_name	        		= wpn-scorpion_kalibr
+inv_name_short			= wpn-scorpion_kalibr
+description				= enc_kalibr_weapons_wpn-scorpion
+inv_grid_width     = 3
+inv_grid_height    = 1
+cost				= 4000
+hit_power        			= 0.62
+condition_shot_dec 	= 0.00022
+
+; Снижение отдачи
+[wpn_scorpion_otdaca]:wpn_scorpion
+$spawn             		= "weapons\scorpion\wpn_scorpion_otdaca"
+fire_dispersion_base    = 0.175
+cam_relax_speed        = 1.75
+cam_dispersion         = 0.45		
+cam_dispersion_inc	    = 0.11		
+cam_max_angle	         = 15		
+inv_name	        		= wpn-scorpion_otdaca
+inv_name_short			= wpn-scorpion_otdaca
+description				= enc_otdaca_weapons_wpn-scorpion
+inv_grid_width     = 3
+inv_grid_height    = 1
+cost				= 4100
+
+
+; Снижение веса
+[wpn_scorpion_ves]:wpn_scorpion
+$spawn             		= "weapons\scorpion\wpn_scorpion_ves"
+inv_weight			= 1.0
+inv_name	        		= wpn-scorpion_ves
+inv_name_short			= wpn-scorpion_ves
+description			= enc_ves_weapons_wpn-scorpion
+inv_grid_width     = 3
+inv_grid_height    = 1
+cost				= 3500
+
+; Отдача и вес
+[wpn_scorpion_otdaca_ves]:wpn_scorpion_otdaca
+$spawn             		= "weapons\scorpion\wpn_scorpion_otdaca_ves"
+inv_weight			= 1.0
+inv_name	        		= wpn-scorpion_otdaca_ves
+inv_name_short			= wpn-scorpion_otdaca_ves
+description			= enc_otdaca_ves_weapons_wpn-scorpion
+cost					= 4500
+

@@ -1,0 +1,277 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+	    
+	-- Сталкеры
+	if type == "generators_orly" then
+		-- 7 работ
+		t = {section = "logic@generators_orly_zemlyk", idle = 0, prior = 10, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@generators_orly_kamp1", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		for i = 2, 4 do
+			t = {section = "logic@generators_orly_walker"..i, idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		end
+		t = {section = "logic@generators_orly_kamp5", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@generators_orly_kamp6", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	-- Чёрные сталкеры
+	if type == "black_generators" then
+		-- 10 работ
+		for i = 1, 10 do
+			t = {section = "logic@black_generators_walker"..i, idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Свободовцы
+	if type == "generators_svoboda" then
+		-- 4 работы
+		t = {section = "logic@generators_svoboda_walker1", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@generators_svoboda_walker2", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@generators_svoboda_kamp3", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@generators_svoboda_kamp4", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	-- Свиньи
+	if type == "generators_flesh1" then
+		-- 4 работы
+		for t = 1, 4 do
+			t = {section = "logic@generators_flesh1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Псевдогигант
+	if type == "generators_gigant" then
+		-- 1 работа
+		t = {section = "logic@generators_gigant", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	-- Тушканы
+	if type == "generators_tushkano" then
+		-- 6 работ
+		for t = 1, 6 do
+			t = {section = "logic@generators_tushkano", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кабаны
+	if type == "generators_kaban" then
+		-- 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@generators_kaban", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Снорки
+	if type == "generators_snork" then
+		-- 4 работы
+		for t = 1, 4 do
+			t = {section = "logic@generators_snork", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кабаны с поросятами
+	if type == "gener_kaban_two" then
+		--5 работ
+		for t = 1, 5 do
+			t = {section = "logic@gener_kaban_two", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Химеры
+	if type == "generators_chimera" then
+		-- 2 работы
+		for t = 1, 2 do
+			t = {section = "logic@generators_chimera", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Крысоволки
+	if type == "gen_ratlike" then
+		--' 15 работ
+		for t = 1, 5 do
+			t = {section = "logic@gen_ratlike_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@gen_ratlike_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@gen_ratlike_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+     
+---'''' Гулаги с переменным состоянием ''''---
+
+end
+
+function load_states(gname,type)
+
+	if type == "generators_orly" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "black_generators" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "generators_svoboda" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "generators_flesh1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "generators_gigant" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "generators_tushkano" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "generators_kaban" then       
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "generators_snork" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "gener_kaban_two" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "generators_chimera" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "gen_ratlike" then
+		return function(gulag)
+			return 0
+		end
+	end
+     
+  end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	if gulag_type == "generators_orly" then
+		return npc_community == "stalker"
+	end
+	if gulag_type == "black_generators" then
+		return npc_community == "stalker"
+	end
+	if gulag_type == "generators_svoboda" then
+		return npc_community == "freedom"
+	end
+
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+	if gulag_type == "generators_flesh1" then
+		return npc_community == "flesh"
+	end
+	if gulag_type == "generators_gigant" then
+		return npc_community == "pseudo_gigant"
+	end
+	if gulag_type == "generators_tushkano" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "generators_kaban" then
+		return npc_community == "boar"
+	end
+	if gulag_type == "generators_snork" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "gener_kaban_two" then
+		return npc_community == "boar"
+	end
+	if gulag_type == "generators_chimera" then
+		return npc_community == "chimera"
+	end
+	if gulag_type == "gen_ratlike" then
+		return npc_community == "ratlike"
+	end
+
+     	return false
+end

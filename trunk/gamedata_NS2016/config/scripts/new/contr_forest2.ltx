@@ -1,0 +1,17 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = mob_camp@contr_forest2
+on_death = mob_death@contr_forest2
+
+[mob_camp@contr_forest2]
+path_home = contr_forest2_walk
+path_look = contr_forest2_look
+home_min_radius = 10
+home_max_radius = 15
+
+[mob_death@contr_forest2]
+on_info = %+contr_forest2_dead%
+
+

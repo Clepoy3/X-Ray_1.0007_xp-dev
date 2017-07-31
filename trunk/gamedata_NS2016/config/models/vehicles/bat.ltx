@@ -1,0 +1,85 @@
+[helicopter_definition]
+default_hit_factor  = 0.9 ;0.01           ; default hit factor (0..1)
+hit_section         = hit_bones        ; hit section name
+wpn_rotate_x_bone   = head        ; rotate X-axis(pitch) bone name
+wpn_rotate_y_bone   = head  ; rotate Y-axis(head)  bone name
+wpn_fire_bone       = head   ; weapon axis (fire)   bone name
+left_rocket_bone    = head        ;
+left_rocket2_bone   = head        ;
+right_rocket_bone   = head        ;
+right_rocket2_bone  = head        ;
+smoke_bone          = ass
+light_bone          = ass
+
+[hit_bones]                            ; per bones hit factor
+;root				= 0.00015
+;korpus1             = 0.00015
+;korpus2				= 0.00015
+ass		            = 0.9  ; 0.00015
+ass				  =  0.9  ; 0.00015
+
+
+[on_death_mode]
+scale_bone = left_wing1,left_wing2
+
+;-------------------------------------------------------------------------------
+;------ destroyed part ---------------------------------------------------------
+
+[destroyed]
+physics\vehicles\bat\part\bat_part_01
+[autoremove_parts]
+time					 = 160
+
+;-------------------------------------------------------------------------------
+;--- part impulse_transition ---------------------------------------------------
+
+[impulse_transition_to_parts]
+random_min               = 0.0    ; величина случайно направленного импульса пропорционально массе нового объекта
+random_hit_imp           = 0.0     ; величина случайно направленного импульса пропорционально разрушающему хиту
+;ref_bone                 =         ; кость из по которой определяется скорость для частей у который связь не задана, по умолчанию рут
+imp_transition_factor    = 0.0     ; фактор с которым прикладывается хит по исходному объекту ко всем частям
+lv_transition_factor     = 0.0     ; коэффициент передачи линейной скорости
+av_transition_factor     = 0.0     ; коэффициент передачи угловой скорости
+
+;-------------------------------------------------------------------------------
+[explosion]
+hit_power_critical			= 0.0, 0.0, 0.0, 0.0
+k_hit_critical				= 0
+frag_hit_critical			= 0
+
+blast					= 0
+blast_r					= 0
+blast_impulse			= 0
+frags		        	= 0
+frags_r				= 0
+frag_hit				= 0
+frag_hit_impulse		= 0
+hit_type_blast			= fire_wound
+hit_type_frag			= fire_wound
+up_throw_factor		= 0
+wm_size             	= 0.1
+smoke_particle      = hit_fx\hit_tarakan_00   ;партиклы при ранении
+explode_particles     = hit_fx\hit_tarakan_00 ;партиклы при взрыве
+light_color			= 0.6,0.5,0.3
+light_range			= 0.1
+light_time 			= 0.1
+
+
+;трассы от осколков
+fragment_speed				= 0
+fragment_tracer_max_length	= 0
+explode_duration    		= 0			;подолжительность взрыва (с)
+
+;звуки
+engine_sound            = monsters\bat
+
+;explode_sound	= monsters\bat_die
+
+snd_explode 			= material\actor\step\gravel2
+;wallmarks
+wallmark_section		= explosion_marks
+
+[explode_effector]
+effect_sect_name = effector_bat_hit
+
+

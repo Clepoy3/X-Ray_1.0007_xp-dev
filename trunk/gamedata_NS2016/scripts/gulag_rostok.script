@@ -1,0 +1,187 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+
+	-- Слепыши
+	if type == "ros_dog" then
+		--' 7 работ
+		for t = 1, 4 do
+			t = {section = "logic@ros_dog_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@ros_dog_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Псевдопсы
+	if type == "ros_pseudodog" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@ros_pseudodog_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Тушканы
+	if type == "ros_tushkano" then
+		--' 10 работ
+		for t = 1, 10 do
+			t = {section = "logic@ros_tushkano_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Крысы
+	if type == "ros_rat" then
+		--' 14 работ
+		for t = 1, 7 do
+			t = {section = "logic@ros_rat_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 7 do
+			t = {section = "logic@ros_rat_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кровососы
+	if type == "ros_bloodsucker" then
+		--' 2 работы
+		for t = 1, 2 do
+			t = {section = "logic@ros_bloodsucker_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Полтергейсты
+	if type == "ros_poltergeist" then
+		--' 2 работы
+		for t = 1, 1 do
+			t = {section = "logic@ros_poltergeist_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 1 do
+			t = {section = "logic@ros_poltergeist_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Снорки
+	if type == "ros_snork" then
+		--' 2 работы
+		for t = 1, 2 do
+			t = {section = "logic@ros_snork_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+---'''' Гулаги с переменным состоянием ''''---
+
+end
+
+function load_states(gname,type)
+
+	if type == "ros_dog" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "ros_pseudodog" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "ros_tushkano" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "ros_rat" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "ros_bloodsucker" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "ros_poltergeist" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "ros_snork" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+   end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+	if gulag_type == "ros_dog" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "ros_pseudodog" then
+		return npc_community == "pseudodog"
+	end
+	if gulag_type == "ros_tushkano" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "ros_rat" then
+		return npc_community == "rat"
+	end
+	if gulag_type == "ros_bloodsucker" then
+		return npc_community == "bloodsucker"
+	end
+	if gulag_type == "ros_poltergeist" then
+		return npc_community == "poltergeist"
+	end
+	if gulag_type == "ros_snork" then
+		return npc_community == "snork"
+	end
+
+	return false
+end

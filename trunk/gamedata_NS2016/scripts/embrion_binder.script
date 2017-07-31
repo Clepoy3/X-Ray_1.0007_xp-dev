@@ -1,0 +1,75 @@
+--[[ embrions
+  idea by andrew53
+  algorithm & optimization by Monnoroch
+  realization by Shadowman  
+  special thanks to Malandrinus for manual on object_binder
+]]
+
+--таблица секций: аномалия - эмбрион
+local mut_sec = {
+["zone_boar_emb"]="horror_boar_strong",
+["zone_burer_emb"]="burer_embrion",
+["zone_cat_emb"]="horror_cat_weak",
+["zone_chimera_emb"]="chimera_embrion",
+["zone_controller_emb"]="controller_embrion",
+["zone_dog_emb"]="horror_dog_weak",
+["zone_flesh_emb"]="horror_flesh_strong",
+["zone_gigant_emb"]="gigant_embrion",
+["zone_krovosos_emb"]="horror_bloodsucker_strong",
+["zone_poltergeist_emb"]="horror_poltergeist_strong",
+["zone_psevdodog_emb"]="horror_pseudodog_strong",
+["zone_psydog_emb"]="psy_dog_embrion",
+["zone_snork_emb"]="horror_snork_normal",
+["zone_tushkano_emb"]="horror_tushkano_strong",
+["zone_zombie_emb"]="horror_zombie_normal"
+}
+
+-- количество монстров рождаемых косоном
+local bonus = {
+["burer_embrion"]=1,
+["chimera_embrion"]=1,
+["controller_embrion"]=1,
+["gigant_embrion"]=1,
+["horror_bloodsucker_strong"]=1,
+["horror_boar_strong"]=2,
+["horror_cat_weak"]=4,
+["horror_dog_weak"]=3,
+["horror_flesh_strong"]=2,
+["horror_poltergeist_strong"]=2,
+["horror_pseudodog_strong"]=1,
+["horror_snork_normal"]=1,
+["horror_tushkano_strong"]=5,
+["horror_zombie_normal"]=1,
+["psy_dog_embrion"]=1
+}
+
+function init(obj)
+	local new_binder = embr_binder(obj)
+	obj:bind_object(new_binder)
+end
+
+class "embr_binder" (object_binder)
+
+function embr_binder:__init(obj) super(obj)
+end 
+
+function embr_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function embr_binder:reinit()
+	object_binder.reinit(self)
+end
+
+function embr_binder:net_spawn(data)
+	local mutant_section = mut_sec[self.object:section()]
+	for i = 1, bonus[mutant_section] do
+		alife():create(mutant_section,self.object:position(),self.object:level_vertex_id(),self.object:game_vertex_id())
+		particles_object("anomaly2\\body_tear_01"):play_at_pos(self.object:position())
+	end
+	return object_binder.net_spawn(self, data)
+end
+
+function embr_binder:net_destroy()
+	object_binder.net_destroy(self)
+end

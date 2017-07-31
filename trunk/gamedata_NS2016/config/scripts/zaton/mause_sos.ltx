@@ -1,0 +1,130 @@
+
+[logic]
+active = heli_move@idle
+on_hit = hit
+on_death = death
+
+[death]
+on_info = %+sos_proval%
+
+[hit]
+on_info = %+sos_proval% heli_move@fly_proval
+
+[heli_move@idle]
+path_move = mause_sos1_idle_move
+engine_sound = false
+mute = true
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+default_velocity = 0
+on_info = {+sos_say_one_start} heli_move@fly1
+
+[heli_move@fly1]
+path_move = mause_sos2_idle_move
+default_velocity = 8
+max_velocity = 9
+engine_sound = true
+mute = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = 30
+invulnerable = true
+immortal = true
+on_timer = 45000 | heli_move@fly2
+
+[heli_move@fly2]
+path_move = mause_sos_polet1_move
+default_velocity = 6
+max_velocity = 7
+engine_sound = true
+mute = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = 30
+invulnerable = true
+on_timer = 8000 | heli_move@fly3
+
+[heli_move@fly3]
+path_move = mause_sos_polet2_move
+default_velocity = 6
+max_velocity = 7
+engine_sound = true
+mute = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = 30
+invulnerable = true
+on_timer = 8000 | heli_move@fly4
+
+
+[heli_move@fly4]
+path_move = mause_sos_polet3_move
+default_velocity = 6
+max_velocity = 7
+engine_sound = true
+mute = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = 30
+invulnerable = true
+on_timer = 20000 | heli_move@fly5
+
+
+[heli_move@fly5]
+path_move = mause_sos_polet4_move
+default_velocity = 6
+max_velocity = 7
+engine_sound = true
+mute = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = 30
+invulnerable = true
+on_timer = 20000 | heli_move@fly6
+
+
+[heli_move@fly6]
+path_move = mause_sos_polet5_move
+default_velocity = 6
+max_velocity = 7
+engine_sound = true
+mute = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = 30
+invulnerable = true
+on_timer = 8000 | heli_move@fly7
+
+
+
+[heli_move@fly7]
+path_move = mause_sos_mesto_move
+default_velocity = 8
+max_velocity = 9
+engine_sound = true
+mute = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = 30
+invulnerable = true
+;on_timer = 40000 | heli_move@fly_proval
+
+[heli_move@fly_proval]
+path_move = mause_sos1_idle_move
+engine_sound = true
+mute = true
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+default_velocity = 12
+on_timer = 28000 | %=arhara1_dialog1.del_mause_sos%
+
+

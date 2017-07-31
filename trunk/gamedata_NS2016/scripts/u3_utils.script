@@ -1,0 +1,44 @@
+-----------------------------------------------------------------------------
+-- u3_utils.script
+-- zestawik ma³ych funkcji i klas, przydatnych w innych skryptach.
+-- tam, gdzie nie jest napisane inaczej, autor: utak3r.
+-- 
+-- Last update: 2009.12.29
+-----------------------------------------------------------------------------
+
+--
+-- Sprawdzenie, czy jest gra i czy aktor jest ¿ywy
+--
+function isGameOn()
+	if level.present() and db.actor ~= nil and db.actor:alive() then
+		return true
+	end
+	return false
+end
+
+--
+-- Zapis stanu gry (save)
+--
+function savegame(save_name)
+    if save_name == nil then
+        return false
+    end
+    if isGameOn() then
+        local save_param = user_name().."-"..save_name
+        --get_console():execute("load ~~~ "..save_param)
+        save_param = string.gsub(save_param,"\\n",".")
+        --get_console():execute("load ~~~ "..save_param)
+        save_param = string.gsub(save_param,"[><|?*/\\:\"%b]",".")
+        --get_console():execute("load ~~~ "..save_param)
+        save_param = string.gsub(save_param,"[%%][c][\[][%a%d%p%s]*[\]]","")
+        --get_console():execute("load ~~~ "..save_param)
+        save_param = string.gsub(save_param,"Çàäàíèå âûïîëíåíî","Âûïîëíåíî")
+        --get_console():execute("load ~~~ "..save_param)
+        save_param = string.gsub(save_param,"%.+",".")
+        --get_console():execute("load ~~~ "..save_param)
+        if string.len(save_param)>64 then
+            save_param = string.sub(save_param,1,64)
+        end
+        get_console():execute("save "..save_param)
+    end
+end

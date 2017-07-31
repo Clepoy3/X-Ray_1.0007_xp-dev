@@ -1,0 +1,46 @@
+class "opt_sol_adv" (CUIWindow)
+
+function opt_sol_adv:__init() super()
+
+end
+
+function opt_sol_adv:__finalize() 
+
+end
+	
+function opt_sol_adv:InitControls(x, y, xml, handler)
+
+	self:Init(x,y, 738, 416)
+	self:SetAutoDelete(true)
+	
+	self.bk = xml:InitFrame("frame", self)
+	
+	xml:InitStatic("tab_sol_adv:text_static", self)
+	
+	local scrPIC
+	scrPIC = xml:InitStatic("tab_sol_adv:picture", self)
+	scrPIC:SetWindowName("screen_pict")
+	
+	xml:InitStatic("tab_sol_adv:cap_HUDChange", self)
+	local radio_HUD = xml:InitTab("tab_sol_adv:radio_HUDChange", self)
+	handler:Register(radio_HUD, "radio_HUDChange")	
+	handler.radio_HUD = radio_HUD
+	radio_HUD:SetNewActiveTab(ui_mm_opt_main.solReadVar("hud"))
+	
+	xml:InitStatic("tab_sol_adv:cap_InvChange", self)
+	local radio_inv = xml:InitTab("tab_sol_adv:radio_InvChange", self)
+	handler:Register(radio_inv, "radio_InvChange")	
+	handler.radio_inv = radio_inv
+	radio_inv:SetNewActiveTab(ui_mm_opt_main.solReadVar("inv"))
+	
+	xml:InitStatic("tab_sol_adv:cap_ScopeChange", self)
+	local radio_scope = xml:InitTab("tab_sol_adv:radio_ScopeChange", self)
+	handler:Register(radio_scope, "radio_ScopeChange")	
+	handler.radio_scope = radio_scope
+	radio_scope:SetNewActiveTab(ui_mm_opt_main.solReadVar("sco"))
+	
+end
+
+
+
+

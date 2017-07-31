@@ -1,0 +1,611 @@
+local math_random = math.random
+local math_ceil = math.ceil
+local math_floor = math.floor
+local string_find = string.find
+local string_format = string.format
+local string_sub = string.sub
+local string_len = string.len
+
+--[[function log(ct, ...)
+	local strStart = string_format("load ~%s~: [death_manager]", ct)
+	local str = string_format(...)
+	local strMaxLen = 200
+	local linesCount = math_ceil(string_len(str)/strMaxLen)
+	for i = 1, linesCount do
+		get_console():execute(strStart..string_sub(str, (i-1)*strMaxLen+1, i*strMaxLen))
+	end
+end--]]
+
+function log(ct,...)
+	get_console():execute( string_format("load ~[%s]:[death_manager]: %s",ct,string_format(...)))
+end
+function list_table(v, name, t_level)
+	local name = name or "item"
+	if t_level then
+		for i = 1, t_level do name = string_format("__%s", name) end
+	else t_level = 0
+	end
+	for kk,vv in pairs(v) do
+		if vv and type(vv) == "table" then
+			log("info", "%s: %s, type: table", name, kk)
+			list_table(vv, kk, t_level + 1)
+		else log("info", "%s: %s, type: %s, value: %s", name, kk, type(vv), tostring((type(vv)=="userdata" and "*") or vv))
+	end	end
+end
+
+inited = false
+
+--' Зависимости в спауне предметов. Предмет спауниться только если есть хотя бы один из зависимых.
+local item_by_comms = {}	-- Ключ - группировка персонажа. Значение - таблица, содержащая имена секций предметов.
+local item_dependence = {}	-- Зависимости в спауне предметов. Предмет спауниться только если есть хотя бы один из зависимых.
+
+--' Множители и минимаксы для выпадения вещей в зависимости от уровня
+local mul_by_level = {}
+local count_by_level = {}
+
+-- суффиксы по сложности игры
+local gm_dfcy = {
+	[0] = "default",
+	[1] = "stalker",
+	[2] = "veteran",
+	[3] = "master"
+	}
+
+-- какую часть патронов оставлять в стволах в зависимости от сложности игры
+local ammo_dfcy = {
+	default = 0.7,
+	stalker = 0.6,
+	veteran = 0.5,
+	master = 0.4
+	}
+
+-- шанс спавна предметов в зависимости от сложности игры
+local item_dfcy = {
+	default = 0.8,
+	stalker = 0.7,
+	veteran = 0.6,
+	master = 0.5
+	}
+
+local always_keep_item = {}	-- Предметы, которые нельзя удалять (квестовые например)
+local always_delete = {}	-- эти - удалять в обязательном порядке.
+local offs_items = {}		-- эти проверять на protected.
+
+local names_info = {}		-- Таблица выдачи инфопорций по части имени погибшего непися.
+
+-- Таблица для проверки в лоб. Порядок не имеет значения.
+local visuals = {
+	["stalker_bandit"] = "bandit_outfit",
+	["stalker_bandit_4"] = "bandit_outfit_red",
+	["stalker_bandit_2"] = "bandit_outfit_red",
+	["stalker_bandit_5"] = "bandit_outfit_blue",
+	["stalker_bandit_9"] = "bandit_outfit_blue",
+	["stalker_bandit_1"] = "bandit_outfit_red1",
+	["stalker_bandit_drunk"] = "outfit_bandit_m1",
+	["stalker_bandit_8"] = "bandit_gaz_outfit_m1",
+	["stalker_bandit_veteran"] = "bandit_veteran_outfit",
+	["stalker_bandit_borov"] = "bandit_master_outfit",
+	["stalker_bandit_master"] = "bandit_master_outfit",
+	["stalker_bandit_exoskeleton"] = "exo_bandit_outfit",
+	["stalker_do_antigas"] = "dolg_gaz_outfit_m1",
+	["stalker_do_komandir"] = "outfit_dolg_m1",
+	["stalker_do_nauchniy"] = "dolg_scientific_outfit",
+	["stalker_do_exoskeleton"] = "dolg_black_exoskeleton",
+	["stalker_nebo_balon_1"] = "nebo_heavy_outfit",
+	["stalker_nebo_rukzak"] = "nebo_light_outfit",
+	["stalker_nebo_nauchniy"] = "nebo_scientific_outfit",
+	["stalker_nebo_exoskeleton"] = "nebo_exo_outfit",		
+	["stalker_ecolog"] = "ecolog_outfit",
+	["nauchniy_1"] = "ecolog_outfit",
+	["protect_suit2"] = "ecolog_outfit",
+	["stalker_ecolog_military"] = "protection_outfit",
+	["stalker_chemical"] = "protection_outfit",
+	["nauchniy_0"] = "protection_outfit",
+	["protect_suit1"] = "protection_outfit",
+	["izgoy"] = "bandit_veteran_outfit",
+	["stalker_ki_head_1"] = "outfit_killer_m1",
+	["stalker_ki_antigas"] = "killer_gaz_outfit_m1",
+	["stalker_ki_nauchniy"] = "merc_scientific_outfit",
+	["stalker_ki_exoskeleton"] = "killer_blue_exoskeleton",
+	["stalker_militari_1"] = "military_outfit",
+	["stalker_militari_antigas_1"] = "military_outfit",
+	["stalker_military"] = "military_outfit",
+	["stalker_military_green"] = "military_outfit",
+	["stalker_militari_2"] = "militaryspec_outfit",
+	["stalker_militari_antigas_2"] = "militaryspec_outfit",
+	["stalker_commander"] = "militaryspec_outfit",
+	["stalker_military_black"] = "militaryspec_outfit",
+	["stalker_monolit"] = "monolit_outfit",
+	["stalker_mo_hood_9"] = "monolit_gaz_outfit_m1",
+	["stalker_mo_nauchniy"] = "monolit_scientific_outfit",
+	["stalker_mo_exo"] = "monolit_exoskeleton",
+	["stalker_mo_elite"] = "monolit_black_outfit",	
+	["stalker_hood"] = "stalker_outfit", 
+	["stalker_bar_security"] = "stalker_guard_outfit",
+	["stalker_neytral_hood_9"] = "neytral_gaz_outfit_m1",  			
+	["stalker_2_gas"] = "neytral_gaz_outfit_v1",
+	["stalker_3_gas"] = "neytral_gaz_outfit_v2",
+	["stalker_4_gas"] = "neytral_gaz_outfit_v3",
+	["stalker_2_mask"] = "stalker_outfit_v1",
+	["lisiy"] = "stalker_outfit_v1",
+	["stalker_2_mask"] = "stalker_outfit_v1",
+	["stalker_2_ochki"] = "stalker_outfit_v1",
+	["stalker_2_rozh1"] = "stalker_outfit_v1",
+	["stalker_2_usi"] = "stalker_outfit_v1",
+	["stalker_3_mask"] = "stalker_outfit_v2",
+	["hellcar" ] = "stalker_outfit_v2",
+	["stalker_3_mask"] = "stalker_outfit_v2",
+	["stalker_3_rozh2"] = "stalker_outfit_v2",
+	["stalker_3_usi"] = "stalker_outfit_v2",
+	["stalker_4_rozh3"] = "stalker_outfit_v3",
+	["serega"]  = "stalker_outfit_v3",
+	["stalker_4_ochki"] = "stalker_outfit_v3",
+	["stalker_prizrak"] = "outfit_stalker_m1",
+	["stalker_neytral_nauchniy"] = "scientific_outfit",
+	["stalker_scien"] = "scientific_outfit",
+	["stalker_neytral_exoskeleton"] = "exo_outfit",
+	["stalker_exoskeleton"] = "exo_outfit",
+	["green_stalker_1"] = "neytral_novice_outfit_m1",
+	["green_stalker_2"] = "novice_outfit",
+	["stalker_novice"] = "outfit_novice_m1",
+	["green_stalker_3"] = "novice_outfit_rain_1",
+	["green_stalker_4"] = "neytral_novice_outfit_cam",
+	["green_stalker_5"] = "novice_outfit_new_2",
+	["green_stalker_6"] = "novice_outfit_rain_2",
+	["green_stalker_7"] = "neytral_novice_outfit_cam_2",
+	["green_stalker_8"] = "neytral_novice_outfit_cam_3",
+	["green_stalker_9"] = "novice_outfit_new_1",
+	["green_stalker_10"] = "neytral_novice_outfit_cam_1",
+	["green_stalker_11"] = "neytral_novice_outfit_new",
+	["green_stalker_antigas"] = "neytral_novice_gaz_outfit_m1",
+	["soldier_mask"] = "outfit_soldier_m1", 
+	["soldier_obichniy"] = "outfit_soldier_m1", 
+	["stalker_soldier"] = "outfit_soldier_m1", 
+	["soldier_spetsnaz"] = "specops_outfit",
+	["stalker_specops"] = "specops_outfit",
+	["soldier_antigas"] = "outfit_specnaz_m1",
+	["stalker_zombie1"] = "bandit_outfit",
+	["stalker_zombie2"] = "dolg_outfit",
+	["zombie_fresh_1"] = "dolg_outfit",
+	["stalker_zombie3"] = "stalker_outfit",
+	["stalker_zombie6"] = "stalker_outfit",
+	["zombie_fresh_2"] = "stalker_outfit", 
+	["stalker_zombie4"] = "killer_outfit",
+	["stalker_zombie5"] = "stalker_guard_outfit",
+	["stalker_zombie7"] = "novice_outfit",
+	["stalker_zombie8"] = "neytral_novice_outfit_m1",
+	["stalker_zombie_specnaz"] = "specops_outfit",
+	["zombie_fresh_0"] = "svoboda_heavy_outfit",
+	["zombie_exoskeleton"] = "broken_exoskeleton",
+	["stalker_sv_rukzak_1_1"] = "svoboda_light_outfit",
+	["stalker_sv_rukzak_3"] = "svoboda_light_outfit",
+	["stalker_svoboda_light"] = "svoboda_light_outfit",
+	["stalker_sv_rukzak_1"] = "svoboda_heavy_outfit",
+	["stalker_sv_rukzak_2"] = "svoboda_heavy_outfit",
+	["stalker_sv_rukzak_3_1"] = "svoboda_heavy_outfit",
+	["stalker_sv_cook"] = "svoboda_heavy_outfit",
+	["stalker_sv_max"] = "svoboda_heavy_outfit",
+	["stalker_svoboda_heavy"] = "svoboda_heavy_outfit",
+	["stalker_sv_hood_91"] = "svoboda_gaz_outfit_m1",
+	["stalker_sv_hood_9"] = "svoboda_heavy_gaz_outfit_m1",
+	["stalker_sv_nauchniy"] = "freedom_scientific_outfit",
+	["stalker_sv_exoskeleton"] = "svoboda_exoskeleton",
+	["stalker_sv_leader"] = "outfit_svoboda_m1"
+}
+
+-- Если ничего не нашло по прямому соответствию, то будет поиск по части названия
+-- Порядок следования в таблице имеет значение!! Сортировать её нельзя!
+-- Бессмысленно сначала искать по "neytral", а потом - по "stalker_neytral"!
+-- Можно только наоборот.
+-- Подтаблица npc_names даёт возможность указывать прямо имя непися и его индивидуальный броник
+local sect_by_visual_part = {
+	["stalker_bandit"] = {
+		sect = "bandit_outfit"
+	},
+	["stalker_do"] = {
+		sect = "dolg_outfit"
+	},
+	["stalker_ki"] = {
+		sect = "killer_outfit"
+	},
+	["stalker_mo"] = {
+		sect = "monolit_outfit"
+	},
+	["neytral"] = {
+		npc_names = {
+			["esc_wolf"] = "neytral_gaz_outfit_m2",
+			["esc_stalker_fanat"] = "neytral_gaz_outfit_m2",
+			["esc_fox"] = "neytral_gaz_outfit_m2",
+			["esc_provodnik"] = "neytral_gaz_outfit_m2",
+			["gar_hellcar"] = "neytral_gaz_outfit_m2",
+			["gar_seryi"] = "neytral_gaz_outfit_m2",
+			["agr_krot"] = "neytral_gaz_outfit_m2"
+		},
+	},
+	["stalker_neytral_rukzak"] = {
+		sect = "outfit_stalker_m2"
+	},
+	["stalker_neytral"] = {
+		sect = "stalker_outfit"
+	},
+	["soldier_bandana"] = {
+		sect = "outfit_soldier_m1"
+	},
+	["soldier_beret"] = {
+		sect = "outfit_soldier_m1"
+	},
+	["stalker_sv_balon_1"] = {
+		sect = "svoboda_heavy_outfit"
+	}
+}
+
+-- вероятность выпадения бронежилетов и диапазон состояний выпавших бронежилетов и оружия
+-- condition - диапазон состояний выпавших бронежилетов и оружия
+-- probability_outfit - вероятность выпадения бронежилетов
+item_cond = {default = { prob = 0.15, min = 5, max = 95 }}
+
+local iniFileName = "misc\\death_generic.ltx"
+local death_ini = g_ini_file(iniFileName)
+
+
+function init()
+if not inited then
+	local n, community, result, id, value, t, ammo
+	local dfcy = gm_dfcy[level.get_game_difficulty()]
+--log("инфо_лог","[init]: dfcy: %s",dfcy)
+--	n = death_ini:line_count("wpn_loaded_by_difficulty")
+--	for i=0,n-1 do
+--		result, id, value = death_ini:r_line("wpn_loaded_by_difficulty",i,"","")
+--		ammo_dfcy[id] = tonumber(value)
+--	end
+	ammo_dfcy.current = ammo_dfcy[dfcy]
+--log("инфо_лог","[init]: ammo_dfcy.current: %s",tostring(ammo_dfcy.current))
+
+--	n = death_ini:line_count("item_prob_by_difficulty")
+--	for i=0,n-1 do
+--		result, id, value = death_ini:r_line("item_prob_by_difficulty",i,"","")
+--		item_dfcy[id] = tonumber(value)
+--	end
+	item_dfcy.current = item_dfcy[dfcy]
+--log("инфо_лог","[init]: item_dfcy.current: %s",tostring(item_dfcy.current))
+
+	-- какие предметы и в каком количестве спавнить в зависимости от сложности игры
+	local item_count_section = string_format("item_count_%s",dfcy)
+	n = death_ini:line_count(item_count_section)
+	for i = 0, n-1 do
+		result, id, value = death_ini:r_line(item_count_section, i, "", "")
+		if string_sub(id, 1, 5) == "ammo_" then
+			ammo = getIniValueU32Simple(id,"box_size")
+		else
+			ammo = nil
+		end
+		count_by_level[id] = {ammo = ammo}
+		t = parse_nums(value)	
+		if t[1] then
+			count_by_level[id].min = tonumber(t[1])
+			if t[2] then
+				count_by_level[id].max = tonumber(t[2])
+			else
+				count_by_level[id].max = count_by_level[id].min
+			end
+		else
+			count_by_level[id].min, count_by_level[id].max = 0, 0
+			get_console():execute(string.format("load ~dc~: [death_manager]: Error on [death_ini] declaration. Section [%s], line [%s]", item_count_section, tostring(id)))
+		end
+	end
+
+--amk.dump_table(count_by_level,1,"count_by_level")
+
+	-- вероятность встретить вещь на локации
+	local level_name = level.name()
+	if not death_ini:section_exist(level_name) then
+		level_name = "default"
+	end
+--log("инфо_лог","[init]: level_name: %s",level_name)
+	n = death_ini:line_count(level_name)
+	for i = 0, n - 1 do
+		result, id, value = death_ini:r_line(level_name, i, "", "")
+		if count_by_level[id] then
+			mul_by_level[id] = tonumber(value)
+		end
+	end
+
+--amk.dump_table(mul_by_level,1,"mul_by_level")
+
+	-- вероятность выпадения по группировкам и кондиция брони
+	n = death_ini:line_count("item_cond_by_comms")
+	for i = 0, n - 1 do
+		result, community, value = death_ini:r_line("item_cond_by_comms", i, "", "")
+		t = parse_nums(value)
+		if t[1] and t[2] and t[3] then
+			item_cond[community] = {prob = tonumber(t[1]), min = tonumber(t[2]), max = tonumber(t[3])}
+		else
+			get_console():execute(string.format("load ~dc~: [death_manager]: Error on [death_ini] declaration. Section [item_cond_by_comms], line [%s]", tostring(id)))
+		end
+		if death_ini:section_exist(community) then
+			item_by_comms[community] = {}	-- вероятность встретить вещь у члена группировки
+			local l = death_ini:line_count(community)
+			for i = 0, l - 1 do
+				result, id, value = death_ini:r_line(community, i, "", "")
+				if mul_by_level[id] then
+					item_by_comms[community][id] = tonumber(value)
+				end
+			end
+		end
+	end
+
+--amk.dump_table(item_by_comms,1,"item_by_comms")
+
+
+	n = death_ini:line_count("item_dependence")	-- таблица зависимостей боеприпасов к оружию
+	-- todo: сделать нормальный кэш конфигов отдельным скриптом, и ВЕЗДЕ брать из него.
+	local vvv
+	for i=0,n-1 do
+		result, id, value = death_ini:r_line("item_dependence",i,"","")
+		item_dependence[id] = {}
+		vvv = parse_names(value)
+		for k,v in pairs(vvv) do
+			item_dependence[id][v] = true
+		end
+	end
+
+--amk.dump_table(item_dependence,1,"item_dependence")
+
+	n = death_ini:line_count("delete_items")	-- Предметы, которые следует удалять
+	for i=0,n-1 do
+		result, id, value = death_ini:r_line("delete_items",i,"","")
+		always_delete[id] = true
+	end
+
+--amk.dump_table(always_delete,1,"always_delete")
+
+	n = death_ini:line_count("keep_items")	-- Предметы, которые нельзя удалять (квестовые например)
+	for i=0,n-1 do
+		result, id, value = death_ini:r_line("keep_items",i,"","")
+		if value == "true" then	always_keep_item[id] = true end
+	end
+
+	n = death_ini:line_count("names_info")	-- инфопорции для трупов
+	for i=0,n-1 do
+		result, id, value = death_ini:r_line("names_info",i,"","")
+		if value then names_info[id] = value end
+	end
+
+	inited = true
+end
+end
+
+local	inv_list = {}
+function on_death(npc_id)
+	if not inited then
+		init()
+	end
+	local npc
+	if npc_id then
+		npc = level.object_by_id(npc_id)
+	end
+	if not npc then
+		return
+	end
+	--' Спрашиваем у серверного объекта: генерились ли предметы
+	local sim = alife()
+	local sobj = sim:object(npc:id())
+	if not sobj or sobj.death_droped == true then
+		return
+	end
+	sobj.death_droped = true
+	local ini = npc:spawn_ini()
+	if ini and ini:section_exist("dont_spawn_character_supplies") then
+log("инфо_лог","[on_death]: dont_spawn_character: %s",tostring(npc:name()))
+		return
+	end
+	local community = npc:character_community()
+	local icnd = item_cond[community]
+	if not icnd then
+		icnd = item_cond.default
+	end
+	local item_in_slot, loaded_ammo
+	for slot = 1, 2 do
+		item_in_slot = npc:item_in_slot(slot)
+		if item_in_slot and IAmAWeaponFireOnly[item_in_slot:clsid()] then
+--log("инфо_лог","[on_death]: item_in_slot: %s",tostring(item_in_slot:name()))
+			loaded_ammo = item_in_slot:get_ammo_in_magazine()
+--log("инфо_лог","[on_death]: loaded_ammo: %s",tostring(loaded_ammo))
+			item_in_slot:unload_magazine()
+local a = item_in_slot:get_ammo_in_magazine()
+--log("инфо_лог","[on_death]: a: %s",tostring(a))
+--			item_in_slot:set_ammo_elapsed(math_ceil(ammo_dfcy.current * loaded_ammo))
+--local b = item_in_slot:get_ammo_in_magazine()
+--log("инфо_лог","[on_death]: b: %s",tostring(b))
+		end
+	end
+
+
+	local grant_item = {}
+	-- Проверка на отсутствие спауна лута
+	if ini and ini:section_exist("dont_spawn_loot") then
+		grant_item = nil
+		npc:iterate_inventory(removeAlways, npc)
+	else
+		npc:iterate_inventory(check_inv, npc)
+--amk.dump_table(inv_list,1,"inv_list")
+
+		-- список предметов, которые остаются или будут добавлены в трупик
+		local spawn_items = item_by_comms[community]
+		if spawn_items then
+			for k,v in pairs(spawn_items) do
+--log("инфо_лог","[on_death]:spawn_items k: %s v: %s",tostring(k),tostring(v) )
+				-- По каждому виду объектов необходимо получить зависимости
+				--dc-- по тому, что если бы у нас был работающий оффлайн - это было бы нафиг не надо.
+				if check_item_dependence(npc, k) then
+--log("инфо_лог","[on_death]:dependence k: %s v: %s",tostring(k),tostring(v) )
+					-- решаем: будет, или нет, todo: добавить зависимость от уровня непися
+					if mul_by_level[k] and (mul_by_level[k] * v * item_dfcy.current) > math_random() then
+						grant_item[k] = math_ceil(math_random(count_by_level[k].min, count_by_level[k].max))
+					end
+				end
+			end
+		end
+--amk.dump_table(inv_list, 1, "inv_list")
+--amk.dump_table(grant_item, 1, "grant_item")
+		local ammo = {}
+		for i=1,#inv_list do
+			local section = inv_list[i].section
+			if grant_item[section] then
+				if grant_item[section] > 0 then
+					if count_by_level[section].ammo then
+						ammo[#ammo+1] = inv_list[i].item -- с патронами все запущено, будем считать отдельно
+						-- get_console():execute(string.format("load ~dc~: [death_manager], on_death: %s is ammo", section))
+					else grant_item[section] = grant_item[section] - 1
+					end
+				elseif not inv_list[i].protected then
+					-- get_console():execute(string.format("load ~dc~: [death_manager], on_death: %s isn't protected, delete", section))
+					release_item(inv_list[i].id, npc)
+				else
+					-- get_console():execute(string.format("load ~dc~: [death_manager], on_death: %s is protected, keep", section))
+				end
+			elseif not inv_list[i].protected then
+				-- get_console():execute(string.format("load ~dc~: [death_manager], on_death: %s isn't granted nor protected, delete", section))
+				release_item(inv_list[i].id, npc)
+			end
+		end
+
+		for k,v in pairs(grant_item) do
+			for i=1,v do
+				-- get_console():execute(string.format("load ~dc~: [death_manager], on_death: grant %s %s, create", v-i+1, k))
+				if count_by_level[k] and count_by_level[k].ammo then
+					create_ammo(npc, k, math_ceil(count_by_level[k].ammo*ammo_dfcy.current))
+				else create_item(npc, k)
+	end	end	end	end
+
+	local vis, sect
+	local npc_name = protected_items.get_obj_name(npc)
+	if grant_item and string_sub(npc:section(), 1, 5) ~= "arena" and community ~= "arena_enemy" and
+	  npc_name ~= "yan_specnaz_dead" and npc_name ~= "x16_stalker_ghost" then 
+		local t = amk.read_stalker_params(sobj)
+		if t then
+			vis = t.visual
+			vis = Parse_StrToTbl(vis,"\\")
+			--list_table(vis, "visual")
+			vis = vis[#vis]
+		if vis then
+			sect = visuals[vis]
+			if not sect then
+				for k,v in pairs(sect_by_visual_part) do
+					if string_find(vis, k) then
+						if v.sect then
+							sect = v.sect
+							break
+						elseif v.npc_names then
+							sect = v.npc_names[npc_name]
+							if sect then break end
+	end	end	end	end	end	end	end
+			
+	if sect and icnd.prob * item_dfcy.current > math_random() then
+		local obj = create_item(npc, sect)
+		if obj then amk.start_timer("set_condition",1,{obj.id, math_random(icnd.min, icnd.max)})
+	end	end
+
+	if names_info[npc_name] then
+		if db.actor:dont_has_info(names_info[npc_name]) then
+			db.actor:give_info_portion(names_info[npc_name])
+	end	end
+	grant_item, inv_list = {}, {}	
+end
+
+function removeAlways(npc, item)
+    if not npc or not item then return end
+	local se_npc = alife():object(npc:id())
+	local se_obj = alife():object(item:id())
+	if se_npc and se_obj then
+		local section = item:section()
+		--get_console():execute(string.format("load ~dc~: [death_manager] npc: %s (%s), item: %s, off: %s, keep: %s, protected: %s", npc:character_name(), npc:name(), item:name(), tostring(always_delete[section] or offs_items[section]), tostring(always_keep_item[section]), tostring( (offs_items[section] and protected_items.doNotTouchAnything(item)) or "ignored" ) ))
+
+		if always_delete[section]
+			or
+				(section == "device_torch_clon" or section == "device_torch") and not se_npc.torch_on
+		then
+			release_item(item:id(), npc)
+		end
+	end
+end
+
+function check_inv(npc, item)
+	if not npc or not item then
+		return
+	end
+	local se_npc = alife():object(npc:id())
+	local sobj = alife():object(item:id())
+	if se_npc and sobj then
+		local section = item:section()
+--log("инфо_лог","[check_inv]: section: %s",tostring(section))
+		if always_delete[section] or not ( always_keep_item[section] or protected_items.doNotTouchAnything(item) ) or
+				(section == "device_torch_clon" or section == "device_torch") and not se_npc.torch_on then
+			inv_list[#inv_list+1] = {id = item:id(), section = section, protected = false}
+		else
+			inv_list[#inv_list+1] = {id = item:id(), section = section, protected = true}
+		end
+	end
+end
+
+function set_weapon_drop_condition(item)
+	-- local condition  = (math.random(15)+75)/100
+	--printf("condition [%s]", tostring(condition))
+	-- item:set_condition(condition)	
+end
+
+function check_item_dependence(npc, section)	-- есть ли хоть один из зависимых объектов у персонажа ?
+	if npc then
+		if item_dependence[section] == nil then
+			return true
+		end
+		for k,v in pairs(item_dependence[section]) do
+--log("инфо_лог","[check_inv]: k: %s v: %s",tostring(k),tostring(v) )
+			local obj = npc:object(k)
+if obj then
+local a = npc:marked_dropped(obj)
+log("инфо_лог","[check_inv]: obj: %s marked: %s",tostring(obj:name()),tostring(a) )
+end
+			-- if obj then return true end
+			if obj and npc:marked_dropped(obj) ~= true then return true end
+			--dc-- и нафига здесь это было ? if obj and npc:marked_dropped(obj) ~= true then return true end
+		end
+	end
+	return false
+end
+
+function release_item(obj_id, npc)
+	-- все-таки небольшая залержка не помешает. См. комментарии в inv_manager
+	local obj = alife():object(obj_id)
+	local item = level.object_by_id(obj_id)
+	if obj and item then
+		if npc:marked_dropped(item) then
+log("инфо_лог","[release_item]: obj: %s marked: %s",tostring(npc:name()),tostring(item:name()) )
+			--get_console():execute(string.format("load ~dc~: info, [death_manager], on_death: obj: %s marked to be dropped", obj:name()))
+		else
+			--get_console():execute(string.format("load ~dc~: info, [death_manager], on_death: obj: %s released", obj:name()))
+			npc:mark_item_dropped(obj)
+			alife():release(obj, true)
+		end
+	else get_console():execute(string.format("load ~dc~: warning, [death_manager], on_death: object gone !"))
+	end
+end
+
+function create_item(npc, section)
+	return alife():create(section, npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
+	end
+
+function create_ammo(npc, section, size)
+	if size < 1 then size = 1 end
+	-- get_console():execute(string.format("load ~dc~: info, [death_manager], create %s ammo: %s", tostring(size),section))
+	return se_respawn.create_ammo(section, npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id(), size)
+	end
+
+-- количество патронов в пачке, тоже уперто из того же dunin_ammo.script
+function get_ammo_size(obj)
+	local sobj = alife():object(obj:id())
+	local packet = net_packet()
+	cse_alife_item_ammo.STATE_Write(sobj, packet)
+	packet:r_seek(packet:w_tell() - 2)
+	return packet:r_u16()
+end

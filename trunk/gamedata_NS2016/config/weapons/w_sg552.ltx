@@ -1,0 +1,274 @@
+; Штурмовой карабин СИГ552
+[wpn_sg552_sk1]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency 	= 
+$spawn                  = "weapons\sg552_sk1"					
+$npc			 		= on				
+$prefetch 		 		= 8
+scheduled               = off              
+cform                   = skeleton
+class                   = WP_AK74
+min_radius              = 0
+max_radius              = 50
+description				= enc_arsenal_sg552
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier	= 1.0		        
+holder_fov_modifier		= 0.7              
+
+weapon_class			= assault_rifle
+
+cost					= 5000
+
+ammo_limit		 		= 210
+ammo_current			= 30
+ammo_elapsed		 	= 30
+
+ammo_mag_size		 	= 30
+ammo_class		 		= ammo_5.56x45_ss190, ammo_5.56x45_ap
+grenade_class			= ammo_m209
+fire_modes				= 1, -1
+launch_speed = 0
+
+hand_dependence		 	= 1
+single_handed			= 0
+
+inv_name				= ars-sg552
+inv_name_short			= ars-sg552
+inv_weight				= 3.2
+
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 5
+inv_grid_y         = 24
+
+kill_msg_x			= 175
+kill_msg_y			= 0
+kill_msg_width		= 82
+kill_msg_height		= 28
+
+slot 					= 2		
+animation_slot			= 8		
+
+;params of weapon recoil
+fire_dispersion_base			= 0.21		
+control_inertion_factor			= 1.25f
+
+;отдача
+cam_relax_speed         		= 8		
+cam_relax_speed_ai         		= 5.2
+cam_dispersion          		= 0.6		
+cam_dispersion_inc			= 0.2		
+cam_dispertion_frac			= 0.9		
+cam_max_angle				= 13    	
+cam_max_angle_horz			= 23		
+cam_step_angle_horz			= 1.3
+
+fire_dispersion_condition_factor 	= 3	    	 
+misfire_probability 		= 0.0017	 
+misfire_condition_k			= 0.09
+condition_shot_dec 			= 0.00014	
+
+direction               = 0, 0, 1
+
+fire_point             	=  0,0.225,0.413
+shell_particles	 		= weapons\shells_r_ns_556
+flame_particles			= weapons\generic_weapon05
+grenade_flame_particles		= weapons\generic_weapon01
+
+shell_point		 		= 0,0.247,0.127
+shell_dir		 		= 0.0, 1.0, 0.0
+
+rpm_empty_click 	 	= 200
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        		= 0.73
+hit_impulse		 	    = 3
+hit_type 			    = fire_wound
+hit_rate	            = 1.88
+fire_distance           = 175
+bullet_speed			= 730
+rpm                     = 780
+
+use_aim_bullet				= true		
+time_to_aim					= 1.0
+
+silencer_hit_power       	= 0.66
+silencer_hit_impulse	 	= 2
+silencer_fire_distance   	= 150
+silencer_bullet_speed	 	= 660
+
+hud                     = wpn_sg552_sk1_hud
+normal                  = 0, 1, 0
+position         	    = -0.026,-0.172,0
+orientation             = 0, 0, 0
+
+strap_position         		= -0.16,-0.36,0.15			
+strap_orientation      		= -10,-5,10					
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo            = 1000
+visual                   	= weapons\sig552\wpn_sg552_sk1.ogf
+
+
+ph_mass			 		= 5
+
+;addons
+scope_status			= 2
+silencer_status			= 2
+grenade_launcher_status	= 2
+
+scope_name 					= wpn_addon_acog
+scope_x                     = 52
+scope_y                     = 0
+
+silencer_name  				= wpn_addon_sil_556_ar
+silencer_x                  = 170  ; offset in inventory icon
+silencer_y                  = 17
+
+grenade_launcher_name 		= wpn_addon_grenade_launcher_m203
+grenade_launcher_x          = 101
+grenade_launcher_y          = 36
+
+;silencer_flame_particles 	= weapons\generic_weapon01
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 5
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.2
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+zoom_enabled			= true
+scope_zoom_factor	    = 75
+
+;звуки
+snd_draw			= weapons\generic_draw, 0.5
+snd_holster			= weapons\generic_holster, 0.5
+snd_shoot			= weapons\sg550_shot
+snd_empty			= weapons\gen_empty, 0.5
+snd_reload			= weapons\sg550_reload, 0.5
+snd_shoot_grenade			= weapons\m203_shot
+snd_reload_grenade			= weapons\m203_reload
+snd_switch					= weapons\groza_switch, 1.0, 0.5
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+snd_silncer_shot			= weapons\sg550_silent, 0.5
+
+[wpn_sg552_sk1_hud]
+shell_point          	= -0.15, 0.01, 0.00
+shell_dir		 = 0.0, 0.0, 0.0
+
+fire_bone               = wpn_body
+fire_point              = 0.03,0.0,-0.001
+fire_point2             = 0.13,0.0,-0.09
+
+orientation             = 0, 0, 0
+position                = 0, 0, 0
+visual                  = weapons\sig552\wpn_sg552_sk1_hud.ogf
+
+grenade_bone            	= grenka1	
+
+; animation names
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+; animation names
+; attached grenade launcher [GRENADE fire mode]
+anim_idle_g					= idle_g
+anim_idle_g_aim				= idle_g_aim
+anim_reload_g				= reload_g
+anim_shoot_g				= shoot_g
+anim_switch_grenade_on		= g_on
+anim_switch_grenade_off		= g_off
+anim_draw_g					= draw_g
+anim_holster_g				= holster_g
+
+; attached grenade launcher [NORMAL fire mode]
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_w_gl_aim
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+
+zoom_offset			= -0.127001,0.017101,-0.125
+zoom_rotate_x		= -0.0
+zoom_rotate_y		= 0.0
+
+grenade_normal_zoom_offset			= -0.127001,0.017101,-0.125
+grenade_normal_zoom_rotate_x		= -0.0
+grenade_normal_zoom_rotate_y		= 0.0
+
+grenade_zoom_offset			= -0.127001,0.017101,-0.125
+grenade_zoom_rotate_x		= 0.0
+grenade_zoom_rotate_y		= -0.0
+
+zoom_hide_crosshair	= true
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2
+
+;--апгрейды---
+
+
+; Снижение отдачи
+[wpn_sg552_sk1_otdaca]:wpn_sg552_sk1
+$spawn             		     = "weapons\sg552_sk1\wpn_sg552_sk1_otdaca"
+fire_dispersion_base         = 0.105
+cam_relax_speed              = 4
+cam_dispersion          	= 0.3		
+cam_dispersion_inc	          = 0.1		
+cam_max_angle	               = 6.5		
+inv_name	        			= wpn-sg552_sk1_otdaca
+inv_name_short			     = wpn-sg552_sk1_otdaca
+description				= enc_otdaca_wpn_sg552_sk1
+inv_grid_width     = 5
+inv_grid_height    = 2
+cost				= 8300
+
+
+; Снижение веса
+[wpn_sg552_sk1_ves]:wpn_sg552_sk1
+$spawn             		     = "weapons\sg552_sk1\wpn_sg552_sk1_ves"
+inv_weight				= 2.4
+inv_name	        			= wpn-sg552_sk1_ves
+inv_name_short			     = wpn-sg552_sk1_ves
+description				= enc_ves_wpn_sg552_sk1
+inv_grid_width     = 5
+inv_grid_height    = 2
+cost				= 8000
+
+; Отдача и вес
+[wpn_sg552_sk1_otdaca_ves]:wpn_sg552_sk1_otdaca
+$spawn             		     = "weapons\sg552_sk1\wpn_sg552_sk1_otdaca_ves"
+inv_weight				= 2.4
+inv_name	        			= wpn-sg552_sk1_otdaca_ves
+inv_name_short			     = wpn-sg552_sk1_otdaca_ves
+description				= enc_otdaca_ves_wpn_sg552_sk1
+cost					     = 11300
+

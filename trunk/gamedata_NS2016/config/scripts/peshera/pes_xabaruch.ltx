@@ -1,0 +1,29 @@
+[logic]
+active = {-pes_shahter_start} walker1, nil
+danger = pes_xabaruch_danger
+
+[walker1]
+path_walk = pes_xabaruch_walk1
+path_look = pes_xabaruch_look1
+meet = meet
+on_info = {+pes_xabaruch_done !talking} walker2
+
+[walker2]
+path_walk = pes_xabaruch_walk2
+path_look = pes_shahter_look1
+meet = no_meet
+on_info = {+pes_shahter_start} kamp1
+
+[kamp1]
+center_point  = pes_stalker_kamp2
+path_walk = pes_stalker_kamp2_task
+[pes_xabaruch_danger]
+ignore_distance = 0
+
+[meet]
+meet_state = 20| {-pes_xabaruch_start} threat,|2| guard
+meet_state_wpn = 25| {-pes_xabaruch_start} threat,|14| threat,|5| backoff@threat_weap
+victim = 20| actor
+victim_wpn = 25| actor
+meet_dialog = pes_xabaruch_talk
+precond = "usability"

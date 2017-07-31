@@ -1,0 +1,20 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = kamp1
+
+[kamp1]
+center_point = aes2_monolit_camp4
+path_walk = aes2_monolit_camp4_task
+radius = 2
+on_info = {!is_day} walker1
+
+[walker1]
+path_walk = aes2_monolit_ambush8_walk5
+path_look = aes2_monolit_ambush8_look5
+on_info = {=is_day} kamp1
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 0

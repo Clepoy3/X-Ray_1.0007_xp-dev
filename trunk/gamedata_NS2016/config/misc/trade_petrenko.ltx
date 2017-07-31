@@ -1,0 +1,9 @@
+[trader]
+buy_condition = petrenko_generic_buy
+sell_condition = {+bar_svoboda_rg6_done} petrenko_after_rg6_sell, petrenko_start_sell
+buy_supplies = {+bar_svoboda_rg6_done} supplies_after_rg6, supplies_start
+
+
+#include "shop_petrenko\petrenko_buy.ltx"
+#include "shop_petrenko\petrenko_supl.ltx"
+#include "shop_petrenko\petrenko_trade.ltx"

@@ -1,0 +1,39 @@
+[logic]
+active = walker
+meet = meet
+danger = danger_ignore
+
+[walker]
+path_walk = zaton0_norman0_walk
+path_look = zaton0_norman0_look
+on_info = {+norman_walk1} walker1
+combat_ignore_cond = always
+
+[walker1]
+path_walk = zaton_norman_walk
+path_look = zaton_norman_look
+on_info = {+norman_punch_off} walker2
+combat_ignore_cond = always
+
+[walker2]
+path_walk = zaton1_norman1_walk
+path_look = zaton1_norman1_look
+on_info = {+norman_psi_off} walker3
+combat_ignore_cond = always
+
+[walker3]
+path_walk = zaton2_norman2_walk
+path_look = zaton2_norman2_look
+on_info = {+norman_walk2} walker4
+
+[walker4]
+path_walk = zaton3_norman3_walk
+path_look = zaton3_norman3_look
+
+[danger_ignore]
+ignore_distance = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true

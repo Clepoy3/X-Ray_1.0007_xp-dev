@@ -1,0 +1,1116 @@
+---' revision and adaptation for NS_2012 lsclon 20.01.12 '---
+-- для функций нашедших свое применение есть /ссылка для поиска/
+-- !! позицию актера записывать только как 'db.actor:position()' !!
+
+-- Каждая функция в этом файле используется как условие xr_logic: {=функция !функция}
+-- Если в функцию необходимо передавать параметры, то: {=функция(парам1:парам2:...) !функция(парам1:парам2:...)}
+-- Формат: function f(actor, npc).В случае передачи параметров: function f(actor, npc, p).
+-- Детали реализации нужно помещать в файл xr_conditions_impl.script, а не в этот файл.
+
+---' -------------------------------------------------------------------------------
+-- Общие функции
+---' -------------------------------------------------------------------------------
+
+---' time --------------------------------------------------------------------------
+-- определяет нечётность интервала игрового времени
+function odd_time_interval(actor,npc,p)
+	local n = p[1]
+	return n and odd(amk.game_milliseconds()/n)
+end
+--[[
+Проверка на заданный период времени
+Время задается в минутах
+Параметры: (tshift:period_min)
+		tshift - периодичность срабатывания
+		period - период срабатывания на котором мы получаем true
+Примеры: time_period(60:10) - возвращает true каждый час на протяжении первых 10 минут
+--]]
+function time_period(actor,npc,p)
+	local tshift, period = p[1], p[2]
+	return tshift and period and tshift > period and level.get_time_minutes() % tshift <= period
+end
+-- определяет соответствие заданному промежутку времени, параметры(t1,t2)
+function is_interval_time(actor,npc,p) counterAdd("is_interval_time")
+	local t1, t2 = p[1], p[2]
+	return t1 and t2 and level.get_time_hours() >= t1 and level.get_time_hours() < t2
+end
+-- определение день = true/ночь = false /солдаты на насыпи/
+function time_hours(actor,npc) counterAdd("time_hours")
+	return level.get_time_hours() >= 5 and level.get_time_hours() < 22
+end
+-- определяет время с 6 до 22 /Костя в баре/
+function is_day(actor,npc) counterAdd("is_day")
+	return level.get_time_hours() >= 6 and level.get_time_hours() < 22
+end
+-- определяет время с 22 до 4
+function is_night(actor,npc) counterAdd("is_night")
+	return level.get_time_hours() >= 22 or level.get_time_hours() < 4
+end
+-- определяет время с 4 до 8
+function is_morning(actor,npc) counterAdd("is_morning")
+	return level.get_time_hours() >= 4 and level.get_time_hours() < 8
+end
+-- определяет время с 8 до 12
+function is_midday(actor,npc) counterAdd("is_midday")
+	return level.get_time_hours() >= 10 and level.get_time_hours() < 16
+end
+-- определяет время с 12 до 16
+function is_snack(actor,npc) counterAdd("is_snack")
+	return level.get_time_hours() >= 12 and level.get_time_hours() < 16
+end
+-- определяет время с 16 до 20
+function is_evening(actor,npc) counterAdd("is_evening")
+	return level.get_time_hours() >= 16 and level.get_time_hours() < 20
+end
+-- определяет время с 20 до 24
+function is_midnight(actor,npc) counterAdd("is_midnight")
+	return level.get_time_hours() >= 20 and level.get_time_hours() < 24
+end
+
+---' distance ----------------------------------------------------------------------
+-- дистанция до актера <= заданной
+function dist_to_actor_le(actor,npc,p)
+	local a_pos = db.actor and db.actor:position()
+	local d = a_pos and p[1]
+	return npc and d and npc:position():distance_to_sqr(a_pos) <= d * d
+end
+-- дистанция до актера > заданной /val_escort_captive.ltx/
+function dist_to_actor_ge(actor,npc,p)
+	local a_pos = db.actor and db.actor:position()
+	local d = a_pos and p[1]
+	return npc and d and npc:position():distance_to_sqr(a_pos) > d * d
+end
+-- дистанция до обьекта <= заданной, параметры:(sid:dist) /val_escort_captive.ltx/
+function distance_to_obj_le(actor,npc,p)
+	local obj, d = level_object_by_sid(p[1]), p[2]
+	return obj and npc and d and npc:position():distance_to_sqr(obj:position()) <= d * d
+end
+-- дистанция до обьекта > заданной, параметры:(sid:dist)
+function distance_to_obj_ge(actor,npc,p)
+	local obj, d = level_object_by_sid(p[1]), p[2]
+	return obj and npc and d and npc:position():distance_to_sqr(obj:position()) > d * d
+end
+-- расстояние до текущего реального врага <= заданного значения
+function dist_to_enemy_le(actor,npc,p)
+	local d = p[1]
+	local enemy = npc and d and npc:best_enemy()
+	return enemy and enemy:position():distance_to_sqr(npc:position()) <= d * d
+end
+-- расстояние до текущего реального врага > заданного значения /amk_embankment/
+function dist_to_enemy_ge(actor,npc,p)
+	local d = p[1]
+	local enemy = npc and d and npc:best_enemy()
+	return enemy and enemy:position():distance_to_sqr(npc:position()) > d * d
+end
+-- враг на расстоянии >= заданному /gulag_yantar.ltx/
+function fighting_dist_ge(actor,npc,p)
+	local d = p[1]
+	local enemy = npc and d and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	if not enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+
+	return enemy and enemy:position():distance_to(npc:position()) >= d
+end
+-- текущий враг на расстоянии >= 20м /amk_embankment/
+function fighting_dist_ge_20(actor,npc)
+	local enemy = npc and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	if not enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	return enemy and enemy:position():distance_to_sqr(npc:position()) >= 400
+end
+-- DELME: для тестов: {=test_condition_actor_near}
+function test_condition_actor_near(actor,npc)
+	return db.actor and npc and distance_between(db.actor,npc) <= 3
+end
+-- растояние между актером и нпс меньше 20
+function mob_actor_nearest(actor,npc)
+	return db.actor and npc and distance_between(db.actor,npc) < 20
+end
+
+---' zone --------------------------------------------------------------------------
+-- один из персонажей находится в заданной зоне, вызывать только из SPACE RESTRICTOR!
+-- для объектов в оффлайне ИСПОЛЬЗОВАТЬ one_obj_in_zone!
+-- параметры:(sid1:sid2:...)
+function obj_in_zone(actor,npc,p)
+	local obj
+	if npc and p then
+		for i, v in pairs(p) do
+			obj = level_object_by_sid(v)
+			if obj and npc:inside(obj:position()) then
+				return true
+			end
+		end
+	end
+	return false
+end
+-- персонаж находится в заданной зоне(для зон работающих и в оффлайне)
+-- параметры:(sid:def*) /val_prisoner_cage_zone/
+-- * параметр не обязателен
+-- def = true(по умолчанию)\false(если не нужна проверка в офлайне)
+function one_obj_in_zone(actor,npc,p)
+	local obj, def = level_object_by_sid(p[1]), p[2]
+	if npc and obj then
+		return npc:inside(obj:position())
+	end
+	return (def ~= "false")
+end
+-- актер находится в заданной зоне параметр:(string) /суицидная свинка/
+function actor_in_zone(actor,npc,p)
+	local a_pos = db.actor and db.actor:position()
+	local s = a_pos and p[1]
+	local z = s and db.zone_by_name[s]
+	return z and z:inside(a_pos)
+end
+-- актер находится вне заданной зоны параметр:(string)
+function actor_out_zone(actor,npc,p)
+	local a_pos = db.actor and db.actor:position()
+	local s = a_pos and p[1]
+	local z = s and db.zone_by_name[s]
+	return z and (not z:inside(a_pos))
+end
+
+---' gulag -------------------------------------------------------------------------
+-- принадлежность врага к одной из групп, параметры:(?:?:...)
+function enemy_group(actor,npc,p)
+	local enemy = npc and p and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	local g = enemy:group()
+	if g then
+		for i, v in pairs(p) do
+			if g == v then
+				return true
+			end
+		end
+	end
+	return false
+end
+-- принадлежность врага к гулагу, параметры:(string:string:...) /гранатометчики на стадионе/
+function enemy_gulag(actor,npc,p)
+	local enemy = npc and p and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	
+	local g = db.storage[npc:id()].enemy ~= 0 and xr_gulag.get_npc_gulag(enemy)
+	local n = g and g.name
+	if n then
+		for i, v in pairs(p) do
+			if n == v then
+				return true
+			end
+		end
+	end
+	return false
+end
+-- сравнивает состояние гулага с заданным, параметры:(string:num) /гулаг esc2_dogs2_exit/
+function gulag_state(actor,npc,p)
+	return xr_gulag.getGulagState(p[1]) == p[2]
+end
+-- гулаг не существует или в нём еще никого нет, параметр:(sid or string) /esc_blokpost/
+function gulag_empty(actor,npc,p)
+	return xr_gulag.getGulagPopulationComed(p[1]) == 0
+end
+-- в указанном гулаге народу <= заданному колличеству, параметр:(sid or string:num) /esc_blokpost/
+function gulag_population_le(actor,npc,p)
+	local s, n = p[1], p[2]
+	return s and n and xr_gulag.getGulagPopulation(s) <= n
+end
+-- в указанном гулаге народу > заданного колличества, параметр:(sid or string:num) /esc2_st_fabric/
+-- при совместном использовании с 'gulag_population_le' не должно быть >=
+function gulag_population_ge(actor,npc,p)
+	local s, n = p[1], p[2]
+	return s and n and xr_gulag.getGulagPopulation(s) >= n
+end
+-- в указанном гулаге пришло народу < заданного колличества, параметр:(sid or string:num)
+function gulag_population_comed_le(actor,npc,p)
+	local s, n = p[1], p[2]
+	return s and n and xr_gulag.getGulagPopulationComed(s) < n
+end
+-- в указанном гулаге пришло народу >= заданного колличества, параметр:(sid or string:num) /esc2_st_fabric/
+function gulag_population_comed_ge(actor, npc, p)
+	local s, n = p[1], p[2]
+	return s and n and xr_gulag.getGulagPopulationComed(s) >= n
+end
+-- возвращает количество активных персонажей в гулаге в онлайне(живых и не раненных), параметр:(string)
+function gulag_population_active_on(actor,npc,p)
+	return xr_conditions_impl.gulag_active_population_on(p[1])
+end
+-- возвращает количество активных персонажей в гулаге(живых и не раненных), параметр:(string) /gulag_agroprom.ltx/
+function gulag_population_active(actor,npc,p)
+	return xr_conditions_impl.gulag_active_population(p[1])
+end
+-- в гулаге нет активных членов(живых и не раненных), параметр:(string) /esc_fabrika_bandit_space_restrictor/
+function gulag_inactive(actor,npc,p)
+	return xr_conditions_impl.gulag_active_population(p[1]) == 0
+end
+-- если количество активных членов гулага(живых и не раненных) <= заданному, параметры[string:num] /gar_actor_mudak_vsu_scenu_sorval/
+function gulag_population_active_le(actor,npc,p)
+	local s, n = p[1], p[2]
+	return s and n and xr_conditions_impl.gulag_active_population(s) <= n
+end
+-- если в указанном гулаге потери больше или равны заданным, параметры(string:num) /escape_blockpost_zone/
+function gulag_casualities_ge(actor,npc,p)
+	local s, n = p[1], p[2]
+	return s and n and xr_gulag.getCasualities(s) >= n
+end
+
+---' hit - killer ------------------------------------------------------------------
+-- Проверка того что хит был нанесен объектом указанным в списке, параметры:(sid:sid:...) /val_escort_nap1.txt/
+function hitted_by(actor,npc,p)
+	local obj
+	local t = npc and p and db.storage[npc:id()].hit
+	if t then
+		for i, v in pairs(p) do
+			obj = level_object_by_sid(v)
+			if obj and t.who == obj:id() then
+				return true
+			end
+		end
+	end
+	return false
+end
+-- проверка, что нпс был нанасен хит актером /amk_embankment/
+function hit_by_actor(actor,npc)
+	local t = actor and npc and db.storage[npc:id()].hit 
+	return t and t.who == actor:id()
+end
+-- проверка, что нпс был нанасен хит актером из заданного ствола, параметры:(wpn:slot)
+function hit_by_actor_wpn(actor,npc,p)
+	local s, n = p[1], p[2]
+	local t = actor and npc and db.storage[npc:id()].hit
+	local w = t and t.who == actor:id() and actor:item_in_slot(n)
+	local i = w and w:section() == s and actor:active_item()
+	return i:section() == s
+end
+-- проверка, что нпс был нанасен хит актером из wpn_awm_new /gigant_red_strong/
+function hit_by_actor_awm(actor,npc)
+	local tab,wpn
+	if actor and npc then
+		tab = db.storage[npc:id()].hit
+		if tab and tab.who == actor:id() then
+			wpn = actor:item_in_slot(2)
+			return wpn and wpn:section() == "wpn_awm_new" and actor:active_item():section() == "wpn_awm_new"
+		end
+	end
+	return false
+end
+-- проверка, что нпс был нанасен хит актером из wpn_eagle_m2 /kontroller_yazva.ltx/
+function hit_by_actor_eagle(actor,npc)
+	local tab,wpn
+	if actor and npc then
+		tab = db.storage[npc:id()].hit
+		if tab and tab.who == actor:id() then
+			wpn = actor:item_in_slot(1)
+			return wpn and wpn:section() == "wpn_eagle_m2" and actor:active_item():section() == "wpn_eagle_m2"
+		end
+	end
+	return false
+end
+-- определяет, что монстру нанесен хит /esc_suicidal_flesh/
+function mob_was_hit(actor,npc)
+	local h = npc and npc:get_monster_hit_info()
+	return h.who and h.time ~= 0
+end
+-- Проверка того что нпс убит объектом из списка, параметры:(sid:sid:...)
+function killed_by(actor,npc,p)
+	local obj
+	local t = npc and p and db.storage[npc:id()].death
+	if t then
+		for i, v in pairs(p) do
+			obj = level_object_by_sid(v)
+			if obj and t.killer == obj:id() then
+				return true
+			end
+		end
+	end
+	return false
+end
+-- проверка, что убийца нпс - актер /amk_embankment/
+function killed_by_actor(actor,npc)
+	local tab = actor and npc and db.storage[npc:id()].death
+	if tab and tab.killer then 
+		return tab.killer == actor:id()
+	end
+	return false
+end
+-- проверка, что нпс был убит актером из заданного ствола, параметры:(wpn)
+function killed_by_actor_wpn(actor,npc,p)
+	local tab = actor and npc and db.storage[npc:id()].death
+	local item = tab and tab.killer == actor:id() and actor:active_item()
+	if item then
+		return item:section() == p[1]
+	end
+	return false
+end
+-- проверка, что нпс был убит актером из wpn_svd_foto /nevid_monolit/
+function killed_by_actor_svd(actor,npc)
+	return xr_conditions_impl.killed_by_actor_wpn(actor,npc,"wpn_svd_foto") == true
+end
+-- проверка, что нпс был убит актером из wpn_walther_son /puzir_schenok/
+function killed_by_actor_walther(actor,npc)
+	return xr_conditions_impl.killed_by_actor_wpn(actor,npc,"wpn_walther_son") == true
+end
+-- проверка, что нпс был убит актером из wpn_eagle_m2 /kontroller_yazva.ltx/
+function killed_by_actor_eagle(actor,npc)
+	return xr_conditions_impl.killed_by_actor_wpn(actor,npc,"wpn_eagle_m2") == true
+end
+-- в активной секции проверка, что актер враг /val_escort_nap1.ltx/
+-- в секции [death] - проверка, что нпса убил актер /не применяется/
+function actor_enemy(actor,npc) counterAdd("actor_enemy")
+	if actor and npc then
+		local tab = db.storage[npc:id()].death
+		if tab then
+			return tab.killer == actor:id()
+		else
+			return npc:relation(actor) == game_object.enemy
+		end
+	end
+	return false
+end
+
+---' enemy -------------------------------------------------------------------------
+-- проверка, что есть хотя бы один враг из списка, параметры:(sid:sid:...) /esc_fabrika_bandit/
+function check_fighting(actor,npc,p) counterAdd("check_fighting")
+	local enemy = npc and p and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(db.storage[npc:id()].enemy)
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	local sid = enemy:story_id()
+	if sid then
+		for i, v in pairs(p) do
+			if sid == v then
+				return true
+			end
+		end
+	end
+	return false
+end
+-- проверка, что хотя бы у одного объекта из списка реальный враг нпс или актер, параметры:(sid:sid:...) /val_escort_nap1.ltx/
+function val_nap1_check_fighting(actor,npc,p) counterAdd("val_nap1_check_fighting")
+	local enemy, enemy_id, obj
+	if actor and npc and p then
+		for i, v in pairs(p) do
+			obj = level_object_by_sid(v)
+			enemy = obj and obj:best_enemy()
+			enemy_id = enemy and enemy:id()
+			if enemy_id then
+				return enemy_id == npc:id() or enemy_id == actor:id()
+			end
+		end
+	end
+	return false
+end
+-- проверяет, есть ли у нпс реальный враг /gulag_pripyat.script/
+function has_enemy(actor,npc) counterAdd("has_enemy")
+	return npc and npc:best_enemy()
+end
+-- у нпс есть реальный враг и нпс видит его /gulag_yantar.ltx/
+function see_enemy(actor,npc) counterAdd("see_enemy")
+	local enemy = npc and npc:best_enemy()
+	return enemy and npc:see(enemy)
+end
+-- проверка, что имеются враги
+function mob_has_enemy(actor,npc) counterAdd("mob_has_enemy")
+	return npc and npc:get_enemy()
+end
+-- текущий враг актёр /amk_embankment/
+function fighting_actor(actor,npc) counterAdd("fighting_actor")
+	return npc and actor and db.storage[npc:id()] and db.storage[npc:id()].enemy == 0 and not has_alife_info("invizible_actor")
+end
+-- текущий враг не актёр
+function dont_fighting_actor(actor,npc) counterAdd("dont_fighting_actor")
+	return not (npc and actor and db.storage[npc:id()] and db.storage[npc:id()].enemy == 0 and not has_alife_info("invizible_actor"))
+end
+
+---' alive -------------------------------------------------------------------------
+-- проверка, что актер жив
+function actor_alive(actor,npc) counterAdd("actor_alive")
+	return actor and actor:alive()
+end
+-- проверка, что актер мертв /bar_territory_zone.ltx/
+function actor_dead(actor,npc) counterAdd("actor_dead")
+	return actor and not actor:alive()
+end
+-- все ли проверяемые сталкеры живы, параметры:(sid:sid:...)
+function is_alive_all(actor,npc,p)
+	local sobj
+	if p then
+		for i, v in pairs(p) do
+			sobj = alife():story_object(v)
+			if sobj and not sobj:alive() then
+				return false
+			end
+		end
+	end
+	return true
+end
+-- проверка, что один из проверяемых сталкеров жив, параметры:(sid:sid:...)
+function is_alive_one(actor,npc,p)
+	local sobj
+	if p then
+		for i, v in pairs(p) do
+			sobj = alife():story_object(v)
+			if sobj and not sobj:alive() then
+				return true
+			end
+		end
+	end
+	return false
+end
+-- проверка, что персонаж жив, параметры:(sid) /солдаты под мостом/
+function is_alive(actor,npc,p)
+	local sobj = alife():story_object(p[1])
+	return sobj and sobj:alive()
+end
+-- проверка, что все проверяемые сталкеры мертвы, параметры:(sid:sid:...)
+function is_dead_all(actor,npc,p)
+	local sobj
+	if p then
+		for i, v in pairs(p) do
+			sobj = alife():story_object(v)
+			if sobj and sobj:alive() then
+				return false
+			end
+		end
+	end
+	return true
+end
+-- проверка, что один из проверяемых сталкеров мертв, параметры:(sid:sid:...) /val_escort_nap1.ltx/
+function is_dead_one(actor,npc,p)
+	local sobj
+	if p then
+		for i, v in pairs(p) do
+			sobj = alife():story_object(v)
+			if (not sobj) or not sobj:alive() then
+				return true
+			end
+		end
+	end
+	return false
+end
+-- проверка, что персонаж мертв, параметры:(sid) /сцена с бочками на радаре/
+function is_dead(actor,npc,p)
+	local sobj = alife():story_object(p[1])
+	return (not sobj) or not sobj:alive()
+end
+
+---' health - wounded - see --------------------------------------------------------
+-- проверка, что ППС ранен /раненый друг Серого/ 
+function is_wounded(actor,npc)
+	return xr_wounded.is_wounded(npc)
+end
+-- проверка на раненность нпс
+function heavy_wounded(actor,npc)
+	return npc and xr_wounded.is_heavy_wounded_by_id(npc:id())
+end
+-- если здоровье нпс <= заданному значению
+function health_le(actor,npc,p)
+	local n = p[1]
+	return npc and n and npc.health <= n
+end
+-- здоровье вертолёта <= заданному значению /почти все верты/
+function heli_health_le(actor,npc,p)
+	local obj, n = npc:get_helicopter(), p[1]
+	return n and obj and obj:GetfHealth() <= n
+end
+-- нпс видит объект с сидом
+function see_npc(actor,npc,p)
+	local obj = level_object_by_sid(p[1])
+	return obj and npc and npc:see(obj)
+end
+-- видит ли вертолёт npc, параметр:(sid)
+function heli_see_npc(actor,npc,p)
+	local obj, heli = level_object_by_sid(p[1])
+	heli = npc and obj and npc:get_helicopter()
+	return heli and heli:isVisible(obj)
+end
+-- видит ли нпс актера /val_escort_guard1.ltx/
+function see_actor(actor,npc) counterAdd("see_actor")
+	return actor and npc and npc:alive() and npc:see(actor)
+end
+-- видит ли вертолёт актера
+function heli_see_actor(actor,npc) counterAdd("heli_see_actor")
+	local heli = actor and npc and npc:get_helicopter()
+	return heli and heli:isVisible(actor)
+end
+
+---' kamp --------------------------------------------------------------------------
+-- проверка, что нпс под кампом /секция [meet] для kamp/
+function _kamp_talk(actor,npc)
+	 return ( npc and xr_kamp.kamp_stalkers[npc:id()] ) ~= false
+end
+
+-- проверяет, что нпс в диалоге /gulag_escape.ltx/
+function _used(actor,npc)
+	return npc and npc:is_talking()
+end
+
+---' other -------------------------------------------------------------------------
+-- видим ли мы еще "черный экран" > 1
+function black_screen(actor,npc)
+	return device().precache_frame > 1
+end
+-- проверка, что актер спит
+function is_actor_sleeping(actor,npc)
+	return actor and actor:is_actor_sleeping()
+end
+-- сравнивает коммъюнити нпс с заданной, параметры:(string)
+function npc_community(actor,npc,p)
+	return npc and npc:character_community() == s
+end
+-- сравнивает ранг нпс с заданным, параметр:(string) /treasure_manager.ltx/
+--[[function npc_rank(actor,npc,p)
+	return npc and ranks.get_obj_rank_name(npc) == s
+end]]
+function npc_rank(actor,npc,p)
+ if npc then
+  return ranks.get_obj_rank_name( npc ) == p[1]
+ end
+ return false
+end
+-- сравнивает профиль нпс с заданным, параметр:(string) /treasure_manager.ltx/
+--[[function npc_profile(actor,npc,p)
+	return npc and npc:profile_name() == s
+end]]
+function npc_profile(actor,npc,p)
+ if npc then
+  return npc:profile_name() == p[1]
+ end
+ return false
+end
+-- Проверка, что лучшее оружие нпс - пистолет /при пси-ранении/
+function best_pistol(actor,npc)
+	return npc and npc:item_in_slot(1)
+end
+-- есть ли указанный предмет у актёра в инвентаре, параметры(string) /yantar_psi_radiotion_75/
+function actor_has_item(actor,npc,p)
+	local s = p[1]
+	return actor and s and actor:object(s) ~= nil
+end
+-- проверка, что у актера в руках оружие /dialogs_military.script - не используется/
+function actor_has_weapon(actor,npc)
+	local obj = actor:active_item()
+	return obj and IAmAWeapon[obj:clsid()]
+end
+-- проверка, есть ли в текущей схеме нпс указанный сигнал, параметры(string) /монолит на ЧАЭС2/
+function signal(actor,npc,p)
+	local s = p[1]
+	local st = npc and db.storage[npc:id()]
+	local sigs = st and st[st.active_scheme].signals
+	return s and sigs and sigs[s]
+end
+-- проверка, что значение указанного счётчика актёра больше указанного, параметры(string:num) /sar_monolith_gen_main.ltx/
+function counter_greater(actor,npc,p)
+	local s, n = p[1], p[2]
+	local c = actor and s and n and xr_logic.pstor_retrieve(actor,s,0)
+	if c then
+		return c > n
+	end
+	return false
+end
+-- открыто диалоговое окно /esc_trader.ltx/
+function talking(actor,npc)
+	return actor and actor:is_talking()
+end
+-- проверка трех условий: 1.актер в диалоге, 2.хорошо распродался, 3.согласился на подсказки /не применяется/
+function talking_or_tutor(actor,npc)
+	return actor and (actor:is_talking() or has_alife_info("esc_trader_experienced") or has_alife_info("esc_trader_newbie"))
+end
+-- проверка, что актер произвел торговлю /esc_trader.ltx/
+function trade_exchanged(actor,npc)
+	return npc and db.storage[npc:id()].trade.exchanged
+end
+-- проверка, что актер вошел в торговлю /esc_trader.ltx/
+function trading(actor,npc)
+	return npc and db.storage[npc:id()].trade.trading
+end
+-- проверка, что актер на заданной локации, параметр(string) /task_manager.ltx/
+function actor_on_level(actor,npc,p)
+	return p[1] == level.name()
+end
+-- /не применяется/
+function is_wfx_playing(actor,npc)
+	return level.is_wfx_playing ()
+end
+---' -------------------------------------------------------------------------------
+-- Special functions
+---' -------------------------------------------------------------------------------
+
+---' for Escape --------------------------------------------------------------------
+-- проверка, что оба сида мертвы /не применяется/
+function esc_vagon_all_dead(actor,npc)
+	return xr_conditions_impl.esc_vagon_all_dead(actor,npc)
+end
+-- проверка, что 'esc_blokpost' в 1 состоянии /esc_matugalnik.ltx/
+function esc_blokpost_night(actor,npc)
+	return xr_gulag.getGulagState("esc_blokpost") == 1
+end
+-- проверка, что бандиты убиты или ??(вторая инфа нигде не выдается) /Шустрый/
+function esc_bandits_die(actor,npc)
+	return has_alife_info("esc_kill_bandits_quest_kill") or has_alife_info("esc_kill_bandits_noquest_kill")
+end
+-- проверка, что хрюшку убила одна из перечисленных аномалий /не применяется/
+function esc_tutorial_flesh_died_in_anomaly(actor,npc)
+	local t = npc and db.storage[npc:id()].death
+	local k = t and t.killer_name 
+	return k == "esc_tutorial_mincer_02" or k == "esc_tutorial_mosquito_bald_01" or k == "esc_tutorial_mincer_01"
+end
+
+---' for Garbage -------------------------------------------------------------------
+-- проверка, что живых бандитов >1, и выбирает близжайшего /gar_dm_bandit1.ltx/
+function gar_dm_nearest_bandit(actor,npc)
+	return actor and xr_conditions_impl.gar_dm_nearest_bandit(actor,npc,1)
+end
+-- проверка, что все бандиты живы, и выбирает второго по растоянию /gulag_garbage.ltx/
+function gar_dm_2nd_nearest_bandit(actor, npc)
+	return actor and xr_conditions_impl.gar_dm_nearest_bandit(actor,npc,2)
+end
+-- в указанном гулаге(несуществует) кабанов нулевая популяция в онлайне(живых и не раненных) /gar_boars_territory2/
+function gar_boars_nest2_dead(actor,npc)
+	return xr_conditions_impl.gulag_active_population_on("gar_boars_nest2") == 0
+end
+-- в указанном гулаге осталось не более 5 бандитов в онлайне(живых и не раненных) /диалог gar_hellcar_start/
+function gar_damaged_bandits(actor,npc)
+	return xr_conditions_impl.gulag_active_population_on("gar_bandit_agr") <= 5
+end
+-- в указанном гулаге более 5 бандитов(живых и не раненных) /диалог gar_hellcar_start/
+function gar_not_damaged_bandits(actor,npc)
+	return xr_conditions_impl.gulag_active_population("gar_bandit_agr") > 5
+end
+-- /не применяется/
+function gar_angar_sleep(actor,npc)
+	return (gulag_empty(actor,npc,{"gar_seryi_bandits"}) and not has_alife_info("agr_krot_band_start")) or (gulag_population_le(actor,npc,{"gar_smart_bandit_large_lager",9}) and has_alife_info("agr_krot_band_start"))
+end
+-- в указанном гулаге бандитов нулевая популяция в онлайне(живых и не раненных) /диалог gar_seriy_start/
+function gar_bandits_seryi_die(actor,npc)
+	return xr_conditions_impl.gulag_active_population_on("gar_seryi_bandits") == 0
+end
+-- в указанном гулаге есть активные члены(живые и не раненные) /диалог gar_seriy_start/
+function gar_bandits_seryi_not_die(actor,npc)
+	return xr_conditions_impl.gulag_active_population("gar_seryi_bandits") > 0
+end
+
+---' for Agroprom ------------------------------------------------------------------
+-- возвращает количество активных персонажей в гулаге в онлайне(живых и не раненных) /agr_krot.ltx/
+function agr_factory_hold_inactive(actor,npc)
+return xr_conditions_impl.gulag_active_population_on("agr_factory_hold") == 0
+end
+-- в указанном гулаге кабанов нулевая популяция(живых и не раненных)
+function agr_boars_nest_dead(actor,npc)
+	return xr_conditions_impl.gulag_active_population("agr_boar_nest") == 0
+end
+-- в указанном гулаге менее 6 членов(живых и не раненных) /agr_space_restrictor_0004/
+function agr_nii_pop_check(actor,npc)
+	return xr_conditions_impl.gulag_active_population("agr_nii") < 6
+end
+
+---' for Dark Valley ---------------------------------------------------------------
+-- есть, ли хотя бы один враг из перечисленных и отсутствует инфопоршень /val_lager_bandits - не применяется/
+function val_bandits_ci(actor,npc)
+	local is = {val_escort_captive_enemy = 400,val_sacrifice_finish = 401,val_prisoner_free = 402}
+	local enemy = npc and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	local sid = enemy and enemy:story_id()
+	for i, s in pairs(is) do
+		if sid == s then
+			return (not has_alife_info(i))
+		end
+	end
+	return false
+end
+-- проверка: 1.если враг актер и дистанция >= заданной, то 2.есть, ли хотя бы один враг из перечисленных и отсутствует инфопоршень
+-- /val_lager_bandits - не применяется/
+function val_bandits_ci_actor(actor,npc,p)
+	local d, sid = p[1]
+	local is = {val_escort_captive_enemy = 400,val_sacrifice_finish = 401,val_prisoner_free = 402}
+	local enemy = actor and npc and d and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	if db.storage[npc:id()].enemy == 0 then
+		return npc:position():distance_to_sqr(actor:position()) >= d * d
+	else
+		sid = enemy:story_id()
+		for i, s in pairs(is) do
+			if sid == s then
+				return (not has_alife_info(i))
+			end
+		end
+	end
+	return false
+end
+-- проверка, что хотя бы один из проверяемых сидов жив и дистанция > заданной /val_escort_captive.ltx/
+function val_escort_captive_dist_to_guards_ge(actor,npc,p)
+	local o1, o2, d = level_object_by_sid(407), level_object_by_sid(408), p[1]
+	if npc and d then
+		if o1 and o1:alive() and npc:position():distance_to_sqr(o1:position()) < d * d then
+			return false
+		end
+		if o2 and o2:alive() and npc:position():distance_to_sqr(o2:position()) < d * d then
+			return false
+		end
+	end
+	return true
+end
+-- проверка, что хотя бы один из проверяемых сидов жив и дистанция <= заданной /val_escort_captive.ltx/
+function val_escort_captive_dist_to_guards_le(actor,npc,p)
+	local o1, o2, d = level_object_by_sid(407), level_object_by_sid(408), p[1]
+	if npc and d then
+		if o1 and o1:alive() and npc:position():distance_to_sqr(o1:position()) >= d * d then
+			return false
+		end
+		if o2 and o2:alive() and npc:position():distance_to_sqr(o2:position()) >= d * d then
+			return false
+		end
+	end
+	return true
+end
+-- есть враг(val_escort_captive) с сидом 400 /val_escort_guard3.ltx - не применяется/
+function val_fighting_captive(actor,npc)
+	local enemy = npc and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	return enemy:story_id() == 400
+end
+-- /не применяется/
+function val_escort_combat_end(actor,npc)
+	return false
+end
+-- определяет, что нпс получил хит от сида(val_escort_nap1) 406 /не применяется/
+function val_hit_by_nap1(actor,npc)
+	local obj = level_object_by_sid(406)
+	local t = npc and obj and db.storage[npc:id()].hit
+	return t and t.who == obj:id()
+end
+-- определяет, что нпс получил хит от одного из сидов /не применяется/
+function val_hit_by_guard(actor,npc)
+	local o1, o2 = level_object_by_sid(407), level_object_by_sid(408)
+	local t = npc and db.storage[npc:id()].hit
+	return t and ((o1 and t.who == o1:id()) or (o2 and t.who == o2:id()))
+end
+-- есть враг(val_sacrifice_victim) с сидом 401 /val_prisoner_guard.ltx - не применяется/
+function val_fighting_sacrifice_victim(actor,npc)
+	local enemy = npc and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	return enemy:story_id() == 401
+end
+-- есть враг(val_prisoner_captive) с сидом 402 /val_prisoner_guard.ltx - не применяется/
+function val_fighting_prisoner(actor,npc)
+	local enemy = npc and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	return enemy:story_id() == 402
+end
+-- есть враг(val_sacrifice_bloodsucker) с сидом 403 /не применяется/
+function val_fighting_sacrifice_bloodsucker(actor,npc)
+	local enemy = npc and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	local g = s_enemy and enemy:group()
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	return enemy:story_id() == 403
+end
+-- актер находится в заданной зоне /не применяется/
+function val_actor_in_cage(actor,npc)
+	local a_pos = actor and db.actor:position()
+	local z = a_pos and db.zone_by_name["val_prisoner_cage_zone"]
+	return z and z:inside(a_pos)
+end
+-- у актера есть ключ от х18 /не применяется/
+function val_actor_has_key_to_underground(actor,npc)
+	return actor and actor:object("val_key_to_underground") ~= nil
+end
+-- сид находится в зоне /не применяется/
+function val_prisoner_in_cage(actor,npc)
+	local p, z = level_object_by_sid(402), db.zone_by_name["val_prisoner_cage_zone"]
+	return p and z and z:inside(p:position())
+end
+-- на актере бандитская куртка /не применяется/
+function actor_wears_bandit_outfit(actor, npc)
+	--local cur_eq = actor and actor:get_current_equipment()
+	--return cur_eq and cur_eq:name() == "bandit_outfit"
+	return actor and actor:object("bandit_outfit") ~= nil
+end
+
+---' for LabX18 --------------------------------------------------------------------
+-- у актера есть ugrum_flash /не применяется/
+function dar_actor_has_a_key1(actor,npc)
+	return actor and actor:object("ugrum_flash") ~= nil
+end
+-- у актера есть krot_flash /не применяется/
+function dar_actor_has_a_key2(actor,npc)
+	return actor and actor:object("krot_flash") ~= nil
+end
+
+---' for Bar -----------------------------------------------------------------------
+-- проверка состояния лагерей в баре /bar_dolg_megafone.ltx/
+function bar_dolg_alarm(actor,npc)
+	return xr_gulag.getGulagState("bar_dolg_general") == 2 or xr_gulag.getGulagState("bar_dolg_veterans") == 2
+end
+-- проверка на враждебность группировки /не применяется/
+function bar_hostile_npc(actor,npc)
+	local c = npc:character_community()
+	return c ~= "stalker" and c ~= "dolg" and c ~= "ecolog"
+end
+
+---' for Rostok --------------------------------------------------------------------
+-- возвращает количество активных персонажей в онлайне в гулаге с заданным приоритетом(живых и не раненных) /gulag_bar.ltx/
+function rostok_gulag_inactive(actor,npc)
+return xr_conditions_impl.gulag_active_population_prior("bar_freedom_attack",5) == 0
+end
+-- возвращает количество активных персонажей в гулаге в онлайне(живых и не раненных) /gulag_bar.ltx/
+function rostok_gulag_2_inactive(actor, npc)
+return xr_conditions_impl.gulag_active_population_on("bar_freedom_chasers_attack") == 0
+end
+-- дистанция до актера <= заданной /gulag_bar.ltx/
+function rostok_dist_to_actor_le(actor,npc,p)
+	local a_pos = actor and db.actor:position()
+	local d = a_pos and p[1]
+	return npc and d and npc:position():distance_to_sqr(a_pos) <= d * d
+end
+-- определяет видит ли нпс актера или сид(530) /gulag_bar.ltx не применяется/
+function see_actor_and_kruglov(actor,npc)
+	local s = level_object_by_sid(503)
+	return actor and npc and (npc:see(actor) or s and npc:see(s))
+end
+
+---' for Yantar --------------------------------------------------------------------
+-- у актера есть yantar_ghost_pda /не применяется/
+function has_ghost_pda(actor,npc)
+	return actor and actor:object("yantar_ghost_pda") ~= nil
+end
+
+---' for Military ------------------------------------------------------------------
+-- проверка, что объект с сидом(729 несуществует) мертв /не применяется/
+function is_controller_dead(actor,npc)
+	local s = level_object_by_sid(729)
+	return s and not s:alive()
+end
+-- проверка, что актер является врагом ходя бы одному из нпс /не применяется/
+function mil_actor_enemy(actor,npc)
+	local s, sid = {707,702,728}
+	for i, v in pairs(s) do
+		sid = actor and level_object_by_sid (v)
+		if sid and sid:alive () then
+			return sid:relation(actor) == game_object.enemy
+		end
+	end
+	return false
+end
+-- проверка, что отношение группировки к актеру не ниже -500 /mil_before_blockpost_restriktor/
+function mil_actor_enemy_freedom (actor, npc)
+	return actor and relation_registry.community_goodwill("freedom",actor:id()) < -500
+end
+
+---' for Radar ---------------------------------------------------------------------
+-- /rad_antenna_rays_and_spot/
+function rad_pass_time(actor,npc)
+	return true
+end
+
+---' for Pripyat -------------------------------------------------------------------
+-- проверка отсутствия поршня или существования гулага и что актер не враг гулагу /followers_fighting_sound_zone/
+function pri_followers_can_hear(actor,npc)
+	local g = xr_gulag.get_gulag(823)
+	return actor and (not has_alife_info("pri_followers_start") or (g and g:get_population() > 0 and not g:npc_is_enemy_to_anybody(actor)))
+end
+-- проверка, что у нпс есть враг - снорк из указанного гулага(несуществует) /pri_monolith_roof/
+function pri_monolith_combat_ignore(actor,npc)
+	local enemy = npc and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	local g = enemy:clsid() == clsid.snork_s and xr_gulag.get_npc_gulag(enemy)
+	return g and (g.name == "pri_snork_nest1" or g.name == "pri_snork_nest2")
+end
+-- у актера есть снаряд ammo_og-7b /не применяется/
+function pri_actor_has_rpg_ammo(actor,npc)
+	return actor and actor:object("ammo_og-7b") ~= nil
+end
+-- проверка отсутствия гулага или у нпс есть реальный враг из этого гулага /pri_followers/
+function pri_follower_see_ambush(actor,npc)
+	local g = xr_gulag.get_gulag_by_name("pri_wave7")
+	local enemy = g and npc and npc:best_enemy()
+	if enemy then
+		for k, v in pairs(g.Object) do
+			if v and enemy():id() == v:id() then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+---' for Sarcofag ------------------------------------------------------------------
+-- у актера есть decoder /sar_secret_room/
+function actor_has_decoder(actor,npc)
+	return actor and actor:object("decoder") ~= nil
+end
+
+---' for Deadcity ------------------------------------------------------------------
+-- у нпс есть враг - 1.ГГ при отсутствии инфопоршня, 2.нпс с сидом 1200, 3.нпс из проверяемого гулага /gulag_deadcity.ltx - не применяется/
+function cit_combat_ignore(actor,npc,p)
+	local info, gulags, g = p[1], {cit_kanaliz1 = true, cit_kanaliz2 = true, cit_kanaliz3 = true}
+	local enemy = actor and npc and db.storage[npc:id()].enemy and level.object_by_id(db.storage[npc:id()].enemy)
+	local s_enemy = enemy and npc_by_clsid[enemy:clsid()] and enemy:alive() and alife():object(enemy:id())
+	if not s_enemy then
+		if npc then db.storage[npc:id()].enemy = nil end
+		return false
+	end
+	
+	if db.storage[npc:id()].enemy == 0 then
+		return info and not has_alife_info(info)
+	elseif enemy:story_id() == 1200 then
+		return true
+	else
+		g = xr_gulag.get_npc_gulag(enemy)
+		return g and gulags[g]
+	end
+	
+	return false
+end
+
+---' for Trade ---------------------------------------------------------------------
+local trade_by_level = {
+	l01_escape = "escape",
+	l02_garbage = "garbage",
+	l03_agroprom = "garbage",
+	l03u_agr_underground = "garbage",
+	l04_darkvalley = "garbage",
+	k01_darkscap = "garbage",
+	l04u_labx18 = "garbage",
+	l05_bar = "bar",
+	l06_rostok = "bar",
+	l07_military = "bar",
+	l08_yantar = "yantar",
+	l08u_brainlab = "yantar",
+	l09_deadcity = "yantar",
+	l10_radar = "radar",
+	l10u_bunker = "radar",
+	l11_pripyat = "radar",
+	atp_for_test22 = "atp_for_test22r",
+	peshera = "peshera",
+	puzir = "puzir",
+	aver = "aver",
+	warlab = "warlab",
+	lost_village = "lost_village",
+	av_peshera = "av_peshera" }
+-- /не применяется/
+function npc_trade_by_level(actor,npc,p)
+	local l, t = p[1], trade_by_level[level.name()]
+	return l and t and t == l
+end
+-- /не применяется/
+function treasure_exist(actor,npc,p)
+	return true
+end
+-- проигрование подсказок /esc_tutorial.ltx - сейчас не применяется/
+function can_send_tutorial(actor,npc)
+	return actor and not (actor:is_talking() or game.has_active_tutorial() or actor:has_info("ui_inventory") or actor:has_info("ui_pda"))
+end
+
+---' for Arena ---------------------------------------------------------------------
+-- проверка, что актер находится в зоне(несуществует) /bar_arena_sr.ltx - не применяется/
+function bar_arena_actor_inside(actor,npc)
+	local a_pos = actor and db.actor:position()
+	local z = a_pos and db.zone_by_name["bar_arena_waiter"]
+	return z and z:inside(a_pos)
+end
+-- проверка, наличия двух зон и актер находится в первой(несуществует) /bar_arena_sr.ltx - не применяется/
+function bar_arena_actor_fight(actor,npc)
+	local z1 = db.zone_by_name["bar_arena_sr"]
+	local z2 = db.zone_by_name["bar_arena_waiter"]
+	local a_pos = z1 and z2 and actor and db.actor:position()
+	return a_pos and z1:inside(a_pos) and not z2:inside(a_pos)
+end
+-- проверка, что актер находится в зоне(несуществует) /bar_arena_sr.ltx - не применяется/
+function bar_arena_actor_outside(actor,npc)
+	local a_pos = actor and db.actor:position()
+	local z = a_pos and db.zone_by_name["bar_arena_waiter_out"]
+	return z and z:inside(a_pos)
+end
+-- определяет ранг актера или наличие инфопоршня /bar_arena_rank_checker/
+function bar_actor_rank_stalker(actor,npc)
+	return actor:character_rank() > 300 or actor:has_info("bar_arena_fight_8_done")
+end
+function bar_actor_rank_veteran (actor,npc)
+	return actor:character_rank() > 600 or actor:has_info("bar_arena_fight_8_done")
+end
+-- проверка наличия инфопоршей для арены /bar_arena_triger.ltx/
+function bar_arena_fight_3_end(actor,npc)
+	return has_alife_info("bar_arena_fight_3_stalker_1_die") and has_alife_info("bar_arena_fight_3_stalker_2_die")
+end
+function bar_arena_fight_4_end(actor,npc)
+	return has_alife_info("bar_arena_fight_4_stalker_1_die") and has_alife_info("bar_arena_fight_4_stalker_2_die") and has_alife_info("bar_arena_fight_4_stalker_3_die")
+end
+function bar_arena_fight_5_end(actor,npc)
+	return has_alife_info("bar_arena_fight_5_stalker_1_die") and has_alife_info("bar_arena_fight_5_stalker_2_die")
+end
+function bar_arena_fight_6_end(actor,npc)
+	return has_alife_info("bar_arena_fight_6_stalker_1_die") and has_alife_info("bar_arena_fight_6_stalker_2_die") and has_alife_info("bar_arena_fight_6_stalker_3_die") and has_alife_info("bar_arena_fight_6_stalker_4_die") and has_alife_info("bar_arena_fight_6_stalker_5_die") and has_alife_info("bar_arena_fight_6_stalker_6_die")
+end
+function bar_arena_fight_8_end(actor,npc)
+	return has_alife_info("bar_arena_fight_8_stalker_1_die") and has_alife_info("bar_arena_fight_8_stalker_2_die") and has_alife_info("bar_arena_fight_8_stalker_3_die") and has_alife_info("bar_arena_fight_8_stalker_4_die")
+end
+-- проверяет группу текущего боя /bar_territory_zone.ltx/
+function aem_group(actor,npc,p)
+	return aem_manager.get_aem():is_group_name(p[1])
+end
+-- проверяет начальную озвучку текущего боя /sound.ltx/
+function aem_intro(actor,npc,p)
+	return aem_manager.get_aem():is_intro_name(p[1])
+end
+-- проверяет конечную озвучку текущего боя /sound.ltx/
+function aem_extro(actor,npc,p)
+	return aem_manager.get_aem():is_extro_name(p[1])
+end
+-- проверка, что идет выброс /aem_admin.ltx/
+function aem_check_blow(actor,npc)
+	local blow = amk.load_variable("blowout",0)
+	return blow and blow > 0
+end
+-- были уничтожены все группировки /aem_admin.ltx/
+function aem_evil(actor,npc)
+	return aem_manager.get_aem():is_stalkers_evil()
+end
+-- группировки не были уничтожены /aem_admin.ltx/
+function aem_kind(actor,npc)
+	return not aem_manager.get_aem():is_stalkers_evil()
+end
+-- проверяет, что нпс находится на заданной позиции(bar_arena_man_look) /aem_admin.ltx/
+function aem_on_place(actor,npc)
+	local pos = npc:position()
+	return (pos.x>148.8 and pos.x<157.7) and (pos.z>68.3 and pos.z<69.9)
+end

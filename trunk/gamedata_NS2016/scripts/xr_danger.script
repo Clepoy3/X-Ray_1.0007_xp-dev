@@ -1,0 +1,491 @@
+----------------------------------------------------------------------------------------------------------------------
+--'	Схема кемпер. Чудак с бальшой пушкой ходит и отстреливает живность.
+--'	автор: Диденко Руслан (Stohe)
+--'	подкручено: всем, кому не лень (sapsan)
+--'	TODO: 
+----------------------------------------------------------------------------------------------------------------------
+
+local math_pow = math.pow
+local math_min = math.min
+local math_sqrt= math.sqrt
+local math_abs = math.abs
+local string_format = string.format
+
+-- ГГ нашкодничал
+actor_danger = {}
+-- учет всех трупов
+corpses_danger = {}
+
+-- скорость для разного вида данжеров
+-- 3.6 - максимальная скорость сталкера не в панике
+-- 25 - максимальная скорость полета гранаты (определено эмприрически)
+local bullet_ricochet = 8
+local danger_speed = {
+	[danger_object.grenade]		= 3.6 + 25,
+	[danger_object.entity_corpse]	= 3.6 + 0,
+	[danger_object.entity_attacked]	= 3.6 + 3.6,
+	[danger_object.attacked]	= 3.6 + 3.6,
+	[danger_object.enemy_sound]	= 3.6 + 3.6,
+	[danger_object.attack_sound]	= 3.6 + 3.6,
+	[danger_object.entity_death]	= 3.6 + 0,
+	[bullet_ricochet]		= 3.6 + 0
+}
+
+local default_danger_ignore_distance = {
+	ignore_distance		= 200,
+	ignore_distance_grenade	= 25,
+	ignore_distance_corpse	= 50,
+	ignore_distance_hit	= 200,
+	ignore_distance_sound_e	= 100,
+	ignore_distance_death	= 50,
+	ignore_distance_sound	= 100
+}
+
+local default_danger_inertion_time = {
+	danger_inertion_time_grenade	= 60000,
+	danger_inertion_time_corpse	= 60000,
+	danger_inertion_time_hit	= 600000,
+	danger_inertion_time_sound	= 60000,
+	danger_inertion_time_sound_e	= 60000,
+	danger_inertion_time_death	= 600000,
+	danger_inertion_time_ricochet	= 60000
+}
+
+local default_danger_ignore_time = {
+	danger_ignore_time_corpse	= 60000
+}
+
+default_danger_settings = {
+	-- ПЫС лопухнулись изначально и теперь неписи без заданных и проверенных расстояний будут реагировать на денжеры
+	["ignore_distance"]		= math_pow(default_danger_ignore_distance["ignore_distance"], 2),
+	["ignore_distance_grenade"]	= math_pow(default_danger_ignore_distance["ignore_distance_grenade"], 2),
+	["ignore_distance_corpse"]	= math_pow(default_danger_ignore_distance["ignore_distance_corpse"], 2),
+	["ignore_distance_hit"]		= math_pow(default_danger_ignore_distance["ignore_distance_hit"], 2),
+	["ignore_distance_sound"]	= math_pow(default_danger_ignore_distance["ignore_distance_sound"], 2),
+	["ignore_distance_sound_e"]	= math_pow(default_danger_ignore_distance["ignore_distance_sound_e"], 2),
+	["ignore_distance_death"]	= math_pow(default_danger_ignore_distance["ignore_distance_death"], 2),
+
+	["danger_inertion_time_grenade"]= default_danger_inertion_time["danger_inertion_time_grenade"],
+	["danger_inertion_time_corpse"]	= default_danger_inertion_time["danger_inertion_time_corpse"],
+	["danger_inertion_time_hit"]	= default_danger_inertion_time["danger_inertion_time_hit"],
+	["danger_inertion_time_sound"]	= default_danger_inertion_time["danger_inertion_time_sound"],
+	["danger_inertion_time_sound_e"]= default_danger_inertion_time["danger_inertion_time_sound_e"],
+	["danger_inertion_time_death"]= default_danger_inertion_time["danger_inertion_time_death"],
+	["danger_inertion_time_ricochet"]=default_danger_inertion_time["danger_inertion_time_ricochet"],
+
+	-- Игнорирование данжера какое-то время после предыдущего
+	["danger_ignore_time_corpse"]	= default_danger_ignore_time["danger_ignore_time_corpse"]
+}
+
+local always_ignore_danger_from = { m_car = "true" }
+
+local danger_types = {
+	[danger_object.grenade]		= "grenade",
+	[danger_object.entity_corpse]	= "entity_corpse",
+	[danger_object.entity_attacked]	= "entity_attacked",
+	[danger_object.attacked]	= "attacked",
+	[danger_object.enemy_sound]	= "enemy_sound",
+	[danger_object.attack_sound]	= "attack_sound",
+	[danger_object.entity_death]	= "entity_death",
+	[bullet_ricochet]		= "bullet_ricochet"
+}
+
+local danger_type_to_ignore = {
+	[danger_object.grenade]		= "grenade",
+	[danger_object.entity_corpse]	= "corpse",
+	[danger_object.entity_attacked]	= "hit",
+	[danger_object.attacked]	= "hit",
+	[danger_object.enemy_sound]	= "sound",
+	[danger_object.attack_sound]	= "sound",
+	[danger_object.entity_death]	= "death",
+	[bullet_ricochet]		= "sound"
+}
+
+local danger_type_to_inertion_time = {
+	[danger_object.grenade]		= "danger_inertion_time_grenade",
+	[danger_object.entity_corpse]	= "danger_inertion_time_corpse",
+	[danger_object.entity_attacked]	= "danger_inertion_time_hit",
+	[danger_object.attacked]	= "danger_inertion_time_hit",
+	[danger_object.enemy_sound]	= "danger_inertion_time_sound_e",
+	[danger_object.attack_sound]	= "danger_inertion_time_sound",
+	[danger_object.entity_death]	= "danger_inertion_time_death",
+	[bullet_ricochet]		= "danger_inertion_time_ricochet"
+}
+
+local danger_type_to_ignore_time = {
+	[danger_object.grenade]			= "danger_ignore_time_grenade",
+	[danger_object.entity_corpse]		= "danger_ignore_time_corpse",
+	[danger_object.entity_attacked]	= "danger_ignore_time_hit",
+	[danger_object.attacked]		= "danger_ignore_time_hit",
+	[danger_object.enemy_sound]		= "danger_ignore_time_sound_e",
+	[danger_object.attack_sound]		= "danger_ignore_time_sound",
+	[danger_object.entity_death]		= "danger_ignore_time_death",
+	[bullet_ricochet]			= "danger_ignore_time_ricochet"
+}
+
+local danger_type_to_ignore_distance = {
+	[danger_object.grenade]		= "ignore_distance_grenade",
+	[danger_object.entity_corpse]	= "ignore_distance_corpse",
+	[danger_object.entity_attacked]	= "ignore_distance_hit",
+	[danger_object.attacked]	= "ignore_distance_hit",
+	[danger_object.enemy_sound]	= "ignore_distance_sound_e",
+	[danger_object.attack_sound]	= "ignore_distance_sound",
+	[danger_object.entity_death]	= "ignore_distance_death",
+	[bullet_ricochet]		= "ignore_distance_sound"
+}
+
+-- EVALUATORS
+-- true - есть danger, false - нет danger
+
+class "evaluator_danger" (property_evaluator)
+function evaluator_danger:__init(name, storage, npc) super (nil, name) counterAdd("xr_danger.evaluator_danger:__init")
+	self.a = storage
+	self.is_zombied = npc:character_community() == "zombied"
+	self.npc_id = npc:id()
+	self.npc_name = npc:name() or "none"
+	self.npc_character_name = npc:character_name() or "none"
+	self.corpses = {}	-- таблица для запоминания увиденных трупов - чтобы боялись труп только один раз (sapsan)
+	self.dangersIgnoreTime = {}	-- таблица для запоминания времени последнего неигрнорированного данжера (sapsan)
+	self.actor_time = 0
+	self.danger_check_time = 0
+end
+
+function evaluator_danger:evaluate() counterAdd("xr_danger.evaluator_danger:evaluate")
+	if self.mgr == nil then self.mgr = self.object:motivation_action_manager() end
+
+	local id = self.npc_id
+	local st = db.storage[id]
+	-- Отсеиваем тяж- и псираненых. todo: если ранен - отключить нафиг, ибо нефиг.
+	if
+		xr_wounded.is_heavy_wounded_by_id(id)
+		or
+		xr_wounded.is_psy_wounded_by_id(id)
+		or
+		self.object.alive and not self.object:alive()
+	then
+		return false
+	end
+
+	local actor = db.actor
+	if actor_danger[id] and actor_danger[id] + 30000 > time_global() and db.actor:alive() then
+		return true
+	else
+		actor_danger[id] = nil
+	end
+	
+	local best_danger = self.object:best_danger()
+	if not best_danger then
+		return false
+	end
+
+	local tg = time_global()
+	local bd_type = best_danger:type()
+	local bd_obj = best_danger:object()
+	if bd_type == danger_object.bullet_ricochet or not (bd_type and danger_types[bd_type]) then bd_type = bullet_ricochet end
+	local bd_time = best_danger:time()
+
+	if self.danger_time == bd_time and bd_type == st.danger_type then
+		if bd_type == danger_object.entity_corpse then
+			-- неписи принимают за бест данжер не самый свежий труп 
+			-- посмотрим все трупы
+			local danger_settings = db.storage[id].danger or default_danger_settings
+			local inertion_type = danger_type_to_inertion_time[bd_type]
+			local corpse_inertion = inertion_type and danger_settings[inertion_type] or 0
+			if corpse_inertion > 0 then
+				for cid, corpse_time in pairs(corpses_danger) do
+					if tg - corpse_time < corpse_inertion then
+						local corpseObj = level.object_by_id(cid)
+						if corpseObj and self.object:see(corpseObj) then
+							return true
+						end
+					else
+						corpses_danger[cid] = nil
+					end
+				end
+			end
+		end
+		
+		
+		local passed_time = tg - self.danger_time
+		local bd_name = bd_obj and bd_obj:name()
+		if bd_name and self.corpses[bd_name] then
+			bd_type = danger_object.entity_corpse
+			passed_time = tg - self.corpses[bd_name]
+		end
+		if check_danger_inertion_time(id, bd_type, passed_time) then
+			return true
+		end
+	end
+
+	local bd_dep_obj = best_danger:dependent_object()
+	local danger_name
+	local bd_pos
+	if bd_type == danger_object.bullet_ricochet or not (bd_type and danger_types[bd_type]) then bd_type = bullet_ricochet end
+
+	if bd_dep_obj then	-- граната, обычно
+		if bd_type == danger_object.grenade and self.is_zombied then return false end	-- для зомбированных нужно игнорировать гранату
+		bd_pos = best_danger:position()
+		danger_name = bd_dep_obj:name() or "unknow (dep)"
+		if st.danger_name ~= danger_name or st.danger_type ~= bd_type then
+		elseif self.danger_time == bd_time then return false	-- уже видел ///?????????
+		end
+	else
+		danger_name = bd_obj and bd_obj:name() or danger_types[bd_type] or "unknow"
+		if danger_name then
+			if st.danger_name ~= danger_name or st.danger_type ~= bd_type then
+				if bd_obj then
+				local bd_st = db.storage[bd_obj:id()]
+				local is_stalker = IAmAStalker[bd_obj:clsid()]
+				local is_monster = IAmAMonster[bd_obj:clsid()]
+				if bd_obj:id() ~= db.actor:id()
+					and (
+						bd_type == danger_object.attack_sound
+						and (
+							(is_stalker or is_monster)
+							and (
+								not bd_obj:alive()
+								or is_stalker and not bd_obj:best_enemy()
+								or is_monster and not bd_obj:get_enemy()
+							)
+							or
+							is_stalker and (xr_kamp.deadmansMoversIds[bd_obj:id()] or bd_st["watcher_act"] and bd_st["watcher_act"].grabitemid)
+						)
+						
+						or
+						
+						bd_type == danger_object.attacked
+						and is_stalker
+						and (
+							bd_obj:id() == id
+							or
+							not bd_obj:best_danger() or bd_obj:best_danger():object() and bd_obj:best_danger():object():id() == bd_obj:id()
+						)
+					)
+				then
+					return false
+				end
+				end
+			elseif self.danger_time == bd_time then
+				local is_stalker = bd_obj and IAmAStalker[bd_obj:clsid()]
+				if bd_obj then self.object:enable_memory_object(bd_obj, false) end
+				return false	-- уже видел
+			end
+		else	-- что-то взорвалось ?
+			self.danger_time = bd_time
+			st.danger_name = "unknow"
+			st.danger_type = bd_type
+			return true
+		end
+
+		-- не находится ли денжер в списке вечнозапрещенных.(БТР, Вертолеты и тд)
+		local bd_section = bd_obj and bd_obj:section()
+		if bd_section and always_ignore_danger_from[bd_section] then return false end
+
+		-- не находится ли данжер в списке запрещенных
+		local ignore_type = danger_type_to_ignore[bd_type]
+		if ignore_type and self.a.ignore_types[ignore_type] then return false end
+
+		if bd_obj and npc_by_clsid[bd_obj:clsid()] and bd_obj:alive() then
+			-- запись в стораж непися реального врага - для функций в xr_conditions.script
+			st.enemy = bd_obj and bd_obj:id()
+		end
+		
+		-- инерция игнорирования данжера (актуально для свежих трупов)
+
+		bd_pos = best_danger:position()
+		if sr_danger.check_danger_position(bd_pos) then return false end	-- Отсеиваем по зоне
+		if xr_gulag.is_info_restricted(id, bd_pos) then return false end	-- Отсеиваем по информационным рестрикторам
+
+		if bd_type == danger_object.entity_corpse or bd_type == danger_object.entity_death or bd_obj and npc_by_clsid[bd_obj:clsid()] and not bd_obj:alive() then	-- если труп, то возбуждаемся, но только один раз. Иначе все равно смысла нет (dc)
+			if self.is_zombied
+				or self.corpses[danger_name] and not check_danger_inertion_time(id, danger_object.entity_corpse, tg - self.corpses[danger_name])
+				or not self.corpses[danger_name] and (not bd_obj or not bd_obj:alive()) and (not bd_obj or db.storage[bd_obj:id()].dead_already or not check_danger_inertion_time(id, danger_object.entity_corpse, tg - bd_obj:death_time()))
+			then
+				if not self.corpses[danger_name] and (not bd_obj or not bd_obj:alive()) then
+					self.corpses[danger_name] = bd_obj and not db.storage[bd_obj:id()].dead_already and bd_obj:death_time() or -default_danger_inertion_time["danger_inertion_time_death"]
+				end
+				if bd_obj then self.object:enable_memory_object(bd_obj, false) end
+				return false
+			else
+				if not self.corpses[danger_name] and (not bd_obj or not bd_obj:alive()) then
+					self.corpses[danger_name] = bd_obj and not db.storage[bd_obj:id()].dead_already and bd_obj:death_time() or -default_danger_inertion_time["danger_inertion_time_death"]
+				end
+				if bd_type ~= danger_object.entity_corpse and bd_type ~= danger_object.entity_death then -- помер - лежи тихонько
+					return false
+				end
+			end
+		end
+
+		local active_scheme = st.active_scheme	-- отсеиваем по настройке combat_ignore/danger
+		if active_scheme == "camper" then
+			if bd_type == danger_object.grenade then
+				self.danger_time = bd_time
+				st.danger_name = danger_name
+				st.danger_type = bd_type
+				return true
+			else
+				return false 	-- кэмпер уже дерется, так что реагируем только на гранату, а она не в этой ветке
+			end
+		end
+
+		if st.enemy ~= nil then
+			local overrides = active_scheme and xr_logic.generic_scheme_overrides(self.object)
+			local combat_ignore = overrides and overrides.combat_ignore
+			if combat_ignore and xr_logic.pick_section_from_condlist(db.actor, self.object, overrides.combat_ignore.condlist ) then
+				return false
+			end
+		end
+		
+		local enemy = self.object:best_enemy()
+		if not enemy then
+			if bd_type == danger_object.enemy_sound then
+				if bd_obj and bd_obj:id() == actor:id() then	-- Проверка на запрещенный денжер от актера
+					if self.object:relation(actor) ~= game_object.enemy then
+						return false
+					end
+				end
+			elseif danger_object.attack_sound and bd_obj and bind_turret.is_friendly_turret(self.object, bd_obj, bd_pos) then
+				return false	-- Отсеиваем дружественные туррели. (dc: А надо ? По звуку-то ?)
+			end
+		end
+	end
+	local danger_distance = check_danger_distance(id, self.object:position(), bd_type, bd_pos)	-- Отсеиваем по дистанции
+	if danger_distance then
+		self.danger_time = bd_time
+		st.danger_name = danger_name
+		st.danger_type = bd_type
+		return true
+	end
+	return false
+end
+
+
+-- BINDER
+function add_to_binder(object, ini, scheme, section, storage) counterAdd("xr_danger.add_to_binder")
+   	local manager = object:motivation_action_manager()
+	manager:remove_evaluator(stalker_ids.property_danger)
+	manager:add_evaluator(stalker_ids.property_danger, this.evaluator_danger("danger", storage, object))
+end
+
+function set_danger(npc, ini, scheme, section) counterAdd("xr_danger.set_danger")
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+end
+
+local koef_by_rank = {
+	["novice"] = 1, --2,
+	["experienced"] = 0.8, --1.6,
+	["veteran"] = 0.6, --1.3,
+	["master"] = 0.7 --1,
+}
+
+function reset_danger(npc, scheme, st, section) counterAdd("xr_danger.reset_danger")
+	local danger_section
+	if scheme and scheme ~= "nil" then danger_section = utils.cfg_get_string(st.ini, section, "danger", npc, false, "") end
+
+	local danger_settings = st["danger"]
+	if not danger_settings then
+		danger_settings = {}
+		st["danger"] = danger_settings
+	end
+
+	danger_settings["ignore_types"] = {}
+	if danger_section then
+		local t = parse_names(utils.cfg_get_string(st.ini, danger_section, "ignore_types", npc, false, "", ""))
+		for i = 1, #t do danger_settings["ignore_types"][t[i]] = true end
+	end
+	danger_settings["ignore_distance"]		= math_pow(utils.cfg_get_number(st.ini, danger_section, "ignore_distance", npc, false, default_danger_ignore_distance["ignore_distance"]), 2)
+	danger_settings["ignore_distance_grenade"]	= math_pow(utils.cfg_get_number(st.ini, danger_section, "ignore_distance_grenade", npc, false, default_danger_ignore_distance["ignore_distance_grenade"]), 2)
+	danger_settings["ignore_distance_corpse"]	= math_pow(utils.cfg_get_number(st.ini, danger_section, "ignore_distance_corpse", npc, false, default_danger_ignore_distance["ignore_distance_corpse"]), 2)
+	danger_settings["ignore_distance_hit"]		= math_pow(utils.cfg_get_number(st.ini, danger_section, "ignore_distance_hit", npc, false, default_danger_ignore_distance["ignore_distance_hit"]), 2)
+
+	local ignore_sound = utils.cfg_get_number(st.ini, danger_section, "ignore_distance_sound", npc, false, default_danger_ignore_distance["ignore_distance_sound"])
+	local enemy_sound =  default_danger_ignore_distance["ignore_distance_sound_e"]
+	if enemy_sound > ignore_sound then enemy_sound	= ignore_sound end
+	danger_settings["ignore_distance_sound"]	= math_pow(ignore_sound, 2)
+	danger_settings["ignore_distance_sound_e"]	= math_pow(enemy_sound, 2)
+	
+	danger_settings["ignore_distance_death"]		= math_pow(utils.cfg_get_number(st.ini, danger_section, "ignore_distance_death", npc, false, default_danger_ignore_distance["ignore_distance_death"]), 2)
+
+	local npc_rank = ranks.get_obj_rank_name(npc)
+	local koef = koef_by_rank[npc_rank] * (1 + math.random(-33, 33) / 100)
+
+	danger_settings["danger_inertion_time_grenade"]	= utils.cfg_get_number(st.ini, danger_section, "danger_inertion_time_grenade", npc, false, koef*default_danger_inertion_time["danger_inertion_time_grenade"])
+	danger_settings["danger_inertion_time_corpse"]	= utils.cfg_get_number(st.ini, danger_section, "danger_inertion_time_corpse", npc, false, koef*default_danger_inertion_time["danger_inertion_time_corpse"])
+	danger_settings["danger_inertion_time_hit"]	= utils.cfg_get_number(st.ini, danger_section, "danger_inertion_time_hit", npc, false, koef*default_danger_inertion_time["danger_inertion_time_hit"])	
+	danger_settings["danger_inertion_time_ricochet"]= utils.cfg_get_number(st.ini, danger_section, "danger_inertion_time_ricochet", npc, false, koef*default_danger_inertion_time["danger_inertion_time_ricochet"])
+	danger_settings["danger_inertion_time_sound"]	= utils.cfg_get_number(st.ini, danger_section, "danger_inertion_time_sound", npc, false, koef*default_danger_inertion_time["danger_inertion_time_sound"])	
+	danger_settings["danger_inertion_time_sound_e"]	= koef*default_danger_inertion_time["danger_inertion_time_sound_e"]
+	if danger_settings["danger_inertion_time_sound_e"] > danger_settings["danger_inertion_time_sound"] then
+		danger_settings["danger_inertion_time_sound_e"] = danger_settings["danger_inertion_time_sound"]
+	end
+	
+	danger_settings["danger_inertion_time_death"]	= utils.cfg_get_number(st.ini, danger_section, "danger_inertion_time_death", npc, false, koef*default_danger_inertion_time["danger_inertion_time_death"])	
+	
+	danger_settings["danger_ignore_time_corpse"]	= utils.cfg_get_number(st.ini, danger_section, "danger_ignore_time_corpse", npc, false, koef*default_danger_ignore_time["danger_ignore_time_corpse"])
+	
+end
+
+
+function check_danger_inertion_time(npc_id, bd_type, passed_time) counterAdd("xr_danger.check_danger_inertion_time")
+	if bd_type == danger_object.bullet_ricochet or not (bd_type and danger_types[bd_type]) then bd_type = bullet_ricochet end
+	local danger_settings = db.storage[npc_id].danger or default_danger_settings
+	local inertion_type = danger_type_to_inertion_time[bd_type]
+	return inertion_type and danger_settings[inertion_type] > passed_time
+end
+
+function check_danger_ignore_time(st, bd_type, tg, dangersIgnoreTime, bd_obj) counterAdd("xr_danger.check_danger_ignore_time")
+	if bd_type == danger_object.bullet_ricochet or not (bd_type and danger_types[bd_type]) then bd_type = bullet_ricochet end
+	local danger_settings = st.danger or default_danger_settings
+	local inertion_type = danger_type_to_inertion_time[bd_type]
+	local inertion_time = inertion_type and danger_settings[inertion_type] or 0
+	local danger_settings = st.danger or default_danger_settings
+	local dangerIgnoreTime = danger_settings[danger_type_to_ignore_time[bd_type]]
+
+	if dangersIgnoreTime[bd_type] ~= nil and dangersIgnoreTime[bd_type] - inertion_time  > tg
+		and (bd_type ~= danger_object.entity_corpse and bd_type ~= danger_object.entity_death --[[or bd_obj:death_time() > dangersIgnoreTime[bd_type] - dangerIgnoreTime]])
+	then
+		return true
+	end
+	
+	if danger_type_to_ignore_time[bd_type] then
+		if dangerIgnoreTime then -- этот тип можно игнорировать
+			dangersIgnoreTime[bd_type] = tg + dangerIgnoreTime
+		end
+	end
+	
+	return false
+end
+
+function getDangerSettings(npcId)
+	local st = db.storage[npcId]
+	local dangerSettings = st and st.danger or default_danger_settings
+
+	return dangerSettings
+end
+
+function check_danger_distance(npc_id, npc_pos, bd_type, bd_pos) counterAdd("xr_danger.check_danger_distance")
+	local st = db.storage[npc_id]
+	if st then
+		if bd_type == danger_object.bullet_ricochet or not (bd_type and danger_types[bd_type]) then bd_type = bullet_ricochet end
+		local danger_settings = getDangerSettings(npc_id) --st.danger or default_danger_settings
+
+		local danger_distance_sqr = bd_pos:distance_to_sqr(npc_pos)	
+		st.dist = danger_distance_sqr
+
+		if danger_types[bd_type] then
+			st.danger_min_dist = danger_settings[danger_type_to_ignore_distance[bd_type]]
+			if danger_settings.ignore_distance < st.danger_min_dist then
+				st.danger_min_dist = danger_settings.ignore_distance
+			end
+		else
+			st.danger_min_dist = danger_settings.ignore_distance
+		end
+		if danger_distance_sqr >= st.danger_min_dist then
+			return false
+		else
+			return true
+		end
+	else
+		return false
+	end
+end

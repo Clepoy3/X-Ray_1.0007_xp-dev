@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="windows-1251"  ?>
+<game_dialogs>
+
+<dialog id="pulia_dialog">
+	            <has_info>bar_darklab_document_start</has_info>
+	            <dont_has_info>pulia_dialog_finish</dont_has_info>
+	            <dont_has_info>val_prisoner_done</dont_has_info>
+        <phrase_list>
+	    <phrase id="0">
+                <text>pulia_dialog_0</text>
+				<next>1</next>
+                </phrase>
+        <phrase id="1">
+                <text>pulia_dialog_1</text>
+				<next>2</next>
+                </phrase>
+        <phrase id="2">
+                <text>pulia_dialog_2</text>
+				<next>3</next>
+                </phrase>
+        <phrase id="3">
+			<text>pulia_dialog_3</text>
+				<next>4</next>
+                </phrase>
+        <phrase id="4">
+			<text>pulia_dialog_4</text>
+				<next>5</next>
+                </phrase>
+        <phrase id="5">
+			<text>pulia_dialog_5</text>
+				<next>6</next>
+                </phrase>
+        <phrase id="6">
+			<text>pulia_dialog_6</text>
+				<next>7</next>
+                </phrase>
+        <phrase id="7">
+			<text>pulia_dialog_7</text>
+				<next>8</next>
+                </phrase>
+        <phrase id="8">
+			<text>pulia_dialog_8</text>
+                  <give_info>pulia_dialog_finish</give_info>
+               </phrase>			
+        </phrase_list>
+      </dialog>
+
+<dialog id="pulia_dialog1">
+	            <has_info>val_prisoner_door_unlocked</has_info>
+	            <has_info>pulia_dialog_finish</has_info>
+	            <dont_has_info>pulia_dialog1_finish</dont_has_info>
+        <phrase_list>
+	    <phrase id="0">
+                <text>pulia_dialog1_0</text>
+				<next>1</next>
+                </phrase>
+        <phrase id="1">
+                <text>pulia_dialog1_1</text>
+				<next>2</next>
+                </phrase>
+        <phrase id="2">
+                <text>pulia_dialog1_2</text> 
+                  <give_info>pulia_dialog1_finish</give_info>
+			<action>spawn_zombi.pulia_optika_dal</action>
+               </phrase>			
+        </phrase_list>
+      </dialog>
+
+<dialog id="val_prisoner_dialog">
+	            <has_info>val_prisoner_door_unlocked</has_info>
+	            <has_info>pulia_dialog_finish</has_info>
+	            <dont_has_info>val_prisoner_dialog_finish</dont_has_info>
+        <phrase_list>
+	    <phrase id="0">
+                <text>val_prisoner_dialog_0</text>
+				<next>1</next>
+                </phrase>
+        <phrase id="1">
+                <text>val_prisoner_dialog_1</text>
+				<next>2</next>
+                </phrase>
+        <phrase id="2">
+                <text>val_prisoner_dialog_2</text> 
+				<next>3</next>
+                </phrase>
+        <phrase id="3">
+                <text>val_prisoner_dialog_3</text> 
+				<next>4</next>
+                </phrase>
+        <phrase id="4">
+                <text>val_prisoner_dialog_4</text>
+                  <give_info>val_prisoner_dialog_finish</give_info>
+			<give_info>info_artmod_cristall_flower_galant</give_info>
+			<action>sak.add_ak47</action>
+			<action>sak.info_artmod</action>
+               </phrase>			
+        </phrase_list>
+      </dialog>
+
+<dialog id="artmod_461_dialog">
+	            <has_info>val_prisoner_door_unlocked</has_info>
+	            <has_info>pulia_dialog_finish</has_info>
+			 <dont_has_info>val_escort_PDA_have</dont_has_info>
+	            <dont_has_info>val_escort_PDA_start</dont_has_info>
+	            <dont_has_info>val_escort_PDA_done</dont_has_info>
+        <phrase_list>
+	    <phrase id="0">
+ 			<text>artmod_461_dialog_0</text>
+                		<next>1</next>
+            </phrase>
+	  <phrase id="1">
+                	<text>artmod_461_dialog_1</text>
+                		<next>2</next>
+            </phrase>
+	  <phrase id="2">
+                	<text>artmod_461_dialog_2</text>
+                		<next>3</next>
+            </phrase>
+	  <phrase id="3">
+                 <text>artmod_461_dialog_3</text>
+				<next>4</next>
+				<next>41</next>
+            </phrase>
+	  <phrase id="4">
+                 <text>artmod_461_dialog_4</text>
+				<give_info>val_escort_PDA_start</give_info>
+				<action>sak.add_und_pda</action>
+            </phrase>
+	  <phrase id="41">
+                <text>artmod_461_dialog_41</text>
+				<action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+      </dialog>
+
+<dialog id="artmod_462_dialog">
+			 <precondition>sak_dialog.val_escort_PDA_have</precondition>
+			 <has_info>val_escort_PDA_have</has_info>
+			 <dont_has_info>val_escort_PDA_done</dont_has_info>
+		<phrase_list>
+	    <phrase id="0">
+ 			<text>artmod_462_dialog_0</text>
+                          <next>1</next>
+            </phrase>
+	    <phrase id="1">
+                <text>artmod_462_dialog_1</text>
+                		  <next>2</next>
+            </phrase>
+	    <phrase id="2">
+                <text>artmod_462_dialog_2</text>
+				  <next>3</next>
+            </phrase>
+	    <phrase id="3">
+                <text>artmod_462_dialog_3</text>
+				<give_info>val_escort_PDA_done</give_info>
+				<action>sak_dialog.give_val_escort_PDA</action>
+				<give_info>info_artmod_electra_moonlight_galant</give_info>
+				<action>sak.info_artmod</action>
+            </phrase>
+        </phrase_list>
+      </dialog>
+
+<dialog id="val_sos_dialog_21_amk">
+			 <dont_has_info>messer_dialog_finish</dont_has_info>
+	        <phrase_list>
+             <phrase id="0">
+                <text>val_sos_dialog_21_amk_0</text>
+                           <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>val_sos_dialog_21_amk_1</text>
+                           <next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>val_sos_dialog_21_amk_2</text>
+                           <next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>val_sos_dialog_21_amk_3</text>
+                           <next>4</next>
+            </phrase>
+            <phrase id="4">
+                <text>val_sos_dialog_21_amk_4</text>
+                		   <next>5</next>
+            </phrase>
+            <phrase id="5">
+                <text>val_sos_dialog_21_amk_5</text>
+                           <next>6</next>
+            </phrase>
+            <phrase id="6">
+                <text>val_sos_dialog_21_amk_6</text>
+                  <give_info>val_sos_give_info</give_info>
+                	<give_info>info_amk_recipt_sopl_dikoobraz</give_info>
+                  <give_info>messer_dialog_finish</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+
+</game_dialogs>

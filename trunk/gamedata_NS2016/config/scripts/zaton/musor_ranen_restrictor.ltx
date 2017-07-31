@@ -1,0 +1,40 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_actor_inside = {+brodway_say_tri_start} sr_idle %=arhara_dialog.zaton_musor1_sms%
+
+[sr_idle]
+on_timer = 2000 | sr_idle@1 %+dell_sosolov =arhara_dialog.last_snip_zvuk =arhara_dialog.hit_dcity_imitator%
+
+[sr_idle@1]
+on_timer = 500 | sr_idle@2 %=run_cam_effector(dis_consciousness:1984:true) =disable_ui%
+
+[sr_idle@2]
+on_timer = 2000 | sr_idle@3_1 %=agr_contuz =run_postprocess(agr_u_fade)%
+
+[sr_idle@3_1]
+on_timer = 1500 | sr_idle@3_2 %=stop_cam_effector(1984) =run_postprocess(deadcity_wake)%
+
+[sr_idle@3_2]
+on_timer = 4000 | sr_idle@3_3 %=arhara_dialog.zaton_musor2_sms%
+
+[sr_idle@3_3]
+on_timer = 3000 | sr_idle@3_4 %=arhara_dialog.zaton_musor3_sms =arhara_dialog.release_actor_money%
+
+[sr_idle@3_4]
+on_timer  = 5000 | sr_idle@3 %=agr_cam_effect =teleport_actor(kat_teleport_to_dark_city_position:kat_teleport_to_dark_city_orientation)%
+
+[sr_idle@3]
+on_timer  = 1500 | sr_idle@4 %=arhara_dialog.zaton_musor4_sms%
+
+[sr_idle@4]
+on_timer = 35500 | sr_idle@5 %=run_postprocess(agr_u_fade)%
+
+[sr_idle@5]
+on_timer = 3000 | sr_idle@last %=stop_cam_effector(123) =run_cam_effector(prison_1:2508:false)%
+
+[sr_idle@last]
+on_timer = 4000 | sr_idle@nil %=enable_ui%
+
+[sr_idle@nil]

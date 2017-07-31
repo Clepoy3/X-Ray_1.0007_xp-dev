@@ -1,0 +1,171 @@
+
+	<credits_ns_seq>
+		<global_wnd x="0" y="0" width="1024" height="768">
+
+
+			<auto_static x="350" y="130" width="480" height="270">
+				<texture>ui\cop_intro</texture>
+			</auto_static>
+			<auto_static x="0" y="0" width="1024" height="768">
+				<texture>ui\ui_static_mm_back_08</texture>
+			</auto_static>
+
+
+		</global_wnd>
+
+		<play_each_item>1</play_each_item>
+
+		<item>
+			<length_sec>130</length_sec>
+			<pause_state>on</pause_state>
+			<function_on_stop>xr_effects.after_credits</function_on_stop>
+			<guard_key/>
+			<pause_sound>on</pause_sound>
+			<sound>Music\credits</sound>
+			<cursor_pos/>
+			<pda_section/>
+			<grab_input>1</grab_input>
+			<main_wnd>
+
+				<auto_static start_time="2" length_sec="10" x="390" y="440" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_ns_author</text>
+				</auto_static>
+				<auto_static start_time="2" length_sec="10" x="390" y="460" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_arhara</text>
+				</auto_static>
+
+
+
+				<auto_static start_time="12" length_sec="5" x="390" y="440" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_ns_team</text>
+				</auto_static>
+
+
+				<auto_static start_time="17" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_bfg</text>
+				</auto_static>
+
+				<auto_static start_time="22" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_sapsan</text>
+				</auto_static>
+
+				<auto_static start_time="27" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_habarych</text>
+				</auto_static>
+
+				<auto_static start_time="32" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_shadowman</text>
+				</auto_static>
+
+				<auto_static start_time="37" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_chorik</text>
+				</auto_static>
+
+				<auto_static start_time="42" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_dennis_chikin</text>
+				</auto_static>
+
+				<auto_static start_time="47" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_whatabout</text>
+				</auto_static>
+
+				<auto_static start_time="52" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_ray</text>
+				</auto_static>
+
+				<auto_static start_time="57" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_solvador</text>
+				</auto_static>
+
+				<auto_static start_time="62" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_fokstar</text>
+				</auto_static>
+
+				<auto_static start_time="67" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_dimon</text>
+				</auto_static>
+
+				<auto_static start_time="72" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_sarcus</text>
+				</auto_static>
+
+				<auto_static start_time="77" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_plotnikoff</text>
+				</auto_static>
+
+				<auto_static start_time="82" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_mav</text>
+				</auto_static>
+
+				<auto_static start_time="87" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_serget</text>
+				</auto_static>
+
+				<auto_static start_time="92" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_chrysler</text>
+				</auto_static>
+
+				<auto_static start_time="97" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_a185</text>
+				</auto_static>
+
+				<auto_static start_time="102" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_prizrak</text>
+				</auto_static>
+
+				<auto_static start_time="107" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_kalter</text>
+				</auto_static>
+
+				<auto_static start_time="112" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_vadyan</text>
+				</auto_static>
+
+				<auto_static start_time="117" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_gektor</text>
+				</auto_static>
+
+				<auto_static start_time="122" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_ptisa</text>
+				</auto_static>
+
+				<auto_static start_time="127" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_sansanich</text>
+				</auto_static>
+
+				<auto_static start_time="132" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_vitaly</text>
+				</auto_static>
+
+				<auto_static start_time="137" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_pahanxcop</text>
+				</auto_static>
+
+				<auto_static start_time="142" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_panteramarina</text>
+				</auto_static>
+
+				<auto_static start_time="142" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_sii</text>
+				</auto_static>
+
+				<auto_static start_time="147" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_lsclon</text>
+				</auto_static>
+
+
+
+				<!--               SPECIAL THANKS                 -->
+
+				<!-- next frame -->
+				<auto_static start_time="155" length_sec="5" x="390" y="460" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_clr_1">st_ns_special_thanks</text>
+				</auto_static>
+				<auto_static start_time="162" length_sec="5" x="390" y="460" width="500" height="40" light_anim="buy_menu_info" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ns_thanks_and</text>
+				</auto_static>
+
+			</main_wnd>
+		</item>
+
+	</credits_ns_seq>

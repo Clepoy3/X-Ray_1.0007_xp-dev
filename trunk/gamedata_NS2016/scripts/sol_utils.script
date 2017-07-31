@@ -1,0 +1,311 @@
+-- отбирает у ГГ всё, что может, но ценное складирует в тайник со стори_ид
+function actor_items_to_box(sid, son) counterAdd("sol_utils.actor_items_to_box")
+    local obj
+    local sim = alife()
+    local actor = db.actor
+	local scale
+	
+	if son then
+		scale = amk.load_variable("gg_need_sleep_nrg",0)
+	end
+	
+	-- ящик, в который перебросится самое ценное
+	local box = level_object_by_sid(sid);
+	if box then
+
+		-- перебор вещей инвентаря ГГ
+		local cnt = actor:object_count()
+		for i=0, cnt-1 do
+			obj = actor:object(i)
+			if protected_items.doNotTouchItem(obj) == false then
+				-- удаление вещи
+				if protected_items.doNotTouchAnything(obj) then
+					-- сохраняем только ценное и квестовое
+					--get_console():execute("load ~~~ release_actor_items transfer_item: "..obj:name())
+					actor:transfer_item(obj, box)
+				else
+					--get_console():execute("load ~~~ release_actor_items release: "..obj:name())
+					sim:release(sim:object(obj:id()), true)
+				end
+				
+				if son then
+					scale = 5 + scale
+				end
+			end
+			
+			if son then
+				sleep_manager.main(5+amk.load_variable("gg_need_sleep_nrg",0))
+			end
+		end
+	end
+end	
+
+-- ВОЗВРАЩЕНИЕ БИНОКЛЯ. Автор: Kolgomor
+-- переделал sapsan
+-- бинокль возвращается на своё место только если он есть у ГГ в инвентаре
+-- то, что занимало место бинокля "перекладывается" из слота в инвентарь
+function binoc_restore() counterAdd("sol_utils.binoc_restore")
+	local slot4 = db.actor:item_in_slot(4)
+	if slot4 then
+		local old_slot4_section = slot4:section()
+		--get_console():execute("load ~~~ actor has "..slot4:name().." in slot4")
+		local binoc = db.actor:object("wpn_binoc")
+		if old_slot4_section ~= "wpn_binoc" and binoc then
+			local s_slot4 = alife():object(slot4:id())
+			local s_binoc = alife():object(binoc:id())
+			if s_slot4 and s_binoc then
+				alife():release(s_slot4, true)
+				alife():release(s_binoc, true)
+				amk.spawn_item_in_inv("wpn_binoc", db.actor)
+				amk.spawn_item_in_inv(old_slot4_section, db.actor)
+			end
+		end
+	end
+end
+
+-- удаление N предметов у ГГ
+-- Перебираются не все предметы. Для актора вначале пропускаются предметы в невидимых слотах: нож, бинокль, болт, фонарик и ПДА.
+-- Кроме того, для актора определён порядок перебора предметов: сначала перебираются предметы в рюкзаке, потом на поясе, потом в слотах (только те, что видны).
+-- section - секция, count - количество, strict - строго (всё или ничего)
+function delete_item_count(section, count, condition, strict) counterAdd("sol_utils.delete_item_count")
+	local sim = alife()
+	local sobj
+	local countCurr = count
+	local itemsToDelete = {}
+	
+	-- работаем в два этапа - сначала "умный" перебор: рюкзак, пояс, видимые слоты
+	-- это для того, чтобы по возможности сначала удалялись предметы в рюкзаке, а не на поясе
+	db.actor:inventory_for_each(
+		function(item, npc)
+			if countCurr > 0 and item and item:section() == section
+				and (condition == nil or item:condition() >= condition) then
+				sobj = sim:object(item:id())
+				if sobj then
+					itemsToDelete[item:id()] = true
+					countCurr = countCurr - 1
+				end
+			end
+		end
+	)
+	
+	if countCurr > 0 then
+		-- похоже, что "умный" перебор также пропускает и невыкладываемые (квестовые) предметы
+		-- идем полным перебором
+		db.actor:iterate_inventory(
+			function(obj, item)
+				if countCurr > 0 and item and item:section() == section
+					and (condition == nil or item:condition() >= condition)
+					-- проверка обязательна - объект может быть удален ранее !
+					-- она то продублируется ниже (if sobj then), но так правильнее
+					and not itemsToDelete[item:id()] then
+					sobj = sim:object(item:id())
+					if sobj then
+						itemsToDelete[item:id()] = true
+						countCurr = countCurr - 1
+					end
+				end
+			end,
+			db.actor
+		)
+	end
+	
+	if strict and countCurr == 0 or not strict and count - countCurr > 0 then
+		for id, _ in pairs(itemsToDelete) do
+			sobj = sim:object(id)
+			if sobj then
+				sim:release(sobj, true)
+			end
+		end
+		news_manager.relocate_item(db.actor, "out", section, count - countCurr)
+	end
+	return countCurr == 0
+end
+
+-- проверка наличия определенного количества предметов с возможностью задать минимальное состояние
+function check_item_count(section, count, condition) counterAdd("sol_utils.check_item_count")
+	local sim = alife()
+	local sobj
+	local negative_count = 0
+	db.actor:iterate_inventory(
+		function(obj, item)
+			if count > 0 and item and item:section() == section then
+				sobj = sim:object(item:id())
+				if sobj then
+					if condition == nil then count = count - 1
+					else
+					 if item:condition() >= condition then	count = count - 1
+				 	 else	negative_count = negative_count + 1 end
+				 	end
+				end
+			end
+		end,
+		db.actor
+	)
+	if count == 0 then	     return  1 end  -- есть нужное кол-во допустимой кондиции
+	if negative_count == 0 then  return  0 end  -- нужного кол-ва нет, и нет ниже кондиции
+				     return -1      -- нужного кол-ва допустимой кондиции нет, и есть ниже кондиции
+end
+
+-- удаление разного количества разных предметов у ГГ
+function delete_items_counts(sectionsInfo) counterAdd("sol_utils.getRankByIddelete_items_counts")
+	for section, info in pairs(sectionsInfo) do
+		delete_item_count(section, info["count"], info["condition"], info["strict"])
+	end
+end
+
+-- закешированное получшение ранга непися
+-- допускается, что ранг непися не меняется
+-- а что он будет менятся во время его нахождения в онлайне - не критично, так как при следующей загрузке он будет обновлён
+local npcRanks = {}
+function getRankById(npcId) counterAdd("sol_utils.getRankById")
+	local result = 300 -- нечто среднее по больнице
+	if npcId then
+		if not npcRanks[npcId] then
+			local npc = level.object_by_id(npcId)
+			if npc then
+				npcRanks[npcId] = npc.character_rank and npc:character_rank() or npc.rank and npc:rank() or 300 -- 300 - что-то среднее по больнице
+			else
+				local snpc = alife():object(npcId)
+				npcRanks[npcId] = snpc.rank and snpc:rank() or 300
+			end
+			
+			if npcRanks[npcId] <= 0 then
+				npcRanks[npcId] = 1
+			end
+		end
+		
+		result = npcRanks[npcId]
+	end
+	
+	return result
+end
+
+-- вывод сообщения на экран c дефолтным звуком
+function send_tip(text, timeout, sender, showtime) counterAdd("sol_utils.send_tip")
+	if timeout == nil then timeout = 0 end
+	if showtime == nil then showtime = 5000 end
+	if sender == nil then
+		sender = "default"
+	end
+	local x = news_manager.tips_icons[sender][1]
+	local y = news_manager.tips_icons[sender][2]
+	
+	xr_sound.get_safe_sound_object([[device\pda\pda_tip]]):play(db.actor, timeout, sound_object.s2d)
+	db.actor:give_game_news(text, "ui\\ui_iconsTotal", Frect():set(x,y,83,47), timeout*1000, showtime)
+end
+
+-- переустановка видимости на миникарте
+function minimapSpotReset() counterAdd("sol_utils.minimapSpotReset")
+	for id, obj in pairs(db.creatures) do
+		if IAmAStalker[obj:clsid()] then
+			stalker_generic.reset_show_spot(obj, db.storage[id].active_scheme, db.storage[id], db.storage[id].active_section)
+		end
+	end
+	
+	difficultyOld = level.get_game_difficulty()
+end
+
+-- переустановка видимости на миникарте одному сталкеру
+function minimapSpotResetOne(npcId) counterAdd("sol_utils.minimapSpotResetOne")
+	if npcId and db.storage[npcId] then
+		local npc = level.object_by_id(npcId)
+		if npc and IAmAStalker[npc:clsid()] then
+			stalker_generic.reset_show_spot(npc, db.storage[npcId].active_scheme, db.storage[npcId], db.storage[npcId].active_section)
+		end
+	end
+end
+
+-- смена группировки непися
+-- все сюда в связи с сбросом отображения точек врагов на миникарте (кроме особых случаев особых смен отношений)
+function setCharacterCommunity(npcId, community) counterAdd("sol_utils.setCharacterCommunity")
+	local result
+	if community and npcId then
+		if npcId ~= db.actor:id() then
+			local s_npc = alife():object(npcId)
+			local npc = s_npc and level.object_by_id(npcId)
+			if npc and npc:alive() then
+				result = npc:set_character_community(community, 0, 0) -- 0, 0 - задаётся squad, group
+				minimapSpotResetOne(npcId)
+			end
+		else
+			local o
+			for id, _ in pairs(db.creatures) do
+				o = level.object_by_id(id)
+				if o and IAmAStalker[o:clsid()] and o:alive() then
+					if o:relation(db.actor) == game_object.enemy then
+						o:enable_memory_object(db.actor, false)
+						db.storage[id].enemy = nil
+					end
+				end
+			end
+			result = db.actor:set_character_community(community, 0, 0) -- 0, 0 - задаётся squad, group
+			minimapSpotReset()
+		end
+	end
+
+	return result
+end
+
+-- смена отношения между неписями
+-- все сюда в связи с сбросом отображения точек врагов на миникарте (кроме особых случаев особых смен отношений)
+function setRelation(who, relation, target) counterAdd("sol_utils.setRelation")
+	local result
+	if who and relation and target and who:id() ~= db.actor:id() then
+		local who_ok = alife():object(who:id()) and who:alive()
+		local target_ok = target:id() == db.actor:id() or alife():object(target:id()) and target:alive()
+		if who_ok and target_ok then
+			result = who:set_relation(relation, target)
+			minimapSpotResetOne(who:id())
+		end
+	end
+
+	return result
+end
+
+-- смена благосклонности между неписями
+-- все сюда в связи с сбросом отображения точек врагов на миникарте (кроме особых случаев особых смен отношений)
+function changeGoodwill(who, goodwill, target) counterAdd("sol_utils.changeGoodwill")
+	local result
+	if who and goodwill and target and who:id() ~= db.actor:id() then
+		local s_who = alife():object(who:id())
+		local s_target = target:id() == db.actor:id() or alife():object(target:id())
+		if s_who and s_target then
+			result = who:change_goodwill(goodwill, target)
+			minimapSpotResetOne(who:id())
+		end
+	end
+
+	return result
+end
+
+-- Проверка необходимости перезадать видимость на миникарте
+local difficultyOld
+function checkResetShowSpotNeeded()
+	local difficultyCurrent = level.get_game_difficulty()
+	if difficultyOld ~= difficultyCurrent and (difficultyOld == 0 or difficultyCurrent == 0) then
+		minimapSpotReset()
+	end
+end
+
+-- получение визуала
+function getVisual(id, nameOnly)
+	local result = ""
+	
+	if id then
+		local sobj = alife():object(id)
+		if sobj then
+			if IAmAStalker[sobj:clsid()] then
+				local t = amk.read_stalker_params(sobj)
+				result = t.visual
+				
+				if nameOnly then
+					result = Parse_StrToTbl(result,"\\")
+					result = Parse_StrToTbl(result[#result],".")
+					result = (result and result[1]) or "undefined"
+				end
+			end
+		end
+	end
+	
+	return result
+end

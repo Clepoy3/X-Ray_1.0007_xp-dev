@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+
+
+<string id="mobil_torgash_zakaz_agro_0">
+<text>Ты говорил позже поговорим?</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_1">
+<text>Ну ты что там надумал, гигант мысли, - будешь сейчас заказ на что-нибудь делать?</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_2">
+<text>В этот раз ничего не буду.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_3">
+<text>Сможешь мне АЕК-971 подогнать? Судя по тому, что я про него знаю - очень серьезная пушка. Да и с патронами проблем не будет - 5.45х39 часто встречаются.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_4">
+<text>Хочу ОЦ-33 "Пернач" себе в качестве вспомогательного ствола.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_5">
+<text>АЕК ковровского завода? Да ствол довольно серьезный, и достать его непросто... Хм, ну да ладно - нет невыполнимых задач, есть хреновые исполнители. Но это не про меня - достану я тебе это чудо отечественной техники... Обойдется тебе это ориентировочно в шестьдесят штук. И плюс десять штук ты мне сейчас как задаток дашь. По рукам?</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_6">
+<text>Хм, "Пернач"? Редкая штука - насколько мне известно, он сейчас на вооружении только у спецподразделений МВД в России. Придется российские связи подключать. Но ничего невозможного нет... Стоить это тебе будет тысяч тридцать пять и еще пять штук сейчас на месте. Согласен?</text>
+</string> 
+<string id="mobil_torgash_zakaz_agro_7">
+<text>Дороговато, но по рукам - хороший ствол не может стоить дешево.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_8">
+<text>За советский ствол, разработанный лет 20 назад, семьдесят штук? Ты в своем уме? Нет конечно - ищи себе таких клиентов в психушке.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_9">
+<text>Взял бы с удовольствием, но денег нет на задаток.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_10">
+<text>Неслабо, но в принципе цена реальная - согласен.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_11">
+<text>За пистолет, пусть даже автоматический, сорок кусков? Нет, договора не будет.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_12">
+<text>Жаль, но нет у меня денег на задаток.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_13">
+<text>Ну все - тогда договорились - будет тебе АЕК. Еще что-нибудь?</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_14">
+<text>Как хочешь. Еще что-нибудь?</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_15">
+<text>Ну извини - ты человек новый, без задатка договора не будет. Может еще что продашь, чтоб на задаток насобирать? Или еще что-нибудь хочешь?</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_16">
+<text>Тогда жди меня и я вернусь. Шутка - как достану - жди визита. Еще что-нибудь?</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_17">
+<text>Заставлять не буду. Еще что-нибудь?</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_18">
+<text>Ну тогда дела не будет. Если есть желание - можешь мне еще чего-нибудь продать. Глядишь - и на задаток наберешь. Или еще что-нибудь надо?</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_19">
+<text>Нет, ничего не надо.</text>
+</string>
+<string id="mobil_torgash_zakaz_agro_20">
+<text>Хорошо, давай попробуем поторговать.</text>
+</string>
+
+
+<string id="mobil_torgash_sobrali_dengi_agro_0">
+<text>Ну вроде наторговал немного.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_1">
+<text>Тогда предъяви деньгу. Расценки ты помнишь: АЕК - десять штук, Пернач - пять.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_2">
+<text>Тогда  предъяви деньгу. Расценки ты помнишь: за АЕК - десять штук.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_3">
+<text>Тогда предъяви деньгу. Расценки ты помнишь: за Пернач - пять кусков.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_4">
+<text>Помню - держи денежку за АЕК.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_5">
+<text>Да пока не забыл - пересчитай за Пернач.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_6">
+<text>Все равно блин, не хватает.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_7">
+<text>Все равно блин, не хватает.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_8">
+<text>Ты мою политику уже знаешь - в долг не дам. Посмотри - может есть что еще продать?</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_9">
+<text>Хорошо, давай еще посмотрим.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_10">
+<text>Нет, хватит - все равно столько не будет.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_11">
+<text>Держу. Ну все - заказ принят. Еще что?</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_12">
+<text>Пересчитал. Еще что?</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_13">
+<text>Нет, ничего.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_14">
+<text>Ну типа еще Пернач хочу.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_agro_15">
+<text>Ага - АЕК давай закажем.</text>
+</string>
+
+
+<string id="atp_mobil_otdal_tovar_0">
+<text>Ну что, поговорим про заказ?</text>
+</string>
+<string id="atp_mobil_otdal_tovar_1">
+<text>Всё в лучшем виде. Выполнил я твой заказ, правда повозиться пришлось. Забирать, надеюсь, будешь?</text>
+</string>
+<string id="atp_mobil_otdal_tovar_2">
+<text>Конечно буду.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_3">
+<text>Не буду я ствол забирать - передумал я. Нашел уже оружие получше.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_4">
+<text>Тогда готовь денежки.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_5">
+<text>Ну как хочешь. Задаток я с тебя получил, возвращать его не собираюсь - даже и не пытайся возражать - я свое время на тебя тратил. А оружие я все равно кому-нибудь продам - товар редкий и качественный. Кстати, дел с тобой по поводу заказов я больше не имею - на хрена мне такие непостоянные клиенты?</text>
+</string>
+<string id="atp_mobil_otdal_tovar_6">
+<text>Ну и ладно - все что мне надо я и так в Зоне сам достану.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_7">
+<text>Давай мне мой АЕК. Надеюсь он в хорошем состоянии? А то мне убитый ствол не нужен, тем более за такие деньги, хе-хе.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_8">
+<text>Жду свой "Пернач". Новый хоть?</text>
+</string>
+<string id="atp_mobil_otdal_tovar_9">
+<text>Не переживай - автомат прямо с заводского склада, еще в смазке. Цена как договаривались - 60 тысяч.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_10">
+<text>Новый-новый. Обойдется тебе это в 35 тысяч - я условия не меняю.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_11">
+<text>Блин денег не хватает. Что можно придумать?</text>
+</string>
+<string id="atp_mobil_otdal_tovar_111">
+<text>Блин денег не хватает. Что можно придумать?</text>
+</string>
+<string id="atp_mobil_otdal_tovar_12">
+<text>Давай поторгуем. Сейчас у меня крупный заказ на арты - поэтому скупаю их по приличным ценам, особенно модификаты и абсолюты. Так что думай.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_13">
+<text>Ладно, давай попробуем торговлей заняться, авось получиться тебя надуть, хе-хе.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_14">
+<text>Держи денежку за АЕК.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_15">
+<text>Держи денежку за "Пернач".</text>
+</string>
+<string id="atp_mobil_otdal_tovar_16">
+<text>Нет, передумал я - не хочу забирать ствол.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_17">
+<text>Ну тогда - разговор окончен - больше с тобой дел по заказам я не имею.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_18">
+<text>Ладно, переживу я это как-нибудь.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_19">
+<text>Держи свой автомат. Еще что?</text>
+</string>
+<string id="atp_mobil_otdal_tovar_20">
+<text>Держи своего пернатого. Еще что?</text>
+</string>
+<string id="atp_mobil_otdal_tovar_21">
+<text>Да нет, ничего. Спасибо!</text>
+</string>
+<string id="atp_mobil_otdal_tovar_22">
+<text>А ты ничего не забыл, добрый молодец? Ты ж еще кое-что заказывал.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_23">
+<text>А, блин, точно!</text>
+</string>
+<string id="atp_mobil_otdal_tovar_24">
+<text>У тебя с памятью плохо или ты думал меня кинуть? Торговцев практически невозможно надуть.</text>
+</string>
+<string id="atp_mobil_otdal_tovar_25">
+<text>Не за что! Бывай!</text>
+</string>
+<string id="atp_mobil_otdal_tovar_26">
+<text>И тебе не хворать!</text>
+</string>
+
+
+
+
+
+<string id="mobil_torgash_sobrali_dengi_atp_aek_0">
+<text>Ну на АЕК вроде насобирал.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_atp_aek_1">
+<text>Тогда предъяви деньгу. Расценки ты помнишь - шестьдесят штук.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_atp_aek_2">
+<text>Помню - держи денежку.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_atp_aek_3">
+<text>Держу. Лови свой автомат. С тобой приятно иметь дело.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_atp_aek_4">
+<text>Спасибо!</text>
+</string>
+
+
+
+<string id="mobil_torgash_sobrali_dengi_atp_pernac_0">
+<text>Вот на Пернач наскрёб.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_atp_pernac_1">
+<text>Тогда давай меняться - ты мне денежку, я тебе пистоль. Расценки ты помнишь - тридцать пять штук.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_atp_pernac_2">
+<text>Помню, вот возьми кровно заработанные.</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_atp_pernac_3">
+<text>Добро, держи Пернатого. Удачи тебе в Зоне!</text>
+</string>
+<string id="mobil_torgash_sobrali_dengi_atp_pernac_4">
+<text>И тебе не хворать!</text>
+</string>
+
+
+
+
+
+
+<string id="mobil_torgash_zakaz_atp_0">
+<text>А сейчас тебе заказ можно сделать?</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_1">
+<text>Почему ж нельзя? Мы уже второй раз пересекаемся, значит ты что-то стоишь в Зоне, раз жив до сих пор. Говори.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_2">
+<text>Конечно можно - я убедился, что с тобой можно дело иметь - слово ты держишь. Слушаю тебя.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_33">
+<text>Какой нафиг заказ -ты только что меня кинул один раз, и теперь еще что-то хочешь? Ну уж нет - теперь для тебя заказы закрыты. Даже торговать с тобой особого желания нет, но придется - не хочу чтоб про меня молва пошла по Зоне типа хочет - торгует, не хочет - не торгует. Не хочется терять заслуженную репутацию из-за всяких непостоянных сталкеров.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_34">
+<text>Ладно успокойся - в жизни всякое бывает. Нервы побереги.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_3">
+<text>Слышал я что есть в Зоне Винторез уникальный - вроде как снайперский. Говорят на нем специальный прицел установлен с определителем и подсветкой целей. Судя по обрывкам разговоров он то ли у Лукаша, то ли Лукаш просто что-то про него знает. Точно установить не удалось - сам понимаешь что-то в одном месте услышал, что-то в другом.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_4">
+<text>И что ты от меня хочешь? Чтоб я достал его тебе?</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_5">
+<text>Ну как бы да.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_6">
+<text>Хм, как бы да. Веселую ты мне задачку ставишь: поди туда - не знаю куда, принеси то - не знаю что, хе-хе. Мне что в розыск на Винторез этот подавать и объявления клеить на всех столбах? Может еще листовки с вертолета сбрасывать? Ладно, пошумел - и хватит. Давай покумекаем. Лукаш, говоришь, может знать? Ну в принципе я со Свободовцами в нормальных отношениях, можно попробовать. Естественно, не задаром. Сразу учти - цена будет очень кусаться. Думаю не меньше 150 тысяч. И плюс 15 тысяч я сейчас как задаток возьму.</text>
+</string> 
+<string id="mobil_torgash_zakaz_atp_9">
+<text>Ладно, не кипятись - держи задаток.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_10">
+<text>Сто пятьдесят штук за ствол и еще пятнашку сейчас? Ты наверное в своем вертолете перегрелся. В наших вертухах ведь кондиционера нет - вот и результат. Слишком дорого.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_11">
+<text>С задатком проблема - нет сейчас у меня столько. А без задатка можно? В кредит? Под честное пионерское, хе-хе.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_12">
+<text>Ну все - тогда по рукам - если этот Винторез есть, я попробую его тебе достать.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_13">
+<text>Как хочешь. Упрашивать не буду. Еще что-нибудь?</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_14">
+<text>Ой-ой-ой, честное пионерское. Тебя что с такой бандитской рожей в пионеры приняли? Мда погорячились они. Пионер, млин. Нет, без задатка сделки не будет. Ищь чего - в кредит он захотел. Если реально хочешь этот ствол - продай мне еще чего-нибудь. Копеечка к копеечке - и на задаток наберешь. Арты я сейчас дорого беру.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_15">
+<text>Буду ждать от тебя результатов.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_16">
+<text>Нет ничего больше не надо.</text>
+</string>
+<string id="mobil_torgash_zakaz_atp_17">
+<text>Хорошо, давай попробуем поторговать.</text>
+</string>
+
+
+<string id="shurup_pro_vint_as_0">
+<text>Ну здоров, Шуруп. Чего там за дела с Винторезом? Седой на тебя стрелки перевел.</text>
+</string>
+<string id="shurup_pro_vint_as_1">
+<text>Да, есть такое дело - у меня этот Винт. Не спрашивай как он мне достался - все равно не скажу. Короче, насколько я понял, ты хочешь его для себя приобрести?</text>
+</string>
+<string id="shurup_pro_vint_as_2">
+<text>Угу, хочу. Для этого и просил Седого. Но все что он смог сделать - это на тебя вывести.</text>
+</string>
+<string id="shurup_pro_vint_as_3">
+<text>Он все равно больше ничего не смог бы сделать - я не очень люблю с торгашами общаться. Обдирают они нас, честных сталкеров - знаешь сколько у них водка стоит?</text>
+</string>
+<string id="shurup_pro_vint_as_4">
+<text>Если честно - не очень знаю. Не любитель я этого дела. Короче, Склифасовский, что решать по Винторезу будем - продашь его мне? Или тебе его на водку поменять?</text>
+</string>
+<string id="shurup_pro_vint_as_5">
+<text>Хрен тебе, а не на водку. А продать - это можно. Но учти - задешево не продам. Седой хотел у меня его за 100 штук купить - а я не согласился - маловато будет. Значит тебе его отдам за 150 тысяч - знаю что торговцы навар меньше 50% не признают - раз у меня хотел купить за 100 - значит тебе собирался продать за 150, не меньше.</text>
+</string>
+<string id="shurup_pro_vint_as_6">
+<text>Ну да - он и говорил 150. Говоришь, хотел купить за сто штук, а мне продать за 150? Вот жук - он же еще и предоплату взял...</text>
+</string>
+<string id="shurup_pro_vint_as_7">
+<text>Вот видишь - обдирают нас торгаши проклятые. А предоплата - это твои проблемы - я ее вычитывать из своей цены не собираюсь. Можем решить по другому - выполнишь для меня задание - скину с цены 50 штук. Или можешь купить за полную стоимость.</text>
+</string>
+<string id="shurup_pro_vint_as_8">
+<text>Некогда мне задание выполнять - держи деньги.</text>
+</string>
+<string id="shurup_pro_vint_as_9">
+<text>Хорошо - вот тебе Винторез.</text>
+</string>
+<string id="shurup_pro_vint_as_10">
+<text>Спасибо!</text>
+</string>
+<string id="shurup_pro_vint_as_11">
+<text>Говори, что за задание.</text>
+</string>
+<string id="shurup_pro_vint_as_12">
+<text>Короче, дело обстоит так - все что я сейчас тебе скажу, должно остаться между нами. Ты парень вроде надежный и по своему честный - по крайней мере никто в Зоне про тебя плохого не говорит. \nЕсть у меня канал один - мне по нему из-за пределов Зоны иногда посылки передают. Как раз недавно положили мне в схрон посылочку, но не могу я сейчас за ней идти - дел на базе по горло. Сгоняешь?</text>
+</string>
+<string id="shurup_pro_vint_as_13">
+<text>А куда гнать-то?</text>
+</string>
+<string id="shurup_pro_vint_as_14">
+<text>На Свалке на территории ангара люк есть - это один из схронов. Посылка там лежит.</text>
+</string>
+<string id="shurup_pro_vint_as_15">
+<text>Свалка? Далековато конечно, но в принципе давай сгоняю - 50 штук экономии стоят потраченого времени.</text>
+</string>
+<string id="shurup_pro_vint_as_16">
+<text>Хорошо, но только так - ни одной записи про это не должно остаться - поэтому в ПДА ничего не пиши и не отмечай, добро? Если передумаешь посылку тащить - все равно приходи - за полную стоимость ствол возьмешь.</text>
+</string>
+<string id="shurup_pro_vint_as_17">
+<text>Ладно, конспиратор, не буду отмечать. Скоро буду.</text>
+</string>
+<string id="shurup_pro_vint_as_151">
+<text>Нет, не хочу так далеко бегать - давай лучше за полную стоимость возьму.</text>
+</string>
+<string id="shurup_pro_vint_as_152">
+<text>Нет, не хочу так далеко бегать - но блин денег не хватает. Подождешь немного?</text>
+</string>
+<string id="shurup_pro_vint_as_18">
+<text>Блин, денег не хватает. Подождешь пока я соберу нужную сумму?</text>
+</string>
+<string id="shurup_pro_vint_as_19">
+<text>Подожду, только не затягивай, а то я передумаю...</text>
+</string>
+<string id="shurup_pro_vint_as_20">
+<text>Постараюсь побыстрее.</text>
+</string>
+<string id="shurup_pro_vint_as_21">
+<text>Та не - ну его нафиг за такие деньги. У меня уже есть неплохое оружие - зачем мне такой дорогой ствол?</text>
+</string>
+<string id="shurup_pro_vint_as_22">
+<text>Как хочешь - второй раз предлагать не буду.</text>
+</string>
+<string id="shurup_pro_vint_as_23">
+<text>Ну и ладно.</text>
+</string>
+
+
+<string id="shurup_vipol_kvest_0">
+<text>Нашел я твою посылочку.</text>
+</string>
+<string id="shurup_vipol_kvest_1">
+<text>Премного благодарен. Надеюсь про факт нашей сделки никто не узнал?</text>
+</string>
+<string id="shurup_vipol_kvest_2">
+<text>Я за свои слова отвечаю - обещал - значит никто про это не узнал. Держи свою посылочку и деньги.</text>
+</string>
+<string id="shurup_vipol_kvest_3">
+<text>Спасибо. Вот тебе Винторез.</text>
+</string>
+<string id="shurup_vipol_kvest_4">
+<text>И тебе спасибо.</text>
+</string>
+<string id="shurup_vipol_kvest_5">
+<text>Я за свои слова отвечаю - обещал - значит никто про это не узнал. Посылка твоя у меня, но вот денег не хватает. Давай так -  держи посылку, а с деньгами я чуть позже подойду.</text>
+</string>
+<string id="shurup_vipol_kvest_6">
+<text>Только долго не гуляй.</text>
+</string>
+<string id="shurup_vipol_kvest_7">
+<text>Постраюсь.</text>
+</string>
+
+
+<string id="shurup_zabiraem_vint_0">
+<text>И снова здравствуйте.</text>
+</string>
+<string id="shurup_zabiraem_vint_1">
+<text>Насобирал денег?</text>
+</string>
+<string id="shurup_zabiraem_vint_2">
+<text>Ага, есть такое дело.</text>
+</string>
+<string id="shurup_zabiraem_vint_3">
+<text>Тогда держи свой Винт.</text>
+</string>
+<string id="shurup_zabiraem_vint_4">
+<text>Ага, есть такое дело.</text>
+</string>
+<string id="shurup_zabiraem_vint_5">
+<text>Тогда держи свой Винт.</text>
+</string>
+<string id="shurup_zabiraem_vint_6">
+<text>Нет еще.</text>
+</string>
+<string id="shurup_zabiraem_vint_7">
+<text>Нет еще.</text>
+</string>
+<string id="shurup_zabiraem_vint_8">
+<text>Спасибо!</text>
+</string>
+
+
+<string id="test_vert_0">
+<text>Вызывай верт.</text>
+</string>
+<string id="test_vert_1">
+<text>Готово.</text>
+</string>
+<string id="test_vert_2">
+<text>Ждем.</text>
+</string>
+
+
+
+
+<string id="kit_antena_three_0">
+<text>Ну держи свои кондёры-транзюки. Пришлось побегать пока их нашел. За периметром в любом радиомагазине за копейки купить можно, а тут шарься по развалинам с риском для жо... Хотел сказать для жизни. Надо было их Седому заказать, хе-хе.</text>
+</string>
+<string id="kit_antena_three_1">
+<text>Ну вот и отлично. Тогда я буду заканчивать, а ты пока иди к Бороде - он хотел тебя видеть.</text>
+</string>
+<string id="kit_antena_three_2">
+<text>Ну давай, радиотехник. Не накосячь - второй комплект сам искать пойдешь.</text>
+</string>
+
+
+<string id="boroda_say_three_0">
+<text>Ну вот я и вернулся.</text>
+</string>
+<string id="boroda_say_three_1">
+<text>Как сходил? Успешно?</text>
+</string>
+<string id="boroda_say_three_2">
+<text>Ну более-менее, запчасти уже отдал этому умельцу пусть работает. Как закончит - будет у вас нормальная связь, почти Билайн, хе-хе.</text>
+</string>
+<string id="boroda_say_three_3">
+<text>Ладно остряк-самоучка, что выяснил полезного?</text>
+</string>
+<string id="boroda_say_three_4">
+<text>Бандиты на баржах в принципа адекватные пацаны. Старшего зовут Дед, думаю с ним можно дело иметь в случае чего. Кроме того наткнулся я и на бандитов-отморозков. С ними тоже пообщался, правда через прорезь прицела.</text>
+</string>
+<string id="boroda_say_three_5">
+<text>Надеюсь для них общение закончилось печально? А по бандитам на баржах - может и придется нам если не объединятся, то по крайней мере союз заключать. Все таки поодиночке с серьезным врагом не справиться. А Последний день - еще тот крепкий орешек. На них Брюсов Виллисов надо хотя бы штук десять.</text>
+</string>
+<string id="boroda_say_three_6">
+<text>Десять мало - хотя бы пятнаднать, хе-хе. Ладно, мне пока к Сахарову надо сгонять, есть к нему дельце довольно важное. Но я скоро вернусь, мы ведь еще не поговорили насчет летающего острова. Сейчас некогда - дело не ждет. Но не сбрасывайте меня со счетов. Если что - помогу чем смогу.</text>
+</string>
+<string id="boroda_say_three_7">
+<text>Спасибо, нам надежные ребята не помешают. Удачи!</text>
+</string>
+<string id="boroda_say_three_8">
+<text>Давай, держитесь тут.</text>
+</string>
+
+
+
+<string id="elza_vesti_ot_sahar_0">
+<text>Ну что ж, Эльза, я передал весточку Вашему мужу.</text>
+</string>
+<string id="elza_vesti_ot_sahar_1">
+<text>Спасибо.</text>
+</string>
+<string id="elza_vesti_ot_sahar_2">
+<text>Теперь давайте поговорим по инетресующему меня вопросу - про летающий остров.</text>
+</string>
+
+
+</string_table>

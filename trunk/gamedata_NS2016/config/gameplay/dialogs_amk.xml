@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+
+<!-- AMK Dialogs-->
+<game_dialogs>
+	<!--Диалог с Кулинаром-->
+	<dialog id="artem_kulinar">
+		<dont_has_info>kulinar_info_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>artem_kulinar_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>artem_kulinar_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>artem_kulinar_2</text>
+                <next>3</next>
+            </phrase>
+			<phrase id="3">
+				<text>artem_kulinar_3</text>
+                <next>4</next>
+            </phrase>
+			<phrase id="4">
+				<text>artem_kulinar_4</text>
+                <next>5</next>
+            </phrase>
+			<phrase id="5">
+				<text>artem_kulinar_5</text>
+                <next>6</next>
+            </phrase>
+			<phrase id="6">
+				<text>artem_kulinar_6</text>
+                <next>7</next>
+            </phrase>
+			<phrase id="7">
+				<text>artem_kulinar_7</text>
+				<next>8</next>
+            </phrase>
+			<phrase id="8">
+				<text>artem_kulinar_8</text>
+				<next>9</next>
+            </phrase>
+			<phrase id="9">
+				<text>artem_kulinar_9</text>
+				<next>10</next>
+            </phrase>
+			<phrase id="10">
+				<text>artem_kulinar_10</text>
+				<next>11</next>
+            </phrase>
+			<phrase id="11">
+				<text>artem_kulinar_11</text>
+				<give_info>kulinar_info_done</give_info>
+            </phrase>
+		</phrase_list>
+	</dialog>
+	
+	<!--Диалог с Вороном-->
+	<dialog id="vitek_voron">
+		<dont_has_info>voron_info_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>vitek_voron_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>vitek_voron_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>vitek_voron_2</text>
+                <next>3</next>
+            </phrase>
+			<phrase id="3">
+				<text>vitek_voron_3</text>
+                <next>4</next>
+            </phrase>
+			<phrase id="4">
+				<text>vitek_voron_4</text>
+                <next>5</next>
+            </phrase>
+			<phrase id="5">
+				<text>vitek_voron_5</text>
+                <next>6</next>
+            </phrase>
+			<phrase id="6">
+				<text>vitek_voron_6</text>
+                <next>7</next>
+            </phrase>
+			<phrase id="7">
+				<text>vitek_voron_7</text>
+				<give_info>voron_info_done</give_info>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<!--Диалоги с Матвеем Кулинаром-->
+	<dialog id="matvei_kulinar">
+		<dont_has_info>matvei_info_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_kulinar_0</text>
+            <give_info>opr_help_stalker_done</give_info>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_kulinar_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_kulinar_2</text>
+                <next>3</next>
+            </phrase>
+			<phrase id="3">
+				<text>matvei_kulinar_3</text>
+                <next>4</next>
+            </phrase>
+			<phrase id="4">
+				<text>matvei_kulinar_4</text>
+                <next>5</next>
+            </phrase>
+			<phrase id="5">
+				<text>matvei_kulinar_5</text>
+                <next>6</next>
+            </phrase>
+			<phrase id="6">
+				<text>matvei_kulinar_6</text>
+                <next>7</next>
+            </phrase>
+			<phrase id="7">
+				<text>matvei_kulinar_7</text>
+				<next>8</next>
+            </phrase>
+			<phrase id="8">
+				<text>matvei_kulinar_8</text>
+				<next>9</next>
+            </phrase>
+			<phrase id="9">
+				<text>matvei_kulinar_9</text>
+	                  <next>10</next>
+            </phrase>
+			<phrase id="10">
+				<text>matvei_kulinar_10</text>	
+                        <give_info>matvei_info_done</give_info>
+				<action>new_spawn.matvei_tainik</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_dialog2">
+		<dont_has_info>matvei_info_done2</dont_has_info>
+            <precondition>spawn_zombi.have_pushka_matvei</precondition>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_dialog2_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_dialog2_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_dialog2_2</text>
+                <next>3</next>
+            </phrase>
+			<phrase id="3">
+				<text>matvei_dialog2_3</text>
+                <next>4</next>
+            </phrase>
+			<phrase id="4">
+				<text>matvei_dialog2_4</text>	
+                        <give_info>matvei_info_done2</give_info>
+            <action>spawn_zombi.pushka_matvei_out</action>
+            <action>spawn_zombi.pda_matvei_out</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_dialog3">
+            <has_info>open_opr_stalker</has_info>
+		<dont_has_info>matvei_info_done3</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_dialog3_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_dialog3_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_dialog3_2</text>
+                        <give_info>matvei_info_done3</give_info>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz">
+            <has_info>matvei_info_done3</has_info>
+		<dont_has_info>matvei_zakaz_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz_2</text>
+                        <give_info>matvei_zakaz_start</give_info>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz_est">
+            <has_info>matvei_zakaz_start</has_info>
+		<dont_has_info>matvei_zakaz_finish</dont_has_info>
+            <precondition>spawn_zombi.matvei_zakaz</precondition>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz_est_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz_est_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz_est_2</text>
+                        <give_info>matvei_zakaz_finish</give_info>
+                        <action>spawn_zombi.matvei_zakaz_out</action>
+                        <action>spawn_zombi.matvei_money</action>
+    				<action>new_spawn.matvei_infa_spawn</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz2">
+            <has_info>matvei_zakaz_finish</has_info>
+		<dont_has_info>matvei_zakaz2_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz2_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz2_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz2_2</text>
+                        <give_info>matvei_zakaz2_start</give_info>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz2_est">
+            <has_info>matvei_zakaz2_start</has_info>
+		<dont_has_info>matvei_zakaz2_finish</dont_has_info>
+            <precondition>spawn_zombi.matvei_zakaz2</precondition>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz2_est_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz2_est_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz2_est_2</text>
+                        <give_info>matvei_zakaz2_finish</give_info>
+                        <action>spawn_zombi.matvei_zakaz2_out</action>
+                        <action>spawn_zombi.matvei_money2</action>
+    				<action>new_spawn.matvei_infa_spawn2</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz3">
+            <has_info>matvei_zakaz2_finish</has_info>
+		<dont_has_info>matvei_zakaz3_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz3_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz3_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz3_2</text>
+                        <give_info>matvei_zakaz3_start</give_info>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz3_est">
+            <has_info>matvei_zakaz3_start</has_info>
+		<dont_has_info>matvei_zakaz3_finish</dont_has_info>
+            <precondition>spawn_zombi.matvei_zakaz3</precondition>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz3_est_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz3_est_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz3_est_2</text>
+                        <give_info>matvei_zakaz3_finish</give_info>
+                        <action>spawn_zombi.matvei_zakaz3_out</action>
+                        <action>spawn_zombi.matvei_money3</action>
+    				<action>new_spawn.matvei_infa_spawn3</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz4">
+            <has_info>matvei_zakaz3_finish</has_info>
+		<dont_has_info>matvei_zakaz4_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz4_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz4_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz4_2</text>
+                        <give_info>matvei_zakaz4_start</give_info>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz4_est">
+            <has_info>matvei_zakaz4_start</has_info>
+		<dont_has_info>matvei_zakaz4_finish</dont_has_info>
+            <precondition>spawn_zombi.matvei_zakaz4</precondition>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz4_est_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz4_est_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz4_est_2</text>
+                        <give_info>matvei_zakaz4_finish</give_info>
+                        <action>spawn_zombi.matvei_zakaz4_out</action>
+                        <action>spawn_zombi.matvei_money4</action>
+    				<action>new_spawn.matvei_infa_spawn4</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz5">
+            <has_info>matvei_zakaz4_finish</has_info>
+		<dont_has_info>matvei_zakaz5_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz5_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz5_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz5_2</text>
+                        <give_info>matvei_zakaz5_start</give_info>
+    				<action>new_spawn.black_cristall_spawn2</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz5_est">
+            <has_info>matvei_zakaz5_start</has_info>
+		<dont_has_info>matvei_zakaz5_finish</dont_has_info>
+            <precondition>spawn_zombi.matvei_zakaz5</precondition>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz5_est_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz5_est_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz5_est_2</text>
+                        <give_info>matvei_zakaz5_finish</give_info>
+                        <action>spawn_zombi.matvei_zakaz5_out</action>
+                        <action>spawn_zombi.matvei_money5</action>
+    				<action>new_spawn.matvei_infa_spawn5</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz6">
+            <has_info>matvei_zakaz5_finish</has_info>
+		<dont_has_info>matvei_zakaz6_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz6_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz6_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz6_2</text>
+                        <give_info>matvei_zakaz6_start</give_info>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz6_est">
+            <has_info>matvei_zakaz6_start</has_info>
+		<dont_has_info>matvei_zakaz6_finish</dont_has_info>
+            <precondition>spawn_zombi.matvei_zakaz6</precondition>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz6_est_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz6_est_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz6_est_2</text>
+                        <give_info>matvei_zakaz6_finish</give_info>
+                        <action>spawn_zombi.matvei_zakaz6_out</action>
+                        <action>spawn_zombi.matvei_money6</action>
+				<action>new_spawn.matvei_infa_spawn6</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz7">
+            <has_info>matvei_zakaz6_finish</has_info>
+		<dont_has_info>matvei_zakaz7_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz7_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz7_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz7_2</text>
+                        <give_info>matvei_zakaz7_start</give_info>
+   				<action>new_spawn.black_cristall_spawn3</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="matvei_zakaz7_est">
+            <has_info>matvei_zakaz7_start</has_info>
+		<dont_has_info>matvei_zakaz7_finish</dont_has_info>
+            <precondition>spawn_zombi.matvei_zakaz7</precondition>
+		<phrase_list>
+			<phrase id="0">
+                <text>matvei_zakaz7_est_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>matvei_zakaz7_est_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>matvei_zakaz7_est_2</text>
+                        <give_info>matvei_zakaz7_finish</give_info>
+                        <action>spawn_zombi.matvei_zakaz7_out</action>
+                        <action>spawn_zombi.matvei_money7</action>
+						<action>arhara1_dialog1.spawn_puteprovod_imi</action>
+    				<action>new_spawn.matvei_infa_spawn7</action>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+<dialog id="rasskaz_matvei">
+		<dont_has_info>rasskaz_matvei_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                        <text>rasskaz_matvei_0</text>
+                 <next>1</next>
+            </phrase>
+			<phrase id="1">
+				<text>rasskaz_matvei_1</text>
+                <next>2</next>
+            </phrase>
+			<phrase id="2">
+				<text>rasskaz_matvei_2</text>
+                <next>3</next>
+            </phrase>
+			<phrase id="3">
+				<text>rasskaz_matvei_3</text>
+                <next>4</next>
+            </phrase>
+			<phrase id="4">
+				<text>rasskaz_matvei_4</text>
+			      <give_info>rasskaz_matvei_done</give_info>
+            </phrase>
+		</phrase_list>
+	</dialog>
+
+
+
+
+
+
+</game_dialogs>

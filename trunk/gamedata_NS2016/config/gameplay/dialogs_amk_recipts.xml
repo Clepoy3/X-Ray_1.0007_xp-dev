@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+    <dialog id="amk_recipts_ratcatcher">
+    <phrase_list>
+            <phrase id="0">
+                <text>amk_rkd0</text>
+                <next>1</next>
+                <action>amk_dialogs.act_rnd_init</action>
+            </phrase>
+
+            <phrase id="1">
+                <text>amk_rkd1</text>
+                <next>2</next>
+                <next>4</next>
+            </phrase>
+                 
+            <phrase id="2">
+              <precondition>amk_dialogs.pre_rnd_30_100</precondition>
+              <text>amk_rkd2</text>
+              <next>3</next>
+            </phrase>
+
+            <phrase id="3">
+            <text>amk_rkd3</text>
+                <next>5</next>
+            </phrase>
+
+            <phrase id="4">
+                <precondition>amk_dialogs.pre_rnd_0_30</precondition>
+                <text>amk_rkd4</text>
+                <action>amk_dialogs.frenzy_humanoid</action>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+
+            <phrase id="5">
+                <text>amk_rkd5</text>
+                <next>6</next>
+            </phrase>
+
+             <phrase id="6">
+                <text>amk_rkd6</text>
+                <next>7</next>
+            </phrase>
+
+            <phrase id="7">
+                <text>alenka_info</text>
+                <give_info>info_amk_recipt_burer_grandmother_glassbeards</give_info>
+                <give_info>info_amk_ratcatcher_story</give_info>
+                <action>amk_dialogs.make_kill_task_failed</action>
+                <next>8</next>
+            </phrase>
+
+            <phrase id="8">
+                <text>amk_rkd8</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+
+        </phrase_list>
+    </dialog>
+
+</game_dialogs>

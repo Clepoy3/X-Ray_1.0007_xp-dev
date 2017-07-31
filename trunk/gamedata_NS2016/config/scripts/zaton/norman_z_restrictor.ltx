@@ -1,0 +1,34 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_npc_in_zone = 19049 |norman_z_restrictor| sr_idle@time
+
+[sr_idle@time]
+on_timer = 1000 | sr_idle@time1 %=arhara_dialog.zaton_pervoe_sms4%
+
+[sr_idle@time1]
+on_timer = 11000 | sr_idle@time2 %+norman_punch_off%
+
+[sr_idle@time2]
+on_timer = 2000 | sr_idle@time3 %=arhara_dialog.zvuk_norman1%
+
+[sr_idle@time3]
+on_timer = 2500 | sr_idle@time4 %=arhara_dialog.zvuk_norman =arhara_dialog.norman_psi_effec%
+
+[sr_idle@time4]
+on_timer = 3500 | sr_idle@time5 %+spawn_vstreca_zaton =arhara_dialog.zvuk_norman1%
+
+[sr_idle@time5]
+on_timer = 2000 | sr_idle@time6 %=arhara_dialog.zvuk_norman =arhara_dialog.kill_wstrecha =arhara_dialog.kill_wstrecha1%
+
+[sr_idle@time6]
+on_timer = 7000 | sr_idle@time7 %+norman_psi_off%
+
+[sr_idle@time7]
+on_timer = 5000 | sr_idle@time8 %=arhara_dialog.zaton_pervoe_sms5%
+
+[sr_idle@time8]
+on_timer = 15000 | sr_idle@nil %+norman_walk2%
+
+[sr_idle@nil]

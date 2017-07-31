@@ -1,0 +1,1437 @@
+;-- Кот на болотах
+[logic@kotsit_of]
+active = kamp@kotsit_of
+
+[kamp@kotsit_of]
+center_point = kotsit_centr 
+
+[logic@kotsit_centr]
+active = kamp@kotsit_centr
+combat_ignore = combat_ignore
+on_hit = hit@kotsit_centr
+
+[hit@kotsit_centr]
+on_info = %+kot_hit%
+
+[meet@kotsit_centr]
+meet_state		= 10|guard@wait
+meet_state_wpn	= 10|backoff@threat_weap
+victim		= 10|actor
+victim_wpn		= 10|actor
+use			= true
+use_wpn		= false
+syndata		= backoff@threat_weap
+
+[danger_ignore@kotsit_centr]
+ignore_distance = 10
+
+[kamp@kotsit_centr]
+center_point = kotsit_centr 
+combat_ignore_cond = always
+danger = danger_ignore@kotsit_centr
+meet = meet@kotsit_centr
+on_info = {+kot_hit} kamp@kotsit_centr_hit
+on_actor_dist_le_nvis = 5 | remark@kotsit_centr
+
+[remark@kotsit_centr]
+anim = guard
+target = actor
+meet = meet@kotsit_centr
+danger = danger_ignore@kotsit_centr
+on_timer = 60000 | kamp@kotsit_centr
+
+[kamp@kotsit_centr_hit]
+center_point = kotsit_centr 
+danger = danger_ignore@kotsit_centr
+meet = meet@kotsit_centr
+on_timer = 120000 | kamp@kotsit_centr
+
+[logic@kotsit]
+active = walker@kotsit
+
+[walker@kotsit]
+path_walk = kotsit_walk
+path_look = kotsit_look
+danger = danger_ignore@kotsit_centr
+meet = no_meet
+on_info = {+kot_need_doc_have} camper@kotsit
+
+[camper@kotsit]
+path_walk = kotsit_walk
+path_look = kotsit_look
+danger = danger_ignore@kotsit_centr
+meet = meet@kotsit_centr
+
+;-- Кот на базе чистого неба
+[logic@kotrestr]
+active = walker@kotrestr
+
+[walker@kotrestr]
+path_walk = kotrestr_walk
+path_look = kotrestr_look
+
+[logic@kotrestrbar]
+active = camper@kotrestrbar
+
+[camper@kotrestrbar]
+path_walk = kotrestrbar_walk
+path_look = kotrestrbar_look
+danger = danger_ignore@kotrestrbar
+meet = meet@kotrestrbar
+
+[meet@kotrestrbar]
+meet_state		= 15|guard@wait
+meet_state_wpn	= 15|backoff@threat_weap
+victim		= 15|actor
+victim_wpn		= 15|actor
+use			= true
+use_wpn		= false
+syndata		= backoff@threat_weap
+
+[danger_ignore@kotrestrbar]
+ignore_distance = 10
+
+;-- Дэн и охотники оффлайн
+[logic@dan_do]
+active = walker@dan_do
+
+[walker@dan_do]
+path_walk = dan_do_walk
+path_look = dan_do_look
+
+[logic@oxot1_do]
+active = walker@oxot1_do
+
+[walker@oxot1_do]
+path_walk = oxot1_do_walk
+path_look = oxot1_do_look
+
+[logic@oxot2_do]
+active = kamp@oxot2_do
+
+[kamp@oxot2_do]
+center_point = oxot_do_centr 
+
+[logic@oxot3_do]
+active = kamp@oxot3_do
+
+[kamp@oxot3_do]
+center_point = oxot_do_centr
+
+[logic@oxot4_do]
+active = kamp@oxot4_do
+
+[kamp@oxot4_do]
+center_point = oxot_do_centr
+
+[logic@oxot5_do]
+active = kamp@oxot5_do
+
+[kamp@oxot5_do]
+center_point = oxot_do_centr
+
+;-- Дэн и охотники онлайн
+[logic@dan]
+active = camper@dan
+
+[camper@dan]
+path_walk = dan_walk
+path_look = dan_look
+danger = danger_ignore@dan
+meet = meet@dan
+on_actor_dist_le_nvis = 5 | remark@dan
+
+[remark@dan]
+anim = guard
+target = actor
+meet = meet@dan
+danger = danger_ignore@dan
+on_timer = 60000 | camper@dan
+
+[meet@dan]
+meet_state		= 5|guard@wait
+meet_state_wpn	= 5|backoff@threat_weap
+victim		= 5|actor
+victim_wpn		= 5|actor
+use			= true
+use_wpn		= false
+syndata		= backoff@threat_weap
+
+[danger_ignore@dan]
+ignore_distance = 10
+
+[logic@oxot1]
+active = walker@oxot1
+
+[walker@oxot1]
+path_walk = oxot1_walk
+path_look = oxot1_look
+danger = danger_ignore@dan
+
+[logic@oxot2]
+active = walker@oxot2
+
+[walker@oxot2]
+path_walk = oxot2_walk
+path_look = oxot2_look
+danger = danger_ignore@dan
+
+[logic@oxot3]
+active = walker@oxot3
+
+[walker@oxot3]
+path_walk = oxot3_walk
+path_look = oxot3_look
+danger = danger_ignore@dan
+
+[logic@oxot4]
+active = kamp@oxot4
+
+[kamp@oxot4]
+center_point = oxot_koster
+danger = danger_ignore@dan
+
+[logic@oxot5]
+active = kamp@oxot5
+
+[kamp@oxot5]
+center_point = oxot_koster
+danger = danger_ignore@dan
+
+;-- Мстители на хуторе возле перехода на Кордон
+[logic@snip_hu1]
+active = camper@snip_hu1
+
+[camper@snip_hu1]
+path_walk = snip_hu1_walk
+path_look = snip_hu1_look
+def_state_standing = assault
+danger = danger_ignore@snip_hu
+
+[danger_ignore@snip_hu]
+ignore_distance = 30
+
+[logic@snip_hu2]
+active = camper@snip_hu2
+
+[camper@snip_hu2]
+path_walk = snip_hu2_walk
+path_look = snip_hu2_look
+def_state_standing = assault
+danger = danger_ignore@snip_hu
+
+[logic@snip_hu3]
+active = camper@snip_hu3
+
+[camper@snip_hu3]
+path_walk = snip_hu3_walk
+path_look = snip_hu3_look
+def_state_standing = assault
+danger = danger_ignore@snip_hu
+
+[logic@snip_hu4]
+active = camper@snip_hu4
+
+[camper@snip_hu4]
+path_walk = snip_hu4_walk
+path_look = snip_hu4_look
+def_state_standing = assault
+danger = danger_ignore@snip_hu
+
+[logic@snip_hu5]
+active = camper@snip_hu5
+
+[camper@snip_hu5]
+path_walk = snip_hu5_walk
+path_look = snip_hu5_look
+def_state_standing = assault
+danger = danger_ignore@snip_hu
+
+[logic@snip_hu6]
+active = kamp@snip_hu6
+
+[kamp@snip_hu6]
+center_point = snip_hu_centr 
+danger = danger_ignore@snip_hu
+
+[logic@snip_hu7]
+active = kamp@snip_hu7
+
+[kamp@snip_hu7]
+center_point = snip_hu_centr 
+danger = danger_ignore@snip_hu
+
+;-- Калмык и Ко оффлайн
+[logic@kalmyak_offline]
+active = walker@kalmyak_offline
+combat_ignore = combat_ignore
+
+[walker@kalmyak_offline]
+path_walk = kalmyak_wait_walk
+path_look = kalmyak_wait_look
+combat_ignore_cond = always
+
+[logic@kalmyak_napar1_offline]
+active = walker@kalmyak_napar1_offline
+combat_ignore = combat_ignore
+
+[walker@kalmyak_napar1_offline]
+path_walk = kalmyak_napar1_walk
+path_look = kalmyak_napar1_look
+combat_ignore_cond = always
+
+[logic@kalmyak_napar2_offline]
+active = walker@kalmyak_napar2_offline
+combat_ignore = combat_ignore
+
+[walker@kalmyak_napar2_offline]
+path_walk = kalmyak_napar2_walk
+path_look = kalmyak_napar2_look
+combat_ignore_cond = always
+
+[logic@kalmyak_napar3_offline]
+active = walker@kalmyak_napar3_offline
+combat_ignore = combat_ignore
+
+[walker@kalmyak_napar3_offline]
+path_walk = kalmyak_napar3_walk
+path_look = kalmyak_napar3_look
+combat_ignore_cond = always
+
+;-- Калмык и Ко онлайн
+[logic@kalmyak_wait]
+active = walker@kalmyak_wait
+combat_ignore = combat_ignore
+
+[walker@kalmyak_wait]
+path_walk = kalmyak_wait_walk
+path_look = kalmyak_wait_look
+combat_ignore_cond = always
+danger = danger_ignore@kalmyak
+meet = meet@kalmyak1
+
+[meet@kalmyak1]
+meet_state = 10|threat,|3|guard
+meet_state_wpn = 10|backoff@threat_weap,|3|threat
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+use_wpn = false
+
+[danger_ignore@kalmyak]
+ignore_distance_grenade = 5
+ignore_distance_corpse = 0
+ignore_distance_hit = 150
+ignore_distance_sound = 0
+danger_inertion_time_grenade = 2000
+danger_inertion_time_corpse = 1000
+danger_inertion_time_hit = 2000
+danger_inertion_time_sound = 1500
+danger_inertion_time_ricochet = 0
+
+[logic@kalmyak_napar1]
+active = walker@kalmyak_napar1
+combat_ignore = combat_ignore
+
+[walker@kalmyak_napar1]
+path_walk = kalmyak_napar1_walk
+path_look = kalmyak_napar1_look
+combat_ignore_cond = always
+danger = danger_ignore@kalmyak
+meet = meet@kalmyak_napar
+
+[logic@kalmyak_napar2]
+active = walker@kalmyak_napar2
+combat_ignore = combat_ignore
+
+[walker@kalmyak_napar2]
+path_walk = kalmyak_napar2_walk
+path_look = kalmyak_napar2_look
+combat_ignore_cond = always
+danger = danger_ignore@kalmyak
+meet = meet@kalmyak_napar
+
+[logic@kalmyak_napar3]
+active = walker@kalmyak_napar3
+combat_ignore = combat_ignore
+
+[walker@kalmyak_napar3]
+path_walk = kalmyak_napar3_walk
+path_look = kalmyak_napar3_look
+combat_ignore_cond = always
+danger = danger_ignore@kalmyak
+meet = meet@kalmyak_napar
+
+[meet@kalmyak_napar]
+meet_state = 15|threat
+meet_state_wpn = 15|threat
+victim = 15|actor
+victim_wpn = 15|actor
+use = false
+use_wpn = false
+
+;-- Калмык и Ко постоянная работа
+[logic@kalmyak]
+active = walker@kalmyak
+on_death = death@kalmyak
+
+[death@kalmyak]
+on_info = %+kalmyak_dead%
+
+[walker@kalmyak]
+path_walk = kalmyak_walk
+path_look = kalmyak_look
+danger = danger_ignore@kalmyak
+meet = meet@kalmyak2
+
+[logic@kalmyak_napar1_ohr]
+active = walker@kalmyak_napar1_ohr
+
+[walker@kalmyak_napar1_ohr]
+path_walk = kalmyak_ohr_walk
+path_look = kalmyak_ohr_look
+danger = danger_ignore@kalmyak
+meet = meet@kalmyak2
+
+[logic@kalmyak_napar2_kam]
+active = kamp@kalmyak_napar2_kam
+
+[kamp@kalmyak_napar2_kam]
+center_point = kalmyak_centr 
+danger = danger_ignore@kalmyak
+meet = meet@kalmyak2
+
+[logic@kalmyak_napar3_kam]
+active = kamp@kalmyak_napar3_kam
+
+[kamp@kalmyak_napar3_kam]
+center_point = kalmyak_centr 
+danger = danger_ignore@kalmyak
+meet = meet@kalmyak2
+
+[meet@kalmyak2]
+meet_state = 15|guard
+meet_state_wpn = 15|threat,|3|backoff@threat_weap
+victim = 15|actor
+victim_wpn = 15|actor
+use = true
+use_wpn = false
+
+;-- Сталкеры и охотники
+[logic@mar_neutral1_kamp]
+active = kamp@mar_neutral1
+
+[kamp@mar_neutral1]
+center_point  = kamp
+path_walk = kamp_task
+
+[logic@mar_neutral2_kamp]
+active = kamp@mar_neutral2
+
+[kamp@mar_neutral2]
+center_point  = kamp
+path_walk = kamp_task
+
+;-- Дьяк 0 состояние
+[logic@dyak_wait]
+active = walker@dyak_wait
+on_death = death@dyak_wait
+
+[death@dyak_wait]
+on_info = %+dyak_dead%
+
+[walker@dyak_wait]
+path_walk = dyak_wait_walk
+path_look = dyak_wait_look
+danger = danger_condition@esc_saha
+meet = no_meet
+on_actor_dist_le_nvis = 5 | remark@dyak_wait
+
+[remark@dyak_wait]
+anim = guard
+target = actor
+snd = dark_knyaz_hello
+on_signal = sound_end| camper@dyak_wait
+meet = no_meet
+
+[camper@dyak_wait]
+path_walk = dyak_wait_walk
+path_look = dyak_wait_look
+danger = danger_condition@esc_saha
+meet = meet@esc_saha
+
+;-- Дьяк 1 состояние
+[logic@dyak_dal]
+active = walker@dyak_dal
+on_death = death@dyak_dal
+
+[death@dyak_dal]
+on_info = %+dyak_dead%
+
+[walker@dyak_dal]
+path_walk = dyak_walk
+path_look = dyak_look
+danger = danger_condition@esc_saha
+meet = meet@esc_saha
+
+;-- Дьяк 2 состояние
+[logic@dyak]
+active = walker@dyak
+on_death = death@dyak
+
+[death@dyak]
+on_info = %+dyak_dead%
+
+[walker@dyak]
+path_walk = dyak_walk
+path_look = dyak_look
+danger = danger_condition@esc_saha
+meet = meet@esc_saha
+
+;-- Сахатый оффлайн
+[logic@esc_saha_plen_offline]
+active = walker@esc_saha_plen_offline
+combat_ignore = combat_ignore
+
+[walker@esc_saha_plen_offline]
+path_walk = esc_saha_plen_walk
+path_look = esc_saha_plen_look
+combat_ignore_cond = always
+
+;-- Сахатый онлайн
+[logic@esc_saha_plen]
+active = camper@esc_saha_plen
+combat_ignore = combat_ignore
+on_death = death@esc_saha_plen
+
+[danger_condition@esc_saha]
+ignore_distance = 0
+
+[death@esc_saha_plen]
+on_info = %+esc_saha_dead%
+
+[camper@esc_saha_plen]
+path_walk = esc_saha_plen_walk
+path_look = esc_saha_plen_look
+combat_ignore_cond = always
+def_state_campering = prisoner
+on_info = {+add_church_ban_signal} remark@esc_saha_plen
+meet = no_meet
+danger = danger_condition@esc_saha
+
+[remark@esc_saha_plen]
+anim = prisoner
+meet = no_meet
+target = look_plen_saha, 0
+combat_ignore_cond = always
+danger = danger_condition@esc_saha
+on_actor_dist_le = 5| remark@esc_saha_plen2
+
+[remark@esc_saha_plen2]
+snd = esc_saha_plen_help
+anim = prisoner
+meet = no_meet
+target = actor
+combat_ignore_cond = always
+danger = danger_condition@esc_saha
+on_signal = sound_end| walker@esc_saha_plen
+
+[walker@esc_saha_plen]
+path_walk = esc_saha_plen_walk
+path_look = esc_saha_plen_look
+combat_ignore_cond = always
+danger = danger_condition@esc_saha
+meet = meet@esc_saha
+
+[meet@esc_saha]
+meet_state		= 15|guard@wait
+meet_state_wpn	= 15|backoff@threat_weap
+victim		= 15|actor
+victim_wpn		= 15|actor
+use			= true
+use_wpn		= false
+syndata		= backoff@threat_weap
+
+;-- Сахатый свободен
+[logic@esc_saha]
+active = kamp@esc_saha
+
+[kamp@esc_saha]
+center_point = saha_free_centr 
+danger = danger_condition@esc_saha
+meet = meet@esc_saha
+
+;-- Люди Дьяка 0 состояние
+[logic@ex_nebo_ata1_sit]
+active = kamp@ex_nebo_ata1_sit
+
+[kamp@ex_nebo_ata1_sit]
+center_point = centr_wait
+path_walk = centr_wait_task
+danger = danger_condition@esc_saha
+
+[logic@ex_nebo_ata2_sit]
+active = kamp@ex_nebo_ata2_sit
+
+[kamp@ex_nebo_ata2_sit]
+center_point = centr_wait
+path_walk = centr_wait_task
+danger = danger_condition@esc_saha
+
+[logic@ex_nebo_ata3_sit]
+active = kamp@ex_nebo_ata3_sit
+
+[kamp@ex_nebo_ata3_sit]
+center_point = centr_wait
+path_walk = centr_wait_task 
+danger = danger_condition@esc_saha
+
+;-- Люди Дьяка 1 состояние
+[logic@ex_nebo_ata1]
+active = walker@ex_nebo_ata1
+
+[walker@ex_nebo_ata1]
+path_walk = ex_nebo_ata1_walk
+path_look = ex_nebo_ata1_look
+danger = danger_condition@esc_saha
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@ex_nebo_ata2]
+active = walker@ex_nebo_ata2
+
+[walker@ex_nebo_ata2]
+path_walk = ex_nebo_ata2_walk
+path_look = ex_nebo_ata2_look
+danger = danger_condition@esc_saha
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@ex_nebo_ata3]
+active = walker@ex_nebo_ata1
+
+[walker@ex_nebo_ata3]
+path_walk = ex_nebo_ata3_walk
+path_look = ex_nebo_ata3_look
+danger = danger_condition@esc_saha
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+;-- Люди Дьяка 2 состояние
+[logic@ex_nebo_ata3_free]
+active = kamp@ex_nebo_ata3_free
+
+[kamp@ex_nebo_ata3_free]
+center_point = saha_free_centr
+path_walk = saha_free_centr_task
+danger = danger_condition@esc_saha
+
+[logic@ex_nebo_ata1_ohr]
+active = walker@ex_nebo_ata1_ohr
+
+[walker@ex_nebo_ata1_ohr]
+path_walk = ex_nebo_ata_ohr_walk
+path_look = ex_nebo_ata_ohr_look
+danger = danger_condition@esc_saha
+
+[logic@ex_nebo_ata2_patr]
+active = walker@ex_nebo_ata2_patr
+
+[walker@ex_nebo_ata2_patr]
+path_walk = ex_nebo_ata_patr_walk
+path_look = ex_nebo_ata_patr_look
+danger = danger_condition@esc_saha
+
+;-- Бандиты в церкви
+[logic@marshban1]
+active = walker@marshban1
+combat_ignore = combat_ignore
+
+[walker@marshban1]
+path_walk = marshban1_walk
+path_look = marshban1_look
+combat_ignore_cond = {=check_fighting(14001)}
+danger = danger_ignore@marshban1
+
+[danger_ignore@marshban1]
+ignore_distance_grenade	= 5
+ignore_distance_corpse	= 0
+ignore_distance_hit		= 150
+ignore_distance_sound	= 0
+danger_inertion_time_grenade	= 2000
+danger_inertion_time_corpse	= 1000
+danger_inertion_time_hit		= 2000
+danger_inertion_time_sound	= 1500
+danger_inertion_time_ricochet	= 0
+
+[logic@marshban2]
+active = walker@marshban2
+combat_ignore = combat_ignore
+
+[walker@marshban2]
+path_walk = marshban2_walk
+path_look = marshban2_look
+combat_ignore_cond = {=check_fighting(14001)}
+danger = danger_ignore@marshban1
+
+[logic@marshban3]
+active = walker@marshban3
+combat_ignore = combat_ignore
+
+[walker@marshban3]
+path_walk = marshban3_walk
+path_look = marshban3_look
+combat_ignore_cond = {=check_fighting(14001)}
+danger = danger_ignore@marshban1
+
+[logic@marshban_patr]
+active = walker@marshban_patr
+combat_ignore = combat_ignore
+
+[walker@marshban_patr]
+path_walk = marshban_patr_walk
+path_look = marshban_patr_look
+combat_ignore_cond = {=check_fighting(14001)}
+danger = danger_ignore@marshban1
+
+[logic@marshban_kos1]
+active = kamp@marshban_kos1
+combat_ignore = combat_ignore
+
+[kamp@marshban_kos1]
+center_point = centr_church 
+combat_ignore_cond = {=check_fighting(14001)}
+danger = danger_ignore@marshban1
+
+[logic@marshban_kos2]
+active = kamp@marshban_kos2
+combat_ignore = combat_ignore
+
+[kamp@marshban_kos2]
+center_point = centr_church 
+combat_ignore_cond = {=check_fighting(14001)}
+danger = danger_ignore@marshban1
+
+[logic@marshban_kos3]
+active = kamp@marshban_kos3
+combat_ignore = combat_ignore
+
+[kamp@marshban_kos3]
+center_point = centr_church 
+combat_ignore_cond = {=check_fighting(14001)}
+danger = danger_ignore@marshban1
+
+[logic@marshban_kos4]
+active = kamp@marshban_kos4
+combat_ignore = combat_ignore
+
+[kamp@marshban_kos4]
+center_point = centr_church 
+combat_ignore_cond = {=check_fighting(14001)}
+danger = danger_ignore@marshban1
+
+;-- Пост чистонебовцев на рыбацком хуторе и за ним
+[logic@mar_post_nebo_kamp1]
+active = kamp1@mar_post_nebo
+
+[kamp1@mar_post_nebo]
+center_point  = kamp1
+path_walk = kamp1_task
+
+[logic@mar_post_nebo_kamp2]
+active = kamp2@mar_post_nebo
+
+[kamp2@mar_post_nebo]
+center_point  = kamp2
+path_walk = kamp2_task
+
+[logic@mar_post_nebo_walker1]
+active = walker1@mar_post_nebo
+
+[walker1@mar_post_nebo]
+path_walk = walk1
+path_look = look1
+
+[logic@mar_post_nebo_walker2]
+active = walker2@mar_post_nebo
+
+[walker2@mar_post_nebo]
+path_walk = walk2
+path_look = look2
+
+[logic@mar_post_nebo_walker3]
+active = walker3@mar_post_nebo
+
+[walker3@mar_post_nebo]
+path_walk = walk3
+path_look = look3
+
+;-- База Чистонебовцев
+;-- Свиблов
+[logic@scy_leader]
+active = walker@scy_leader
+combat_ignore = combat_ignore
+on_hit = hit@scy_leader
+
+[hit@scy_leader]
+on_info = %+scy_leader_hit%
+
+[walker@scy_leader]
+path_walk = scy_leader_walk
+path_look = scy_leader_look
+meet = meet@scy_leader
+danger = danger_ignore@scy_leader
+combat_ignore_cond = always
+on_info = {+scy_leader_hit} walker@scy_leader_hit
+on_actor_dist_le_nvis = 5 | remark@scy_leader
+
+[remark@scy_leader]
+anim = guard
+target = actor
+snd = scy_leader_hello
+combat_ignore_cond = always
+on_info = {+scy_leader_hit} walker@scy_leader_hit
+on_signal = sound_end| remark@scy_leader2
+meet = no_meet
+
+[remark@scy_leader2]
+anim = guard
+target = actor
+combat_ignore_cond = always
+meet = meet@scy_leader
+on_info = {+scy_leader_hit} walker@scy_leader_hit
+
+[walker@scy_leader_hit]
+path_walk = scy_leader_walk
+path_look = scy_leader_look
+meet = meet@scy_leader
+danger = danger_ignore@scy_leader
+on_timer = 120000 | walker@scy_leader
+
+[danger_ignore@scy_leader]
+ignore_distance = 0
+
+[meet@scy_leader]
+meet_state		= 15|guard@wait
+meet_state_wpn	= 15|backoff@threat_weap
+victim		= 15|actor
+victim_wpn		= 15|actor
+use			= true
+use_wpn		= false
+syndata		= backoff@threat_weap
+
+;-- Охранник Свиблова
+[logic@ohr_leader]
+active = camper@ohr_leader
+combat_ignore = combat_ignore
+on_hit = hit@ohr_leader
+
+[hit@ohr_leader]
+on_info = %+ohr_leader_hit%
+
+[camper@ohr_leader]
+path_walk = ohr_leader_walk
+path_look = ohr_leader_look
+danger = danger_ignore@scy_leader
+combat_ignore_cond = always
+meet = meet@scy_leader
+on_info = {+ohr_leader_hit} walker@ohr_leader_hit
+on_info2 = {+scy_leader_hit} walker@ohr_leader_hit
+
+[walker@ohr_leader_hit]
+path_walk = ohr_leader_walk
+path_look = ohr_leader_look
+danger = danger_ignore@scy_leader
+meet = meet@scy_leader
+
+;-- Первый часовой
+[logic@chasovoi1]
+active = camper@chasovoi1
+combat_ignore = combat_ignore
+on_hit = hit@chasovoi1
+
+[hit@chasovoi1]
+on_info = %+chasovoi1_hit%
+
+[camper@chasovoi1]
+path_walk = chasovoi1_walk
+path_look = chasovoi1_look
+danger = danger_ignore@scy_leader
+combat_ignore_cond = always
+meet = meet@scy_leader
+on_info = {+chasovoi1_hit} walker@chasovoi1_hit
+on_info2 = {+scy_leader_hit} walker@chasovoi1_hit
+
+[walker@chasovoi1_hit]
+path_walk = chasovoi1_walk
+path_look = chasovoi1_look
+danger = danger_ignore@scy_leader
+meet = meet@scy_leader
+
+;-- Второй часовой
+[logic@chasovoi2]
+active = camper@chasovoi2
+combat_ignore = combat_ignore
+on_hit = hit@chasovoi2
+
+[hit@chasovoi2]
+on_info = %+chasovoi2_hit%
+
+[camper@chasovoi2]
+path_walk = chasovoi2_walk
+path_look = chasovoi2_look
+danger = danger_ignore@scy_leader
+combat_ignore_cond = always
+meet = meet@scy_leader
+on_info = {+chasovoi2_hit} walker@chasovoi2_hit
+on_info2 = {+scy_leader_hit} walker@chasovoi2_hit
+
+[walker@chasovoi2_hit]
+path_walk = chasovoi1_walk
+path_look = chasovoi1_look
+danger = danger_ignore@scy_leader
+meet = meet@scy_leader
+
+;-- Третий часовой
+[logic@chasovoi3]
+active = camper@chasovoi3
+combat_ignore = combat_ignore
+on_hit = hit@chasovoi3
+
+[hit@chasovoi3]
+on_info = %+chasovoi3_hit%
+
+[camper@chasovoi3]
+path_walk = chasovoi3_walk
+path_look = chasovoi3_look
+danger = danger_ignore@scy_leader
+combat_ignore_cond = always
+meet = meet@scy_leader
+on_info = {+chasovoi3_hit} walker@chasovoi3_hit
+on_info2 = {+scy_leader_hit} walker@chasovoi3_hit
+
+[walker@chasovoi3_hit]
+path_walk = chasovoi3_walk
+path_look = chasovoi3_look
+danger = danger_ignore@scy_leader
+meet = meet@scy_leader
+
+;-- Первый патрульный
+[logic@patbaz1]
+active = walker@patbaz1
+
+[walker@patbaz1]
+path_walk = patbaz1_walk
+path_look = patbaz1_look
+danger = danger_ignore@scy_leader
+
+;-- Второй патрульный
+[logic@patbaz2]
+active = walker@patbaz2
+
+[walker@patbaz2]
+path_walk = patbaz2_walk
+path_look = patbaz2_look
+danger = danger_ignore@scy_leader
+
+;-- Охранник бара
+[logic@barpos]
+active = camper@barpos
+
+[camper@barpos]
+path_walk = barpos_walk
+path_look = barpos_look
+danger = danger_ignore@scy_leader
+
+;-- Сидящие у костров
+[logic@kam1]
+active = kamp@kam1
+
+[kamp@kam1]
+center_point = camp_centr 
+danger = danger_ignore@scy_leader
+
+[logic@kam2]
+active = kamp@kam2
+
+[kamp@kam2]
+center_point = camp_centr 
+danger = danger_ignore@scy_leader
+
+[logic@kam3]
+active = kamp@kam3
+
+[kamp@kam3]
+center_point = camp_centr 
+danger = danger_ignore@scy_leader
+
+[logic@kam4]
+active = kamp@kam4
+
+[kamp@kam4]
+center_point = small_centr 
+danger = danger_ignore@scy_leader
+
+[logic@kam5]
+active = kamp@kam5
+
+[kamp@kam5]
+center_point = small_centr 
+danger = danger_ignore@scy_leader
+
+[logic@kam6]
+active = kamp@kam6
+
+[kamp@kam6]
+center_point = small_centr 
+danger = danger_ignore@scy_leader
+
+;-- Учёрый чистонебовец возле аппаратуры
+[logic@ucen]
+active = camper@ucen
+
+[camper@ucen]
+path_walk = ucen_walk
+path_look = ucen_look
+danger = danger_ignore@scy_leader
+meet = meet@ucen
+on_info = {+need_televizor_start} walker@ucen
+
+[walker@ucen]
+path_walk = ucen_walk
+path_look = ucen_look
+danger = danger_ignore@scy_leader
+meet = meet@ucen2
+
+[meet@ucen]
+meet_dialog = tv_need_first
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[meet@ucen2]
+meet_dialog = tv_need_second
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+;-- Сони
+[logic@slip]
+active = walker@slip
+
+[walker@slip]
+path_walk = slip_walk
+path_look = slip_look
+danger = danger_ignore@scy_leader
+
+[logic@sliper]
+active = sleeper@sliper
+
+[sleeper@sliper]
+path_main = slip
+meet = meet@neutral
+
+;-- Контроллёр на хуторе оффлайн
+[logic@controller_hu_offline]
+active = mob_home@controller_hu_offline
+
+[mob_home@controller_hu_offline]
+path_home = controller_hu_walk
+home_min_radius = 30
+home_max_radius = 60
+on_signal = sig_attacked | mob_combat@controller_hu_offline
+
+[mob_combat@controller_hu_offline]
+on_timer = 60000 | mob_home@controller_hu_offline
+
+;-- Контроллёр на хуторе онлайн
+[logic@controller_hu]
+active = mob_home@controller_hu
+
+[mob_home@controller_hu]
+path_home = controller_hu_walk
+home_min_radius = 30
+home_max_radius = 60
+on_signal = sig_attacked | mob_combat@controller_hu
+
+[mob_combat@controller_hu]
+on_timer = 60000 | mob_home@controller_hu
+
+;-- Зомби на хуторе
+[logic@marsh_zombi_hutor_home]
+active = mob_home@marsh_zombi_hutor
+
+[mob_home@marsh_zombi_hutor]
+path_home = home
+home_min_radius = 25
+home_max_radius = 60
+
+;-- Кошки
+[logic@mar_cat1_home1]
+active = mob_home1@mar_cat1
+
+[mob_home1@mar_cat1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@mar_cat1_home2]
+active = mob_home2@mar_cat1
+
+[mob_home2@mar_cat1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@mar_cat2_home1]
+active = mob_home1@mar_cat2
+
+[mob_home1@mar_cat2]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@mar_cat2_home2]
+active = mob_home2@mar_cat2
+
+[mob_home2@mar_cat2]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+;-- Библиотекарь
+[logic@mar_bibliotekar_home]
+active = mob_home@mar_bibliotekar
+
+[mob_home@mar_bibliotekar]
+path_home = home
+home_min_radius = 15
+home_max_radius = 40
+
+;-- Свиньи
+[logic@mar_flesh1_home1]
+active = mob_home1@mar_flesh1
+
+[mob_home1@mar_flesh1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@mar_flesh1_home2]
+active = mob_home2@mar_flesh1
+
+[mob_home2@mar_flesh1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@mar_flesh2_home1]
+active = mob_home1@mar_flesh2
+
+[mob_home1@mar_flesh2]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@mar_flesh2_home2]
+active = mob_home2@mar_flesh2
+
+[mob_home2@mar_flesh2]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+;-- Кровососы на сгоревшем хуторе
+[logic@mar_bloodsucker_home]
+active = mob_home@mar_bloodsucker
+
+[mob_home@mar_bloodsucker]
+path_home = home
+home_min_radius = 15
+home_max_radius = 50
+
+;-- Тушканы
+[logic@mar_tushkano1_home1]
+active = mob_home1@mar_tushkano1
+
+[mob_home1@mar_tushkano1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@mar_tushkano1_home2]
+active = mob_home2@mar_tushkano1
+
+[mob_home2@mar_tushkano1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@mar_tushkano2_home]
+active = mob_home@mar_tushkano2
+
+[mob_home@mar_tushkano2]
+path_home = home
+home_min_radius = 15
+home_max_radius = 40
+
+;-- Снорки
+[logic@mar_snork1_home1]
+active = mob_home1@mar_snork1
+
+[mob_home1@mar_snork1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@mar_snork1_home2]
+active = mob_home2@mar_snork1
+
+[mob_home2@mar_snork1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@mar_snork2_home]
+active = mob_home@mar_snork2
+
+[mob_home@mar_snork2]
+path_home = home
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@mar_snork3_home1]
+active = mob_home1@mar_snork3
+
+[mob_home1@mar_snork3]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@mar_snork3_home2]
+active = mob_home2@mar_snork3
+
+[mob_home2@mar_snork3]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@mar_snork3_home3]
+active = mob_home3@mar_snork3
+
+[mob_home3@mar_snork3]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 50
+
+;-- Изломы
+[logic@mar_fracture_home]
+active = mob_home@mar_fracture
+
+[mob_home@mar_fracture]
+path_home = home
+home_min_radius = 15
+home_max_radius = 50
+
+;-- Слепыши
+[logic@mar_dog1_home1]
+active = mob_home1@mar_dog1
+
+[mob_home1@mar_dog1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@mar_dog1_home2]
+active = mob_home2@mar_dog1
+
+[mob_home2@mar_dog1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@mar_dog2_home]
+active = mob_home@mar_dog2
+
+[mob_home@mar_dog2]
+path_home = home
+home_min_radius = 15
+home_max_radius = 50
+
+;-- Химеры
+[logic@mar_chimera_home1]
+active = mob_home1@mar_chimera
+
+[mob_home1@mar_chimera]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@mar_chimera_home2]
+active = mob_home2@mar_chimera
+
+[mob_home2@mar_chimera]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+;--- Крысюк
+[logic@mar_krisyk_lager_kamp]
+active = kamp@mar_krisyk_lager_kamp
+
+[kamp@mar_krisyk_lager_kamp]
+center_point  = kamp
+path_walk = kamp_task
+
+;--- Сцена с Халявой - наёмники
+[logic@mar_killer_xalyava_walker1]
+active = walker1@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker1@mar_killer_xalyava]
+path_walk = walk1
+path_look = look1
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+[logic@mar_killer_xalyava_walker2]
+active = walker2@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker2@mar_killer_xalyava]
+path_walk = walk2
+path_look = look2
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+[logic@mar_killer_xalyava_walker3]
+active = walker3@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker3@mar_killer_xalyava]
+path_walk = walk3
+path_look = look3
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+[logic@mar_killer_xalyava_walker4]
+active = walker4@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker4@mar_killer_xalyava]
+path_walk = walk4
+path_look = look4
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+[logic@mar_killer_xalyava_walker5]
+active = walker5@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker5@mar_killer_xalyava]
+path_walk = walk5
+path_look = look5
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+[logic@mar_killer_xalyava_walker6]
+active = walker6@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker6@mar_killer_xalyava]
+path_walk = walk6
+path_look = look6
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+[logic@mar_killer_xalyava_walker7]
+active = walker7@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker7@mar_killer_xalyava]
+path_walk = walk7
+path_look = look7
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+[logic@mar_killer_xalyava_walker8]
+active = walker8@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker8@mar_killer_xalyava]
+path_walk = walk8
+path_look = look8
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+[logic@mar_killer_xalyava_walker9]
+active = walker9@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker9@mar_killer_xalyava]
+path_walk = walk9
+path_look = look9
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+[logic@mar_killer_xalyava_walker10]
+active = walker10@mar_killer_xalyava
+combat_ignore = combat_ignore
+
+[walker10@mar_killer_xalyava]
+path_walk = walk10
+path_look = look10
+combat_ignore_cond = {-kill_xalyava =check_fighting(3301:3302)}
+
+;--Бандиты на Удава
+[logic@mar_vert_bandit_walker1]
+active = walker1@mar_vert_bandit
+
+[walker1@mar_vert_bandit]
+path_walk = walk1
+path_look = look1
+
+[logic@mar_vert_bandit_walker2]
+active = walker2@mar_vert_bandit
+
+[walker2@mar_vert_bandit]
+path_walk = walk2
+path_look = look2
+
+[logic@mar_vert_bandit_walker3]
+active = walker3@mar_vert_bandit
+
+[walker3@mar_vert_bandit]
+path_walk = walk3
+path_look = look3
+
+[logic@mar_vert_bandit_walker4]
+active = walker4@mar_vert_bandit
+
+[walker4@mar_vert_bandit]
+path_walk = walk4
+path_look = look4
+
+[logic@mar_vert_bandit_walker5]
+active = walker5@mar_vert_bandit
+
+[walker5@mar_vert_bandit]
+path_walk = walk5
+path_look = look5
+
+[logic@mar_vert_bandit_walker6]
+active = walker6@mar_vert_bandit
+
+[walker6@mar_vert_bandit]
+path_walk = walk6
+path_look = look6
+
+[logic@mar_vert_bandit_walker7]
+active = walker7@mar_vert_bandit
+
+[walker7@mar_vert_bandit]
+path_walk = walk7
+path_look = look7
+
+[logic@mar_vert_bandit_walker8]
+active = walker8@mar_vert_bandit
+
+[walker8@mar_vert_bandit]
+path_walk = walk8
+path_look = look8
+
+

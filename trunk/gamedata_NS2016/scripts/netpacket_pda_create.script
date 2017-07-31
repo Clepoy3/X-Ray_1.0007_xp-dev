@@ -1,0 +1,43 @@
+local netpacket_pda_id = nil
+function create_pda()
+    if netpacket_pda_id ~= nil then
+        return netpacket_pda_id
+    else
+        local np_obj
+        netpacket_pda_id = 0
+        if db.storage[db.actor:id()].pstor["have_netpacket_pda"] == nil then
+            --создание ПДА для нетпакета при новой игре
+            local sim = alife()      
+            np_obj = sim:create("netpacket_pda",
+                db.actor:position(),
+                db.actor:level_vertex_id(),
+                db.actor:game_vertex_id(),
+                db.actor:id())
+            if np_obj then
+                netpacket_pda_id = np_obj.id
+            --    get_console():execute("load ~#I#:"..string.format("netpacket_pda:Ге... Не надо паниковать. Вы всего лишь создали ПДА с id = "..netpacket_pda_id))
+                db.storage[db.actor:id()].pstor["have_netpacket_pda"] = netpacket_pda_id
+            end
+            --[[for id=0,65535 do	
+              np_obj = sim:object(id)
+              if np_obj then
+                  if np_obj:section_name()=="netpacket_pda" then
+                    get_console():execute("load ~#I#:"..string.format("netpacket_pda:Ге... Не надо паниковать. Вы всего лишь создали ПДА в СИДом: "..id))
+                    netpacket_pda_id = id
+                    db.storage[db.actor:id()].pstor["have_netpacket_pda"] = netpacket_pda_id
+                    break
+                  end
+              end
+            end]]
+        else
+            netpacket_pda_id = db.storage[db.actor:id()].pstor["have_netpacket_pda"]
+        end
+        if netpacket_pda_id == 0 then
+            get_console():execute("load ~#I#:"..string.format("Не найден netpacket_pda: пишем на актора "..netpacket_pda_id))
+        end
+        
+        return netpacket_pda_id
+    end
+    
+    
+end

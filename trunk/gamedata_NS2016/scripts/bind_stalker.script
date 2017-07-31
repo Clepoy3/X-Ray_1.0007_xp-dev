@@ -1,0 +1,1488 @@
+-- файл из мода "Народной солянки 2009" от 14.06.
+-- Адаптирован для Менеджера оружия. Rulix aka Bak от 2.07.09
+-- Адатировал: Idler.
+
+level_last, level_current = "", ""
+local time = time_global()
+
+local night_vision_real = false
+local night_vision_fake = false
+local night_vision_snd, night_vision_snd_loop
+night_vision_outfit_id = nil
+outfit_restored = false
+local night_vision_on_take_item = false
+
+
+local table_sort = table.sort
+local table_insert = table.insert
+local table_remove = table.remove
+local math_ceil = math.ceil
+local string_format = string.format
+
+function log(ct, ...)
+	get_console():execute(string_format("load ~%s~: [bind_stalker] %s",ct, string_format(...)))
+end
+
+function init(obj)
+	xr_motivator.AddToMotivator(obj)
+end
+
+function actor_init(npc)
+	npc:bind_object(actor_binder(npc))
+	-- level_tasks.add_location(707,"blue_location","Лукаш")
+	-- level_tasks.add_location(702,"blue_location","Макс")
+	-- level_tasks.add_location(728,"blue_location","Повар")
+end
+
+local game_difficulty_by_num = {
+	[0] = "gd_novice",
+	[1] = "gd_stalker",
+	[2] = "gd_veteran",
+	[3] = "gd_master"}
+
+SolvadorHud = 0
+lasthealth	= 0
+lasttime	= 0
+post_process	= 0
+local weapon_hide = false
+-- local arts = false
+torchFirst = false
+----------------------------------------------------------------------------------------------------------------------
+class "actor_binder" (object_binder)
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:__init (obj) super(obj)
+	self.bCheckStart = false
+	self.weather_manager = level_weathers.get_weather_manager()
+	self.is_saved = false
+	monnoroch_utils.mon_callback:init()
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:net_spawn(data)
+	sol_item_drop.remove_changer()
+	spawn_level_changer.remove_old_teleport()  
+	level.show_indicators()
+	self.bCheckStart = true
+	self.weapon_hide = false -- спрятано или нет оружие при разговоре.
+	weapon_hide = false -- устанавливаем глобальный дефолтовый флаг.
+	SolvadorHud = tonumber(ui_mm_opt_main.solReadVar("hud"))
+
+	if object_binder.net_spawn(self,data) == false then return false end
+	db.add_actor(self.object)
+	if self.st.disable_input_time == nil then level.enable_input() end
+	self.weather_manager:reset()
+	-- добавим ГГ в таблицу рангов
+	if actor_stats.add_to_ranking and self.object:rank() >= 900 then
+		actor_stats.add_to_ranking(self.object:id())
+	end
+
+
+	death_manager.init()	-- Загружаем настройки лута
+	monnoroch_utils.mon_callback:net_spawn()
+
+	amk.on_game_load(obj)
+	local actor = db.actor
+	level_last = xr_logic.pstor_retrieve(actor, "level_last", nil) or xr_logic.pstor_retrieve(actor, "last_lname", nil) or "unknow"
+	level_current = level.name()
+	xr_logic.pstor_store(actor, "level_last", level_current)
+
+	braad_test.false_info()
+	braad_test.new_info()
+	braad_test.check_info()
+	braad_test.forest_info()
+	braad_test.forest_update()
+	braad_test.kot_update()
+
+	-- kostya_level --
+	spawn_teleport.spawn_teleport_hospital()
+	
+	--nightvision_snd_start_restore()
+
+	return true
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:net_destroy()
+	amk.on_game_save(obj)	-- added by xStream for AMK miniSDK
+	if actor_stats.remove_from_ranking then
+		actor_stats.remove_from_ranking(self.object:id())
+	end
+	--  game_stats.shutdown ()
+	db.del_actor(self.object)
+	sr_light.clean_up ()
+
+	self.object:set_callback(callback.inventory_info, nil)
+	self.object:set_callback(callback.article_info, nil)
+	self.object:set_callback(callback.on_item_take, nil)
+	self.object:set_callback(callback.on_item_drop, nil)
+	self.object:set_callback(callback.trade_sell_buy_item, nil)
+
+	--self.object:set_callback(callback.actor_sleep, nil)
+	self.object:set_callback(callback.task_state, nil)
+	self.object:set_callback(callback.level_border_enter, nil)
+	self.object:set_callback(callback.level_border_exit, nil)
+	self.object:set_callback(callback.take_item_from_box, nil)
+	self.object:set_callback(callback.use_object, nil)
+	self.object:set_callback(callback.death, nil)
+
+	xr_sound.stop_all_sound_object()
+
+	if iniStatistic then
+		get_console():execute("load ~~~ amk.dump_table(iniLines):")
+		amk.dump_table(iniLines)
+		get_console():execute("load ~~~ amk.dump_table(iniOtherLines):")
+		amk.dump_table(iniOtherLines)
+		get_console():execute("load ~~~ amk.dump_table(iniStat):")
+		local t = {}
+		for sect, count in pairs(iniStat) do table_insert(t, {sect, count}) end
+		table_sort(t, sortStat)
+		amk.dump_table(t)
+	end
+
+	object_binder.net_destroy(self)
+	
+--	counterPrint()
+ 	m_icons.RemoveIcons()
+end
+
+function sortStat(t1, t2)
+	return t1[2] > t2[2]
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:reinit()
+	object_binder.reinit(self)
+	local npc_id = self.object:id()
+	db.storage[npc_id] = {}
+	self.st = db.storage[npc_id]
+	self.st.pstor = nil
+	self.next_restrictors_update_time = -10000
+
+	self.object:set_callback(callback.inventory_info, self.info_callback, self)
+	self.object:set_callback(callback.article_info, self.article_callback, self)
+	self.object:set_callback(callback.on_item_take, self.on_item_take, self)
+	self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
+	self.object:set_callback(callback.trade_sell_buy_item, self.trade_sell_buy_item, self) -- for game stats
+	--self.object:set_callback(callback.actor_sleep, self.sleep_callback, self)
+	self.object:set_callback(callback.task_state, self.task_callback, self)
+	--self.object:set_callback(callback.map_location_added, self.map_location_added_callback, self)
+	self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
+	self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
+	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
+	self.object:set_callback(callback.use_object, self.on_use_object, self)
+	self.object:set_callback(callback.death, self.death_callback, self)
+end
+----------------------------------------------------------------------------------------------------------------------
+controllerSoundPresentOnDeath = false
+function actor_binder:death_callback(victim, who)
+	if victim:id() == db.actor:id() then difficulty_manager.deathStatCollect() end
+	
+	--get_console():execute("load sergeyt hochet poymat controlera")
+	controllerSoundPresentOnDeath = false
+	local actorPosition = self.object:position()
+	local kontrikSoundAuraDistance = getIniValueFloatSimple("m_controller_e", "PsyAura_Fake_MaxAddDist", 90)
+	kontrikSoundAuraDistance = kontrikSoundAuraDistance*kontrikSoundAuraDistance
+	for k,v in pairs(db.creatures) do
+	    local obj = level.object_by_id(k)
+	    if obj and obj:clsid() == clsid.controller_s and obj:position():distance_to_sqr(actorPosition) <= kontrikSoundAuraDistance then
+		controllerSoundPresentOnDeath = true
+		get_console():execute("cfg_save user.ltx")
+		get_console():execute("unbind quick_load")
+		get_console():execute("unbind_sec quick_load")
+		--get_console():execute("load sergeyt poymal controlera "..obj:name())
+		break
+	    end
+	
+	end
+	--get_console():execute("load sergeyt ne hochet poymat controlera")
+end
+
+function actor_binder:take_item_from_box(box, item)
+	local story_id = box:story_id()
+	if story_id == nil then return end
+	--get_console():execute("load ~~~ take_item_from_box: "..box:name().." story_id: "..story_id)
+	treasure_manager.take_item_from_box(box, story_id)
+	zamok.remove(box, item)	
+	if level.map_has_object_spot(box:id(), "crlc_big")~= 0 then
+		level.map_remove_object_spot(box:id(), "crlc_big")
+	end
+	gps_habar.on_item_take_from_box(box, item) --idler++--	
+end
+----------------------------------------------------------------------------------------------------------------------
+local border_str = 0
+local border_cnt = 0
+local border_out = false
+local on_radar_level = false
+local on_radar_hit = 0
+
+function actor_binder:level_border_enter(npc, info_id)
+	border_out = false
+	news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СИСТЕМА:".."\\n".."%c[255,255,128,128]Сбой устранен.".."".."\n", nil, nil, 15000)
+	level.remove_pp_effector(1001)
+	level.remove_pp_effector(1002)
+	xr_sound.set_actor_sound("")
+end
+
+function actor_binder:level_border_exit(npc, info_id)
+	border_out = true
+	news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СИСТЕМА:".."\\n".."%c[255,255,128,128]Внутренний сбой. Вероятная причина - сильное излучение.".."".."\n", nil, nil, 15000)
+	border_str = 0.006
+	level.add_pp_effector("dead_zone.ppe", 1001, true)
+	level.set_pp_effector_factor(1001, 0.5)
+	level.add_pp_effector("yantar_underground_psi.ppe", 1002, true)
+	level.set_pp_effector_factor(1002, 0.5)
+	xr_sound.set_actor_sound("level_border_detector")
+	xr_sound.set_actor_sound_factor(5)
+end
+
+function border_danger()
+	if border_out then
+		if border_str < 1 then border_str = border_str + 0.001 end
+			local h = hit()
+			h.draftsman = db.actor
+			h.type = hit.radiation
+			h.power = border_str
+			db.actor:hit(h)
+			h.type = hit.telepatic
+			h.power = 0.025
+			db.actor:hit(h)
+		if border_cnt > 10 then
+			border_cnt = 0
+			local actor_pos = db.actor:position()
+			local offset = math.pi*2.0*math.random()
+			local radius= 10 + math.random() * 20
+			local height= 2 + math.random() * 10
+			local pos=vector():set(math.sin(offset)*radius+actor_pos.x,actor_pos.y+height,math.cos(offset)*radius+actor_pos.z)
+			phantom_manager.spawn_phantom(pos)
+		else border_cnt = border_cnt + 1
+		end
+	elseif on_radar_level then
+		local pos = db.actor:position()
+		if pos.z > 65 and pos.x > 350 and pos.x < 410 then
+			if pos.z > 130 then
+				level.remove_pp_effector(1523)
+				level.remove_pp_effector(1001)
+				level.remove_pp_effector(1002)
+				on_radar_hit = 0
+				db.actor:kill(db.actor)
+			elseif on_radar_hit == 0 then
+				on_radar_hit = 0.006
+				level.add_pp_effector("fire_hit.ppe", 1523, true)
+				level.set_pp_effector_factor(1523, 0.5)
+				news_manager.send_tip(db.actor, "%c[255,160,160,160]".."СИСТЕМА:".."\\n".."%c[255,255,128,128]Внутренний сбой. Вероятная причина - сильное излучение.".."".."\n", nil, nil, 15000)
+				level.add_pp_effector("dead_zone.ppe", 1001, true)
+				level.set_pp_effector_factor(1001, 0.5)
+				level.add_pp_effector("yantar_underground_psi.ppe", 1002, true)
+				level.set_pp_effector_factor(1002, 0.5)
+			else
+				on_radar_hit = on_radar_hit + 0.003
+				local h = hit()
+				h.draftsman = db.actor
+				h.power = on_radar_hit
+				h.type = hit.fire
+				db.actor:hit(h)
+				h.draftsman = db.actor
+				h.type = hit.radiation
+				db.actor:hit(h)
+				h.power = on_radar_hit + 0.03
+				h.type = hit.telepatic
+				db.actor:hit(h)
+				if border_cnt > 8 then
+					border_cnt = 0
+					local actor_pos = db.actor:position()
+					local offset = math.pi*2.0*math.random()
+					local radius= 10 + math.random() * 20
+					local height= 2 + math.random() * 10
+					local pos=vector():set(math.sin(offset)*radius+actor_pos.x,actor_pos.y+height,math.cos(offset)*radius+actor_pos.z)
+					phantom_manager.spawn_phantom(pos)
+				else border_cnt = border_cnt + 1
+				end
+			end
+		elseif on_radar_hit > 0 then
+			level.remove_pp_effector(1523)
+			level.remove_pp_effector(1001)
+			level.remove_pp_effector(1002)
+			on_radar_hit = 0
+		end
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+trader = nil
+function actor_binder:info_callback(npc, info_id)
+	ex_audit.info_call(info_id)
+
+	--' Сюжет
+	lc_control.on_info( info_id )	-- управление переходами
+
+	braad_test.kot_info()
+	braad_test.dead_npc()
+	braad_test.new_info()
+	braad_test.check_info()
+	braad_test.forest_info()
+	braad_test.forest_update()
+	braad_test.kot_update()
+	braad_test.check_ecolog_dead()
+	flamethrower.check_info(info_id)
+	level_tasks.proceed(self.object)
+	level_tasks.process_info_portion(info_id)	-- Отметки на карте
+	amk_utils.actor_info(npc, info_id) 
+	inventory.on_inventory_info(info_id) 
+	
+	if info_id == "bar_kpk_remont_done" and task_exists("kpk_hide", 0) then
+		task_delete("kpk_hide", 0)
+	end
+	if info_id == "SergeT_talk_start" and not task_exists("kpk_hide", 0) then
+		task_add("kpk_hide", arhara_dialog.disabl_karta, 0)
+	end
+
+	trade_manager.onInfoPortion(info_id)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:trade_sell_buy_item(item, sell_bye, money)
+	if sell_bye == true then
+		game_stats.money_trade_update (money)
+	else
+		game_stats.money_trade_update (-money)
+	end
+	if item then
+		amk.start_timer("check_npc_inventory", 2, item:id())
+	end
+	if trader and trader:alive() then
+		trade_manager.onTradeItem(item, trader, sell_bye)
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:article_callback(npc, group, name)
+	if device().precache_frame >1 then return end
+	if group == "Diary" then
+		news_manager.send_encyclopedy(group, "diary")	-- fix per Cpt. Borovich -- now 100% more annoying
+	else news_manager.send_encyclopedy(group, "encyclopedy")
+	end
+	--AMK UTILS--
+	amk_utils.actor_article(npc, group, name)
+	--AMK UTILS--
+end
+--------------------------------------------------------------------------------------------------
+function actor_binder:on_item_take (obj)
+	inventory.on_item_take(obj)
+	level_tasks.proceed(self.object)
+
+	--get_console():execute("load [bind_stalker]401 on_item_take "..obj:section().." night_vision_real: "..tostring(night_vision_real)..", torchFirst: "..tostring(torchFirst))
+	if night_vision_real then
+		local night_vision_fake_needed = IAmAOutfit[obj:clsid()]
+		
+		if obj:section() == "device_torch" or obj:section() == "device_torch_clon" then
+			if not torchFirst then
+				torchFirst = true
+			else
+				night_vision_fake_needed = true
+			end
+		end
+		
+		if night_vision_fake_needed then
+			--get_console():execute("load [bind_stalker]415 on_item_take "..obj:section().." night_vision_fake "..tostring(night_vision_fake))
+			
+			--get_console():execute("load [bind_stalker]417 on_item_take night_vision_fake was present, outfit_restored "..tostring(outfit_restored))
+			local outfit = db.actor:get_current_outfit()
+			if outfit then
+				local outfitSection = outfit:section()
+				local nvSection = getIniValueStringSimple(outfitSection, "nightvision_sect", false) or false --get_console():execute("load [bind_stalker]421 on_item_take outfitSection "..tostring(outfitSection).." nvSection "..tostring(nvSection))
+				if nvSection and nvSection ~= "" then
+					local effectorName = getIniValueStringSimple(nvSection, "pp_eff_name", "")
+					if effectorName ~= "" then
+						level.add_pp_effector(effectorName, 575757, true)
+						--amk.send_tip("on_item_take add_pp_effector")
+						--night_vision_snd = xr_sound.get_safe_sound_object([[weapons\nv_loop]])
+						--night_vision_snd:play(db.actor, 0, sound_object.s2d+sound_object.looped)
+						
+						nightvision_snd_loop()
+						
+						night_vision_fake = true --get_console():execute("load [bind_stalker]432 on_item_take night_vision_fake = true")
+						night_vision_on_take_item = true --get_console():execute("load [bind_stalker]433 on_item_take night_vision_on_take_item = true")
+						
+						--nightvision_snd_start_hide()
+					end
+				end
+				night_vision_real = false
+				--get_console():execute("load [bind_stalker]439 on_item_take night_vision_real = false")
+			else --[[get_console():execute("load [bind_stalker]440 on_item_take outfit was not present")]] end
+		end
+	end
+
+	ex_hoard.hoard_spawn(obj)
+	amk.on_item_take(obj)
+	amk_utils.actor_item_take(obj)
+	inv_manager.on_item_moved(obj, true)
+	sak.check_used_item(obj)
+	braad_test.checking_use_item(obj)
+	if xrs_ai then xrs_ai.actor_item_take(obj) end 
+	babah.on_item_take(obj)
+	spawn_zombi.checking_taken_item(obj)
+	new_spawn.checking_taken_item(obj)
+	spawn_restrictor.checking_taken_item(obj)
+    arhara_dialog.checking_taken_item(obj)
+	
+	if rx_ai then rx_ai.actor_item_take(obj) end
+	if sol_utils then sol_utils.binoc_restore() end
+	monnoroch_utils.mon_callback:on_item_take(obj)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_item_drop(obj)
+	sol_item_drop.on_item_drop(obj)
+	babah.li(obj)
+	player_ogg.lose_item(obj)	-- Vergas ogg-player
+	level_tasks.proceed(self.object)
+	inv_manager.on_item_moved(obj, false)
+	amk.on_item_drop(obj)
+	amk_utils.actor_item_drop(obj)
+	inventory.on_item_drop(obj)
+	arc_main.lose_item(obj)
+	braad_test.drop_actor(obj)
+	spawn_level_changer.checking_droped_obj(obj)
+	monnoroch_utils.mon_callback:on_item_drop(obj)
+end
+----------------------------------------------------------------------------------------------------------------------
+
+function actor_binder:task_callback(_task, _objective, _state)
+	task_manager.task_callback(_task:get_id(), _objective:get_idx(), _state)
+	if _objective:get_idx() == 0 then
+		if _state == task.fail then news_manager.send_task(db.actor, "fail", _task, _objective)
+		elseif _state == task.completed then
+			task_manager.reward_by_task(_task)
+			news_manager.send_task(db.actor, "complete", _task, _objective)
+		else news_manager.send_task(db.actor, "new", _task, _objective)
+		end
+	elseif _task:get_objective(0):get_state() == task.in_progress then
+		news_manager.send_task(db.actor, "update", _task, _objective)
+	end
+	amk_utils.actor_task(_task, _objective, _state)	--AMK UTILS
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:map_location_added_callback(spot_type_str, object_id)
+	if app_ready() == false or device().precache_frame > 1 then return end
+	-- news_manager.send_task(db.actor, "new")
+end
+----------------------------------------------------------------------------------------------------------------------
+
+local actor_last_health = 0.5
+local bleeding = 0
+local hud_blood_names = {"hud_blood1","hud_blood2","hud_blood3","hud_blood4","hud_blood5"}
+function hud_blood()
+	if game_options.blood then
+		local actor = db.actor
+		if actor and actor:alive() then
+			local current_health = actor.health
+			if (current_health >= actor_last_health or current_health >= 0.9) and bleeding > 0 then
+				local hud = get_hud()
+				if hud:GetCustomStatic(hud_blood_names[bleeding]) then
+					hud:RemoveCustomStatic(hud_blood_names[bleeding])
+				end
+				actor_last_health = current_health
+				bleeding = bleeding and bleeding - 1
+			elseif actor_last_health >= current_health + 0.05 and bleeding < 5 then
+				bleeding = bleeding + 1
+				get_hud():AddCustomStatic(hud_blood_names[bleeding])
+				actor_last_health = current_health
+	end	end	end
+end
+
+local isactcondset = false
+local radeffect = false
+function hud_low_health()
+	if not game_options.bleed then
+		if isactcondset then
+			level.remove_pp_effector(2012)
+			isactcondset = false
+		end
+		if radeffect then
+			level.remove_pp_effector(2013)
+			radeffect = false
+		end
+		return
+	end
+	local actor = db.actor
+	if actor.health < 0.3 and not isactcondset then
+		level.add_pp_effector("alcohol.ppe", 2012, true)
+		isactcondset = true
+	end
+	if actor.health > 0.35 and isactcondset then
+		level.remove_pp_effector(2012)
+		isactcondset = false
+	end
+	if actor.radiation > 0.3 and not radeffect then
+		level.add_pp_effector("alcohol.ppe", 2013, true)
+		radeffect = true
+	end
+	if actor.radiation < 0.1 and radeffect then
+		level.remove_pp_effector(2013)
+		radeffect = false
+	end
+end
+
+
+local jump_pos_x, jump_pos_y, jump_pos_z
+local jump_pos_old_x, jump_pos_old_y, jump_pos_old_z
+jump_sense = 0
+jump_power = vector()
+jump_pos, jump_pos_old, jump_dir = nil, nil, nil
+jump_cnt = 0
+jump_cnt_max = 0	-- 20 для костюма
+jump_power_ini = 0	-- 0.2 для костюма
+jump_power_delta = 0	-- 0.05 для костюма
+
+
+function jet()
+	if jump_sense > 0 then
+		if jump_cnt > 0 then
+			local h = hit()
+			h.draftsman = db.actor
+			h.type = hit.strike
+			h.power = 0
+			h.impulse = 100000
+			h.direction = vector():set(0,1,0)
+			h:bone("bip01_spine")
+			db.actor:hit(h)
+--			jump_pos:add(jump_power)
+--			db.actor:set_actor_position(jump_pos)
+--			jump_cnt = jump_cnt - 1
+		else
+			jump_pos = db.actor:position()
+			jump_pos_y = jump_pos.y
+			if jump_pos_old_y and jump_pos_old_y + 0.2 < jump_pos_y then
+				jump_cnt = 20
+			--	jump_power:sub(jump_pos,jump_pos_old)
+			end
+		end
+		jump_pos_old = jump_pos
+		jump_pos_old_y = jump_pos_y
+	end
+end
+--local jet_pos_old_x, jet_pos_old_y, jet_pos_old_z
+--local jet_power = 0.2
+--function jet()
+--	local outfit = db.actor:item_in_slot(6)
+--	if outfit and outfit:section() == "exo_bandit_outfit" then
+--		local jet_pos = db.actor:position()
+--		local jet_pos_x, jet_pos_y, jet_pos_z = jet_pos.x, jet_pos.y, jet_pos.z
+--		if jet_cnt then
+--
+--			jet_pos_x = jet_pos.x + jet_pos.x - jet_pos_old_x
+--			jet_pos_y = jet_pos.y + jet_pos.y - jet_pos_old_y + jet_power
+--			jet_pos_z = jet_pos.z + jet_pos.z - jet_pos_old_z
+--			if jet_cnt > 0 then
+--				local pos_target_new = vector():set(jet_pos_x, jet_pos_y, jet_pos_z)
+--				db.actor:set_actor_position(pos_target_new)
+--				jet_cnt = jet_cnt - 1
+--				jet_power = jet_power + 0.05
+--			else jet_power, jet_cnt = 0.2, nil
+--			end
+--		elseif jet_pos_old_y and jet_pos_old_y + 0.2 < jet_pos_y then jet_cnt = 20
+--		end
+--		jet_pos_old_x, jet_pos_old_y, jet_pos_old_z = jet_pos_x, jet_pos_y, jet_pos_z
+--	end
+--end
+
+scopeUsed = false
+local last_weapon_id
+local last_weapon_scope
+local last_weapon_nv
+local night_visor = false
+
+t0, t50, t200, t1000, t5000 = {}, {}, {}, {}, {}		-- группы { строка для wathdog, функция }
+t0s, t50s, t200s, t1000s, t5000s = 0, 0, 0, 0, 0		-- функций в группе
+t0n, t50n, t200n, t1000n, t5000n = 1, 1, 1, 1, 1		-- текущая функция в группе
+t0t, t50t, t200t, t1000t, t5000t = nil, nil, nil, nil, nil	-- время следующего обновления
+t0q, t50q, t200q, t1000q, t5000q = 0, 50, 200, 1000, 5000	-- через сколько обновлять
+
+local test_t0, test_t1, test_t50, test_t51
+
+local t50test	= {["min"] = 1000000, ["max"]=0, ["total"]=0, ["n"]=0, "entry"}
+local t200test	= {["min"] = 1000000, ["max"]=0, ["total"]=0, ["n"]=0, "entry"}
+local t1000test	= {["min"] = 1000000, ["max"]=0, ["total"]=0, ["n"]=0, "entry"}
+local t5000test	= {["min"] = 1000000, ["max"]=0, ["total"]=0, ["n"]=0, "entry"}
+local t_test
+
+function task_add(task_name,task,task_group)
+	if task_name and task and task_group then
+		if task_group == 0 then
+			t0s = t0s + 1
+			t0[t0s] = { ["fn"] = task, ["name"] = task_name }
+		elseif task_group == 50 then
+			t50s = t50s + 1
+			t50[t50s] = { ["fn"] = task, ["name"] = task_name }
+		elseif task_group == 200 then
+			t200s = t200s + 1
+			t200[t200s] = { ["fn"] = task, ["name"] = task_name }
+		elseif task_group == 1000 then
+			t1000s = t1000s + 1
+			t1000[t1000s] = { ["fn"] = task, ["name"] = task_name }
+		elseif task_group == 5000 then
+			t5000s = t5000s + 1
+			t5000[t5000s] = { ["fn"] = task, ["name"] = task_name }
+		end
+	else
+		log("Ошибка", "[task_add]: отсутствие параметра")
+	end
+end
+
+function task_delete(task_name,task_group)
+	if not task_group then
+			log("Ошибка", "[task_delete]: отсутствие параметра - task_group")
+	end	
+	if task_group == 1000 then
+		for i = 1, t1000s do
+			if t1000[i] and t1000[i]["name"] == task_name then
+				t1000[i] = nil
+				t1000s = t1000s - 1
+				return
+			end
+		end
+	end
+	if task_group == 5000 then
+		for i = 1, t5000s do
+			if t5000[i] and t5000[i]["name"] == task_name then
+				t5000[i] = nil
+				t5000s = t5000s - 1
+				return
+			end
+		end
+	end
+	if task_group == 200 then
+		for i = 1, t200s do
+			if t200[i] and t200[i]["name"] == task_name then
+				t200[i] = nil
+				t200s = t200s - 1
+				return
+			end
+		end
+	end
+	if task_group == 50 then
+		for i = 1, t50s do
+			if t50[i] and t50[i]["name"] == task_name then
+				t50[i] = nil
+				t50s = t50s - 1
+				return
+			end
+		end
+	end
+	if task_group == 0 then
+		for i = 1, t0s do
+			if t0[i] and t0[i]["name"] == task_name then
+				t0[i] = nil
+				t0s = t0s - 1
+				return
+			end
+		end
+	end
+end
+
+function task_exists(task_name, task_group)
+	if not task_group then
+			log("Ошибка", "[task_exists]: отсутствие параметра - task_group")
+	end
+	if task_group == 1000 then
+		for i = 1, t1000s do
+			if t1000[i] and t1000[i]["name"] == task_name then
+				return true
+			end
+		end
+	end
+	if task_group == 5000 then
+		for i = 1, t5000s do
+			if t5000[i] and t5000[i]["name"] == task_name then
+				return true
+			end
+		end
+	end
+	if task_group == 200 then
+		for i = 1, t200s do
+			if t200[i] and t200[i]["name"] == task_name then
+				return true
+			end
+		end
+	end
+	if task_group == 50 then
+		for i = 1, t50s do
+			if t50[i] and t50[i]["name"] == task_name then
+				return true
+			end
+		end
+	end
+	if task_group == 0 then
+		for i = 1, t0s do
+			if t0[i] and t0[i]["name"] == task_name then
+				return true
+			end
+		end
+	end	
+	return false
+end
+
+-- поиск таска по имени
+function task_search(task_name)
+	for i = 1, t1000s do
+		if t1000[i] and t1000[i]["name"] == task_name then
+			return true
+		end
+	end
+	for i = 1, t5000s do
+		if t5000[i] and t5000[i]["name"] == task_name then
+			return true
+		end
+	end
+	for i = 1, t200s do
+		if t200[i] and t200[i]["name"] == task_name then
+			return true
+		end
+	end
+	for i = 1, t50s do
+		if t50[i] and t50[i]["name"] == task_name then
+			return true
+		end
+	end
+	for i = 1, t0s do
+		if t0[i] and t0[i]["name"] == task_name then
+			return true
+		end
+	end
+	return false
+end
+
+function task_ini()
+	for i = 1, #tasks_list do
+		task_add(tasks_list[i]["name"], tasks_list[i]["task"], tasks_list[i]["group"])
+	end
+end
+
+tasks_list = {
+	-- 50 ms, не использовать ! Перегружено. Добавлять при крайней необходимости прямо в апдейт.
+	-- [] = { ["name"] = "",				["task"] = false,				["group"] = 50 },
+
+	-- 200 ms
+	[1] = { ["name"] = "amk_mod.check_metka",		["task"] = amk_mod.check_metka,			["group"] = 200 },
+	[2] = { ["name"] = "xr_sound.update_actor",		["task"] = xr_sound.update_actor,		["group"] = 200 },
+
+	-- переделать полностью, и вынести отсюда нахрен
+	[3] = { ["name"] = "inventory.update",			["task"] = inventory.update,			["group"] = 200 },
+
+	[4] = { ["name"] = "amk.on_actor_update",		["task"] = amk.on_actor_update,			["group"] = 200 },
+	[5] = { ["name"] = "babah.update",			["task"] = babah.update,			["group"] = 200 },
+	[6] = { ["name"] = "inv_npc.update",			["task"] = inv_npc.update,			["group"] = 200 },
+
+	-- todo: вынести ЭТО из апдейта нафиг !
+	[7] = { ["name"] = "meceniy_work.set_invisible",	["task"] = meceniy_work.set_invisible,		["group"] = 200 },
+	-- Vergas ogg-player, см. выше
+	[8] = { ["name"] = "player_ogg.used_item",		["task"] = player_ogg.used_item,		["group"] = 200 },
+
+	-- 1000 ms
+	[9] = { ["name"] = "meceniy_utils.on_actor_update_callback",["task"] = meceniy_utils.on_actor_update_callback,["group"] = 1000 },
+	[10] = { ["name"] = "arc_main.actor_update",		["task"] = arc_main.actor_update,		["group"] = 1000 },
+	[11] = { ["name"] = "meceniy_work.mainw",		["task"] = meceniy_work.mainw,			["group"] = 1000 },
+	[12] = { ["name"] = "amk_offline_alife.update",		["task"] = amk_offline_alife.update,		["group"] = 200 },
+	[13] = { ["name"] = "doc_viewer.update",		["task"] = doc_viewer.update,			["group"] = 1000 },
+	[14] = { ["name"] = "stco.update",			["task"] = stco.update,				["group"] = 1000 },
+	-- добавлять по колбэку
+	[15] = { ["name"] = "bind_stalker.border_danger",	["task"] = bind_stalker.border_danger,		["group"] = 1000 },
+	[16] = { ["name"] = "xr_kamp.update",			["task"] = xr_kamp.update,			["group"] = 1000 },
+	[17] = { ["name"] = "amk_mod.check_armor",		["task"] = amk_mod.check_armor,			["group"] = 1000 },
+	[18] = { ["name"] = "amk_mod.interactive_music",		["task"] = amk_mod.interactive_music,		["group"] = 1000 },
+	[19] = { ["name"] = "amk_mod.firebat_ammo",		["task"] = amk_mod.firebat_ammo,		["group"] = 1000 },
+	[20] = { ["name"] = "gps_habar.update_gps_state",	["task"] = gps_habar.update_gps_state,		["group"] = 1000 },
+	[21] = { ["name"] = "bind_stalker.hud_blood",		["task"] = bind_stalker.hud_blood,		["group"] = 1000 },
+	[22] = { ["name"] = "bind_stalker.hud_low_health",	["task"] = bind_stalker.hud_low_health,		["group"] = 1000 },
+
+	-- 5000 ms
+	-- Добавлять только при изменениях в инвентаре.
+	[23] = { ["name"] = "inv_manager.on_update",		["task"] = inv_manager.on_update,		["group"] = 5000 }}
+
+watch_value = 0	-- malandrinus
+game_paused=11
+local firstStart = true
+local firstStartWithoutDelay = false
+--local torch_light = false
+--local torch_unknown = false
+active_item_saved = false
+
+
+function actor_binder:update(delta)
+	if _G.watchdog then
+		log( "error", "watchdog: %s", _G.watchdog )
+		a = _G.watchdog / 0
+	end
+	watch_value = game.time()
+	time = time_global()
+	local gp_fn
+	if game_paused > 10 then
+		if game_paused == 11 or t50t == nil or t200t == nil or t1000t == nil or t5000t == nil then
+			t50t, t200t, t1000t, t5000t = time + t50q, time + t200q, time + t1000q, time + t5000q
+			--t50test["entry"], t200test["entry"], t1000test["entry"], t5000test["entry"] = time, time, time, time
+			task_ini()
+			--get_console():execute("load ~~~ actor: 1-st !")
+			game_paused = game_paused +1
+		elseif game_paused == 12 then
+			game_paused = 0
+		else
+			--get_console():execute("load ~~~ actor: paused !")
+			--get_console():execute("load ~~~ weather: "..level.get_weather())
+			--local pos = db.actor:position()
+			--get_console():execute("load ~~~ actor: "..pos.x..", "..pos.y..", "..pos.z.." gv "..db.actor:game_vertex_id().." lv"..db.actor:level_vertex_id())
+			 --local wthr = level.get_weather()
+			 --local lname = level.name()
+			 --if wthr then
+			  --amk.send_tip("Погода: "..wthr.." локация: "..lname,"Отладчик погоды",1,20,"gen_info")
+			-- end
+			game_paused = 2
+		end
+	end
+
+	amk.oau_watchdog = 200
+	amk.oau_reason="actor_binder:update"
+	object_binder.update(self, delta)
+	amk.oau_watchdog = 199
+	game_stats.update(delta, self.object)
+	amk.oau_watchdog = 198
+
+	amk.oau_watchdog = "bind_stalker.dream"	-- $DreamMod  апдейт схемы сна
+	if sleep_manager.is_sleep_active() then
+		local actor = db.actor
+		if actor:alive() then
+			xr_logic.issue_event(actor, db.storage[actor:id()]["ar_sleep"], "update")
+		else
+			--get_console():execute("load [sleep] bind_stalker:update actor die")
+			sleep_manager.stopper()
+		end
+	end
+	biodetector.update()
+	if t1000n == 0 then	-- ни чем не заняты ?
+		if time > t1000t then
+			t1000test["entry"] = time
+			t1000t, t1000n = time + t1000q, 1
+			if not scopeUsed then	-- используем этот цикл под что-нибудь полезное
+				if ui_rad then	--вывод шкалы радиации
+					local show = db.actor.health > 0 and game_options.shkala_rad
+					ui_rad.update(show)
+				end
+
+				if SolvadorHud == 1 then 
+					m_icons.UpdateIcons()
+				end
+				
+				local hud = get_hud()
+				-- время (based on Vergas)
+				local cs = hud:GetCustomStatic("hud_show_time")
+				if cs == nil then
+					hud:AddCustomStatic("hud_show_time", true)
+					cs = hud:GetCustomStatic("hud_show_time")
+				end
+				if cs then
+					local time_h = level.get_time_hours()
+					local time_m = level.get_time_minutes()
+					cs:wnd():SetText(string_format("%02d:%02d", time_h, time_m))
+				end
+
+				--' Вывод сообщения о большой радиации
+				if db.actor.radiation >= 0.7 then
+					local custom_static = hud:GetCustomStatic("cs_radiation_danger")
+					if custom_static == nil then
+						hud:AddCustomStatic("cs_radiation_danger", true)
+						hud:GetCustomStatic("cs_radiation_danger"):wnd():SetTextST("st_radiation_danger")
+					end
+				else
+					local custom_static = hud:GetCustomStatic("cs_radiation_danger")
+					if custom_static ~= nil then
+						hud:RemoveCustomStatic("cs_radiation_danger")
+			end	end	end
+		end
+	else
+		gp_fn = t1000[t1000n]	-- выполняем последовательно что там еще есть
+		if gp_fn then
+			amk.oau_watchdog = gp_fn["name"]
+			gp_fn["fn"]()
+			t1000n = t1000n + 1
+		else
+			t1000n = 0
+			monnoroch_utils.mon_callback:update()	-- и используем остаток
+			if self.warning then	-- сообщение о переполнении нетпакета. todo: оторвать отсюда нафиг.
+				self.warning = nil
+				local hud = get_hud()
+				hud:AddCustomStatic("hud_save_warning")
+				local wnd=hud:GetCustomStatic("hud_save_warning"):wnd()
+				if self.critical==1 then
+					wnd:SetTextST(game.translate_string("amk_warn_trans"))
+					self.critical=nil
+				elseif self.critical==2 then
+					wnd:SetTextST(game.translate_string("amk_warn_trans_critical"))
+					self.critical=nil
+				else wnd:SetTextST(game.translate_string("amk_warn_attention"))
+				end
+			elseif self.wt and self.wt < time then
+				self.wt = nil
+				local hud = get_hud()
+				if hud:GetCustomStatic("hud_save_warning") then
+					hud:RemoveCustomStatic("hud_save_warning")
+				end
+			end
+			
+
+			--t_test = time_global() - t1000test["entry"]
+			--if t_test < t1000test["min"] then t1000test["min"] = t_test end
+			--if t_test > t1000test["max"] then t1000test["max"] = t_test end
+			--t1000test["n"] = t1000test["n"] + 1
+			--t1000test["entry"] = nil
+			--t1000test["total"] = t1000test["total"] + t_test
+			-- действия только раз при загрузке, но уже после полноценного старта игры
+			if firstStart and t5000n == 0 then	-- не включаем паузу, пока не выполнилось ВСЕ
+				firstStart = false
+				
+				--get_console():execute("load [bind_stalker]979 firstStart night_vision_real "..tostring(night_vision_real))
+				if night_vision_real then
+					--get_console():execute("load [bind_stalker]981 firstStart night_vision_real was present")
+					local outfit = db.actor:get_current_outfit()
+					if outfit then
+						local outfitSection = outfit:section()
+						local nvSection = getIniValueStringSimple(outfitSection, "nightvision_sect", false) or false
+						if nvSection and nvSection ~= "" then
+							local effectorName = getIniValueStringSimple(nvSection, "pp_eff_name", "")
+							if effectorName ~= "" then
+								level.add_pp_effector(effectorName, 575757, true)
+								--amk.send_tip("firstStart add_pp_effector, real false, fake true")
+								--get_console():execute("load [bind_stalker]991 firstStart add_pp_effector, real false, fake true")
+								--night_vision_snd = xr_sound.get_safe_sound_object([[weapons\nv_loop]])
+								--night_vision_snd:play(db.actor, 0, sound_object.s2d+sound_object.looped)
+								
+								nightvision_snd_loop()
+								
+								night_vision_fake = true
+								--get_console():execute("load [bind_stalker]998 firstStart night_vision_fake = true")
+								
+								--nightvision_snd_start_hide()
+							end
+						end
+					end
+				end
+				night_vision_real = false
+				--get_console():execute("load [bind_stalker]1006 firstStart night_vision_real = false")
+
+				-- запускаем плеер на продолжение проигрывания
+				player_ogg.start_pleer_post_save()
+				braad_test.marsh_first_spawn()
+				if level.name() == "l10_radar" and not has_alife_info("bar_deactivate_radar_done") then
+					on_radar_level = true	-- активируем убийственный радар только на радаре ;)
+				end
+				-- ставим игру на паузу после загрузки
+				if game_options.game_pause and not game_options.new_game then
+					if ui_rad then	--вывод шкалы радиации
+						local show = db.actor.health > 0 and game_options.shkala_rad
+						ui_rad.update(show)
+					end
+					device():pause(true)
+				end
+				amk_mod.check_blowout_on_load()
+				
+			end
+	end	end
+
+	if t5000n == 0 then	-- ни чем не заняты ?
+		if time > t5000t then
+			t5000test["entry"] = time
+			t5000t, t5000n = time + t5000q, 1
+			braad_test.grib_respawn()	-- используем этот цикл под что-нибудь полезное
+		end
+	else
+		gp_fn =  t5000[t5000n]	-- выполняем последовательно что там еще есть
+		if gp_fn then
+			amk.oau_watchdog = gp_fn["name"]
+			gp_fn["fn"]()
+			t5000n = t5000n + 1
+		else
+			t5000n = 0
+			self.weather_manager:update()	-- используем остаток
+			--t_test = time_global() - t5000test["entry"]
+			--if t_test < t5000test["min"] then t5000test["min"] = t_test end
+			--if t_test > t5000test["max"] then t5000test["max"] = t_test end
+			--t5000test["n"] = t5000test["n"] + 1
+			--t5000test["entry"] = nil
+			--t5000test["total"] = t5000test["total"] + t_test
+	end	end
+
+	-- Обновление отключения ввода с клавиатуры.
+	if self.st.disable_input_time ~= nil
+	  and game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle then
+		level.enable_input()
+		self.st.disable_input_time = nil
+	end
+	-- Обновление сна с переносом чувака в указанную позицию
+	if self.st.sleep_relocate_time ~= nil
+	  and game.get_game_time():diffSec(self.st.sleep_relocate_time) >= self.st.sleep_relocate_idle then
+		--get_console():execute("load [sleep] bind_stalker:update sleep_relocate_time ")
+		self.object:set_actor_position(self.st.sleep_relocate_point)
+		local dir = self.st.sleep_relocate_point:sub(self.st.sleep_relocate_look)
+		self.object:set_actor_direction(dir:getH())
+		self.st.sleep_relocate_time = nil
+	end
+
+	-- Апдейт прятание оружия игрока во время диалога
+	if weapon_hide == true or self.object:is_talking() then
+		if self.weapon_hide == false then
+			self.object:hide_weapon()
+			self.weapon_hide = true
+		end
+	else
+		if self.weapon_hide == true then
+			self.object:restore_weapon()
+			self.weapon_hide = false
+		end
+	end 
+
+	amk.oau_watchdog=191
+	amk.oau_reason="actor_binder:bind_restrictor"
+	-- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
+	if self.next_restrictors_update_time < time then
+		bind_restrictor.actor_update(delta)
+		bind_mteleport.actor_update(delta)	-- Апдейтим наш телепорт (Kostya_level)
+		self.next_restrictors_update_time = time + 200
+		task_manager.actor_update()
+	end
+	amk.oau_watchdog=190
+	-- обновление постпроцессов
+	if post_process ~= 0 then
+		if post_process:update() == true then post_process = 0	end
+	end
+
+	if self.bCheckStart then
+		if not has_alife_info("storyline_actor_start")
+		  and (level.name() == "l01_escape") then
+			self.object:give_info_portion("storyline_actor_start")
+			_G.g_start_avi = true
+			lc_control.clear_all_lc()	-- удаление олспавновых переходов при НИ.
+							-- пока здесь. потом весь блок вынести
+		end
+		-- if not has_alife_info("encyclopedy") then self.object:give_info_portion("encyclopedy") end
+		if not has_alife_info("global_dialogs") then self.object:give_info_portion("global_dialogs") end
+		if not has_alife_info("level_changer_icons") then self.object:give_info_portion("level_changer_icons") end
+
+	--	level_tasks.add_lchanger_location()
+		self.bCheckStart = false
+	end
+
+	amk.on_actor_update_2()
+
+	if bind_art then bind_art.beep_art(delta) end
+
+	if xrs_ai then xrs_ai.actor_update(delta) end
+
+	if t50n == 0 then	-- ни чем не заняты ?
+		if time > t50t then
+			t50test["entry"] = time
+			t50t, t50n = time + t50q, 1
+			-- используем этот цикл под что-нибудь полезное
+			sol_sound.update()	-- todo: убрать
+		end
+	else
+		t50n = 0
+		amk_mod.doabcevents()	-- todo: убрать
+	end
+
+	if not firstStartWithoutDelay then 
+		firstStartWithoutDelay = true
+		if game_options.new_game then
+			if string.find(command_line(), "-nointro") ~= nil then
+				game.start_tutorial("intro_game")
+			end
+		end
+		
+		if db.actor:has_info("SergeT_talk_start") and not has_alife_info("bar_kpk_remont_done") and not task_exists("kpk_hide", 0) then
+			task_add("kpk_hide", arhara_dialog.disabl_karta, 0)
+		end
+		
+		--night_vision_outfit_id = db.actor:get_current_outfit()
+		--night_vision_outfit_id = night_vision_outfit_id and night_vision_outfit_id:id()
+		--amk.send_tip("firstStartWithoutDelay night_vision_outfit_id: "..tostring(night_vision_outfit_id))
+		if not active_item_saved then
+			--db.actor:hide_weapon()
+			local active_item = db.actor:active_item()
+			--amk.send_tip("firstStart active_item: "..tostring(active_item and active_item:name())..", active_slot: "..tostring(db.actor:active_slot())..", active_item_saved: "..tostring(active_item_saved))
+			if active_item then
+				db.actor:activate_slot(5)
+			end
+		end
+	end
+
+	if t200n == 0 then
+		if time > t200t then
+			t200test["entry"] = time
+			t200t, t200n = time + t200q, 1
+			local actor = db.actor
+			if actor:accuracy() < 0.0015 then
+				if not scopeUsed then
+					local item = actor:active_item()
+					local item_id = item and item:id()
+					if item_id then
+						if item_id == last_weapon_id then
+							scopeUsed = last_weapon_scope
+							night_visor = last_weapon_nv
+						else
+							local section = item:section()
+							if section == "wpn_binoc" then
+								scopeUsed = true
+							elseif section == "wpn_crossbow" then
+								scopeUsed = true
+								night_visor = "bast.ppe"
+							elseif IAmAWeaponFireOnly[item:clsid()] then
+								local scope_type = getIniValueFloatSimple(section, "scope_status", 0)
+								local t = scope_type == 2 and amk.get_weapon_data(alife():object(item_id))
+								scopeUsed = scope_type == 1 or (t and bit_and(t.addon_flags, 1) == 1)
+							end
+						end
+						last_weapon_nv = night_visor
+						last_weapon_scope = scopeUsed
+						if night_visor then
+							level.add_pp_effector("bast.ppe", 1034, true)
+						end
+						if scopeUsed then
+							local hud = get_hud()
+							ui_rad.update(false)
+							local cs = hud:GetCustomStatic("hud_show_time")
+							if cs then hud:RemoveCustomStatic("hud_show_time") end
+							m_icons.RemoveIcons() 
+						end
+					end
+					last_weapon_id = item_id
+				end
+			else
+				scopeUsed = false
+				if night_visor then
+					level.remove_pp_effector(1034)
+					night_visor = false
+				end
+			end
+			
+			local outfit = db.actor:get_current_outfit()
+			local night_vision_outfit_current_id = outfit and outfit:id()
+			local outfitSection = outfit and outfit:section()
+			local nvSection = outfitSection and getIniValueStringSimple(outfitSection, "nightvision_sect", false) or false
+			local torch = db.actor:object("device_torch")
+
+			if torch --[[and night_vision_outfit_current_id and night_vision_outfit_current_id == night_vision_outfit_id]] then
+				local sobj = alife():object(torch:id())
+				if sobj then
+					local data = m_netpk.net_cse_alife_item_torch(sobj)
+					data = data:get()
+					local night_vision_real_new = bit_and(data.upd.torch_flags, 2) ~= 0 and nvSection and nvSection ~= "" and night_vision_outfit_current_id == night_vision_outfit_id
+					if not night_vision_on_take_item or not night_vision_real_new then
+						if night_vision_real and not night_vision_real_new then
+							nightvision_snd_off()
+						elseif not night_vision_real and night_vision_real_new and not night_vision_fake then
+							nightvision_snd_start()
+						end
+						night_vision_on_take_item = false
+					end
+					night_vision_real = night_vision_real_new
+				else
+					night_vision_real = false
+				end
+			else
+				night_vision_real = false
+			end
+
+			if night_vision_real and night_vision_fake and not night_vision_on_take_item or not outfit_restored and night_vision_outfit_current_id ~= night_vision_outfit_id then
+				if night_vision_real or night_vision_fake then
+					nightvision_snd_off()
+				end
+				if night_vision_real or night_vision_outfit_current_id ~= night_vision_outfit_id and db.actor:alive() and torch then
+					local storch = alife():object(torch:id())
+					if storch and not db.actor:marked_dropped(torch) then
+						db.actor:drop_item(torch)
+						db.actor:mark_item_dropped(torch)
+						alife():release(storch, true)
+						amk.spawn_item_in_inv("device_torch")
+						torchFirst = false
+					end
+					night_vision_real = false
+				end
+				if night_vision_fake then
+					level.remove_pp_effector(575757)
+					night_vision_fake = false
+				end
+			end
+			
+			if not outfit_restored then
+				night_vision_outfit_id = night_vision_outfit_current_id
+			end
+		end
+
+	else
+		gp_fn =  t200[t200n]
+		if gp_fn then		-- выполняем последовательно что там еще есть
+			amk.oau_watchdog = gp_fn["name"]
+			gp_fn["fn"]()
+			t200n = t200n + 1
+		else
+			t200n = 0
+			if rx_ai then rx_ai.actor_update() end	-- используем остаток
+			aem_manager.get_aem():update()	-- ARENA_EXTENSION_MOD
+			--t_test = time_global() - t200test["entry"]
+			--if t_test < t200test["min"] then t200test["min"] = t_test end
+			--if t_test > t200test["max"] then t200test["max"] = t_test end
+			--t200test["n"] = t200test["n"] + 1
+			--t200test["entry"] = nil
+			--t200test["total"] = t200test["total"] + t_test
+	end	end
+	--if rx_ai then rx_ai.actor_update() end
+	if t0s > 0 then
+		for i = 1, t0s do
+			amk.oau_watchdog = t0[i]["name"]
+			t0[i]["fn"]()
+		end
+	end
+
+	amk.oau_watchdog = 0
+	amk.oau_reason=""
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:save(packet)
+
+  if rx_ai then rx_ai.actor_save(packet) end
+
+  monnoroch_utils.mon_callback:save(packet)
+  
+  local pk1=fake_net_packet.fake_net_packet()
+  self:save_old(pk1)
+  if pk1:w_tell()>7500 then
+    self.warning=true
+    self.critical=1
+    self.wt=time_global()+60000
+    amk.emergency_cleanup()
+    self:save_old(packet)
+-- amk.send_tip("Actor packet size critical=2 >7500 ","Размер нетпакета ГГ критический:"..pk1:w_tell(),0,15,"gen_info") -- это добавляем
+    amk.emergency_restore()
+  elseif pk1:w_tell()>6000 then
+    self.warning=true
+    self.wt=time_global()+60000
+    self:save_old(packet)
+-- amk.send_tip("Actor packet size critical=1 >6000 ","Размер нетпакета ГГ допустимый:"..pk1:w_tell(),0,15,"gen_info") -- это добавляем
+  else
+    self:save_old(packet)
+    self.wt=time_global()
+-- amk.send_tip("Actor packet size <6000 ","Размер нетпакета ГГ мал. Всё ОК:"..pk1:w_tell(),0,15,"gen_info") -- это добавляем
+  end
+  self.is_saved = true
+end
+
+
+function actor_binder:save_old(packet)
+  
+	local save_treasure_manager = true
+	object_binder.save(self, packet)
+
+	--' Сохраняем уровень сложности
+	if save_treasure_manager == true then
+		packet:w_u8(level.get_game_difficulty() + 128)
+	else
+		packet:w_u8(level.get_game_difficulty())
+	end
+	--get_console():execute("load [bind_stalker]1455 night_vision_fake "..tostring(night_vision_fake))
+	if not night_vision_fake then
+		local torch = db.actor:object("device_torch")
+		night_vision_real = false
+		--torch_light = false
+		--torch_unknown = false
+		if torch then
+			local sobj = alife():object(torch:id())
+			if sobj then
+				local outfit = db.actor:get_current_outfit()
+				--local night_vision_outfit_current_id = outfit and outfit:id()
+				local outfitSection = outfit and outfit:section()
+				local nvSection = outfitSection and getIniValueStringSimple(outfitSection, "nightvision_sect", false) or false
+				--local pk = m_netpk.get(sobj,1) --/ запрос нет-пакета (only 'state')
+				--local data = pk:get() --/ читаем данные из нет-пакета
+				local data = m_netpk.net_cse_alife_item_torch(sobj)
+				data = data:get()
+				night_vision_real = bit_and(data.upd.torch_flags, 2) ~= 0 and nvSection and nvSection ~= ""
+				--get_console():execute("load [bind_stalker]1473 night_vision_real "..tostring(night_vision_real).." outfitSection: "..tostring(outfitSection).." nvSection: "..tostring(nvSection))
+				--amk.send_tip("actor_binder:save_old night_vision_real="..tostring(night_vision_real))
+				--torch_light = bit_and(data.upd.torch_flags, 1) ~= 0
+				--torch_unknown = bit_and(data.upd.torch_flags, 4) ~= 0
+				--amk.dump_table(data,1,"device_torch netpk")
+			end
+		end
+	end
+	
+	local flags = 0
+	if self.st.disable_input_time ~= nil then flags = bit_or(flags, 1) end
+	if night_vision_real or night_vision_fake then flags = bit_or(flags, 2) end
+	if self.object:active_item() then flags = bit_or(flags, 4) end
+	--if torch_unknown then flags = bit_or(flags, 8) end
+	--get_console():execute("load [bind_stalker]1487 night_vision_real saved "..tostring(night_vision_real).." flags: "..tostring(flags))
+	--get_console():execute("load [bind_stalker] active_item saved "..tostring(self.object:active_item() and self.object:active_item():section()).." flags: "..tostring(bit_and(flags,4) ~= 0))
+	--get_console():execute("load [bind_stalker] torch_unknown saved "..tostring(torch_unknown).." flags: "..tostring(flags))
+
+	packet:w_u8(flags)
+	if self.st.disable_input_time ~= nil then
+		utils.w_CTime(packet, self.st.disable_input_time)
+	end
+	--' Сохраняем данные об отключенном вводе
+	--[[if self.st.disable_input_time == nil then
+		packet:w_bool(false)
+	else
+		packet:w_bool(true)
+		utils.w_CTime(packet, self.st.disable_input_time)
+	end]]
+	amk.oAmkLauncher:SaveData(self.object)
+
+	xr_logic.pstor_save_all(self.object, packet)
+	self.weather_manager:save(packet)
+	
+	if save_treasure_manager == true then
+		treasure_manager.save(packet)      
+	end                                  
+
+	task_manager.save(packet)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:load(reader)
+	object_binder.load(self, reader)
+    monnoroch_utils.mon_callback:load(reader)
+	--' Загружаем уровень сложности
+	local game_difficulty = reader:r_u8()
+	
+	local load_treasure_manager = false      
+	if game_difficulty >= 128 then           
+		game_difficulty = game_difficulty - 128
+		load_treasure_manager = true           
+	end                                      
+
+	
+	--get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
+
+	if reader:r_eof() then
+		abort("SAVE FILE IS CORRUPT actor_binder:load "..self.object:name().." завис актор - сушите весла!")
+	end
+
+	local flags = reader:r_u8()
+
+	local stored_input_time = bit_and(flags, 1) ~= 0 --reader:r_bool()
+	night_vision_real = bit_and(flags, 2) ~= 0
+	--amk.send_tip("actor_binder:load night_vision_real="..tostring(night_vision_real))
+	active_item_saved = bit_and(flags, 4) ~= 0
+	--torch_unknown = bit_and(flags, 8) ~= 0
+	--get_console():execute("load [bind_stalker]1544 night_vision_real loaded "..tostring(night_vision_real).." "..(night_vision_real and 1 or 0).." flags: "..tostring(flags))
+	--get_console():execute("load [bind_stalker] active_item loaded "..tostring(active_item_saved))
+	--get_console():execute("load [bind_stalker] torch_unknown loaded "..tostring(torch_unknown).." "..(torch_unknown and 1 or 0).." flags: "..tostring(flags))
+	--get_console():execute("kN "..(night_vision_real and 1 or 0))
+	if stored_input_time then
+		self.st.disable_input_time = utils.r_CTime(reader)
+	end
+
+	xr_logic.pstor_load_all(self.object, reader)
+    amk.oAmkLauncher:LoadData(self.object)
+    
+	self.weather_manager:load(reader)
+	
+	if load_treasure_manager == true then
+		treasure_manager.load(reader)      
+	end                                  
+
+	
+	task_manager.load(reader)
+  
+  if xr_logic.pstor_retrieve(self.object,"emerg",false) then -- нельзя использовать amk.load_varible(), так как db.actor ещё не определён
+    self.warning=true
+    self.critical=2
+    self.wt=time_global()+60000
+  end
+end
+----------------------------------------------------------------------------------------------------------------------
+
+--старт префетча звуков
+--if string.find(command_line(), "-noprefetch") == nil then
+--  sound_prefetch.prefetch_sounds()
+--end
+
+
+-- Weapon functions
+function hide_weapon()
+  weapon_hide = true
+end
+function restore_weapon()
+  weapon_hide = false
+end
+
+--// this is test for section iteration
+--/**
+local function test_section_iteration(file_name, section_name)
+  local     file = ini_file(file_name)
+  local     n = file:line_count(section_name)
+  local     id, value = "", "", result
+  for i=0,n-1 do
+    result, id, value = file:r_line(section_name,i,"","")
+  end
+end
+
+--test_section_iteration("system.ltx","space_restrictor")
+--/**/
+function actor_binder:on_use_object(obj)
+	sol_use_object.on_use_object(obj)
+	--medkit_use.lose_item(obj)
+	meceniy_outfit.on_item_drop(obj)
+    monnoroch_utils.mon_callback:on_use_object(obj)
+end
+
+function nightvision_snd_start_hide()
+amk.send_tip("nightvision_snd_start_hide")
+	local uFileSystem = getFS()
+	
+	local f1 = uFileSystem:update_path("$game_sounds$",[[weapons\nv_start.ogg]])
+	local f2 = uFileSystem:update_path("$game_sounds$",[[weapons\nv_start_off.ogg]])
+	if not uFileSystem:exist(f2) then
+		uFileSystem:file_copy(f1, f2)
+	end
+
+	local f1 = uFileSystem:update_path("$game_sounds$",[[weapons\nv_loop.ogg]])
+	local f2 = uFileSystem:update_path("$game_sounds$",[[weapons\nv_start.ogg]])
+	uFileSystem:file_copy(f1, f2)
+end
+
+function nightvision_snd_start_restore()
+amk.send_tip("nightvision_snd_start_restore")
+	local uFileSystem = getFS()
+	
+	local f1 = uFileSystem:update_path("$game_sounds$",[[weapons\nv_start_off.ogg]])
+	local f2 = uFileSystem:update_path("$game_sounds$",[[weapons\nv_start.ogg]])
+	if uFileSystem:exist(f1) then
+		uFileSystem:file_rename(f1, f2, true)
+	end
+end
+
+function nightvision_snd_start()
+--amk.send_tip("nightvision_snd_start")
+
+	night_vision_snd = xr_sound.get_safe_sound_object([[weapons\nv_start_new]])
+	night_vision_snd:play(db.actor, 0, sound_object.s2d)
+
+	nightvision_snd_loop()
+end
+
+function nightvision_snd_loop()
+--amk.send_tip("nightvision_snd_loop")
+
+	if not night_vision_snd_loop or not night_vision_snd_loop:playing() then
+
+		night_vision_snd_loop = xr_sound.get_safe_sound_object([[weapons\nv_loop_new]])
+		night_vision_snd_loop:play(db.actor, 0, sound_object.s2d+sound_object.looped)
+	end
+
+end
+
+function nightvision_snd_off()
+--amk.send_tip("nightvision_snd_off")
+	if night_vision_snd_loop and night_vision_snd_loop:playing() then
+		night_vision_snd_loop:stop()
+	end
+
+	night_vision_snd = xr_sound.get_safe_sound_object([[weapons\nv_off_new]])
+	night_vision_snd:play(db.actor, 0, sound_object.s2d)
+
+end

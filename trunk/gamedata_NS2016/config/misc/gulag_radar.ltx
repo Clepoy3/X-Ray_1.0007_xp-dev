@@ -1,0 +1,961 @@
+;-------------------------------------------------------------------------------------------------
+;-- RADAR ANTENA
+;-------------------------------------------------------------------------------------------------
+[logic@rad_alarm]
+active = walker@rad_alarm
+
+[walker@rad_alarm]
+path_walk = alarm_walk
+danger=danger_condition
+
+[danger_condition]
+danger_expiration_time = 60000
+danger_inertion_time =  90000
+;--------------------------------------------------------------------------------------------------
+
+;-- Свобода на перекрёстке онлайн
+[logic@rad_freedom_kamp]
+active = kamp@rad_freedom
+
+[kamp@rad_freedom]
+center_point  = kamp
+path_walk = kamp_task
+
+[logic@rad_freedom_walker1]
+active = walker1@rad_freedom
+
+[walker1@rad_freedom]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_freedom_walker2]
+active = walker2@rad_freedom
+
+[walker2@rad_freedom]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_freedom_walker3]
+active = walker3@rad_freedom
+
+[walker3@rad_freedom]
+path_walk = walk3
+path_look = look3
+
+;-- Свобода на перекрёстке оффлайн
+[logic@rad_freedom_walker4]
+active = walker4@rad_freedom
+
+[walker4@rad_freedom]
+path_walk = walk4
+path_look = look4
+
+[logic@rad_freedom_walker5]
+active = walker5@rad_freedom
+
+[walker5@rad_freedom]
+path_walk = walk5
+path_look = look5
+
+[logic@rad_freedom_walker6]
+active = walker6@rad_freedom
+
+[walker6@rad_freedom]
+path_walk = walk6
+path_look = look6
+
+[logic@rad_freedom_walker7]
+active = walker7@rad_freedom
+
+[walker7@rad_freedom]
+path_walk = walk7
+path_look = look7
+
+[logic@rad_freedom_walker8]
+active = walker8@rad_freedom
+
+[walker8@rad_freedom]
+path_walk = walk8
+path_look = look8
+
+[logic@rad_freedom_walker9]
+active = walker9@rad_freedom
+
+[walker9@rad_freedom]
+path_walk = walk9
+path_look = look9
+
+;-- Сталкеры в лесу
+[logic@rad_stalker_les_kamp]
+active = kamp@rad_stalker_les
+
+[kamp@rad_stalker_les]
+center_point  = kamp
+path_walk = kamp_task
+
+[logic@rad_stalker_les_walker1]
+active = walker1@rad_stalker_les
+
+[walker1@rad_stalker_les]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_stalker_les_walker2]
+active = walker2@rad_stalker_les
+
+[walker2@rad_stalker_les]
+path_walk = walk2
+path_look = look2
+
+
+;-- Монолит 1 камперы
+[logic@rad_monolith1_camper1]
+active = camper1@rad_monolith1
+danger = danger_ignore@rad_monolith1
+
+[camper1@rad_monolith1]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_monolith1_camper2]
+active = camper2@rad_monolith1
+danger = danger_ignore@rad_monolith1
+
+[camper2@rad_monolith1]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_monolith1_camper3]
+active = camper3@rad_monolith1
+danger = danger_ignore@rad_monolith1
+
+[camper3@rad_monolith1]
+path_walk = walk3
+path_look = look3
+
+[logic@rad_monolith1_camper4]
+active = camper4@rad_monolith1
+danger = danger_ignore@rad_monolith1
+
+[camper4@rad_monolith1]
+path_walk = walk4
+path_look = look4
+
+[logic@rad_monolith1_camper5]
+active = camper5@rad_monolith1
+danger = danger_ignore@rad_monolith1
+
+[camper5@rad_monolith1]
+path_walk = walk5
+path_look = look5
+
+[logic@rad_monolith1_camper6]
+active = camper6@rad_monolith1
+danger = danger_ignore@rad_monolith1
+
+[camper6@rad_monolith1]
+path_walk = walk6
+path_look = look6
+
+[logic@rad_monolith1_camper7]
+active = camper7@rad_monolith1
+danger = danger_ignore@rad_monolith1
+
+[camper7@rad_monolith1]
+path_walk = walk7
+path_look = look7
+
+;-- Монолит 1 валкеры
+[logic@rad_monolith1_walker8]
+active = walker8@rad_monolith1
+
+[walker8@rad_monolith1]
+path_walk = walk8
+path_look = look8
+
+[logic@rad_monolith1_walker9]
+active = walker9@rad_monolith1
+
+[walker9@rad_monolith1]
+path_walk = walk9
+path_look = look9
+
+[logic@rad_monolith1_walker10]
+active = walker10@rad_monolith1
+
+[walker10@rad_monolith1]
+path_walk = walk10
+path_look = look10
+
+[logic@rad_monolith1_walker11]
+active = walker11@rad_monolith1
+
+[walker11@rad_monolith1]
+path_walk = walk11
+path_look = look11
+
+;-- Монолит 2 камперы
+[logic@rad_monolith2_camper1]
+active = camper1@rad_monolith2
+danger = danger_ignore@rad_monolith2
+
+[camper1@rad_monolith2]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_monolith2_camper2]
+active = camper2@rad_monolith2
+danger = danger_ignore@rad_monolith2
+
+[camper2@rad_monolith2]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_monolith2_camper3]
+active = camper3@rad_monolith2
+danger = danger_ignore@rad_monolith2
+
+[camper3@rad_monolith2]
+path_walk = walk3
+path_look = look3
+
+[logic@rad_monolith2_camper4]
+active = camper4@rad_monolith2
+danger = danger_ignore@rad_monolith2
+
+[camper4@rad_monolith2]
+path_walk = walk4
+path_look = look4
+
+[logic@rad_monolith2_camper5]
+active = camper5@rad_monolith2
+danger = danger_ignore@rad_monolith2
+
+[camper5@rad_monolith2]
+path_walk = walk5
+path_look = look5
+
+[logic@rad_monolith2_camper6]
+active = camper6@rad_monolith2
+danger = danger_ignore@rad_monolith2
+
+[camper6@rad_monolith2]
+path_walk = walk6
+path_look = look6
+
+[logic@rad_monolith2_camper7]
+active = camper7@rad_monolith2
+danger = danger_ignore@rad_monolith2
+
+[camper7@rad_monolith2]
+path_walk = walk7
+path_look = look7
+
+;-- Монолит 2 валкеры
+[logic@rad_monolith2_walker8]
+active = walker8@rad_monolith2
+
+[walker8@rad_monolith2]
+path_walk = walk8
+path_look = look8
+
+[logic@rad_monolith2_walker9]
+active = walker9@rad_monolith2
+
+[walker9@rad_monolith2]
+path_walk = walk9
+path_look = look9
+
+;-- Монолит 3 валкеры
+[logic@rad_monolith3_walker1]
+active = walker1@rad_monolith3
+
+[walker1@rad_monolith3]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_monolith3_walker2]
+active = walker2@rad_monolith3
+
+[walker2@rad_monolith3]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_monolith3_walker3]
+active = walker3@rad_monolith3
+
+[walker3@rad_monolith3]
+path_walk = walk3
+path_look = look3
+
+[logic@rad_monolith3_walker4]
+active = walker4@rad_monolith3
+
+[walker4@rad_monolith3]
+path_walk = walk4
+path_look = look4
+
+[logic@rad_monolith3_walker5]
+active = walker5@rad_monolith3
+
+[walker5@rad_monolith3]
+path_walk = walk5
+path_look = look5
+
+;-- Монолит 3 камперы
+[logic@rad_monolith3_camper6]
+active = camper6@rad_monolith3
+danger = danger_ignore@rad_monolith3
+
+[camper6@rad_monolith3]
+path_walk = walk6
+path_look = look6
+
+[logic@rad_monolith3_camper7]
+active = camper7@rad_monolith3
+danger = danger_ignore@rad_monolith3
+
+[camper7@rad_monolith3]
+path_walk = walk7
+path_look = look7
+
+[logic@rad_monolith3_camper8]
+active = camper8@rad_monolith3
+danger = danger_ignore@rad_monolith3
+
+[camper8@rad_monolith3]
+path_walk = walk8
+path_look = look8
+
+[logic@rad_monolith3_camper9]
+active = camper9@rad_monolith3
+danger = danger_ignore@rad_monolith3
+
+[camper9@rad_monolith3]
+path_walk = walk9
+path_look = look9
+
+[logic@rad_monolith3_camper10]
+active = camper10@rad_monolith3
+danger = danger_ignore@rad_monolith3
+
+[camper10@rad_monolith3]
+path_walk = walk10
+path_look = look10
+
+[logic@rad_monolith3_camper11]
+active = camper11@rad_monolith3
+danger = danger_ignore@rad_monolith3
+
+[camper11@rad_monolith3]
+path_walk = walk11
+path_look = look11
+
+[logic@rad_monolith3_camper12]
+active = camper12@rad_monolith3
+danger = danger_ignore@rad_monolith3
+
+[camper12@rad_monolith3]
+path_walk = walk12
+path_look = look12
+
+[logic@rad_monolith3_camper13]
+active = camper13@rad_monolith3
+danger = danger_ignore@rad_monolith3
+
+[camper13@rad_monolith3]
+path_walk = walk13
+path_look = look13
+
+;-- Монолит 4
+[logic@rad_monolith4_kamp]
+active = kamp@rad_monolith4
+
+[kamp@rad_monolith4]
+center_point  = kamp
+path_walk = kamp_task
+
+[logic@rad_monolith4_walker1]
+active = walker1@rad_monolith4
+
+[walker1@rad_monolith4]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_monolith4_walker2]
+active = walker2@rad_monolith4
+
+[walker2@rad_monolith4]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_monolith4_walker3]
+active = walker3@rad_monolith4
+
+[walker3@rad_monolith4]
+path_walk = walk3
+path_look = look3
+
+[logic@rad_monolith4_walker4]
+active = walker4@rad_monolith4
+
+[walker4@rad_monolith4]
+path_walk = walk4
+path_look = look4
+
+;-- Монолит 5 камперы
+[logic@rad_monolith5_camper1]
+active = camper1@rad_monolith5
+danger = danger_ignore@rad_monolith5
+
+[camper1@rad_monolith5]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_monolith5_camper2]
+active = camper2@rad_monolith5
+danger = danger_ignore@rad_monolith5
+
+[camper2@rad_monolith5]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_monolith5_camper3]
+active = camper3@rad_monolith5
+danger = danger_ignore@rad_monolith5
+
+[camper3@rad_monolith5]
+path_walk = walk3
+path_look = look3
+
+[logic@rad_monolith5_camper4]
+active = camper4@rad_monolith5
+danger = danger_ignore@rad_monolith5
+
+[camper4@rad_monolith5]
+path_walk = walk4
+path_look = look4
+
+[logic@rad_monolith5_camper5]
+active = camper5@rad_monolith5
+danger = danger_ignore@rad_monolith5
+
+[camper5@rad_monolith5]
+path_walk = walk5
+path_look = look5
+
+[logic@rad_monolith5_camper6]
+active = camper6@rad_monolith5
+danger = danger_ignore@rad_monolith5
+
+[camper6@rad_monolith5]
+path_walk = walk6
+path_look = look6
+
+[logic@rad_monolith5_camper7]
+active = camper7@rad_monolith5
+danger = danger_ignore@rad_monolith5
+
+[camper7@rad_monolith5]
+path_walk = walk7
+path_look = look7
+
+[logic@rad_monolith5_camper8]
+active = camper8@rad_monolith5
+danger = danger_ignore@rad_monolith5
+
+[camper8@rad_monolith5]
+path_walk = walk8
+path_look = look8
+
+;-- Монолит 5 валкеры
+[logic@rad_monolith5_walker9]
+active = walker9@rad_monolith5
+
+[walker9@rad_monolith5]
+path_walk = walk9
+path_look = look9
+
+[logic@rad_monolith5_walker10]
+active = walker10@rad_monolith5
+
+[walker10@rad_monolith5]
+path_walk = walk10
+path_look = look10
+
+[logic@rad_monolith5_walker11]
+active = walker11@rad_monolith5
+
+[walker11@rad_monolith5]
+path_walk = walk11
+path_look = look11
+
+[logic@rad_monolith5_walker12]
+active = walker12@rad_monolith5
+
+[walker12@rad_monolith5]
+path_walk = walk12
+path_look = look12
+
+[logic@rad_monolith5_walker13]
+active = walker13@rad_monolith5
+
+[walker13@rad_monolith5]
+path_walk = walk13
+path_look = look13
+
+[logic@rad_monolith5_walker14]
+active = walker14@rad_monolith5
+
+[walker14@rad_monolith5]
+path_walk = walk14
+path_look = look14
+
+[logic@rad_monolith5_walker15]
+active = walker15@rad_monolith5
+
+[walker15@rad_monolith5]
+path_walk = walk15
+path_look = look15
+
+[logic@rad_monolith5_walker16]
+active = walker16@rad_monolith5
+
+[walker16@rad_monolith5]
+path_walk = walk16
+path_look = look16
+
+[logic@rad_monolith5_walker17]
+active = walker17@rad_monolith5
+
+[walker17@rad_monolith5]
+path_walk = walk17
+path_look = look17
+
+[logic@rad_monolith5_walker18]
+active = walker18@rad_monolith5
+
+[walker18@rad_monolith5]
+path_walk = walk18
+path_look = look18
+
+[logic@rad_monolith5_walker19]
+active = walker19@rad_monolith5
+
+[walker19@rad_monolith5]
+path_walk = walk19
+path_look = look19
+
+[logic@rad_monolith5_walker20]
+active = walker20@rad_monolith5
+
+[walker20@rad_monolith5]
+path_walk = walk20
+path_look = look20
+
+;--' Военные камперы на территории антенн
+[logic@rad_military1_camper1]
+active = camper1@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper1@rad_military1]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_military1_camper2]
+active = camper2@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper2@rad_military1]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_military1_camper3]
+active = camper3@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper3@rad_military1]
+path_walk = walk3
+path_look = look3
+
+[logic@rad_military1_camper4]
+active = camper4@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper4@rad_military1]
+path_walk = walk4
+path_look = look4
+
+[logic@rad_military1_camper5]
+active = camper5@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper5@rad_military1]
+path_walk = walk5
+path_look = look5
+
+[logic@rad_military1_camper6]
+active = camper6@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper6@rad_military1]
+path_walk = walk6
+path_look = look6
+
+[logic@rad_military1_camper7]
+active = camper7@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper7@rad_military1]
+path_walk = walk7
+path_look = look7
+
+[logic@rad_military1_camper8]
+active = camper8@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper8@rad_military1]
+path_walk = walk8
+path_look = look8
+
+[logic@rad_military1_camper9]
+active = camper9@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper9@rad_military1]
+path_walk = walk9
+path_look = look9
+
+[logic@rad_military1_camper10]
+active = camper10@rad_military1
+danger = danger_ignore@rad_military1
+
+[camper10@rad_military1]
+path_walk = walk10
+path_look = look10
+
+;-- Военные валкеры на территории антенн
+[logic@rad_military1_walker11]
+active = walker11@rad_military1
+
+[walker11@rad_military1]
+path_walk = walk11
+path_look = look11
+
+[logic@rad_military1_walker12]
+active = walker12@rad_military1
+
+[walker12@rad_military1]
+path_walk = walk12
+path_look = look12
+
+[logic@rad_military1_walker13]
+active = walker13@rad_military1
+
+[walker13@rad_military1]
+path_walk = walk13
+
+[logic@rad_military1_walker14]
+active = walker14@rad_military1
+
+[walker14@rad_military1]
+path_walk = walk14
+
+[logic@rad_military1_walker15]
+active = walker15@rad_military1
+
+[walker15@rad_military1]
+path_walk = walk15
+path_look = look15
+
+[logic@rad_military1_walker16]
+active = walker16@rad_military1
+
+[walker16@rad_military1]
+path_walk = walk16
+path_look = look16
+
+[logic@rad_military1_walker17]
+active = walker17@rad_military1
+
+[walker17@rad_military1]
+path_walk = walk17
+path_look = look17
+
+[logic@rad_military1_walker18]
+active = walker18@rad_military1
+
+[walker18@rad_military1]
+path_walk = walk18
+
+[logic@rad_military1_walker19]
+active = walker19@rad_military1
+
+[walker19@rad_military1]
+path_walk = walk19
+path_look = look19
+
+;-- Военные на выходе на АС
+[logic@rad_military2_walker1]
+active = walker1@rad_military2
+
+[walker1@rad_military2]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_military2_walker2]
+active = walker2@rad_military2
+
+[walker2@rad_military2]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_military2_walker3]
+active = walker3@rad_military2
+
+[walker3@rad_military2]
+path_walk = walk3
+;path_look = look3
+
+[logic@rad_military2_walker4]
+active = walker4@rad_military2
+
+[walker4@rad_military2]
+path_walk = walk4
+;path_look = look4
+
+[logic@rad_military2_walker5]
+active = walker5@rad_military2
+
+[walker5@rad_military2]
+path_walk = walk5
+;path_look = look5
+
+[logic@rad_military2_walker6]
+active = walker6@rad_military2
+
+[walker6@rad_military2]
+path_walk = walk6
+;path_look = look6
+
+;-- Военные возле вагона на перекрёстке
+[logic@rad_military3_walker1]
+active = walker1@rad_military3
+
+[walker1@rad_military3]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_military3_walker2]
+active = walker2@rad_military3
+
+[walker2@rad_military3]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_military3_walker3]
+active = walker3@rad_military3
+
+[walker3@rad_military3]
+path_walk = walk3
+;path_look = look3
+
+[logic@rad_military3_walker4]
+active = walker4@rad_military3
+
+[walker4@rad_military3]
+path_walk = walk4
+;path_look = look4
+
+[logic@rad_military3_walker5]
+active = walker5@rad_military3
+
+[walker5@rad_military3]
+path_walk = walk5
+path_look = look5
+
+[logic@rad_military3_walker6]
+active = walker6@rad_military3
+
+[walker6@rad_military3]
+path_walk = walk6
+path_look = look6
+
+;--' Тушканы
+[logic@rad_tushkano_home]
+active = mob_home@rad_tushkano
+
+[mob_home@rad_tushkano]
+path_home = home
+home_min_radius = 15
+home_max_radius = 50
+
+;--' Снорки
+[logic@rad_snork_home1]
+active = mob_home1@rad_snork
+
+[mob_home1@rad_snork]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@rad_snork_home2]
+active = mob_home2@rad_snork
+
+[mob_home2@rad_snork]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@rad_snork_home3]
+active = mob_home3@rad_snork
+
+[mob_home3@rad_snork]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 50
+
+;--' Кровососы
+[logic@rad_bloodsucker_home1]
+active = mob_home1@rad_bloodsucker
+
+[mob_home1@rad_bloodsucker]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@rad_bloodsucker_home2]
+active = mob_home2@rad_bloodsucker
+
+[mob_home2@rad_bloodsucker]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+;--' Слепыши
+[logic@rad_dog1_home1]
+active = mob_home1@rad_dog1
+
+[mob_home1@rad_dog1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@rad_dog1_home2]
+active = mob_home2@rad_dog1
+
+[mob_home2@rad_dog1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@rad_dog2_home1]
+active = mob_home1@rad_dog2
+
+[mob_home1@rad_dog2]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@rad_dog2_home2]
+active = mob_home2@rad_dog2
+
+[mob_home2@rad_dog2]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+;--' Псевдогигант
+[logic@rad_pseudo_gigant_home]
+active = mob_home@rad_pseudo_gigant
+
+[mob_home@rad_pseudo_gigant]
+path_home = home
+home_min_radius = 15
+home_max_radius = 40
+
+;--' Химеры
+[logic@rad_chimera_home1]
+active = mob_home1@rad_chimera
+
+[mob_home1@rad_chimera]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@rad_chimera_home2]
+active = mob_home2@rad_chimera
+
+[mob_home2@rad_chimera]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+;-- Наёмники на переходе в х8
+[logic@rad_killer_kamp]
+active = kamp@rad_killer
+
+[kamp@rad_killer]
+center_point  = kamp
+path_walk = kamp_task
+
+[logic@rad_killer_walker1]
+active = walker1@rad_killer
+
+[walker1@rad_killer]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_killer_walker2]
+active = walker2@rad_killer
+
+[walker2@rad_killer]
+path_walk = walk2
+path_look = look2
+
+[logic@rad_killer_walker3]
+active = walker3@rad_killer
+
+[walker3@rad_killer]
+path_walk = walk3
+path_look = look3
+
+[logic@rad_killer_walker4]
+active = walker4@rad_killer
+
+[walker4@rad_killer]
+path_walk = walk4
+path_look = look4
+
+;-- Сталкеры возле вагона
+[logic@rad_stalker_vagon_kamp]
+active = kamp@rad_stalker_vagon
+
+[kamp@rad_stalker_vagon]
+center_point  = kamp
+path_walk = kamp_task
+
+[logic@rad_stalker_vagon_walker1]
+active = walker1@rad_stalker_vagon
+
+[walker1@rad_stalker_vagon]
+path_walk = walk1
+path_look = look1
+
+[logic@rad_stalker_vagon_walker2]
+active = walker2@rad_stalker_vagon
+
+[walker2@rad_stalker_vagon]
+path_walk = walk2
+path_look = look2
+
+;--' Крысоволки
+[logic@rad_ratlike_home]
+active = mob_home@rad_ratlike
+
+[mob_home@rad_ratlike]
+path_home = home
+home_min_radius = 20
+home_max_radius = 50
+
+

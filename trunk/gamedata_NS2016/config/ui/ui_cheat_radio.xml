@@ -1,0 +1,23 @@
+	<background_btn_1 x="478" y="159" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="155" g="205" b="155" a="255" align="l">"Долг"</text>
+	</background_btn_1>
+	
+	<background_btn_2 x="478" y="179" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="155" g="205" b="155" a="255" align="l">"Свобода"</text>
+	</background_btn_2>
+	
+	<background_btn_3 x="478" y="199" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="155" g="205" b="155" a="255" align="l">"Сталкеры"</text>
+	</background_btn_3>
+	
+	<background_btn_4 x="478" y="219" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="155" g="205" b="155" a="255" align="l">"Военные"</text>
+	</background_btn_4>
+	
+	<background_btn_5 x="478" y="239" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="155" g="205" b="155" a="255" align="l">"Общая волна"</text>
+	</background_btn_5>
+	
+	<background_btn_6 x="478" y="259" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="155" g="205" b="155" a="255" align="l">"Монолит"</text>
+	</background_btn_6>

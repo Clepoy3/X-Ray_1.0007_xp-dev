@@ -1,0 +1,392 @@
+;Штурмовая винтовка СИГ550
+[wpn_sig550]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	= 
+$spawn              	= "weapons\sig550"		
+$npc					= on				
+$prefetch 			= 8
+scheduled				= off			
+cform               	= skeleton
+class               	= WP_AK74
+min_radius          	= 30
+max_radius          	= 100
+description			= enc_weapons1_wpn-sig550
+
+script_binding  = bind_wpn.init
+	
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier	= 1.0		        
+holder_fov_modifier		= 0.7              
+
+cost					= 6500
+weapon_class			= assault_rifle	
+	
+ammo_limit				= 210
+ammo_current			= 180
+ammo_elapsed			= 30
+	
+ammo_mag_size			= 30
+ammo_class			= ammo_5.56x45_ss190, ammo_5.56x45_ap
+grenade_class			= ammo_m209
+fire_modes				= 1, 3, -1
+f_mode				= 2
+
+launch_speed			= 0
+hand_dependence			= 1
+single_handed			= 0	
+
+slot 					= 2		
+animation_slot			= 2		
+
+inv_name	        	= wpn-sig550
+inv_name_short			= wpn-sig550
+inv_weight				= 4.0
+
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 14
+inv_grid_y         = 36
+
+kill_msg_x			= 80
+kill_msg_y			= 59
+kill_msg_width		= 87
+kill_msg_height		= 24
+
+;базовая дисперсия
+fire_dispersion_base			= 0.14
+control_inertion_factor			= 1.4f
+disp_rate = 1.9
+
+;отдача
+cam_relax_speed         		= 6.5 		
+cam_dispersion          	= 0.45	
+cam_dispersion_inc			= 0.15		
+cam_dispertion_frac			= 0.7
+cam_max_angle					= 10		
+cam_max_angle_horz				= 15		
+cam_step_angle_horz				= 1
+
+fire_dispersion_condition_factor = 3	 
+misfire_probability 	= 0.0016	 
+misfire_condition_k		= 0.08
+condition_shot_dec 		= 0.00013 
+
+direction              		=  0, 0, 1
+fire_point			= 0.000000,0.137000,0.649000
+fire_point2            		=  0.0, 0.097, 0.722
+
+flame_particles				= weapons\generic_weapon05
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles		= weapons\generic_weapon01
+	
+shell_point			= -0.020000,0.167000,0.082000
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles	 			= weapons\shells_l_ns_556
+
+rpm_empty_click 	 		= 200
+
+PDM_disp_base 			= 5.5
+PDM_disp_vel_factor 		= 1.45
+PDM_disp_accel_factor 		= 1.3
+PDM_crouch	 				= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power        			= 0.9
+hit_impulse		 			= 4
+hit_type 					= fire_wound
+hit_rate	                = 1.95
+fire_distance           	= 225
+bullet_speed				= 980
+rpm                     	= 700
+
+;настройки для глушителя
+silencer_hit_power       	= 0.81
+silencer_hit_impulse	 	= 3
+silencer_fire_distance   	= 200
+silencer_bullet_speed	 	= 880
+
+use_aim_bullet				= false
+time_to_aim					= 1.0	
+
+hud                      	= wpn_sig550_hud
+normal                   	= 0, 1, 0
+
+position         	        = -0.026, -0.097, 0.0
+orientation      	        = 0, 0, 0
+
+;под мишкой
+strap_position         		= -0.26,-0.11,0.25			
+strap_orientation      		= -15,-9,110				
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo   		        = 90
+visual         		        = weapons\sig550\wpn_sig550.ogf
+	
+
+ph_mass						= 4
+
+;addons
+scope_status				= 2
+silencer_status				= 2
+grenade_launcher_status		= 2
+
+zoom_enabled				= true						
+scope_zoom_factor	    	= 50						
+
+scope_name 					= wpn_addon_scope_susat
+scope_x                     = 44
+scope_y                     = 0
+silencer_name  				= wpn_addon_sil_556_ar
+silencer_x                  = 179
+silencer_y                  = 13
+grenade_launcher_name 		= wpn_addon_grenade_launcher_m203
+grenade_launcher_x          = 80
+grenade_launcher_y          = 30
+
+;звуки
+snd_draw					= weapons\sig550\sig550_draw
+snd_holster					= weapons\rifle_holster
+snd_shoot					= weapons\sig550\sig550_shoot
+snd_shoot1					= weapons\sig550\sig550_shoot1 
+snd_shoot2					= weapons\sig550\sig550_shoot2  
+snd_shoot3					= weapons\sig550\sig550_shoot3       
+snd_empty					= weapons\sig550\sig550_empty, 0.8
+snd_reload					= weapons\sig550\reload, 0.8, 0.35
+snd_shoot_grenade			      = weapons\m203\M203_grenshoot
+snd_reload_grenade			= weapons\sig550\grenload, 1.0, 0.8
+snd_switch					= weapons\sig550\switch, 1.0, 0.5
+snd_silncer_shot		      	= weapons\sig550\sig550_shot_sil
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+light_color					= 0.6,0.5,0.3
+light_range					= 5
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.2
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+ 
+[wpn_sig550_hud]
+shell_point			= 0.00 , 0.041 , -0.0195 
+shell_dir			     	= 0.0, 1.0, 0.0
+
+fire_point			      = -0, 0.052, -0.0781,
+fire_point2              	= -0, 0.052, -0.0781,
+fire_bone               	= wpn_body
+
+orientation             	= 0, 0, 0
+position                	= 0.147, -0.033, 0.186 
+visual                  	= weapons\sig550\wpn_sig550_hud.ogf
+
+grenade_bone            	= shell
+
+anim_idle				= idle
+anim_idle_aim			= idle_aim
+anim_reload				= reload
+anim_draw				= draw
+anim_holster			= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_sprint
+			
+;анимации с подключенным подствольником
+;(режим стрельбы из подствольника)
+anim_idle_g					= idle_grenade
+anim_idle_g_aim				= idle_w_gl_aim
+anim_reload_g				= reload_grenade
+anim_shoot_g				= shoot_grenade
+anim_switch_grenade_on		= switch_on
+anim_switch_grenade_off		= switch_off
+anim_draw_g					= draw_grenade
+anim_holster_g				= holster_grenade
+;(режим обычной стрельбы)			  
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_w_gl_aim
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.147, 0.033, -0.186 
+zoom_rotate_x		= 0
+zoom_rotate_y		= 0
+
+;прячем перекрестие прицела в зуме
+zoom_hide_crosshair	= true
+
+;тоже самое, но для прицепленого подствольника
+;режим обычной стрельбы
+zoom_offset			= -0.147, 0.033, -0.186 
+zoom_rotate_x		= 0
+zoom_rotate_y		= 0
+
+;режим подствольника
+grenade_zoom_offset			= -0.147, 0.033, -0.186 
+grenade_zoom_rotate_x		= 0
+grenade_zoom_rotate_y		= 0
+
+grenade_normal_zoom_offset			= -0.147, 0.033, -0.186 
+grenade_normal_zoom_rotate_x		= 0
+grenade_normal_zoom_rotate_y		= 0
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2
+
+;-уники--
+
+[wpn_sig_m1]:wpn_sig550	;Штурмовой SiG
+$spawn             				= "weapons\uniq\wpn_sig_m1"	
+description						= enc_weapons1_wpn-sig_m1
+inv_name						= wpn-sig_m1
+inv_name_short					= wpn-sig_m1
+cost					 	= 9000
+ammo_class			= ammo_5.56x45_ap, ammo_5.56x45_ss190
+scope_status					= 0
+silencer_status					= 0
+grenade_launcher_status			= 0
+inv_weight						= 2.2
+condition_shot_dec 				= 0.00015
+inv_grid_width     = 5
+inv_grid_height    = 2
+inv_grid_x         = 13
+inv_grid_y         = 36
+
+
+[wpn_sig_m2]:wpn_sig550	;SiG снайперский
+$spawn             				= "weapons\uniq\wpn_sig_m2"	
+description						= enc_weapons1_wpn-sig_m2
+inv_name						= wpn-sig_m2
+inv_name_short					= wpn-sig_m2
+cost					 	= 5000
+ammo_class			= ammo_5.56x45_ap, ammo_5.56x45_ss190
+fire_modes						= 1, 2
+inv_weight				        = 4.45
+scope_status					= 1
+scope_zoom_factor				= 20
+scope_texture					= wpn\crosshairs\susat
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 19
+inv_grid_y         = 36
+rpm                     	= 700
+cam_relax_speed         		= 8.5
+cam_dispersion          	= 0.28
+cam_relax_speed         	= 9.5
+hud                      	= wpn_sig555_hud
+visual         		        = weapons\sig555\wpn_sig555.ogf
+
+
+[wpn_sig555_hud]
+shell_point			= 0.024 , 0.071 , -0.0195 
+shell_dir			     	= 0.0, 1.0, 0.0
+
+fire_point			      = -0, 0.052, -0.0781,
+fire_point2              	= -0, 0.052, -0.0781,
+fire_bone               	= wpn_body
+
+orientation             	= 0, 0, 0
+position                	= 0.147, -0.033, 0.186 
+visual                  	= weapons\sig555\wpn_sig555_hud.ogf
+
+grenade_bone            	= shell
+
+anim_idle				= idle
+anim_idle_aim			= idle_aim
+anim_reload				= reload
+anim_draw				= draw
+anim_holster			= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_sprint
+			
+;анимации с подключенным подствольником
+;(режим стрельбы из подствольника)
+anim_idle_g					= idle_grenade
+anim_idle_g_aim				= idle_w_gl_aim
+anim_reload_g				= reload_grenade
+anim_shoot_g				= shoot_grenade
+anim_switch_grenade_on		= switch_on
+anim_switch_grenade_off		= switch_off
+anim_draw_g					= draw_grenade
+anim_holster_g				= holster_grenade
+;(режим обычной стрельбы)			  
+anim_idle_gl				= idle_w_gl
+anim_idle_gl_aim			= idle_w_gl_aim
+anim_reload_gl				= reload_w_gl
+anim_draw_gl				= draw_w_gl
+anim_holster_gl				= holster_w_gl
+anim_shoot_gl				= shoot_w_gl
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.147, 0.033, -0.186 
+zoom_rotate_x		= 0
+zoom_rotate_y		= 0
+
+;прячем перекрестие прицела в зуме
+zoom_hide_crosshair	= true
+
+;тоже самое, но для прицепленого подствольника
+;режим обычной стрельбы
+zoom_offset			= -0.147, 0.033, -0.186 
+zoom_rotate_x		= 0
+zoom_rotate_y		= 0
+
+;режим подствольника
+grenade_zoom_offset			= -0.147, 0.033, -0.186 
+grenade_zoom_rotate_x		= 0
+grenade_zoom_rotate_y		= 0
+
+grenade_normal_zoom_offset			= -0.147, 0.033, -0.186 
+grenade_normal_zoom_rotate_x		= 0
+grenade_normal_zoom_rotate_y		= 0
+
+
+;апгрейд---
+
+
+; Снижение отдачи
+[wpn_sig550_otdaca]:wpn_sig550
+$spawn             		     = "weapons\sig550\wpn_sig550_otdaca"
+fire_dispersion_base         = 0.07
+cam_relax_speed              = 3.25
+cam_dispersion          	= 0.225		
+cam_dispersion_inc	          = 0.075		
+cam_max_angle	               = 5		
+inv_name	        			= wpn-sig550_otdaca
+inv_name_short			     = wpn-sig550_otdaca
+description				= enc_otdaca_wpn_sig550
+inv_grid_width     = 5
+inv_grid_height    = 2
+cost				= 8500
+
+
+; Снижение веса
+[wpn_sig550_ves]:wpn_sig550
+$spawn             		     = "weapons\sig550\wpn_sig550_ves"
+inv_weight				= 3
+inv_name	        			= wpn-sig550_ves
+inv_name_short			     = wpn-sig550_ves
+description				= enc_ves_wpn_sig550
+inv_grid_width     = 5
+inv_grid_height    = 2
+cost				= 7700
+
+
+; Отдача и вес
+[wpn_sig550_otdaca_ves]:wpn_sig550_otdaca
+$spawn             		     = "weapons\sig550\wpn_sig550_otdaca_ves"
+inv_weight				= 3
+inv_name	        			= wpn-sig550_otdaca_ves
+inv_name_short			     = wpn-sig550_otdaca_ves
+description				= enc_otdaca_ves_wpn_sig550
+cost					     = 12000
+

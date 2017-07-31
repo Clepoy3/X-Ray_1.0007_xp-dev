@@ -1,0 +1,61 @@
+[logic]
+active = {-doshli_do_negra} kamp, kamp2
+combat_ignore = combat_ignore
+danger = danger_ignore
+on_death = death
+
+[kamp]
+center_point = gulden_kamp
+path_walk = gulden_kamp_task
+radius = 2.2
+no_declarate = true
+no_play = true
+meet = meet
+on_info = {+gulden_say_one_start} walker1
+
+[walker1]
+path_walk = gulden1_walk
+path_look = gulden1_look
+combat_ignore_cond = always
+meet = no_meet
+on_info = {+othod_gulden} walker2
+
+[walker2]
+path_walk = gulden2_walk
+path_look = gulden2_look
+combat_ignore_cond = always
+meet = no_meet
+on_info = {+liniem_otsyuda} karavan
+
+[karavan]
+close_dist = 3
+near_dist = 15
+faraway_dist = 40
+close_state = guard
+near_state = rush
+faraway_state = sprint
+wait_state = hide 
+look_on_actor = false
+no_loot = true 
+radius = 1
+combat_ignore_cond = {=fighting_dist_ge(1)} always
+on_info = {+doshli_do_negra} kamp2
+
+[kamp2]
+center_point = zat_amerika_kamp
+path_walk = zat_amerika_kamp_task
+radius = 2
+no_declarate = true
+no_play = true
+meet = meet
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[danger_ignore]
+ignore_distance = 0
+
+[death]
+on_info = %+zaton_gulden_dead%

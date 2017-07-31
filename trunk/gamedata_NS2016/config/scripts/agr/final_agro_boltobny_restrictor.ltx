@@ -1,0 +1,88 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+spawn_pervay_vertuha} sr_idle@time
+
+[sr_idle@time]
+on_timer = 10000 | sr_idle@time1 %=arhara_dialog.dell_muha_hosp_live =arhara_dialog.agro_boltobny_sms1%
+
+[sr_idle@time1]
+on_timer = 8000 | sr_idle@time2 %=arhara_dialog.agro_boltobny_sms2%
+
+[sr_idle@time2]
+on_timer = 15000 | sr_idle@time3 %=arhara_dialog.agro_boltobny_sms3%
+
+[sr_idle@time3]
+on_timer = 29000 | sr_idle@time4 %=arhara_dialog.agro_boltobny_sms4%
+
+[sr_idle@time4]
+on_timer = 14000 | sr_idle@time5 %=arhara_dialog.agro_boltobny_sms5%
+
+[sr_idle@time5]
+on_timer = 6000 | sr_idle@time6 %=arhara_dialog.agro_boltobny_sms6%
+
+[sr_idle@time6]
+on_timer = 8000 | sr_idle@time7 %=arhara_dialog.agro_boltobny_sms7%
+
+[sr_idle@time7]
+on_timer = 23000 | sr_idle@time8 %=arhara_dialog.agro_boltobny_sms8%
+
+[sr_idle@time8]
+on_timer = 10000 | sr_idle@time9 %=arhara_dialog.agro_boltobny_sms9%
+
+[sr_idle@time9]
+on_timer = 8000 | sr_idle@time10 %=arhara_dialog.agro_boltobny_sms10%
+
+[sr_idle@time10]
+on_timer = 6000 | sr_idle@time11 %=arhara_dialog.agro_boltobny_sms11%
+
+[sr_idle@time11]
+on_timer = 7000 | sr_idle@time12 %=arhara_dialog.agro_boltobny_sms12%
+
+[sr_idle@time12]
+on_timer = 9000 | sr_idle@time13 %=arhara_dialog.agro_boltobny_sms13%
+
+[sr_idle@time13]
+on_timer = 21000 | sr_idle@time14 %=arhara_dialog.agro_boltobny_sms14%
+
+[sr_idle@time14]
+on_timer = 14000 | sr_idle@time15 %=arhara_dialog.agro_boltobny_sms15%
+
+[sr_idle@time15]
+on_timer = 5000 | sr_idle@time16 %=arhara_dialog.agro_boltobny_sms16%
+
+[sr_idle@time16]
+on_timer = 12000 | sr_idle@time17 %=arhara_dialog.agro_boltobny_sms17%
+
+[sr_idle@time17]
+on_timer = 2000 | sr_idle@time18 %+komanda_na_posadku1%
+
+[sr_idle@time18]
+on_timer = 3000 | sr_idle@time19 %+komanda_gg_posadka%
+
+[sr_idle@time19]
+on_timer = 1000 | sr_idle@time20 %+agro_muxa_way2%
+
+[sr_idle@time20]
+on_timer = 25000 | sr_idle@time21 %=arhara_dialog.agro_boltobny_sms18%
+
+[sr_idle@time21]
+on_timer = 12000 | sr_idle@time22 %=arhara_dialog.agro_boltobny_sms19%
+
+[sr_idle@time22]
+on_timer = 9000 | sr_idle@time23 %=arhara_dialog.agro_boltobny_sms20%
+
+[sr_idle@time23]
+on_timer = 1000 | sr_idle@time24 %+komanda_na_posadku2%
+
+[sr_idle@time24]
+on_timer = 15000 | sr_idle@time25 %+final_muzon%
+
+[sr_idle@time25]
+on_timer = 2000 | sr_idle@time26 %=arhara_dialog.sp_imit_tele_final1%
+
+[sr_idle@time26]
+on_timer = 2000 | sr_idle@nil %+spawn_final_arhara%
+
+[sr_idle@nil]

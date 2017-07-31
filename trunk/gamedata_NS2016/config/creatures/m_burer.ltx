@@ -1,0 +1,369 @@
+;---''' BURER '''---
+[m_burer_e]:monster_base
+GroupControlSection     = spawn_group
+SpaceRestrictionSection = space_restrictor,zone_mosquito_bald,zone_radioactive
+$npc      = on
+$prefetch = 16
+cform          = skeleton
+class          = SM_BURER
+script_binding = bind_monster.bind
+visual         = monsters\burer\burer
+corpse_visual  = monsters\burer\burer
+icon           = ui_npc_monster_burer
+
+ef_creature_type = 18
+ef_weapon_type   = 12
+ef_detector_type = 1
+panic_threshold  = 0.1
+
+bone_torso   = bip01_spine1
+bone_head    = bip01_head
+bone_fire    = bip01_head
+weapon_usage = 0
+
+
+distance_to_corpse = 1.2
+DynamicObjectsCount = 32
+Spawn_Inventory_Item_Section = mutant_burer_hand
+Spawn_Inventory_Item_Probability_onDeath = 0.5
+
+;--' Offline Alife '--
+Scheduled = on
+Human     = off
+Health    = 400
+
+MinSpeed     = 1
+MaxSpeed     = 6
+going_speed  = 3
+search_speed = 3.5
+MaxHealthValue = 200
+
+DayTime_Begin = 22
+DayTime_End   = 6
+terrain       = burer_terrain
+smart_terrain_choose_interval = 00:15:00
+
+;--' Physics '--
+ph_box0_center = 0.00, 0.7, 0
+ph_box0_size   = 0.35, 0.7, 0.35
+ph_box1_center = 0,00, 0.6, 0
+ph_box1_size   = 0.35, 0.6, 0.35
+ph_crash_speed_min         = 10
+ph_crash_speed_max         = 30
+ph_collision_damage_factor = 0.1
+ph_mass                    = 70
+
+destroyed_vis_name = physics\dead_body\skelet_crash_monster
+
+ph_skeleton_airr_lin_factor = -0.40
+ph_skeleton_airr_ang_factor = -0.20
+ph_skeleton_hinger_factor1  = 1
+ph_skeleton_ddelay          = 15
+
+ph_skel_fatal_impulse_factor   = 0
+ph_after_death_velocity_factor = 0.75
+ph_skel_shot_up_factor         = 0.25
+
+;--' Movement '--
+Velocity_Stand          = 0.0, 6.0, 6.0, 0.20, 0.5
+Velocity_RunFwdNormal   = 6.0, 2.5, 2.5, 0.20, 1
+Velocity_RunFwdDamaged  = 4.5, 3.0, 3.0, 0.20, 1
+Velocity_WalkFwdNormal  = 2.0, 3.0, 3.0, 0.02, 1.5
+Velocity_WalkFwdDamaged = 1.2, 3.0, 3.0, 0.50, 2
+Velocity_Drag           = 1.0, 3.0, 3.0, 1.00, 1
+Velocity_Steal          = 1.5, 3.0, 3.0, 1.00, 1
+
+Accel_Generic    = 1.5
+Accel_Calm       = 2.5
+Accel_Aggressive = 200
+
+;--' Attack '--
+MinAttackDist = 1.5
+MaxAttackDist = 2.5
+as_min_dist   = 0.5
+as_step       = 0.3
+
+hit_type = wound
+
+Melee_Rotation_Factor = 3.5
+
+attack_effector = burer_attack_effector
+attack_params   = burer_attack_params
+
+;--' Conditions '--
+satiety_v          = 0.0001
+radiation_v        = 0.00001
+satiety_power_v    = 0.001
+satiety_health_v   = 0.00007
+satiety_critical   = -1
+radiation_health_v = 0.01
+morale_v           = 0.01
+health_hit_part    = 0.5
+power_hit_part     = 1
+psy_health_v       = 0.1
+
+immunities_sect = burer_immunities
+
+bleeding_v          = 0.05
+wound_incarnation_v = 0.002
+min_wound_size      = 0.01
+
+sleep_health     = 1.0
+sleep_power      = 1.0
+sleep_satiety    = 1.0
+sleep_radiation  = 1.0
+sleep_psy_health = 1.0
+
+eat_freq         = 5.0
+eat_slice        = 0.01
+eat_slice_weight = 10.0
+
+Min_Satiety = 0.6
+Max_Satiety = 0.9
+satiety_threshold = 0.5
+
+;--' Sounds '--
+sound_idle           = monsters\burer\burer_idle_
+sound_eat            = monsters\burer\burer_idle_
+sound_aggressive     = monsters\biting\def_
+sound_attack_hit     = monsters\burer\burer_attack_
+sound_take_damage    = monsters\burer\burer_telekinetic_
+sound_die            = monsters\burer\burer_attacking_
+sound_threaten       = monsters\biting\def_
+sound_landing        = monsters\biting\def_
+sound_steal          = monsters\biting\def_
+sound_panic          = monsters\burer\burer_attacking_
+sound_growling       = monsters\biting\def_
+sound_gravi_attack   = monsters\burer\burer_gravi_attack_
+sound_tele_attack    = monsters\biting\def_
+sound_gravi_wave     = monsters\burer\burer_gravi_wave_0
+sound_die_in_anomaly = monsters\burer\burer_attacking_
+
+killer_clsids = Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
+
+idle_sound_delay   = 55000
+eat_sound_delay    = 3000
+attack_sound_delay = 14000
+
+sound_distant_idle       = monsters\burer\burer_idle_
+distant_idle_sound_delay = 80000
+distant_idle_sound_range = 100
+
+
+SoundThreshold = 0.06
+max_hear_dist  = 60
+material       = creatures\large
+
+;--' Vision '--
+eye_fov   = 100
+eye_range = 30
+
+min_view_distance       = 0.4
+max_view_distance       = 1
+visibility_threshold    = 100
+always_visible_distance = 0.2
+time_quant              = 0.001
+decrease_value          = 0.01
+velocity_factor         = 0.75
+luminocity_factor       = 0.25
+transparency_threshold  = 0.625
+
+;--' Morale '--
+Morale_Hit_Quant             = 0.1
+Morale_Attack_Success_Quant  = 0.2
+Morale_Take_Heart_Speed      = 0.1
+Morale_Despondent_Speed      = 0.1
+Morale_Stable_Speed          = 0.1
+Morale_Despondent_Threashold = 0.5
+
+;--' Damages '--
+damage = burer_damage
+DamagedThreshold = 0.5
+
+critical_wound_threshold      = -1
+critical_wound_decrease_quant = 0
+
+;--' Species '--
+species   = burer
+rank      = 101
+spec_rank = weak
+community = burer
+
+;--' Other '--
+LegsCount   = 2
+step_params = burer_step_params
+
+actor_restrictor = medium_monster
+selector_approach = 20, 1, 1000, 0, 0, 1000, 10000
+
+
+;-------------------------------------------------------------------------
+; Gravi Ability
+;-------------------------------------------------------------------------
+Gravi_Speed					= 250	; meter/sec	
+Gravi_Step					= 2		; meter
+Gravi_Time_To_Hold			= 350	; milisec
+Gravi_Radius				= 5.0
+Gravi_Impulse_To_Objects	= 500.0
+Gravi_Impulse_To_Enemy		= 1000.0
+Gravi_Hit_Power				= 0.95
+
+;-------------------------------------------------------------------------
+; Tele Ability
+;-------------------------------------------------------------------------
+Tele_Max_Handled_Objects = 5;3	
+Tele_Time_To_Hold		 = 200
+Tele_Object_Min_Mass	 = 10.0
+Tele_Object_Max_Mass	 = 1000.0
+Tele_Find_Radius		 = 6.0
+
+sound_tele_hold			= monsters\burer\burer_tele_hold
+sound_tele_throw		= monsters\burer\burer_tele_throw
+
+;-------------------------------------------------------------------------
+; Scanner
+;-------------------------------------------------------------------------
+scan_critical_value		= 25.0	; граничное значение 
+scan_radius				= 60.0  ; радиус сканировани€
+scan_velocity_threshold	= 3.0	; гранична€ скорость, до которой движение актера игнорируетс€
+scan_decrease_value		= 0.3	; уменьшение текущей суммы в секунду
+scan_trace_time_freq	= 2		; частота трейса скорости (for programmer only) (1 = 2 раза в сек)
+
+scan_sound				= monsters\burer\burer_scan_affect_0
+scan_effector_section	= burer_scan_effector
+
+;-------------------------------------------------------------------------
+; Particles
+;-------------------------------------------------------------------------
+Particle_Tele_Object	= static\fire_distort
+Particle_Gravi_Wave		= anomaly2\burer_wave
+Particle_Gravi_Prepare	= anomaly2\burer_prepare
+Particle_Shield			= anomaly2\burer_shield_01
+
+
+;--' Sections '--
+[burer_attack_effector]
+duality_h       = 0.1
+duality_v       = 0.01
+blur            = 0.01
+gray            = 0.5
+noise_intensity = 0.1
+noise_grain     = 1
+noise_fps       = 30
+color_base      = 0.65, 0.15, 0.1
+color_gray      = 0.333, 0.333, 0.333
+color_add       = 0, 0, 0
+time            = 3.00
+time_attack     = 0.05
+time_release    = 0.50
+
+; camera effects
+ce_time          = 0.3
+ce_amplitude     = 12
+ce_period_number = 2
+ce_power         = 1
+
+[burer_attack_params]
+stand_attack_0 = 0.5, 0.2, 80, 2, 1, 0.5, -1.6, 1.6, -1.6, 1.6, 2.5
+
+[burer_damage]
+default    = 0.1, -1, 0.1
+bip01_neck = 1.8, -1, 0.5
+bip01_head = 2.5, -1, 0.2
+
+[burer_immunities]
+burn_immunity          = 1.0
+strike_immunity        = 1.0
+shock_immunity         = 1.0
+wound_immunity         = 1.0
+radiation_immunity     = 0.0
+telepatic_immunity     = 1.0
+chemical_burn_immunity = 1.0
+explosion_immunity     = 0.5
+fire_wound_immunity    = 0.6
+
+[burer_step_params]
+stand_walk_fwd_0 = 1, 0.4, 1, 0.9, 0.7
+stand_walk_dmg_0 = 1, 0.4, 1, 0.9, 0.7
+stand_run_fwd_0  = 1, 0.4, 1, 0.9, 0.6
+stand_run_dmg_0  = 1, 0.4, 1, 0.9, 0.6
+
+[burer_terrain]
+255,000,255,255
+001,002,000,000 ; ордон
+008,001,000,000 ;Ѕар
+010,001,000,000 ;янтарь
+012,001,000,000 ;ћиллитари
+
+[burer_scan_effector]
+duality_h       = 0.003
+duality_v       = 0.002
+blur            = 1.5
+gray            = 0.3
+noise_intensity = 0.0
+noise_grain     = 2
+noise_fps       = 8
+color_base      = 0.55, 0.5, 0.5
+color_gray      = 0.333, 0.333, 0.333
+color_add       = 0.05, 0, 0
+time            = 10
+time_attack     = 0.3
+time_release    = 0.85
+
+;---'' BASE PROFILES ''---
+;--' weak '--
+[burer_weak]:m_burer_e
+$spawn = "monsters\burers\burer_weak"
+
+;--' normal '--
+[burer_normal]:m_burer_e
+$spawn = "monsters\burers\burer_normal"
+rank      = 301
+spec_rank = normal
+
+;--' strong '---
+[burer_strong]:m_burer_e
+$spawn		= "monsters\burers\burer_strong"
+visual = monsters\burer\burer_1
+rank				= 601
+spec_rank			= strong
+
+;---'' CUSTOM PROFILES ''---
+;--' red '--
+[burer_red]:burer_strong
+$spawn = "monsters\burers\burer_red"
+visual = monsters\burer\burer_red
+Spawn_Inventory_Item_Section = mutant_burer_red_hand
+Spawn_Inventory_Item_Probability_onDeath = 1
+
+;--' ARENA '--
+[burer_arena]:m_burer_e
+script_binding = aem_manager.bind_mob
+panic_threshold = 0
+Spawn_Inventory_Item_Probability_onDeath = 0
+DayTime_Begin = 0
+DayTime_End = 24
+Gravi_Hit_Power = 3.3
+species = arena_monstr
+rank = 901
+spec_rank = personal
+
+immunities_sect = burer_arena_immunities
+
+[burer_arena_immunities]
+burn_immunity          = 0.5
+strike_immunity        = 0.5
+shock_immunity         = 0.5
+wound_immunity         = 0.5
+radiation_immunity     = 0
+telepatic_immunity     = 0
+chemical_burn_immunity = 0.5
+explosion_immunity     = 0.5
+fire_wound_immunity    = 0.2
+
+;--' embrion '--
+[burer_embrion]:burer_strong
+$spawn ="monsters\burers\burer_embrion"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24

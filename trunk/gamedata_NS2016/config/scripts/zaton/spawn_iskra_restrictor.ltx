@@ -1,0 +1,22 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_npc_in_zone = 17086 |spawn_iskra_restrictor| sr_idle@time
+
+[sr_idle@time]
+on_timer = 15000 | sr_idle@time1 %=arhara1_dialog1.gulden_boy_zvuk%
+
+[sr_idle@time1]
+on_timer = 8000 | sr_idle@time2 %+othod_iskra%
+
+[sr_idle@time2]
+on_timer = 8000 | sr_idle@time3 %+othod_gulden =arhara_dialog.gulden_boy_sms%
+
+[sr_idle@time3]
+on_timer = 7000 | sr_idle@time4 %=arhara_dialog.gulden_boy_sms1%
+
+[sr_idle@time4]
+on_timer = 8000 | sr_idle@nil %+presledovateli_spawn%
+
+[sr_idle@nil]

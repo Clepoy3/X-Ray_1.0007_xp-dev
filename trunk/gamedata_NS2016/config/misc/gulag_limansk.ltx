@@ -1,0 +1,553 @@
+;-- Свободовцы в доме у моста
+[logic@lim_freedom_most_walker1]
+active = walker1@lim_freedom_most
+
+[walker1@lim_freedom_most]
+path_walk = walk1
+path_look = look1
+
+[logic@lim_freedom_most_walker2]
+active = walker2@lim_freedom_most
+
+[walker2@lim_freedom_most]
+path_walk = walk2
+path_look = look2
+
+[logic@lim_freedom_most_walker3]
+active = walker3@lim_freedom_most
+
+[walker3@lim_freedom_most]
+path_walk = walk3
+path_look = look3
+
+[logic@lim_freedom_most_walker4]
+active = walker4@lim_freedom_most
+
+[walker4@lim_freedom_most]
+path_walk = walk4
+path_look = look4
+
+[logic@lim_freedom_most_walker5]
+active = walker5@lim_freedom_most
+
+[walker5@lim_freedom_most]
+path_walk = walk5
+path_look = look5
+
+;-- Бандиты
+[logic@lim_bandit_walker1]
+active = walker1@lim_bandit
+
+[walker1@lim_bandit]
+path_walk = walk1
+path_look = look1
+
+[logic@lim_bandit_walker2]
+active = walker2@lim_bandit
+
+[walker2@lim_bandit]
+path_walk = walk2
+path_look = look2
+
+[logic@lim_bandit_walker3]
+active = walker3@lim_bandit
+
+[walker3@lim_bandit]
+path_walk = walk3
+path_look = look3
+
+[logic@lim_bandit_walker4]
+active = walker4@lim_bandit
+
+[walker4@lim_bandit]
+path_walk = walk4
+;path_look = look4
+
+[logic@lim_bandit_walker5]
+active = walker5@lim_bandit
+
+[walker5@lim_bandit]
+path_walk = walk5
+path_look = look5
+
+[logic@lim_bandit_walker6]
+active = walker6@lim_bandit
+
+[walker6@lim_bandit]
+path_walk = walk6
+;path_look = look6
+
+[logic@lim_bandit_walker7]
+active = walker7@lim_bandit
+
+[walker7@lim_bandit]
+path_walk = walk7
+;path_look = look7
+
+;-- База свободовцев
+[logic@lim_borman_lager_walker1]
+active = walker1@lim_borman_lager
+
+[walker1@lim_borman_lager]
+path_walk = walk1
+path_look = look1
+
+[logic@lim_borman_lager_walker2]
+active = walker2@lim_borman_lager
+
+[walker2@lim_borman_lager]
+path_walk = walk2
+path_look = look2
+
+[logic@lim_borman_lager_walker3]
+active = walker3@lim_borman_lager
+
+[walker3@lim_borman_lager]
+path_walk = walk3
+path_look = look3
+
+[logic@lim_borman_lager_walker4]
+active = walker4@lim_borman_lager
+
+[walker4@lim_borman_lager]
+path_walk = walk4
+path_look = look4
+
+[logic@lim_borman_lager_walker5]
+active = walker5@lim_borman_lager
+
+[walker5@lim_borman_lager]
+path_walk = walk5
+path_look = look5
+
+[logic@lim_borman_lager_walker6]
+active = walker6@lim_borman_lager
+
+[walker6@lim_borman_lager]
+path_walk = walk6
+path_look = look6
+
+[logic@lim_borman_lager_walker7]
+active = walker7@lim_borman_lager
+
+[walker7@lim_borman_lager]
+path_walk = walk7
+path_look = look7
+
+[logic@lim_borman_lager_kamp]
+active = kamp@lim_borman_lager_kamp
+
+[kamp@lim_borman_lager_kamp]
+center_point  = kamp
+path_walk = kamp_task
+radius = 0.8
+
+;-- Контроллёр
+[logic@lim_contr]
+active = mob_home@lim_contr
+
+[mob_home@lim_contr]
+path_home = lim_contr_walk
+home_min_radius = 70
+home_max_radius = 110
+on_signal = sig_attacked | mob_combat@lim_contr
+
+[mob_combat@lim_contr]
+on_timer = 60000 | mob_home@lim_contr
+
+;-- Сталкер - зомби возле туннеля с переходом
+[logic@lim_zombied_exit_walker1]
+active = walker1@lim_zombied_exit
+
+[walker1@lim_zombied_exit]
+path_walk = walk1
+;path_look = look1
+
+[logic@lim_zombied_exit_walker2]
+active = walker2@lim_zombied_exit
+
+[walker2@lim_zombied_exit]
+path_walk = walk2
+;path_look = look2
+
+[logic@lim_zombied_exit_walker3]
+active = walker3@lim_zombied_exit
+
+[walker3@lim_zombied_exit]
+path_walk = walk3
+;path_look = look3
+
+[logic@lim_zombied_exit_walker4]
+active = walker4@lim_zombied_exit
+
+[walker4@lim_zombied_exit]
+path_walk = walk4
+path_look = look4
+
+[logic@lim_zombied_exit_walker5]
+active = walker5@lim_zombied_exit
+
+[walker5@lim_zombied_exit]
+path_walk = walk5
+path_look = look5
+
+;-- Сталкер - зомби на площади
+[logic@lim_zombied_sentr_walker1]
+active = walker1@lim_zombied_sentr
+
+[walker1@lim_zombied_sentr]
+path_walk = walk1
+;path_look = look1
+
+[logic@lim_zombied_sentr_walker2]
+active = walker2@lim_zombied_sentr
+
+[walker2@lim_zombied_sentr]
+path_walk = walk2
+;path_look = look2
+
+[logic@lim_zombied_sentr_walker3]
+active = walker3@lim_zombied_sentr
+
+[walker3@lim_zombied_sentr]
+path_walk = walk3
+;path_look = look3
+
+[logic@lim_zombied_sentr_walker4]
+active = walker4@lim_zombied_sentr
+
+[walker4@lim_zombied_sentr]
+path_walk = walk4
+path_look = look4
+
+[logic@lim_zombied_sentr_walker5]
+active = walker5@lim_zombied_sentr
+
+[walker5@lim_zombied_sentr]
+path_walk = walk5
+path_look = look5
+
+;-- Сталкер - зомби во дворе
+[logic@lim_zombied_dvor_walker1]
+active = walker1@lim_zombied_dvor
+
+[walker1@lim_zombied_dvor]
+path_walk = walk1
+;path_look = look1
+
+[logic@lim_zombied_dvor_walker2]
+active = walker2@lim_zombied_dvor
+
+[walker2@lim_zombied_dvor]
+path_walk = walk2
+;path_look = look2
+
+[logic@lim_zombied_dvor_walker3]
+active = walker3@lim_zombied_dvor
+
+[walker3@lim_zombied_dvor]
+path_walk = walk3
+path_look = look3
+
+[logic@lim_zombied_dvor_walker4]
+active = walker4@lim_zombied_dvor
+
+[walker4@lim_zombied_dvor]
+path_walk = walk4
+path_look = look4
+
+[logic@lim_zombied_dvor_walker5]
+active = walker5@lim_zombied_dvor
+
+[walker5@lim_zombied_dvor]
+path_walk = walk5
+path_look = look5
+
+;-- Сталкер - зомби у речки
+[logic@lim_zombied_brook_walker1]
+active = walker1@lim_zombied_brook
+
+[walker1@lim_zombied_brook]
+path_walk = walk1
+;path_look = look1
+
+[logic@lim_zombied_brook_walker2]
+active = walker2@lim_zombied_brook
+
+[walker2@lim_zombied_brook]
+path_walk = walk2
+;path_look = look2
+
+[logic@lim_zombied_brook_walker3]
+active = walker3@lim_zombied_brook
+
+[walker3@lim_zombied_brook]
+path_walk = walk3
+;path_look = look3
+
+[logic@lim_zombied_brook_walker4]
+active = walker4@lim_zombied_brook
+
+[walker4@lim_zombied_brook]
+path_walk = walk4
+;path_look = look4
+
+[logic@lim_zombied_brook_walker5]
+active = walker5@lim_zombied_brook
+
+[walker5@lim_zombied_brook]
+path_walk = walk5
+;path_look = look5
+
+;-- Монолитовцы на стройке
+[logic@lim_monolith1_kamp]
+active = kamp@lim_monolith1_kamp
+
+[kamp@lim_monolith1_kamp]
+center_point  = kamp
+path_walk = kamp_task
+
+[logic@lim_monolith1_walker1]
+active = walker1@lim_monolith1
+
+[walker1@lim_monolith1]
+path_walk = walk1
+path_look = look1
+
+[logic@lim_monolith1_walker2]
+active = walker2@lim_monolith1
+
+[walker2@lim_monolith1]
+path_walk = walk2
+path_look = look2
+
+[logic@lim_monolith1_walker3]
+active = walker3@lim_monolith1
+
+[walker3@lim_monolith1]
+path_walk = walk3
+path_look = look3
+
+[logic@lim_monolith1_walker4]
+active = walker4@lim_monolith1
+
+[walker4@lim_monolith1]
+path_walk = walk4
+;path_look = look4
+
+[logic@lim_monolith1_walker5]
+active = walker5@lim_monolith1
+
+[walker5@lim_monolith1]
+path_walk = walk5
+path_look = look5
+
+[logic@lim_monolith1_walker6]
+active = walker6@lim_monolith1
+
+[walker6@lim_monolith1]
+path_walk = walk6
+;path_look = look6
+
+[logic@lim_monolith1_walker7]
+active = walker7@lim_monolith1
+
+[walker7@lim_monolith1]
+path_walk = walk7
+;path_look = look7
+
+[logic@lim_monolith1_walker8]
+active = walker8@lim_monolith1
+
+[walker8@lim_monolith1]
+path_walk = walk8
+;path_look = look8
+
+[logic@lim_monolith1_walker9]
+active = walker9@lim_monolith1
+
+[walker9@lim_monolith1]
+path_walk = walk9
+path_look = look9
+
+;-- Монолитовцы в доме за стройкой
+[logic@lim_monolith2_walker1]
+active = walker1@lim_monolith2
+
+[walker1@lim_monolith2]
+path_walk = walk1
+;path_look = look1
+
+[logic@lim_monolith2_walker2]
+active = walker2@lim_monolith2
+
+[walker2@lim_monolith2]
+path_walk = walk2
+;path_look = look2
+
+[logic@lim_monolith2_walker3]
+active = walker3@lim_monolith2
+
+[walker3@lim_monolith2]
+path_walk = walk3
+;path_look = look3
+
+[logic@lim_monolith2_walker4]
+active = walker4@lim_monolith2
+
+[walker4@lim_monolith2]
+path_walk = walk4
+path_look = look4
+
+[logic@lim_monolith2_walker5]
+active = walker5@lim_monolith2
+
+[walker5@lim_monolith2]
+path_walk = walk5
+path_look = look5
+
+[logic@lim_monolith2_walker6]
+active = walker6@lim_monolith2
+
+[walker6@lim_monolith2]
+path_walk = walk6
+path_look = look6
+
+[logic@lim_monolith2_walker7]
+active = walker7@lim_monolith2
+
+[walker7@lim_monolith2]
+path_walk = walk7
+path_look = look7
+
+[logic@lim_monolith2_walker8]
+active = walker8@lim_monolith2
+
+[walker8@lim_monolith2]
+path_walk = walk8
+;path_look = look8
+
+;-- Сталкер - зомби у стройки
+[logic@lim_zombied_stroika_kamp1]
+active = kamp@lim_zombied_stroika_kamp1
+
+[kamp@lim_zombied_stroika_kamp1]
+center_point  = kamp1
+path_walk = kamp1_task
+radius = 1.5
+
+[logic@lim_zombied_stroika_kamp2]
+active = kamp@lim_zombied_stroika_kamp2
+
+[kamp@lim_zombied_stroika_kamp2]
+center_point  = kamp2
+path_walk = kamp2_task
+radius = 1.5
+
+[logic@lim_zombied_stroika_walker1]
+active = walker1@lim_zombied_stroika
+
+[walker1@lim_zombied_stroika]
+path_walk = walk1
+;path_look = look1
+
+[logic@lim_zombied_stroika_walker2]
+active = walker2@lim_zombied_stroika
+
+[walker2@lim_zombied_stroika]
+path_walk = walk2
+path_look = look2
+
+[logic@lim_zombied_stroika_walker3]
+active = walker3@lim_zombied_stroika
+
+[walker3@lim_zombied_stroika]
+path_walk = walk3
+;path_look = look3
+
+[logic@lim_zombied_stroika_walker4]
+active = walker4@lim_zombied_stroika
+
+[walker4@lim_zombied_stroika]
+path_walk = walk4
+;path_look = look4
+
+[logic@lim_zombied_stroika_walker5]
+active = walker5@lim_zombied_stroika
+
+[walker5@lim_zombied_stroika]
+path_walk = walk5
+;path_look = look5
+
+[logic@lim_zombied_stroika_walker6]
+active = walker6@lim_zombied_stroika
+
+[walker6@lim_zombied_stroika]
+path_walk = walk6
+;path_look = look6
+
+[logic@lim_zombied_stroika_walker7]
+active = walker7@lim_zombied_stroika
+
+[walker7@lim_zombied_stroika]
+path_walk = walk7
+;path_look = look7
+
+[logic@lim_zombied_stroika_walker8]
+active = walker8@lim_zombied_stroika
+
+[walker8@lim_zombied_stroika]
+path_walk = walk8
+;path_look = look8
+
+;--' Зомби
+[logic@lim_zombie_home1]
+active = mob_home1@lim_zombie
+
+[mob_home1@lim_zombie]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 30
+
+[logic@lim_zombie_home2]
+active = mob_home2@lim_zombie
+
+[mob_home2@lim_zombie]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 30
+
+[logic@lim_zombie2_home1]
+active = mob_home1@lim_zombie2
+
+[mob_home1@lim_zombie2]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@lim_zombie2_home2]
+active = mob_home2@lim_zombie2
+
+[mob_home2@lim_zombie2]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+;--' Кошки
+[logic@lim_cat_home1]
+active = mob_home1@lim_cat
+
+[mob_home1@lim_cat]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@lim_cat_home2]
+active = mob_home2@lim_cat
+
+[mob_home2@lim_cat]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 30
+
+

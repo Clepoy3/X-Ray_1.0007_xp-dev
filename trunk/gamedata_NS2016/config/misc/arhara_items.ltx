@@ -1,0 +1,2534 @@
+[kluch_dell_teleport_warlab]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\kluch_dell_teleport_warlab"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_apterak.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_kluch_dell_teleport_warlab
+
+inv_name			     = "Деактиватор телепорта"
+inv_name_short		     = "Деактиватор телепорта"                    
+
+inv_weight			= 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 24 ; 
+inv_grid_y = 10 ; 
+cost				= 10000
+
+[vorona_egg]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\vorona_egg"
+;$prefetch 			= 32
+class				= II_FOOD
+cform				= skeleton
+visual				= equipments\egg.ogf
+description			= enc_equipment_egg
+
+inv_name			= vorona_egg
+inv_name_short		= vorona_egg
+inv_weight			= 0.01
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 15 ; 
+inv_grid_y = 8 ; 
+cost				= 500
+
+; eatable item
+eat_health = 0.1
+eat_satiety = 0.4
+eat_power = 0
+eat_radiation = -0.1
+wounds_heal_perc = 0
+eat_portions_num = -1
+
+; food item
+slot				= 4
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+attach_angle_offset		= 0.440521, 1.378287, -0.644026
+attach_position_offset	= 0.104196, -0.010821, 0.076969
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+// should be deleted after update
+bone_name				= bip01_r_hand
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+
+
+[lekarstvo]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\lekarstvo"
+;$prefetch 			= 32
+class				= II_BOTTL
+cform				= skeleton
+visual				= equipments\small_bottle_ne
+description			= enc_equipment_lekarstvo
+
+ef_weapon_type		= 0
+
+inv_name			= lekarstvo
+inv_name_short		= lekarstvo
+inv_weight			= 0.02	;0.2
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 14 ; 
+inv_grid_y = 1 ; 
+cost				= 50
+
+attach_angle_offset		= 0.000000, 0.000000, 0.000000
+attach_position_offset	= 0.087266, -0.078540, 0.052360
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+// should be deleted after update
+bone_name				= bip01_r_hand
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+slot				= 4
+
+; eatable item
+eat_health		= -0.1
+eat_satiety		= 0.01
+eat_power		= 0
+eat_radiation	= -0.8
+eat_alcohol		= 0.3
+wounds_heal_perc 	= 0
+eat_portions_num 	= -1
+
+; food item
+slot				= 4
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+break_particles		= explosions\explosion_bottle
+break_sound			= material\bottle\collide\bottle_break_1
+
+
+
+[mozg]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\mozg"
+;$prefetch 			= 32
+class				= II_FOOD
+cform				= skeleton
+visual				= equipments\item_mozg.ogf
+description			= enc_equipment_food_mozg
+
+inv_name			= mozg
+inv_name_short		= mozg
+inv_weight			= 0.7	;0.2
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 18 ; 
+inv_grid_y = 7 ; 
+cost				= 10000
+
+attach_angle_offset		= -0.287979, 1.560923, 1.544060
+attach_position_offset	= 0.096910, -0.013594, 0.107925
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+// should be deleted after update
+bone_name				= bip01_r_hand
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+; eatable item
+eat_health = 0.9
+eat_satiety = 0.9
+eat_power = 0.9
+eat_radiation = -0.9
+wounds_heal_perc = 0.9
+eat_portions_num = -1
+
+; food item
+slot				= 4
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[disk_adren]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\disk_adren"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_disket.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_disket_desc
+
+inv_name			= item_disket
+inv_name_short		= item_disket
+inv_weight			= 0.03
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 14 ; 
+inv_grid_y = 8 ; 
+cost				= 30
+
+
+[tisku_arhara]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\tisku_arhara"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\tisku.ogf
+radius				= 2
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_tisku_desc
+
+inv_name			= item_tisku
+inv_name_short		= item_tisku
+inv_weight			= 15
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 20 ; 
+inv_grid_y = 10 ; 
+cost				= 300
+
+
+[sumka_arhara]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\sumka_arhara"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\sumka_caxapa.ogf 
+radius				= 2
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_sumka_desc
+
+inv_name			= item_sumka
+inv_name_short		= item_sumka
+inv_weight			= 1
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 22 ; 
+inv_grid_y = 11 ; 
+cost				= 500
+
+
+[shaxter_tele]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\shaxter_tele"
+;$prefetch 			= 32
+class				= II_BOTTL
+cform				= skeleton
+visual				= equipments\small_bottle_ne
+description			= enc_equipment_shaxter_tele
+
+ef_weapon_type		= 0
+
+inv_name			= "Лекарство Шахтёра"
+inv_name_short		= "Лекарство Шахтёра"
+inv_weight			= 0.04	;0.2
+quest_item         = true
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 19 ; 
+inv_grid_y = 5 ; 
+cost				= 50
+
+attach_angle_offset		= 0.000000, 0.000000, 0.000000
+attach_position_offset	= 0.087266, -0.078540, 0.052360
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+// should be deleted after update
+bone_name				= bip01_r_hand
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+slot				= 4
+
+; eatable item
+eat_health		= 0.5
+eat_satiety		= 0.05
+eat_power		= 0
+eat_radiation	= -0.2
+eat_alcohol		= 0.03
+wounds_heal_perc 	= 0
+eat_portions_num 	= -1
+
+; food item
+slot				= 4
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+break_particles		= explosions\explosion_bottle
+break_sound			= material\bottle\collide\bottle_break_1
+
+
+[doc_medal]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\doc_medal"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\medal_dok.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_doc_medal_desc
+
+inv_name			= item_doc_medal
+inv_name_short		= item_doc_medal
+inv_weight			= 0.03
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 9 ; 
+inv_grid_y = 8 ; 
+cost				= 50000
+
+
+[fonarik]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\fonarik"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\manual torch.ogf
+
+description			= item_fonarik
+
+inv_name				= "Фонарик"
+inv_name_short			= "Фонарик"
+inv_weight				= 0.35
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 20 ; 
+inv_grid_y = 4 ; 
+attach_angle_offset		= 0.000000, -1.204452, -1.262921
+attach_position_offset	= 0.081856, -0.035081, 0.011694
+attach_bone_name		= bip01_l_hand
+auto_attach				= fals
+cost				= 250
+
+
+[kubik]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\kubik"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\cube_toy.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_kubik_desc
+
+inv_name			= item_kubik
+inv_name_short		= item_kubik
+inv_weight			= 0.03
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 19 ; 
+inv_grid_y = 4 ; 
+cost				= 50
+
+
+[money]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\money"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = money\money.ogf
+cost					= 300
+description			= enc_equipment_money
+inv_name				= "Серебряный рубль"
+inv_name_short			= "Серебряный рубль"
+inv_weight				= 0.02
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 25 ; 
+inv_grid_y = 6 ; 
+quest_item			     = false
+
+
+[money1]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\money1"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = money\money1.ogf
+cost					= 6000
+description			= enc_equipment_money1
+inv_name				= "Золотой червонец"
+inv_name_short			= "Золотой червонец"
+inv_weight				= 0.02
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 23 ; 
+inv_grid_y = 6 ; 
+quest_item			     = false
+
+
+
+[money2]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\money2"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = money\money2.ogf
+cost					= 1000
+description			= enc_equipment_money2
+inv_name				= "Серебряный рубль"
+inv_name_short			= "Серебряный рубль"
+inv_weight				= 0.02
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 26 ; 
+inv_grid_y = 6 ; 
+quest_item			     = false
+
+
+
+[money3]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\money3"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = money\money3.ogf
+cost					= 3000
+description			= enc_equipment_money3
+inv_name				= "Серебряный рубль"
+inv_name_short			= "Серебряный рубль"
+inv_weight				= 0.02
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 24 ; 
+inv_grid_y = 6 ; 
+quest_item			     = false
+
+
+[book_xabarych]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\book_xabarych"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = equipments\book.ogf
+cost					= 300
+description			= enc_book_xabarych
+inv_name				= "Книга Шахтёра"
+inv_name_short			= "Книга Шахтёра"
+inv_weight				= 0.3
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 22 ; 
+inv_grid_y = 6 ; 
+quest_item			     = false
+
+
+
+[arhara_obman]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\arhara_obman"
+;$prefetch 			= 32
+class				= II_ANTIR	;II_ATTCH
+cform				= skeleton
+visual				= equipments\item_apterak.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_arhara_obman
+
+inv_name			= "Телепорт Стрелка"
+inv_name_short		= "Телепорт Стрелка"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 24 ; 
+inv_grid_y = 10 ; 
+cost				= 5
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+eat_alcohol = 0.3
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+[arhara_listok]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\arhara_listok"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= amk\item_zapiska.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_arhara_listok
+
+inv_name			= "Записка Стрелка"
+inv_name_short		= "Записка Стрелка"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+cost				     = 1
+
+
+[arhara_instruk]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\arhara_instruk"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_book_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_arhara_instruk
+
+inv_name			= "Инструкция для костюма"
+inv_name_short		= "Инструкция для костюма"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 12 ; 
+inv_grid_y = 7 ; 
+cost				= 1
+
+
+
+[microshema]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\microshema"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\electro_charge.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 300
+
+description			= electro_charge_12
+inv_name				= "Сломанная плата с микросхемами"
+inv_name_short			= "Сломанная плата с микросхемами"
+inv_weight				= 0.02
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 7 ; 
+inv_grid_y = 8 ; 
+
+
+
+[flyga]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\flyga"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\flask.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_flyga
+
+inv_name			= "Именная фляжка Петренко"
+inv_name_short		= "Именная фляжка Петренко"
+inv_weight			= 0.2
+inv_grid_width     = 1
+inv_grid_height    = 2
+inv_grid_x         = 27
+inv_grid_y         = 39
+cost				= 50000
+
+
+[termos_big]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\termos_big"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\thermos.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_termos_big
+
+inv_name			     = "Большой термос"
+inv_name_short		     = "Большой термос"
+inv_weight			= 0.4
+inv_grid_width = 1 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 14 ; 
+cost				     = 1500
+
+
+[termos_small]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\termos_small"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\thermos_small.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_termos_small
+
+inv_name			= "Маленький термос"
+inv_name_short		= "Маленький термос"
+inv_weight			= 0.25
+inv_grid_width = 1 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 16 ; 
+cost				= 1200
+
+
+[malyva]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\malyva"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_book_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_malyva
+
+inv_name			= "Блокнот с запиской для Борова"
+inv_name_short		        = "Блокнот с запиской для Борова"
+inv_weight			= 0.03
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 8 ; 
+inv_grid_y = 8 ; 
+cost				= 1
+
+
+
+[pribor]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\pribor"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\pribor.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_pribor
+
+inv_name		          = "Компьютер с антенной"
+inv_name_short		        = "Компьютер с антенной"
+inv_weight			= 9
+inv_grid_width = 2 ; 
+inv_grid_height = 3 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 19 ; 
+cost				= 15000
+
+
+[3d_raziy]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\3d_raziy"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\3d_raziy.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_3d_raziy
+
+inv_name			        = "Видеорация"
+inv_name_short		        = "Видеорация"
+inv_weight			= 5
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 26 ; 
+cost				= 15000
+
+
+[telefon]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\telefon"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\telefon.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_telefon
+
+inv_name			        = "Мобильная рация"
+inv_name_short		        = "Мобильная рация"
+inv_weight			= 0.25
+inv_grid_width = 1 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 20 ; 
+cost				= 500
+
+
+[suvorotka]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "food and drugs\suvorotka"
+$prefetch 			= 8
+class			= II_BOTTL ;II_MEDKI
+cform				= skeleton
+visual				= equipments\suvorotka.ogf
+description			= enc_equipment_suvorotka
+inv_name			= "Сыворотка"
+inv_name_short		= "Сыворотка"
+inv_weight			= 0.03	
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 12 ; 
+inv_grid_y = 14 ; 
+cost				= 1000
+
+; eatable item
+eat_health			= 1.0
+eat_satiety			= 0.5
+eat_power			= 0.5
+eat_radiation		= -0.7
+eat_alcohol			= -1.0
+
+wounds_heal_perc	= 0.3
+eat_portions_num	= 1
+eat_max_power		= 0.5
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[gonets_flash]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency = 
+$spawn     = "arhara_items\gonets_flash"
+;$prefetch    = 32
+class    = II_ATTCH
+cform    = skeleton
+visual    = equipments\item_minipda.ogf
+radius    = 1
+;script_binding  = stalker.object_init
+quest_item   = false
+
+description         = gonets_flash_desc
+
+inv_name   = "Флешка гонца"
+inv_name_short  = "Флешка гонца"
+inv_weight   = 0.03
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 26 ; 
+inv_grid_y = 5 ; 
+cost    = 1
+
+
+[kod_kamera]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\kod_kamera"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_book_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_kod_kamera
+
+inv_name			= "Блокнот часового"
+inv_name_short		        = "Блокнот часового"
+inv_weight			= 0.03
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 8 ; 
+inv_grid_y = 8 ; 
+cost				= 1
+
+
+[soap]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\soap"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\soap.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_soap
+
+inv_name			     = "Мыло"
+inv_name_short		     = "Мыло"
+inv_weight			= 0.1
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 28 ; 
+cost				     = 100
+
+
+[shkatulka]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\shkatulka"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\shkatulka.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_shkatulka
+
+inv_name			     = "Шкатулка"
+inv_name_short		     = "Шкатулка"
+inv_weight			= 0.2
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 33 ; 
+cost				     = 4000
+
+
+[arhara_seif]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\arhara_seif"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\arhara_seif.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_arhara_seif
+
+inv_name			     = "Минисейф"
+inv_name_short		     = "Минисейф"
+inv_weight			= 20
+inv_grid_width = 3 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 14 ; 
+cost				     = 8000
+
+
+[kluch_dell_teleport]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\kluch_dell_teleport"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_apterak.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_kluch_dell_teleport
+
+inv_name			     = "Деактиватор телепортов"
+inv_name_short		     = "Деактиватор телепортов"                    
+
+inv_weight			= 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 24 ; 
+inv_grid_y = 10 ; 
+cost				= 1000
+
+
+[kluch_dell_teleport1]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\kluch_dell_teleport1"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_apterak.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_kluch_dell_teleport
+
+inv_name			     = "Деактиватор телепортов"
+inv_name_short		     = "Деактиватор телепортов"                    
+
+inv_weight			= 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 24 ; 
+inv_grid_y = 10 ; 
+cost				= 1000
+
+
+[parcel]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\parcel"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_apterak.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_parcel
+
+inv_name			     = "Посылка"
+inv_name_short		     = "Посылка"                    
+
+inv_weight			= 2.0
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 34 ; 
+cost				= 1
+
+
+[box_with_weapon]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\box_with_weapon"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= physics\box\box_1b
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_box_with_weapon
+
+inv_name			     = "Ящик с оружием"
+inv_name_short		     = "Ящик с оружием"                    
+
+inv_weight			= 25.0
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 21 ; 
+inv_grid_y = 7 ; 
+cost				= 2000
+
+
+[tabletki_1]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\tabletki_1"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\tabletki_1
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_tabletki
+
+inv_name			     = "Таблетки"
+inv_name_short		     = "Таблетки"                    
+
+inv_weight			= 0.01
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 5 ; 
+inv_grid_y = 16 ; 
+cost				= 50
+
+
+
+[tabletki_2]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\tabletki_2"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\tabletki_2
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_tabletki
+
+inv_name			     = "Таблетки"
+inv_name_short		     = "Таблетки"                    
+
+inv_weight			= 0.01
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 7 ; 
+inv_grid_y = 16 ; 
+cost				= 50
+
+
+
+[tabletki_3]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\tabletki_3"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\tabletki_3
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_tabletki
+
+inv_name			     = "Таблетки"
+inv_name_short		     = "Таблетки"                    
+
+inv_weight			= 0.01
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 18 ; 
+inv_grid_y = 15 ; 
+cost				= 50
+
+
+[shpriz]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\shpriz"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\shpriz
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_shpriz
+
+inv_name			     = "Шприц"
+inv_name_short		     = "Шприц"                    
+
+inv_weight			= 0.01
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 29 ; 
+cost				= 50
+
+
+[akkumulytor]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\akkumulytor"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\akkumulytor.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 3000
+
+description			= item_akkumulytor
+inv_name				= "Аккумулятор"
+inv_name_short			= "Аккумулятор"
+inv_weight				= 0.2
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 35 ; 
+
+
+[britva]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\britva"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\razor.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30
+
+description			= item_britva
+inv_name				= "Бритвенный станок"
+inv_name_short			= "Бритвенный станок"
+inv_weight				= 0.01
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 9 ; 
+inv_grid_y = 16 ; 
+
+
+
+[starik_chasy]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\starik_chasy"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\starik_chasy.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30000
+
+description			= item_starik_chasy
+inv_name				= "Золотые часы"
+inv_name_short			= "Золотые часы"
+inv_weight				= 0.01
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 19 ; 
+
+
+
+[land_disketka]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\land_disketka"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\disketka.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30
+
+description			= item_land_disketka
+inv_name				= "Дискета"
+inv_name_short			= "Дискета"
+inv_weight				= 0.01
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 24 ; 
+
+
+
+
+[ekza_akkumul]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\ekza_akkumul"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\ekza_akkumul.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 300
+
+description			= item_ekza_akkumul
+inv_name				= "Блок питания"
+inv_name_short			= "Блок питания"
+inv_weight				= 0.3
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 27 ; 
+
+
+[elek_plata]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\elek_plata"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\elek_plata.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 100
+
+description			= item_elek_plata
+inv_name				= "Плата"
+inv_name_short			= "Плата"
+inv_weight				= 0.08
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 30 ; 
+
+
+
+[kluk_karta]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\kluk_karta"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\kluk_karta.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30000
+
+description			= item_kluk_karta
+inv_name				= "Карта Клыка"
+inv_name_short			= "Карта Клыка"
+inv_weight				= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 4 ; 
+inv_grid_y = 14 ; 
+
+
+
+[kluk_karta_kopiy]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\kluk_karta_kopiy"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\kluk_karta_kopiy.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 100
+
+description			= item_kluk_karta_kopiy
+inv_name				= "Копия карты Клыка"
+inv_name_short			= "Копия карты Клыка"
+inv_weight				= 0.02
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 30 ; 
+
+
+
+
+[trupak]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\trupak"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = monsters\kontroler\kontroler_dead.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 1
+
+description			= item_trupak
+inv_name				= "Труп контролёра"
+inv_name_short			= "Труп контролёра"
+inv_weight				= 80.0
+inv_grid_width = 4 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 6 ; 
+inv_grid_y = 14 ; 
+
+
+[sidor_head]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\sidor_head"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\head_sidor.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 1000
+
+description			= item_sidor_head
+inv_name				= "Чучело головы Сидоровича"
+inv_name_short			= "Чучело головы Сидоровича"
+inv_weight				= 5.0
+inv_grid_width = 1 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 25 ; 
+
+
+[perfuzor_pust]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\perfuzor_pust"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\perfuz_pust.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 1
+
+description			= item_perfuzor_pust
+inv_name				= "Перфузор с пустыми колбами"
+inv_name_short			= "Перфузор с пустыми колбами"
+inv_weight				= 300.0
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 22 ; 
+inv_grid_y = 14 ; 
+
+
+[perfuzor_poln]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\perfuzor_poln"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\perfuz_poln.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 1
+can_take			     = false
+
+description			= item_perfuzor_poln
+inv_name				= "Перфузор с полными колбами"
+inv_name_short			= "Перфузор с полными колбами"
+inv_weight				= 100.0
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 22 ; 
+inv_grid_y = 14 ; 
+
+
+[kukla_1]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\kukla_1"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\kukla_1.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 1
+
+description			= item_kukla_1
+inv_name				= "Старая кукла"
+inv_name_short			= "Старая кукла"
+inv_weight				= 0.14
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 10 ; 
+inv_grid_y = 14 ; 
+
+
+[naem_bloknot]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\arhara_items\naem_bloknot"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_book_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_naem_bloknot
+
+inv_name			= "Блокнот наёмника"
+inv_name_short		        = "Блокнот наёмника"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 3 ; 
+inv_grid_y = 9 ; 
+cost				= 1
+
+
+[amul_naemn]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\amul_naemn"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\soap.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_amul_naemn
+
+inv_name			     = "Печатка наёмника"
+inv_name_short		     = "Печатка наёмника"
+inv_weight			= 0.03
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 31 ; 
+cost				     = 1000
+
+
+[chuchelo_body]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\chuchelo_body"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= physics\dead_body\trofey_pseudodog.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_chuchelo_body
+
+inv_name			     = "Чучело псевдопса"
+inv_name_short		     = "Чучело псевдопса"
+inv_weight			= 10.0
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 24 ; 
+inv_grid_y = 14 ; 
+cost				     = 10000
+
+
+[disk_pantera]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\disk_pantera"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_disket.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_disk_pantera
+
+inv_name			= "Компъютерный диск"
+inv_name_short		= "Компъютерный диск"
+inv_weight			= 0.01
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 14 ; 
+inv_grid_y = 8 ; 
+cost				= 30
+
+
+[zapiska_ranennogo]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\zapiska_ranennogo"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_1.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_zapiska_ranennogo
+
+inv_name			= "Записка убитого сталкера"
+inv_name_short		= "Записка убитого сталкера"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+cost				= 1
+
+[x_ray_antenna]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\x_ray_antenna"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\x_ray_antenna.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_x_ray_antenna
+
+inv_name			     = "Переносная пси-антенна"
+inv_name_short		     = "Переносная пси-антенна"
+inv_weight			= 40.0
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 16 ; 
+cost				     = 15000
+
+[x_ray_antenna_small]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\x_ray_antenna_small"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\x_ray_antenna_small.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_x_ray_antenna
+
+inv_name			     = "Переносная пси-антенна"
+inv_name_short		     = "Переносная пси-антенна"
+inv_weight			= 20.0
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 16 ; 
+cost				     = 15000
+
+[kapitan_pda]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\arhara_items\kapitan_pda"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_pda_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_kapitan_pda
+
+inv_name			= "ПДА капитана карателей"
+inv_name_short		= "ПДА капитана карателей"
+inv_weight			= 0.1
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 24 ; 
+inv_grid_y = 12 ; 
+cost				     = 1
+
+
+
+
+[samopisez]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\samopisez"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\samopisez.ogf
+radius				= 1
+;script_binding		        = stalker.object_init
+quest_item			= false
+
+description			= item_samopisez
+
+inv_name			     = "Бортовой самописец"
+inv_name_short		     = "Бортовой амописец"
+inv_weight			= 20.0
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 3 ; 
+inv_grid_y = 18 ; 
+cost				     = 1500
+
+
+[sbit_vert]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\sbit_vert"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= objects\stuff\veh\mi24.ogf
+
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= Сбитый вертолёт
+
+inv_name			    = "Сбитый вертолёт"
+inv_name_short		    = "Сбитый вертолёт"
+inv_weight			= 10000
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 24 ; 
+inv_grid_y = 12 ; 
+cost				     = 1
+
+
+[makrogenerator]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\makrogenerator"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= objects\makrogenerator1.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+can_take			     = false
+
+description			= item_mini_antenna
+
+inv_name			     = "генератор"
+inv_name_short		     = "генератор"
+inv_weight			= 10000.0
+inv_grid_width = 1 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 4 ; 
+inv_grid_y = 22 ; 
+cost				     = 20
+
+
+
+[video_kasseta]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\video_kasseta"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\kasseta_video.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= "Видеокассета с записью"
+
+inv_name			     = "Видеокассета"
+inv_name_short		     = "Видеокассета"
+inv_weight			= 0.2
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 3 ; 
+inv_grid_y = 31 ; 
+cost				     = 30
+
+
+[detektor_baty]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\detektor_baty"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\kasseta_video.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= "Детектор Сахарова. Определяет и подаёт сигнал при наличии в радиусе 10 метров пластмассы."
+
+inv_name			     = "Спецдетектор"
+inv_name_short		     = "Спецдетектор"
+inv_weight			= 0.2
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 13 ; 
+inv_grid_y = 6 ; 
+cost				     = 30
+
+
+
+[strannik_bloknot]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\strannik_bloknot"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_book_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_strannik_bloknot
+
+inv_name			     = "Блокнот Странника"
+inv_name_short		     = "Блокнот Странника"
+inv_weight			= 0.03
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 8 ; 
+inv_grid_y = 8 ; 
+cost				= 1
+
+
+[bloknot_neizvestnogo]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\arhara_items\bloknot_neizvestnogo"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_book_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_blok_neizvestn
+
+inv_name			     = "Блокнот неизвестного"
+inv_name_short		     = "Блокнот неизвестного"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 3 ; 
+inv_grid_y = 9 ; 
+cost				     = 1
+
+
+
+[wpn_svd_foto]:wpn_svd
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn                  = "arhara_items\wpn_svd_foto"	
+
+description			= enc_weapons1_wpn-svd-foto
+cost					= 25000
+;quest_item			= false
+ammo_mag_size			= 1
+ammo_class			= ammo_7.62x54_foto 
+
+sprint_allowed			= true; false
+
+condition_shot_dec 			= 0.00001 ;увеличение износа при каждом выстреле
+
+inv_name				= "Фоторужьё"
+inv_name_short			= "Фоторужьё"
+
+inv_grid_width = 4 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 5 ; 
+inv_grid_y = 18 ; 
+
+;flame_particles		    = weapons\generic_weapon06
+;smoke_particles		   	= weapons\generic_shoot_00
+;shell_particles	 		= weapons\generic_shells
+
+hit_power           = 16.8
+hit_impulse	      = 1
+hit_type 	        = fire_wound
+hit_rate	        = 3.0
+fire_distance       = 210
+bullet_speed		= 950  
+rpm                 = 140
+
+hud                     = wpn_svd_foto_hud
+normal                  = 0, 1, 0
+position                = -0.026, -0.077, 0.00
+orientation             = 0, 0, 0
+
+startup_ammo            = 1
+visual                  = weapons\svd\wpn_svd.ogf
+
+snd_shoot		= weapons\fotozatvor 
+
+[wpn_svd_foto_hud]
+
+shell_point			= -0.140000,-0.030000,0.080000
+shell_dir		 		= 0.0, 1.0, 0.0
+
+fire_point			= 0.200000,-0.070000,0.090000
+fire_bone               = wpn_body
+orientation             = 0, 0, 0
+position                = 0, 0, 0
+visual                  = weapons\svd\wpn_svd_hud.ogf
+
+anim_holster	= holster
+anim_idle		= idle
+anim_idle_aim	= idle
+anim_reload	= reload
+anim_draw		= draw
+anim_holster	= holster
+anim_shoot	= shoot
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.020000,-0.030000,0.030000
+zoom_rotate_x			= 0.000000
+zoom_rotate_y			= -0.020000
+
+
+[psewdofoto]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\psewdofoto"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\foto_monolit.ogf
+
+radius				= 1
+quest_item			= true
+cost					= 30
+
+description			= "Фото Монолита со стёртыми цифрами кода"
+inv_name				= "Псевдофото Монолита"
+inv_name_short			= "Псевдофото Монолита"
+inv_weight				= 0.1
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 38 ; 
+
+
+
+[mulyz_bomba]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\mulyz_bomba"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= weapons\grenade\yadrena_bomba.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= "Корпус бомбы. Боезаряд и детонатор отсутствуют"
+
+inv_name			     = "Корпус бомбы"
+inv_name_short		     = "Корпус бомбы"
+inv_weight			= 15.0
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 39 ; 
+cost				     = 100
+
+
+
+[neizv_zapiska]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\neizv_zapiska"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= amk\item_zapiska.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_neizv_zapiska
+
+inv_name			= "Листок с информацией"
+inv_name_short		= "Листок с информацией"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+cost				     = 1
+
+
+[forest_last_dead_listok]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\forest_last_dead_listok"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= amk\item_zapiska.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_forest_last_dead_listok
+
+inv_name			= "Инструкция"
+inv_name_short		= "Инструкция"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+cost				     = 1
+
+
+
+
+[chemodan_piyan]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\chemodan_piyan"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\sumka_chemodan.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_chemodan_piyan
+
+inv_name			     = "Сумка проверяющего"
+inv_name_short		     = "Сумка проверяющего"
+inv_weight			= 7.0
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 13 ; 
+inv_grid_y = 18 ; 
+cost				     = 10
+
+
+
+
+
+[klenov_opisalovo]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\klenov_opisalovo"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_book_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_klenov_opisalovo
+
+inv_name			     = "Данные от Клёнова"
+inv_name_short		     = "Данные от Клёнова"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 12 ; 
+inv_grid_y = 7 ; 
+cost				     = 10
+
+
+[pisma_stalka]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\pisma_stalka"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\kluk_karta.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30
+
+description			= "Пачка писем новичка личного характера. Ничего интересного. Хорошо, что написаны карандашом. Покрыта слизью желудка плоти."
+inv_name				= "Письма сталкера"
+inv_name_short			= "Письма сталкера"
+inv_weight				= 0.2
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 4 ; 
+inv_grid_y = 14 ; 
+
+
+
+[predmet_planshetka]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\predmet_planshetka"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\planshetka.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 50
+
+description			= item_planshetka 
+inv_name				= "Планшетка"
+inv_name_short			= "Планшетка"
+inv_weight				= 0.3
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 4 ; 
+inv_grid_y = 14 ; 
+
+
+
+
+
+[nauch_recomend]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\nauch_recomend"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = equipments\kluk_karta.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30
+
+description			= item_nauch_recomend 
+inv_name				= "Рекомендация"
+inv_name_short			= "Рекомендация"
+inv_weight				= 0.2
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 4 ; 
+inv_grid_y = 14 ; 
+
+
+
+
+[korobka_sigars]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\korobka_sigars"
+cform                   = skeleton
+class					= II_ATTCH
+visual                  = new_item\box_cigara.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 50
+
+description			= item_planshetka 
+inv_name				= "Коробка из под сигар с запиской"
+inv_name_short			= "Коробка из под сигар с запиской"
+inv_weight				= 0.3
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 6 ; 
+inv_grid_y = 1 ; 
+
+
+
+[iskra_listok]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\iskra_listok"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= amk\item_zapiska.ogf
+radius				= 1
+quest_item			= false
+
+description			= item_iskra_listok
+
+inv_name			= "Записка Искры"
+inv_name_short		= "Записка Искры"
+inv_weight			= 0.03
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+cost				     = 1
+
+
+
+[verevka]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\verevka"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\verevka.ogf
+radius				= 1
+quest_item			= false
+
+description			= "Кусок обычной бельевой верёвки. Находка для домохозяйки или ковбоя"
+
+inv_name			     = "Верёвка"
+inv_name_short		     = "Верёвка"
+inv_weight			= 0.3
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 15 ; 
+inv_grid_y = 18 ; 
+cost				     = 30
+
+
+
+
+[shaxter_konteyner]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\shaxter_konteyner"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= physics\box\box_lab_01.ogf
+radius				= 1
+quest_item			= false
+
+description			= "Ящик, сделанный из свинца. Вполне подойдёт для хранения радиоактивных материалов"
+
+inv_name			     = "Свинцовый контейнер"
+inv_name_short		     = "Свинцовый контейнер"
+inv_weight			= 20.3
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 22 ; 
+inv_grid_y = 1 ; 
+cost				     = 3000
+
+
+[primanka_1]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\primanka_1"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual = monster_items\item_pseudogigant_hand.ogf
+radius				= 1
+quest_item			= false
+
+inv_name			      = "Приманка"
+inv_name_short		     = "Приманка"
+description			= "Лапа псевдогиганта оказалась хорошей приманкой для собак"
+inv_weight			= 0.3
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 15 ; 
+inv_grid_y = 1 ; 
+cost				     = 5
+
+
+[primanka_2]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\primanka_2"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual = monster_items\item_pseudogigant_hand.ogf
+radius				= 1
+quest_item			= false
+can_take			     = false
+
+inv_name			      = "Приманка"
+inv_name_short		     = "Приманка"
+description			= "Лапа псевдогиганта оказалась хорошей приманкой для собак"
+inv_weight			= 0.3
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 15 ; 
+inv_grid_y = 1 ; 
+cost				     = 5
+
+
+
+[schenok]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn					= "arhara_items\schenok"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = monsters\pseudodog\psevdodog_small_dead.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 10000
+
+description			= "Спящий щенок псевдособаки"
+inv_name				= "Спящий щенок псевдособаки"
+inv_name_short			= "Спящий щенок псевдособаки"
+inv_weight				= 3.7
+inv_grid_width = 2 ; 
+inv_grid_height = 2 ; 
+inv_grid_x = 21 ; 
+inv_grid_y = 18 ; 
+
+
+[kondensatory]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\kondensatory"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\box_condensers.ogf
+radius				= 1
+quest_item			= false
+
+description			= "Коробка с конденсаторами. Кое для кого - незаменимая вещь"
+
+inv_name			     = "Кондёры"
+inv_name_short		     = "Кондёры"
+inv_weight			= 0.3
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 5 ; 
+inv_grid_y = 20 ; 
+cost				     = 3000
+
+
+
+[tranzistory]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\tranzistory"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\box_transistors.ogf
+radius				= 1
+quest_item			= false
+
+description			= "Коробка с транзисторами. Мдя... Крайне необходимая в Зоне вещь, особенно при атаке псевдогигинта..."
+
+inv_name			     = "Транзисторы"
+inv_name_short		     = "Транзисторы"
+inv_weight			= 0.3
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 5 ; 
+inv_grid_y = 21 ; 
+cost				     = 3100
+
+[letun]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\letun"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= physics\vehicles\bat\part\bat_part_01.ogf
+radius				= 1
+quest_item			= false
+
+description			= "Мёртвая аномальная летучая мышь"
+
+inv_name			     = "Летучая мышь"
+inv_name_short		     = "Летучая мышь"
+inv_weight			= 0.3
+inv_grid_width		     = 2
+inv_grid_height		= 2
+inv_grid_x			= 29
+inv_grid_y			= 16
+cost				     = 7000
+
+
+[ded_ryukzak]:identity_immunities
+GroupControlSection	     = spawn_group
+discovery_dependency    = 
+$spawn 				= "arhara_items\ded_ryukzak"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual                  = equipments\item_rukzak.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description             = "Рюкзак Деда. В нём - несколько солнечных батарей."
+inv_name                = "Рюкзак бандита"
+inv_name_short          = "Рюкзак бандита"
+inv_weight			= 7
+inv_grid_width          = 2
+inv_grid_height         = 2
+inv_grid_x              = 6
+inv_grid_y              = 10
+cost                    = 1000
+
+[biodoki]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\biodoki"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = equipments\kluk_karta.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30
+
+description			= "Часть исследований на микробиологическом и генетическом уровне по летучим мышам. Для простого смертного - полная кракобяза." 
+inv_name				= "Заметки охотника"
+inv_name_short			= "Заметки охотника"
+inv_weight			= 0.2
+inv_grid_width			= 2
+inv_grid_height		= 2
+inv_grid_x			= 4
+inv_grid_y			= 14
+
+
+[portator]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\portator"
+cform                   = skeleton
+class				= II_MEDKI ;II_ATTCH
+visual                  = equipments\psp_2.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 1
+
+description			= "Активатор портации с возможностью прицельного выбора координат и территорий. Действует в строго определённых аномальных зонах." 
+inv_name				= "Блок управления телепорта"
+inv_name_short			= "Блок управления телепорта"
+inv_weight			= 0.4
+inv_grid_width			= 2
+inv_grid_height		= 1
+inv_grid_x			= 44
+inv_grid_y			= 54
+
+; eatable item
+eat_health			= 0.0
+eat_satiety			= 0
+eat_power			     = 0.0
+eat_radiation		     = 0.0
+
+wounds_heal_perc	     = 0.0
+eat_portions_num	     = 1
+eat_max_power		     = 0.1
+
+; food item
+animation_slot		     = 4
+
+;hud item
+hud = wpn_vodka_hud
+
+[psewdoportator]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\psewdoportator"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = equipments\item_datchik3
+
+radius				= 1
+quest_item			= false
+cost					= 1
+
+description			= "Прибор с датчиком для отслеживания миграции кровососов." 
+inv_name				= "Прибор с датчиком"
+inv_name_short			= "Прибор с датчиком"
+inv_weight			= 0.4
+inv_grid_width			= 2
+inv_grid_height		= 1
+inv_grid_x			= 39
+inv_grid_y			= 14
+
+
+
+[plato_bloknot]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\plato_bloknot"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_book_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= "Полусгоревший блокнот. В нём - какие-то расчёты и старые схемы. По частично сохранившемуся тексту - похоже на схему включения запасных генераторов на электроподстанции. Подчёркнуты цифры 198... Остальных цифр нет - листок значительно обгорел."
+
+inv_name			= "Блокнот"
+inv_name_short		= "Блокнот"
+inv_weight		= 0.03
+inv_grid_width		= 1
+inv_grid_height	= 1
+inv_grid_x		= 38
+inv_grid_y		= 14
+cost				= 1
+
+
+; автор модельки Рыло
+[notebook_zlobnyi]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\notebook_zlobnyi"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\rylo_notebook.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description         = "Нетбук Злобного. Кроме прочей малопонятной пока информации есть код: 19854622. Ноут - в рабочем состоянии, лёгок и занимает мало места. Лучше его забрать."
+
+inv_name			= "Нетбук Злобного"
+inv_name_short		= "Нетбук Злобного"
+inv_weight		= 1.6
+inv_grid_width		= 2
+inv_grid_height	= 2
+inv_grid_x		= 29
+inv_grid_y		= 18
+cost				= 1000
+
+[doki_monolit]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\doki_monolit"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = equipments\kluk_karta.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30
+
+description = "...Я смог подкоректировать его программу... Он проявляет высокий интеллект... Вчера подарил ему каску времён войны. За это, его прозвали Фриц. Он принял это имя и стал на него отзываться. ...Невероятно, у него стали появляться эмоции. Никто об этом не догадывается и хорошо. Иначе его просто уничтожат. Надо как то вывести его из этой лаборатории... Получилось, я активировал телепорт и вытолкнул его в него. Куда он его занесёт... Что это... Тревога... Надо бежать, пощады за такое не будет..."
+inv_name				= "Заметки учёного"
+inv_name_short			= "Заметки учёного"
+inv_weight			= 0.3
+inv_grid_width			= 2
+inv_grid_height		= 2
+inv_grid_x			= 4
+inv_grid_y			= 14
+
+[kit_antenna_full]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "arhara_items\kit_antenna_full"
+;$prefetch 			= 32
+class				= O_PHYS_S
+cform				= skeleton
+visual				= physics\decor_4\antenna_kit.ogf
+radius				= 1
+
+quest_item			= true
+can_take			= false
+;description			= item_x_ray_antenna
+remove_time = 9998
+custom_data = scripts\collide_ignor.ltx
+inv_name			     = "Собранная антенна Кита"
+inv_name_short		     = "Собранная антенна Кита"
+inv_weight			= 100.0
+inv_grid_width = 2 ; 
+inv_grid_height = 3 ; 
+inv_grid_x = 1 ; 
+inv_grid_y = 16 ; 
+cost				     = 15000
+
+[doki_gauss]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\doki_gauss"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = equipments\kluk_karta.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30
+
+description = "В связи с успешным завершением эксперемента по созданию импульсного оружия, начать перевооружение бойцов клана, а так же бойцов из группировки монолит..."
+inv_name				= "Приказ"
+inv_name_short			= "Приказ"
+inv_weight			= 0.3
+inv_grid_width			= 2
+inv_grid_height		= 2
+inv_grid_x			= 4
+inv_grid_y			= 14
+
+[doki_fritz]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn				= "arhara_items\doki_fritz"
+cform                   = skeleton
+class				= II_ATTCH
+visual                  = equipments\kluk_karta.ogf
+
+radius				= 1
+quest_item			= false
+cost					= 30
+
+description = "...У усыплённого сталкера извлечён биологический материал, в частности мозг, для дальнейшего эксперемента. ...Совмещение биологического материала с роботизированным костюмом, прошло успешно. Отторжения не наблюдается. Индивид быстро обучается. В связи с этим, можно приступать к поставкам биоматериала и костюмов, для производства в больших масштабах."
+inv_name				= "Отчёт"
+inv_name_short			= "Отчёт"
+inv_weight			= 0.3
+inv_grid_width			= 2
+inv_grid_height		= 2
+inv_grid_x			= 4
+inv_grid_y			= 14
+

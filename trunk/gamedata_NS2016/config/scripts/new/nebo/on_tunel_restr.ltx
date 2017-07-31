@@ -1,0 +1,24 @@
+[logic]
+active = sr_idle@one
+
+[sr_idle@one]
+on_info = {+denis_wound_start} sr_idle@two
+
+[sr_idle@two]
+on_actor_inside = sr_idle@tri %=play_snd(ambient\fan_squeaks_1) =play_snd(ambient\waterdrops2) =x18_gluk%
+
+[sr_idle@tri]
+on_timer = 10000 |sr_idle@four %=play_snd(ambient\monolith_1) =play_snd(ambient\os_1) =run_postprocess(agr_u_fade)%
+
+[sr_idle@four]
+on_timer = 15000 |sr_idle@five  %=run_postprocess(deadcity_wake) =play_snd(ambient\lava1) =play_snd(ambient\radarsparks_1) =x18_gluk%
+
+[sr_idle@five]
+on_timer = 15000 |sr_idle@six  %=play_snd(ambient\darkwind1) =play_snd(ambient\rnd_outdoor\rnd_dark6) =run_postprocess(dead_zone)%
+
+[sr_idle@six]
+on_timer = 10000 |sr_idle@seven %=play_snd(ambient\random\rnd_respawn) =play_snd(ambient\rnd_outdoor\rnd_dark6) =run_postprocess(radar_psi)%
+
+[sr_idle@seven]
+on_timer = 10000 | nil 
+

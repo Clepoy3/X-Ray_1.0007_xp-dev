@@ -1,0 +1,412 @@
+--'*******************************************************************************
+--'   **   **   **   **   **    **   **   **      Тайники        **   **   **   **    **   **   **   ** 
+--'*******************************************************************************
+local points={
+    {
+        position={x=-243.61,y=-12.45,z=-37.83},
+        gv=67,
+        lv=12560
+        },
+    {
+        position={x=-167.69,y=-20.012,z=-132.51},
+        gv=55,
+        lv=81353
+        },
+    {
+        position={x=17.24,y=3.50,z=92.55},
+        gv=93,
+        lv=297049
+        },
+    {
+        position={x=32.55,y=21.81,z=156.37},
+        gv=97,
+        lv=324458
+        }
+}
+
+function new_inventory(actor,npc,p1,p2)
+    local a = points[math.random(table.getn(points))]
+    local se_obj = alife():create("m_inventory_box_new", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+	local m_where 
+	if news_main then
+		m_where = news_main.get_point_description("l01_escape1", vector():set(a.position.x,a.position.y,a.position.z))
+	else
+		m_where = "Здесь, на Кордоне"
+	end
+	local n_where 
+	if news_main then
+		n_where = news_main.get_point_description1("l01_escape2", vector():set(a.position.x,a.position.y,a.position.z))
+	db.actor:give_info_portion("escape_kostya_taynik1_start"..n_where)
+	end
+	db.actor:give_talk_message(m_where.." скорее всего поискать стоит. Где-то там он, точно говорю.", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
+-- Звуковое сопровождение
+	local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_03\stalker\talk\leave\leave_5]])
+	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)    
+end
+
+local points2={
+    {
+        position={x=49.58,y=16.17,z=-0.70},
+        gv=294,
+        lv=211771
+        },
+    {
+        position={x=-95.25,y=-1.40,z=-222.45},
+        gv=271,
+        lv=114667
+        },
+	{
+        position={x=-79.10,y=15.82,z=15.42},
+        gv=319,
+        lv=126186
+        },
+	{
+        position={x=96.50,y=-3.30,z=159.67},
+        gv=364,
+        lv=263999
+        },	
+    {
+        position={x=29.16,y=9.79,z=226.94},
+        gv=359,
+        lv=203793
+        }
+}
+
+function new_inventory2(actor,npc,p1,p2)
+    local a = points2[math.random(table.getn(points2))]
+    local obj = alife():create("m_inventory_box2", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+	local m_where 
+	if news_main then
+		m_where = news_main.get_point_description("l02_garbage1", vector():set(a.position.x,a.position.y,a.position.z))
+	else
+		m_where = "Здесь, на Свалке"
+	end
+	local n_where 
+	if news_main then
+		n_where = news_main.get_point_description1("l02_garbage2", vector():set(a.position.x,a.position.y,a.position.z))
+	db.actor:give_info_portion("kostya_svalka_taynik_start"..n_where)
+	end
+	db.actor:give_talk_message(m_where.." скорее всего поискать стоит. Где-то там он, точно говорю.", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
+-- Звуковое сопровождение
+	local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_03\stalker\talk\leave\leave_5]])
+	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)    
+end
+
+
+local points3={
+    {
+        position={x=15.55,y=0.90,z=48.00},
+        gv=475,
+        lv=255469
+        },
+    {
+        position={x=-148.31,y=1.00,z=-217.30},
+        gv=553,
+        lv=89455
+        },
+	{
+        position={x=74.00,y=6.80,z=-115.53},
+        gv=427,
+        lv=310306
+        },
+	{
+        position={x=34.01,y=4.81,z=11.23},
+        gv=463,
+        lv=273058
+        },	
+    {
+        position={x=21.35,y=-2.52,z=-3.02},
+        gv=479,
+        lv=255431
+        },
+	{
+        position={x=-193.50,y=0.80,z=-167.70},
+        gv=667,
+        lv=52528
+        }
+}
+
+function new_inventory5(actor,npc,p1,p2)
+    local a = points3[math.random(table.getn(points3))]
+    local obj = alife():create("m_inventory_box5", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+	local m_where 
+	if news_main then
+		m_where = news_main.get_point_description("l03_agroprom1", vector():set(a.position.x,a.position.y,a.position.z))
+	else
+		m_where = "Здесь, на Агропроме"
+	end
+	local n_where 
+	if news_main then
+		n_where = news_main.get_point_description1("l03_agroprom2", vector():set(a.position.x,a.position.y,a.position.z))
+	db.actor:give_info_portion("kostya_agroprom_taynik_start"..n_where)
+	end
+	db.actor:give_talk_message(m_where.." скорее всего поискать стоит. Где-то там он, точно говорю.", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
+-- Звуковое сопровождение
+	local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_03\stalker\talk\leave\leave_5]])
+	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)    
+end
+
+local points4={
+    {
+        position={x=26.50,y=-16.34,z=74.72},
+        gv=1164,
+        lv=5745
+        },
+    {
+        position={x=13.45,y=-8.90,z=-10.70},
+        gv=1139,
+        lv=4875
+        },
+    {
+        position={x=0.80,y=7.10,z=-18.50},
+        gv=1115,
+        lv=3160
+        }
+}
+
+function new_inventory3(actor,npc,p1,p2)
+    local a = points4[math.random(table.getn(points4))]
+    local se_obj = alife():create("m_inventory_box3", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+	local m_where 
+	if news_main then
+		m_where = news_main.get_point_description("l04u_labx18", vector():set(a.position.x,a.position.y,a.position.z))
+	else
+		m_where = "В лаборатории Х-18"
+	end
+	local n_where 
+	if news_main then
+		n_where = news_main.get_point_description1("l04u_labx181", vector():set(a.position.x,a.position.y,a.position.z))
+	db.actor:give_info_portion("kostya_x18_taynik_start"..n_where)
+	end
+	db.actor:give_talk_message(m_where.." скорее всего поискать стоит. Где-то там он, точно говорю.", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
+-- Звуковое сопровождение
+	local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_03\stalker\talk\leave\leave_5]])
+	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)    
+end
+
+local points5={
+    {
+        position={x=-62.33,y=-13.00,z=-252.71},
+        gv=1454,
+        lv=16705
+        },
+    {
+        position={x=30.50,y=-11.95,z=-238.80},
+        gv=1478,
+        lv=53185
+        },
+	{
+        position={x=7.35,y=0.20,z=-6.90},
+        gv=1502,
+        lv=44632
+        },
+	{
+        position={x=-5.95,y=14.38,z=-15.54},
+        gv=1525,
+        lv=37017
+        },	
+    {
+        position={x=118.00,y=2.45,z=-133.80},
+        gv=1440,
+        lv=101307
+        },
+	{
+        position={x=31.75,y=0.12,z=-22.05},
+        gv=1506,
+        lv=55947
+        }
+}
+
+function new_inventory4(actor,npc,p1,p2)
+    local a = points5[math.random(table.getn(points5))]
+    local obj = alife():create("m_inventory_box4", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+	local m_where 
+	if news_main then
+		m_where = news_main.get_point_description("l08_yantar1", vector():set(a.position.x,a.position.y,a.position.z))
+	else
+		m_where = "На Янтаре"
+	end
+	local n_where 
+	if news_main then
+		n_where = news_main.get_point_description1("l08_yantar2", vector():set(a.position.x,a.position.y,a.position.z))
+	db.actor:give_info_portion("kostya_yantar_taynik_start"..n_where)
+	end
+	db.actor:give_talk_message(m_where.." скорее всего поискать стоит. Где-то там он, точно говорю.", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
+-- Звуковое сопровождение
+	local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_03\stalker\talk\leave\leave_5]])
+	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)    
+end
+
+local points6={
+    {
+        position={x=-47.47,y=-4.60,z=-12.10}, 
+        gv=1605,
+        lv=261495
+        },
+    {
+        position={x=-7.80,y=-6.95,z=66.50}, 
+        gv=1575,
+        lv=306835
+        },
+	{
+        position={x=-26.33,y=-0.56,z=-25.31}, 
+        gv=1593,
+        lv=285435
+        },
+	{
+        position={x=-339.99,y=-23.48,z=252.30}, 
+        gv=1835,
+        lv=14564
+        },	
+    {
+        position={x=-189.95,y=-7.90,z=374.99}, 
+        gv=1859,
+        lv=135302
+        },
+	{
+        position={x=117.51,y=-9.54,z=54.59}, 
+        gv=1558,
+        lv=400703
+        }
+}
+
+function new_inventory6(actor,npc,p1,p2)
+    local a = points6[math.random(table.getn(points6))]
+    local obj = alife():create("m_inventory_box6", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+	local m_where 
+	if news_main then
+		m_where = news_main.get_point_description("l07_military1", vector():set(a.position.x,a.position.y,a.position.z))
+	else
+		m_where = "На Армейских складах"
+	end
+	local n_where 
+	if news_main then
+		n_where = news_main.get_point_description1("l07_military2", vector():set(a.position.x,a.position.y,a.position.z))
+	db.actor:give_info_portion("kostya_as_taynik_start"..n_where)
+	end
+	db.actor:give_talk_message(m_where.." скорее всего поискать стоит. Где-то там он, точно говорю.", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
+-- Звуковое сопровождение
+	local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_03\stalker\talk\leave\leave_5]])
+	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)    
+end
+
+local points7={
+    {
+        position={x=486.60,y=-52.56,z=-102.10},   
+        gv=2050,
+        lv=160821
+        },
+    {
+        position={x=390.70,y=-34.33,z=157.27},   
+        gv=1865,
+        lv=117799
+        },
+    {
+        position={x=573.04,y=-59.40,z=-230.01},   
+        gv=1873,
+        lv=200741
+        },
+	{
+        position={x=-38.38,y=-2.41,z=-26.90},   
+        gv=1962,
+        lv=2036
+        }
+}
+
+function new_inventory7(actor,npc,p1,p2)
+    local a = points7[math.random(table.getn(points7))]
+    local se_obj = alife():create("m_inventory_box7", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+	local m_where 
+	if news_main then
+		m_where = news_main.get_point_description("l10_radar", vector():set(a.position.x,a.position.y,a.position.z))
+	else
+		m_where = "На Радаре"
+	end
+	local n_where 
+	if news_main then
+		n_where = news_main.get_point_description1("l10_radar1", vector():set(a.position.x,a.position.y,a.position.z))
+	db.actor:give_info_portion("kostya_radar_taynik_start"..n_where)
+	end
+	db.actor:give_talk_message(m_where.." скорее всего поискать стоит. Где-то там он, точно говорю.", "ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
+-- Звуковое сопровождение
+	local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_03\stalker\talk\leave\leave_5]])
+	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)    
+end
+
+local points8={
+    {
+        position={x=100.17,y=-2.19,z=-2.16},   
+        gv=2229,
+        lv=212222
+        },
+    {
+        position={x=-92.92,y=0.05,z=-39.15},   
+        gv=2257,
+        lv=19247
+        },
+    {
+        position={x=65.53,y=2.27,z=26.98},   
+        gv=2235,
+        lv=220824
+        }
+}
+
+function new_inventory8(actor,npc,p1,p2)
+    local a = points8[math.random(table.getn(points8))]
+    local se_obj = alife():create("m_inventory_box8", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+	local n_where 
+	if news_main then
+		n_where = news_main.get_point_description1("l11_pripyat1", vector():set(a.position.x,a.position.y,a.position.z))
+	db.actor:give_info_portion("kostya_pripyat_taynik"..n_where)
+	end
+-- Звуковое сопровождение
+	local snd_obj = xr_sound.get_safe_sound_object([[characters_voice\human_03\stalker\talk\leave\leave_5]])
+	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)    
+end
+
+local points9={
+    {
+        position={x=-2.58,y=-1.42,z=201.79},   
+        gv=2195,
+        lv=96188
+        },
+    {
+        position={x=-30.87,y=9.42,z=201.13},   
+        gv=2197,
+        lv=70132
+        },
+    {
+        position={x=-19.71,y=8.00,z=158.66},   
+        gv=2190,
+        lv=78724
+        }
+}
+
+function new_inventory9(actor,npc,p1,p2)
+    local a = points9[math.random(table.getn(points9))]
+    local se_obj = alife():create("m_inventory_box9", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+end
+
+local points10={
+    {
+        position={x=-102.21,y=9.29,z=-9.24},  
+        gv=2250,
+        lv=16790
+        },
+    {
+        position={x=-118.95,y=1.70,z=11.21},   
+        gv=2249,
+        lv=7032
+        },
+    {
+        position={x=-99.60,y=5.45,z=-9.20},  
+        gv=2250,
+        lv=16801
+        }
+}
+
+function new_inventory10(actor,npc,p1,p2)
+    local a = points10[math.random(table.getn(points10))]
+    local se_obj = alife():create("m_inventory_box10", vector():set(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
+end
+

@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding="windows-1251" ?>
+<xml>
+
+<!-- UNIQUM PROFILES -->
+<!--Шахтёр-->
+<specific_character id="pes_shahter" team_default = "1">
+	<name>Шахтёр</name>
+	<icon>ui_npc_u_shahter</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>sim_stalker_master_bio</bio>
+
+	<class>pes_shahter</class>
+	<community>stalker</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<money min="2500" max="5000" infinitive="0"/>
+	<rank>901</rank>
+	<reputation>101</reputation>
+
+	<visual>new\dark_stalker_voron</visual>
+	<snd_config>characters_voice\human_03\stalker\</snd_config>
+	<crouch_type>-1</crouch_type>
+	<panic_threshold>-1</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_saiga12c \n
+		ammo_12x70_buck \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+	</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+	<start_dialog>dm_hello_dialog</start_dialog>
+	<actor_dialog>arhara_shaxter</actor_dialog>
+	<actor_dialog>shaxter_konteyner_ok</actor_dialog>
+	<actor_dialog>shaxter_konteyner_neud</actor_dialog>
+	<actor_dialog>shaxter_fonar_dost</actor_dialog>
+	<actor_dialog>shaxter_fonar_otdat</actor_dialog>
+	<actor_dialog>shax_kniga_naity</actor_dialog>
+	<actor_dialog>shax_kniga_prines</actor_dialog>
+	<actor_dialog>shax_plennik_nayti</actor_dialog>
+	<actor_dialog>shax_plennik_prines</actor_dialog>
+	<actor_dialog>tretiy_kod_nayden</actor_dialog>
+	<actor_dialog>shax_land_perehod_talk</actor_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+</specific_character>
+
+<!--Хабарыч-->
+<specific_character id="pes_xabaruch" team_default = "1">
+	<name>Хабарыч</name>
+	<icon>ui_npc_u_xabaruch_new</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>sim_stalker_veteran_bio</bio>
+
+	<class>pes_xabaruch</class>
+	<community>stalker</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<money min="50" max="100" infinitive="0"/>
+	<rank>601</rank>
+	<reputation>74</reputation>
+
+	<visual>new\xabaruch_new</visual>
+	<snd_config>characters_voice\human_02\stalker\</snd_config>
+	<crouch_type>-1</crouch_type>
+	<panic_threshold>-1</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_spas12 \n
+		ammo_12x70_buck \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+	</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+	<start_dialog>dm_hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+</specific_character>
+
+<!--Стаханов-->
+<specific_character id="pes_stahanov" team_default = "1">
+	<name>Вадя Стаханов</name>
+	<icon>ui_npc_u_stahanov</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>sim_stalker_veteran_bio</bio>
+
+	<class>pes_stahanov</class>
+	<community>stalker</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<money min="50" max="100" infinitive="0"/>
+	<rank>601</rank>
+	<reputation>74</reputation>
+
+	<visual>new\dark_stalker_2</visual>
+	<snd_config>characters_voice\human_02\stalker\</snd_config>
+	<crouch_type>-1</crouch_type>
+	<panic_threshold>-1</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_spas12 \n
+		ammo_12x70_buck \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+	</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+	<start_dialog>dm_hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+</specific_character>
+
+<!--Фима Уголь-->
+<specific_character id="pes_fima_ugol" team_default = "1">
+	<name>Фима Уголь</name>
+	<icon>ui_npc_u_fima_ugol</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>sim_stalker_veteran_bio</bio>
+
+	<class>pes_fima_ugol</class>
+	<community>stalker</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<money min="50" max="100" infinitive="0"/>
+	<rank>601</rank>
+	<reputation>90</reputation>
+
+	<visual>new\dark_stalker_1</visual>
+	<snd_config>characters_voice\human_01\stalker\</snd_config>
+	<crouch_type>-1</crouch_type>
+	<panic_threshold>-1</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_spas12 \n
+		ammo_12x70_buck \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+	</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+	<start_dialog>dm_hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+	<actor_dialog>fima_mulo_prines</actor_dialog>
+	<actor_dialog>fima_mulo_nayti</actor_dialog>
+</specific_character>
+
+<!--Яша Кувалда-->
+<specific_character id="pes_stalker" team_default = "1">
+	<name>Яша Кувалда</name>
+	<icon>ui_npc_u_kuvalda</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>sim_stalker_veteran_bio</bio>
+
+	<class>pes_kuvalda</class>
+	<community>stalker</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<money min="50" max="100" infinitive="0"/>
+	<rank>601</rank>
+	<reputation>70</reputation>
+
+	<visual>new\dark_stalker_3</visual>
+	<snd_config>characters_voice\human_03\stalker\</snd_config>
+	<crouch_type>-1</crouch_type>
+	<panic_threshold>-1</panic_threshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_spas12 \n
+		ammo_12x70_buck \n
+#include "gameplay\character_drugs.xml"
+#include "gameplay\character_food.xml"
+	</supplies>
+
+#include "gameplay\character_criticals_5.xml"
+	<start_dialog>dm_hello_dialog</start_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+</specific_character>
+
+</xml>

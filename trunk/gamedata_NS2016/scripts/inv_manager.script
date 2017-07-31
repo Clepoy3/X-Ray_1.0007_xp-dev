@@ -1,0 +1,277 @@
+local items = {}	-- "Разгрузка", по факту (плевать на скорость - все равно будет зависеть от содержимого).
+local boxes = {}	-- А вот это типа хорошо уложенные предметы в рюкзаке. Типа, Меченый их по пакетикам
+			-- раскладывает. Но у нас будет называться "ящик".
+
+local class = { "ammo", "misc" } -- задел на будущее
+local class_id = { box = 0, ammo = 1, misc = 2 }
+
+local inited
+local repack_new, repack_current
+
+-- Жажда, мать ее ! Сколько чего игнорировать в monnoroch_thirst.script - увеличивается, когда делаем releasе.
+thirst = {
+ ["medkit"] = 0,
+ ["medkit_army"] = 0,
+ ["medkit_scientic"] = 0,
+ ["bread"] = 0,
+ ["bread_a"] = 0,
+ ["mushroom"] = 0,
+ ["kolbasa"] = 0,
+ ["kolbasa_a"] = 0,
+ ["conserva"] = 0,
+ ["sandwich"] = 0,
+ ["sweetness"] = 0,
+ ["mozg"] = 0,
+ ["vodka"] = 0,
+ ["vodka_a"] = 0,
+ ["oceanic815"] = 0,
+ ["beer_a"] = 0,
+ ["energy_drink"] = 0,
+ ["flaska"] = 0
+}
+
+-- инициализация переменных, выполняется единожды
+
+function init()
+
+	-- отсюда возьмём предметы, подлежащие перепаковке
+	--local sys = system_ini()
+	local ini = g_ini_file("misc\\inv_manager.ltx")
+
+	for c = class_id.ammo, class_id.misc do
+
+		local n = ini:line_count(class[c])
+
+		-- Лишние проверки типа этой надо будет убрать. Когда все устаканится - так сразу.
+		if n and n > 0 then
+
+			for i=0, n-1 do
+				local result, i_section, b_section, value	
+				result, i_section, value = ini:r_line(class[c],i,"","")
+				b_section = "box_"..i_section
+
+				items[i_section] = {}
+				items[i_section].class = c
+				items[i_section].bname = b_section
+				items[i_section].repack = 0
+				if c < class_id.misc then
+					items[i_section].size = getIniValueU32Simple(i_section, "box_size")
+				end
+
+				boxes[b_section] = {}
+				boxes[b_section].class = class_id.box
+				boxes[b_section].iname = i_section
+
+
+				local t
+				local size, min, max
+
+				-- Я уже говорил про лишние проверки ?
+				if value then
+					t = parse_nums(value)
+					if t[1] then size = tonumber(t[1]) end
+					if t[2] then min = tonumber(t[2]) else min = 1 end
+					if t[3] then max = tonumber(t[3]) end
+				end
+				if size then
+					boxes[b_section].size = size
+					boxes[b_section].min = min
+					boxes[b_section].max = size + min
+					if max and boxes[b_section].max < max then boxes[b_section].max = max
+					end
+				end
+			end
+		end
+	end
+
+	inited = true
+end
+
+
+function on_item_moved(obj, on_take)
+	if not inited then init() end
+
+	-- Если что-нибудь случилось - то мы тоже что-нибудь сделаем. Не важно что.
+	-- По тому что в bind_stalker всему этому, как и исходному упаковшику патронов - ни разу не место.
+
+	local section = obj:section()
+	if section then
+		--сделать нормальные конфиги, и здесь переделать по-человечески
+		if items[section] then
+			repack_new = section
+			items[repack_new].repack = items[repack_new].repack + 1
+			if repack_new ~= repack_current then repack_current = false end
+		elseif boxes[section] then
+			repack_new = boxes[section].iname
+			if on_take then
+				amk.send_tip("O, "..repack_new.."...  Да еще и целых "..tonumber(boxes[section].size).."...  В рюкзак их !", "Меченый \(тихо сам с собою\)", 0, 35, "gen_info")
+			end
+			items[repack_new].repack = items[repack_new].repack + 1
+			if repack_new ~= repack_current then repack_current = false end
+		end
+	end
+end
+
+
+function on_update()
+	if db.actor:is_talking() then return end	-- во время разговора рыться в рюкзаке неприлично ! ;)
+							-- и инвентарь дергается.
+	local item, box
+	local i_section, b_section
+
+	-- Один вид предметов и одна операция за раз. Как говорится: "Because !"
+	-- Или хоть для начала оторвите кто-нибудь вызовы on_item_take (obj) по каждому предмету при старте.
+	if repack_new then
+		-- Если что-то изменилось, и это не то, что было последний раз - начнем сначала.
+		-- Кажется, это проще и быстрее, чем преобразования индексов и вставки/удаления.
+		i_section, item = next(items)
+		repack_new = false
+	else
+		-- Иначе продолжим сканирование изменений в инвентаре оттуда, где закончили прошлый раз
+		i_section = repack_current
+		item = items[i_section]
+	end
+
+	-- собственно, ищем то, что изменилось
+	while i_section do
+		-- Что-то где-то я забыл. Пусть пока так, но вообще-то надо исправить.
+		-- item в любом случае должен уже быть к началу цикла.
+		if item.repack == 0 then i_section, item = next(items, i_section)
+		else break
+		end
+	end
+
+	if i_section then
+		b_section = item.bname
+		box = boxes[b_section]
+		repack_current = i_section
+		item.repack = 0
+	else
+		-- Наконец-то разгребли !
+		repack_current = false
+		return
+	end
+
+	-- Вообще весь этот кусок какой-то неаккуратный. По тому что раньше это было тупо две совсем разных функции.
+	-- Надо будет поправить. Точнее, вообще выкинуть, когда определимся с местами, откуда оно вызывается.
+
+
+	-- А вот теперь - то, ради чего все затевалось !
+	local obj_section
+	local obj
+	local ammo, i_obj = {}, {}
+
+	local ammo_count, ammo_size, ammo_total, i_count = 0, 0, 0, 0
+	local b_obj
+
+	-- ищем ЭТО сразу и в рюкзаке, и в разгрузке
+	for i=0, db.actor:object_count()-1 do
+		obj = db.actor:object(i)
+		obj_section = obj:section()
+		if obj_section then
+			if i_section == obj_section then
+
+				-- проверяем на патроны и их комплектность
+				if item.class < class_id.misc then
+					ammo_size = get_ammo_size(obj)
+					if ammo_size and ammo_size < item.size then
+						ammo_total = ammo_total + ammo_size
+						ammo_count = ammo_count + 1
+						ammo[ammo_count] = obj:id()
+					else
+						i_count = i_count + 1
+						i_obj[i_count] = obj:id()
+					end
+				else
+					i_count = i_count + 1
+					i_obj[i_count] = obj:id()
+				end
+
+				-- проверяем на необходимость создания ящика
+				if box.size and box.max <= i_count then
+					-- удаляем лишние и создаем ящик
+					for i=1,box.size do delete_item(i_obj[i]) end
+					create_item(b_section, class_id.box, 1)
+					break
+				end
+
+			elseif b_section == obj_section then b_obj = obj:id()
+			end
+		end
+	end
+
+	-- Таки что нам делать с неполными пачками патронов ?
+	-- И почему вообще какие-то пачки, а не сразу нормальные обоймы и нормальные цинки ?
+	-- Короче, нагло уперто из dunin_ammo.script
+
+	if ammo_count > 1 then
+		for i=1,ammo_count do
+			delete_item(ammo[i])
+		end
+		while ammo_total >= item.size do
+			create_item(i_section, item.class, item.size)
+			ammo_total = ammo_total - item.size
+			i_count = i_count + 1
+		end
+		if ammo_total > 0 then
+			create_item(i_section, item.class, ammo_total)
+		end
+	end
+
+	-- Из рюкзака достаем ? Или всем спасибо, все - свободны ? Если минимум принудительно загнан в 0 - значит так надо.
+	if box.size and b_obj and i_count < box.min then
+		amk.send_tip("Все таки что-то у нас в рюкзаке лежит как-то не так... Точно - "..b_section, "Меченый \(тихо сам с собою\)", 0, 35, "gen_info")
+		delete_item(b_obj)
+		for i=1,box.size do
+			create_item(i_section, item.class, item.size)
+		end
+	end
+end
+
+
+
+function create_item(section, i_class, size)
+	-- Три сообщения про странности со спавном - это уже не одно сообщение.
+	-- Лучше мы здесь слегка притормозим, чем внезапно повиснем.
+
+	local pos = db.actor:position()
+	local lvid = db.actor:level_vertex_id()
+	local gvid = db.actor:game_vertex_id()
+	local pid = db.actor:id()
+	local i_section
+
+	if i_class == class_id.box then
+		amk.send_tip("Да что у меня там такое ? Надо-бы в рюкзак, что-ли, запихать...", "Меченый \(тихо сам с собою\)", 0, 35, "gen_info")
+		i_section = boxes[section].iname
+		i_class = items[i_section].class
+	end
+
+	if i_class < class_id.misc then alife():create_ammo(section, pos, lvid, gvid, pid, size)
+	else alife():create(section, pos, lvid, gvid, pid)
+	end
+end
+
+
+function delete_item(obj_id)
+	-- Аналогично про спавн
+	local obj = alife():object(obj_id)
+	if obj then
+		local sect = obj:section_name()
+		if thirst[sect] then thirst[sect] = thirst[sect] + 1 end
+		alife():release(obj, true)
+	end
+end
+
+-- количество патронов в пачке, тоже уперто из того же dunin_ammo.script
+function get_ammo_size(obj)
+	local se_obj = alife():object(obj:id())
+	local packet = net_packet()
+	cse_alife_item_ammo.STATE_Write(se_obj, packet)
+	--packet:r_advance(18)
+	--packet:r_stringZ()
+	--packet:r_advance(8)
+	--packet:r_stringZ()
+	--packet:r_advance(5)
+	packet:r_seek(packet:w_tell() - 2)
+	return packet:r_u16()
+end

@@ -1,0 +1,138 @@
+---' revision and adaptation for NS_2012 lsclon 08.07.12 '---
+--' Artefacts. Схема вывода в онлайн артефактов.
+--' Для ночных артов, при получении флага 'self.first_online', не действует запрет на выход в онлайн.
+
+local string_find = string.find
+--' Таблица ночных артов
+local hight_arts = {
+	["af_electra_flash"] = true,
+	["af_electra_moonlight"] = true,
+	["af_electra_sparkler"] = true,
+	["af_night_star"] = true,
+	["af_gold_fish"] = true,
+	["af_soul"] = true,
+	["af_dummy_pellicle"] = true
+	}
+
+--' Чтение ini - string
+function r_str(ini,section,line,default)
+	if ini:line_exist(section,line) then
+		return ini:r_string(section,line)
+	end
+	return default
+end
+
+--' Игровое время в часах
+function game_hours()
+	local game_time = game.get_game_time()
+	local hours = game_time:timeToString(0)
+	return tonumber(hours)
+end
+
+---' ----------------------------------------------
+class "se_artefact" (cse_alife_item_artefact)
+---' ----------------------------------------------
+--' Конструктор:
+function se_artefact:__init(section) super(section)
+	if hight_arts[section] then
+		self.hight_art = true
+	end
+	self.online = false
+end
+
+--' Сохранение
+function se_artefact:STATE_Write(packet)
+	cse_alife_item_artefact.STATE_Write(self,packet)
+	-- Ночным артам сохраним флаг вывода в онлайн
+	if self.hight_art then
+		-- При спавне некоторыми функциями(например в рюкзак ГГ) парент арта можно определить только при сохранении нетпакета
+		if self.parent_id ~= 65535 and not self.first_online then
+			self.first_online = true
+		end
+		if self.first_online then
+			packet:w_bool(self.first_online)
+		end
+	end
+end
+
+--' Восстановление
+function se_artefact:STATE_Read(packet,size)
+	cse_alife_item_artefact.STATE_Read(self,packet,size)
+	if editor() then
+		return
+	end
+	if not packet:r_eof() then
+		self:art_params()
+		-- Если при чтении параметров не получен флаг вывода в онлайн - пытаемся прочитать из пакета
+		if self.hight_art and not self.first_online then
+			self.first_online = packet:r_bool()
+		end
+	end
+end
+
+--' Регистрация объекта
+function se_artefact:on_register()
+	cse_alife_item_artefact.on_register(self)
+	self:art_params()
+	-- Запишем арт в таблицу для детекторов
+	if not db.artefacts[self.id] then
+		db.artefacts[self.id] = {spot = false,tim_beep = 0,name = self.ru_name}
+	end
+end
+
+--' Чтение параметров
+function se_artefact:art_params()
+	-- Если еще не регистрировались
+	if not self.init_params then
+		local hours,spawn_id
+		self.sect_name = self:section_name()
+		-- Читаем русское название арта
+		self.str_name = getIniValueStringSimple(self.sect_name,"inv_name","no_name")
+		self.ru_name = game.translate_string(self.str_name)
+		-- Флаг ночного арта
+		if self.hight_art then
+			hours = game_hours()
+			spawn_id = string_find(self:name(),tostring(self.id))
+			-- Поставим флаг вывода в онлайн, если регистрируемся ночью или с парентом или арт с аллспавна
+			if hours >= 21 or hours < 05 or self.parent_id ~= 65535 or not spawn_id then
+				self.first_online = true
+			end
+		end
+		self.init_params = true
+	end
+end
+
+--' Обработка переключения в онлайн
+function se_artefact:can_switch_online()
+	cse_alife_item_artefact.can_switch_online(self)
+	local gg = game_graph()
+	local sim = alife()
+	local lid = sim:level_id()
+	local lid_art = gg:vertex(self.m_game_vertex_id):level_id()
+	local hours
+	-- Обрабатывать будем, только арты на текущей локе
+	if lid == lid_art then
+		-- Если ночной арт и нет флага вывода в онлайн
+		if self.hight_art and not self.first_online then
+			hours = game_hours()
+			-- Если ночь
+			if hours >= 21 or hours < 05 then
+				self.first_online = true
+				self.online = true
+				return true
+			end
+			return false
+		end
+		-- Если арт без парента
+		if not self.online and self.parent_id == 65535 then
+			self.online = true
+		end
+		return true
+	-- Всех остальных в оффлайн
+	else
+		if self.online then
+			self.online = false
+		end
+		return false
+	end
+end

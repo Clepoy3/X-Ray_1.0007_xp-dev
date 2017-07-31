@@ -1,0 +1,624 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+
+	-- Тамаз и банда
+	if type == "del_tamaz_killer" then
+		--' 10 работ + 1 экс
+		t = {section = "logic@del_tamaz_lider_walker", idle = 0, prior = 12, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name == "del_tamaz"
+						end
+		}
+		table.insert(sj, t)
+		for i = 1, 10 do
+			t = {section = "logic@del_tamaz_killer_walker"..i, idle = 0, prior = 10, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+    	-- Снорки
+	if type == "del_snork" then
+		--' 4 работы
+		for t = 1, 2 do
+			t = {section = "logic@del_snork_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@del_snork_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кабаны и свинки
+	if type == "del_boar_flesh" then
+		--' 7 работ
+		for t = 1, 4 do
+			t = {section = "logic@del_boar_flesh_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@del_boar_flesh_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "del_boar_flesh2" then
+		--' 10 работ
+		for t = 1, 5 do
+			t = {section = "logic@del_boar_flesh2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@del_boar_flesh2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "del_boar_small" then
+		--' 10 работ
+		for t = 1, 5 do
+			t = {section = "logic@del_boar_small_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@del_boar_small_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "del_boar_flesh3" then
+		--' 7 работ
+		for t = 1, 4 do
+			t = {section = "logic@del_boar_flesh3_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@del_boar_flesh3_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Слепыши
+	if type == "del_dog" then
+		--' 10 работ
+		for t = 1, 5 do
+			t = {section = "logic@del_dog_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@del_dog_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "del_dog2" then
+		--' 20 работ
+		for t = 1, 7 do
+			t = {section = "logic@del_dog2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 7 do
+			t = {section = "logic@del_dog2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 6 do
+			t = {section = "logic@del_dog2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кровососы
+	if type == "del_bloodsucker" then
+		--' 2 работы
+		for t = 1, 2 do
+			t = {section = "logic@del_bloodsucker_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Тушканы
+	if type == "del_tushkano" then
+		--' 20 работ
+		for t = 1, 10 do
+			t = {section = "logic@del_tushkano_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 10 do
+			t = {section = "logic@del_tushkano_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Псевдопсы
+	if type == "del_pseudodog" then
+		--' 7 работ
+		for t = 1, 3 do
+			t = {section = "logic@del_pseudodog_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@del_pseudodog_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@del_pseudodog_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "del_pseudodog2" then
+		--' 6 работ
+		for t = 1, 3 do
+			t = {section = "logic@del_pseudodog2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@del_pseudodog2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Бандиты
+	if type == "del_bandits" then
+		--' 19 работ
+		for i = 1, 10 do
+			t = {section = "logic@del_bandits_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@del_bandits_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@del_bandits_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 3 do
+			t = {section = "logic@del_bandits_kamp3", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+     	-- Коты
+	if type == "del_cat" then
+		--' 10 работы
+		for t = 1, 5 do
+			t = {section = "logic@del_cat_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@del_cat_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Изломы
+	if type == "del_fracture" then
+		--' 4 работы
+		for t = 1, 2 do
+			t = {section = "logic@del_fracture_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@del_fracture_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Контроллёр
+	if type == "del_controller" then
+		--' 1 работа
+		t = { section = "logic@del_controller_home", idle = 0, prior = 20, state = {0}, 
+		  in_rest = "", out_rest = ""
+		} 
+		table.insert(sj, t)
+	end
+	-- Крысоволк
+	if type == "del_ratlike" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@del_ratlike_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "del_ratlike2" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@del_ratlike2_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Зомби гражданские
+	if type == "del_zombie" then
+		--' 10 работ
+		for t = 1, 4 do
+			t = {section = "logic@del_zombie_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@del_zombie_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@del_zombie_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "del_zombie2" then
+		--' 7 работ
+		for t = 1, 4 do
+			t = {section = "logic@del_zombie2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@del_zombie2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Сталкер - зомби у контрика
+	if type == "del_zombied" then
+    		--' 5 работ
+	    	for i = 1, 5 do
+			t = {section = "logic@del_zombied_walker"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Застава долга
+	if type == "del_dolg" then
+		--' 7 работ + 1 экс
+		t = {section = "logic@del_dolg_walker5", idle = 0, prior = 12, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name == "bar_bar_drunk_dolg"
+						end
+		}
+		table.insert(sj, t)
+		for i = 1, 4 do
+			t = {section = "logic@del_dolg_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@del_dolg_kamp", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Сталки и охотники
+	if type == "del_neutral" then
+		--' 19 работ
+		for i = 1, 9 do
+			t = {section = "logic@del_neutral_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@del_neutral_sleeper"..i, idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@del_neutral_kamp1", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@del_neutral_kamp2", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Сталки
+	if type == "del_stalker" then
+		--' 7 работ
+		for i = 1, 3 do
+			t = {section = "logic@del_stalker_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@del_stalker_kamp", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+end
+
+function load_states(gname,type)
+
+	if type == "del_tamaz_killer" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_dolg" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_stalker" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_neutral" then
+		return function(gulag)
+			return 0
+		end
+	end
+    if type == "del_snork" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_boar_flesh" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_boar_flesh3" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_dog" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_bloodsucker" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_boar_flesh2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_tushkano" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_pseudodog" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_pseudodog2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "del_bandits" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_cat" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_ratlike2" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_fracture" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_dog2" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_controller" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_ratlike" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_boar_small" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_zombie" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_zombie2" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "del_zombied" then
+		return function (gulag)
+			return 0
+		end
+	end
+end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	if gulag_type == "del_tamaz_killer" then
+		return npc_community == "killer"
+	end
+	if gulag_type == "del_dolg" then
+		return npc_community == "dolg"
+	end
+	if gulag_type == "del_bandits" then
+		return npc_community == "bandit"
+	end
+	if gulag_type == "del_neutral" then
+        	return npc_community == "stalker" or npc_community == "green"
+    	end
+	if gulag_type == "del_stalker" then
+		return npc_community == "stalker"
+	end
+	if gulag_type == "del_zombied" then
+		return npc_community == "zombied"
+	end
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+	if gulag_type == "del_snork" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "del_boar_flesh" then
+		return npc_community == "boar" or npc_community == "flesh"
+	end
+	if gulag_type == "del_boar_flesh3" then
+		return npc_community == "boar" or npc_community == "flesh"
+	end
+	if gulag_type == "del_dog" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "del_bloodsucker" then
+		return npc_community == "bloodsucker"
+	end
+	if gulag_type == "del_boar_flesh2" then
+		return npc_community == "boar" or npc_community == "flesh"
+	end
+	if gulag_type == "del_tushkano" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "del_pseudodog" then
+		return npc_community == "pseudodog"
+	end
+	if gulag_type == "del_pseudodog2" then
+		return npc_community == "pseudodog"
+	end
+	if gulag_type == "del_fracture" then
+		return npc_community == "fracture"
+	end
+	if gulag_type == "del_dog2" then
+		return npc_community == "dog"
+	end
+	if gulag_type == "del_ratlike2" then
+		return npc_community == "ratlike"
+	end
+	if gulag_type == "del_controller" then
+		return npc_community == "controller"
+	end
+	if gulag_type == "del_ratlike" then
+		return npc_community == "ratlike"
+	end
+	if gulag_type == "del_boar_small" then
+		return npc_community == "boar"
+	end
+	if gulag_type == "del_zombie" then
+		return npc_community == "zombie"
+	end
+	if gulag_type == "del_zombie2" then
+		return npc_community == "zombie"
+	end
+	if gulag_type == "del_cat" then
+		return npc_community == "cat"
+	end
+	return false
+end

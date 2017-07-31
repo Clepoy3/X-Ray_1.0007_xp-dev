@@ -1,0 +1,34 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+sar_mon_poltergeist_1_spawn} sr_particle
+
+[sr_particle]
+name = anomaly2\gravity_blast_03      
+path = sar_poltergeist_1_way                  
+mode = 2 				
+looped = false               
+on_signal = particle_end | sr_idle@2
+
+
+[sr_idle@2]
+on_info = {+sar_mon_poltergeist_2_spawn} sr_particle@2
+
+[sr_particle@2]
+name = anomaly2\gravity_blast_03      
+path = sar_poltergeist_2_way                  
+mode = 2 				
+looped = false               
+on_signal = particle_end | sr_idle@3
+
+
+[sr_idle@3]
+on_info = {+sar_mon_poltergeist_3_spawn} sr_particle@3
+
+[sr_particle@3]
+name = anomaly2\gravity_blast_03      
+path = sar_poltergeist_3_way                  
+mode = 2 				
+looped = false               
+on_signal = particle_end | nil

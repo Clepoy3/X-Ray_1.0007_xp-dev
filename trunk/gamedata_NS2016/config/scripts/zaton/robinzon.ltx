@@ -1,0 +1,48 @@
+[logic]
+active = {-robinzon_say_one_start} walker, walker2
+
+
+[walker]
+path_walk = robinzon_walk
+path_look = robinzon_look
+meet = meet
+combat_ignore_cond = always
+on_timer = 20000 | remark@claim
+
+[remark@claim]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = claim
+target = actor
+on_actor_dist_le_nvis = 4 | walker1
+
+[walker1]
+path_walk = robinzon1_walk
+path_look = robinzon1_look
+combat_ignore_cond = always
+meet = meet
+on_info = {+robinzon_say_one_start} walker2
+
+[walker2]
+path_walk = robinzon2_walk
+path_look = robinzon2_look
+on_info = {!is_day} kamp
+
+[kamp]
+center_point  = zat_robinzon_kamp
+path_walk = zat_robinzon_kamp_task
+radius = 2.2
+danger = danger_ignore
+on_info = {=is_day} walker2
+
+
+[danger_ignore]
+ignore_distance = 0
+
+[meet]
+meet_state = 10|threat|4|guard@wait
+meet_state_wpn = 16|backoff@threat_weap
+victim = 10|actor
+victim_wpn = 16|actor
+use	= true
+use_wpn = false

@@ -1,0 +1,119 @@
+
+local weight_normal = 100
+local weight_max = 350
+local items_dropped_max = 100
+
+local kolco = {from = 10, to = 11}
+local visota = {from = 2, to = 10}
+
+local sim
+local actor
+local weight_rukzak
+local weight_item
+local items = {}
+local items_dropped = {}
+local item_active_id -- предмет в руках игнорируется, но вес его учитывается
+local current_outfit_id -- одетый бронежилет игнорируется, но вес его учитывается
+
+function vibros()
+	sim = alife()
+	actor = db.actor
+	if sim and actor then
+		calc_inventory_weight(actor)
+		--get_console():execute("load ~~~ вес всего, что на и у ГГ: "..weight_rukzak)
+		if weight_rukzak > weight_max then
+			-- выбрасываем предметы рандомно
+			local items_count = #items
+			local iterations = 0
+			local items_dropped_count = 0
+			local koef = weight_rukzak / weight_max -- вероятность вылета предмета
+			local i
+			while weight_rukzak > weight_normal
+				and iterations < items_count
+				and items_dropped_count < items_dropped_max do
+				if math.random() < koef then
+					i = math.random(items_count) -- случайный предмет
+					if not items_dropped[i] then -- если он еще не был выброшен
+						items_dropped[i] = true
+						items_dropped_count = items_dropped_count + 1
+						vector_add = calc_vector_add()
+						actor:drop_item_and_teleport(items[i][1], actor:position():add(vector_add))
+						weight_rukzak = weight_rukzak - items[i][2]
+						koef = weight_rukzak / weight_max -- вероятность вылета предмета
+					end
+				end
+				iterations = iterations + 1
+			end
+		end
+	end
+end
+
+function calc_inventory_weight(npc)
+	items = {}
+	items_dropped = {}
+	weight_rukzak = 0
+	
+	if npc and npc.inventory_for_each then
+		local item_active = npc:active_item()
+		if item_active then
+			item_active_id = item_active:id()
+		else
+			item_active_id = 0
+		end
+		local current_outfit = npc:get_current_outfit()
+		if current_outfit then
+			current_outfit_id = current_outfit:id()
+		else
+			current_outfit_id = 0
+		end
+		npc:inventory_for_each(process_calc) -- не будет просматривать скрытые слоты
+	end
+end
+
+function process_calc(item, npc)
+	if item then 
+	local section = item:section()
+		if section ~= "arc_ballast" -- непонятная хрень весом в 500 кг!!!
+			and iniSectionExistSimple(section)
+			and iniLineExistSimple(section, "inv_weight") then
+		weight_item = getIniValueFloatSimple(section, "inv_weight")
+			--get_console():execute("load ~~~ в рюкзаке: "..section.." весом: "..weight_item)
+		if weight_item > 0 then
+			local item_id = item:id()
+			-- игнорируем предмет в руках, одетый бронежилет или "защищённый" предмет
+			if not (iniLineExistSimple(section, "quest_item") and getIniValueBoolSimple(section, "quest_item"))
+				and item_active_id ~= item_id
+				and current_outfit_id ~= item_id
+				and protected_items.doNotTouchItem(item) == false then 
+				table.insert(items, {item, weight_item})
+				table.insert(items_dropped, false)
+			end
+			-- но вес его учитываем
+			weight_rukzak = weight_rukzak + weight_item
+			end
+		end
+	end
+end
+
+function calc_vector_add()
+	local a = math.random() * 2 * math.pi
+	local r = kolco.from + math.random() * math.abs(kolco.to - kolco.from)
+	local x = math.cos(a) * r
+	local z = math.sin(a) * r
+	local y = visota.from + math.random() * math.abs(visota.to - visota.from)
+	return vector():set(x, y, z)
+end
+
+-- Для тестирования!
+-- Вызывать из апдейтера
+local timer = 0
+
+function update(delta)
+   timer = timer+delta
+   if timer>1000000 then timer = 1000000 end
+   local hud = get_hud()
+   if hud:GetCustomStatic("main_task") and timer>1000 then
+      vibros()
+      timer = 0
+   end
+end

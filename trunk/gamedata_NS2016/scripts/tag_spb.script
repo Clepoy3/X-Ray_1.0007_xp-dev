@@ -1,0 +1,231 @@
+-- Идея и первоначальные скрипты --- TAG --- 23.11.08
+-- Переделано и адаптировано для Народной Солянки
+-- Вызов скрипта из: amk_mod.Blowout_pp(пятая фаза) и ex_horror.horror_effects(четвертая фаза) 
+-- Связь с protected_items.script:
+	-- работаем с любым трупом неписей(без логики), если он не в запрете(cleanerDoNotTouchStalkersCorps(obj))
+	-- выбрасываются только уникальные предметы(doNotTouchAnything(obj))
+-- Шанс превращения зависит от сложности игры и удаления локации от ЧАЭС
+-- Трупы зомбей обрабатываются без ограничений, однако шанс на разрыв увеличен
+-- Так как в игре всего 12 моделек(визуалов) зомби, то:
+	-- они распределены(по возможности) между группировками
+	-- для каждой модели прописана секция спавна(spawn_sections.ltx)
+	-- прописан класс(npc_profile.xml)
+	-- прописано(для разнообразия) по три профиля(character_desc_simulation.xml)
+
+--- Таблицы и переменные --------------------------------------------------
+-- Коэфициент от сложности игры
+local difficult_koef={
+[0]=0.5,
+[1]=0.75,
+[2]=1.0,
+[3]=1.25
+}
+-- Предметы находящиеся в запрете к удалению в protected_items, но будут удалятся(drop_unique_items(trup)) 
+local drop_items = {
+['device_pda'] = true,
+['device_pda_npc'] = true,
+['device_torch'] = true,
+['device_torch_clon'] = true,
+['bolt'] = true
+}
+--- variable and table -------------------------------------------- end ---
+
+--- Функция составления таблицы трупов и запуска таймеров -----------------
+function zombie_team()
+	local sim = alife()
+	local tag_trup_id = {}
+	local lev_id = sim:level_id()
+	local chance = ex_level.level_activity[lev_id][2] * difficult_koef[level.get_game_difficulty()]
+	local level_object_by_id = level.object_by_id
+	local math_random = math.random
+	local table_insert = table.insert
+	local trup, strup, trup_comm
+	--Ищем подходящих покойников по всей текущей локации
+	for i,v in pairs(db.storage) do
+		trup = level_object_by_id(i)
+		if trup then
+			trup_ini = xr_logic.get_customdata_or_ini_file(trup,'<customdata>')
+			if IAmAStalker[trup:clsid()] and not trup:alive() and not trup_ini:section_exist('logic') then
+				--Для правильного чтения protected_items
+				strup = sim:object(i)
+				if strup and not protected_items.cleanerDoNotTouchStalkersCorps(strup) then
+					-- если зомби - без ограничений, для остальных, если выпадет шанс
+					if trup:character_community() == 'zombied' or math_random() <= chance/10 then
+						table_insert(tag_trup_id, i)
+					end
+				end
+			end
+		end
+	end
+	--Время в минутах для таймера запуска превращения
+	local m_time = math_random()
+	for i = 1, #tag_trup_id do
+		amk.g_start_timer('tag_trup_to_zombie', 0, 0, m_time, {"a", tag_trup_id[i]})
+		m_time = m_time + math_random()
+	end
+end
+--- zombie_team --------------------------------------------------- end ---
+
+--- Функция превращения ---------------------------------------------------
+function trup_to_zombie(s_param)
+	-- для совместимости оставлен старый способ с распаковкой
+	if type(s_param) ~= "table" then
+		s_param = amk.unpack_array_from_string(s_param)
+	end
+	
+	local trup_id = s_param[2]
+	local trup = level.object_by_id(trup_id)
+	local strup = alife():object(trup_id)
+	if trup and strup then
+		local trup_pos = trup:position()
+		--Если обрабатываем в первый раз - партиклы и запуск второго таймера(1 минута готовности)
+		if s_param[1] == 'a' then
+			amk_particle.amk_particle({particle = 'anomaly2\\electra_damage_02_smoke', pos = trup_pos, sound = 'anomaly\\electra_idle1'})
+			--amk.send_tip ('Подбор пароля. Абонент '..news_main.get_npc_name(trup)..' блокирован.','Системное сообщение',nil,7,'gen_info')
+			amk.g_start_timer('tag_trup_to_zombie', 0, 0, 1, {'b', trup_id})
+		--Если второй  раз - будем превращать:
+		elseif s_param[1] == 'b' then
+			local rand = math.random()
+			local lv = trup:level_vertex_id()
+			local gv = trup:game_vertex_id()
+			--Взорвем трупик и превратим в скелет(код из AMK.MODa):
+			if (trup:character_community() == 'zombied' and rand <= 0.4) --[[or rand <= 0.1]] then
+			--if math.random() <= 0.1 then
+				--Не очень хорошая идея(эти скелеты долго будут валятся на локе), поэтому просто взорвем!
+				--[[skelet = ex_all.spawn_valid_obj('breakable_object',trup_pos,lv,gv)
+				if skelet then 
+					t = amk.get_breakable_data(skelet)  
+					t.visual ='physics\\dead_body\\skelet_combine_pose_0'..tostring(math.random(3,5))
+					t.mass = 1.0
+					t.physic_type = 3
+					amk.set_breakable_data(t,skelet)
+				end]]
+				amk_particle.amk_particle({particle = 'amk\\zomb_explode', pos = trup_pos, sound = 'anomaly\\anomaly_body_tear_1'})
+				drop_unique_items(trup, strup)
+			--А этих превращаем в зомби 
+			else
+				-- если ГГ видит труп - перезапускаем таймер
+				if db.actor:see(trup) then
+					amk_particle.amk_particle({particle = 'anomaly2\\electra_damage_02_smoke', pos = trup_pos, sound = 'anomaly\\electra_idle1'})
+					amk.g_start_timer('tag_trup_to_zombie', 0, 0, 1, {'b', trup_id})
+				else
+					local name,repa,rank,section = tag_get_npc_data(trup, strup)
+					if section then
+						local zombie = ex_all.spawn_valid_obj(section, trup_pos, lv, gv)
+						if zombie then
+							local z = amk.read_stalker_params(zombie)
+							if z then
+								z.health = 0.1
+								z.updhealth = 0.05
+								z.charname = name
+								z.reputation = repa
+								z.rank = rank
+								amk.write_stalker_params(z, zombie)
+							end
+							zombie.torch_on = strup.torch_on
+							if zombie.torch_on then
+								alife():create("device_torch",zombie.position,zombie.m_level_vertex_id,zombie.m_game_vertex_id, zombie.id)
+								alife():create("device_torch_clon",zombie.position,zombie.m_level_vertex_id,zombie.m_game_vertex_id, zombie.id)
+								zombie.torch_clon_added = true
+							end
+							amk_particle.amk_particle({particle = 'anomaly2\\group_items\\tornado_flash_04', pos = trup_pos, sound = 'anomaly\\electra_blast1'})
+							drop_unique_items(trup, strup)
+							amk.g_start_timer('tag_trup_to_zombie', 0, 0, 0.5, {'c', zombie.id})
+						end
+					end
+				end
+			end
+		elseif s_param[1] == 'c' then
+			local zombie = level.object_by_id(trup_id)
+			if zombie then
+				zombie.health = 1
+				sol_utils.setRelation(zombie, game_object.enemy, db.actor)
+			end
+		end
+	end
+end
+--- trup_to_zombie ------------------------------------------------ end ---
+
+--- Считывание параметров и выбор секции спавна(визуала) ------------------
+function tag_get_npc_data(trup, strup)
+	local name
+	local repa = 0
+	local rank = 0
+	local sect, section
+	if trup then
+		local section = trup:section()
+		if string.sub(section,1,10) ~= 'ex_zombied' then
+			name = trup:character_name()
+			repa = trup:character_reputation()
+			rank = sol_utils.getRankById(trup:id())
+			
+			local t = amk.read_stalker_params(strup)
+			local exo, vis
+			if t then
+				vis = t.visual
+				vis = Parse_StrToTbl(vis,"\\")
+				vis = vis[#vis]
+				exo = vis and string.find(vis, 'exo', 1, true) ~= nil
+			end
+			
+			if exo or exo == nil and rank >= 900 then
+				sect = 1
+			else
+				local trup_comm = trup:character_community()
+				if trup_comm == 'green' or trup_comm == 'sniper'
+					or vis == "stalker_bandit_veteran"
+					or vis == "stalker_bandit_master"
+					or vis == "izgoy"
+					or vis == "stalker_bandit_borov"
+					or string.find(vis, 'hunter', 1, true)
+				then
+					sect = 9
+				elseif trup_comm == 'dolg' then
+					sect = 2
+				elseif trup_comm == 'freedom' then
+					sect = 3
+				elseif trup_comm == 'military' then
+					sect = 4
+				elseif trup_comm == 'killer' or trup_comm == 'monolith' or trup_comm == 'nebo' then
+					sect = 5
+				elseif trup_comm == 'bandit' or trup_comm == 'bandos' then
+						sect = 6
+				elseif trup_comm == 'stalker' then
+					if rank > 300 then
+						sect = 7
+					else
+						sect = 8
+					end
+				end
+			end
+			if sect then
+				section = string.format("%s%s", 'ex_zombied', tostring(sect))
+			end
+		end
+		if not name then
+			name = 'Зомбированный'
+		end
+		return name,repa,rank,section
+	end
+end
+--- tag_get_npc_data ---------------------------------------------- end ---
+
+--- Функция выбрасывания уникальных предметов -----------------------------
+function drop_unique_items(trup, strup)
+	trup:iterate_inventory(item_drop, trup)
+	alife():release(strup, true)
+end
+function item_drop(trup, item)
+	local sim = alife()
+	if item then
+		--Для правильного чтения protected_items
+		local obj = sim:object(item:id())
+		if obj then
+			if protected_items.doNotTouchAnything(obj) and not drop_items[item:section()] then
+				local pos = obj.position
+				trup:drop_item_and_teleport(item, vector():set(pos.x, pos.y + 1, pos.z))
+			end
+		end
+	end
+end
+--- drop_unique_items --- item_drop ------------------------------- end ---

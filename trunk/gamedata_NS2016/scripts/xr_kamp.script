@@ -1,0 +1,2284 @@
+local visualWithHemlet = {
+["stalker_arhara"] = true,
+["stalker_arhara1"] = true,
+["stalker_bandit_8"] = true,
+["stalker_bandit_exoskeleton"] = true,
+["stalker_do_antigas"] = true,
+["stalker_do_exoskeleton"] = true,
+["stalker_do_nauchniy"] = true,
+["stalker_ecolog"] = true,
+["stalker_ecolog_0_zombie"] = true,
+["stalker_ecolog_1_zombie"] = true,
+["stalker_ecolog_2_zombie"] = true,
+["stalker_ecolog_military"] = true,
+["inkvizitor_cherep"] = true,
+["inkvizitor_exolight"] = true,
+["inkvizitor_light"] = true,
+["inkvizitor_redeye"] = true,
+["stalker_ki_antigas"] = true,
+["stalker_ki_exoskeleton"] = true,
+["stalker_ki_nauchniy"] = true,
+["stalker_militari_1"] = true,
+["stalker_militari_2"] = true,
+["stalker_militari_antigas_1"] = true,
+["stalker_militari_antigas_2"] = true,
+["stalker_mo_exo"] = true,
+["stalker_mo_hood_9"] = true,
+["stalker_mo_nauchniy"] = true,
+["nauchniy_0"] = true,
+["nauchniy_1"] = true,
+["stalker_nebo_balon_1"] = true,
+["stalker_nebo_exoskeleton"] = true,
+["stalker_nebo_nauchniy"] = true,
+["stalker_2_gas"] = true,
+["stalker_3_gas"] = true,
+["stalker_3_gas_"] = true,
+["stalker_4_gas"] = true,
+["stalker_4_gas_"] = true,
+["stalker_ne_exoskeleton"] = true,
+["stalker_neytral_exoskeleton"] = true,
+["stalker_neytral_hood_9"] = true,
+["stalker_neytral_hood_92"] = true,
+["stalker_neytral_nauchniy"] = true,
+["green_stalker_antigas"] = true,
+["protect_suit1"] = true,
+["protect_suit2"] = true,
+["nauchniy_pozarnik"] = true,
+["nauchniy_white"] = true,
+["soldier_antigas"] = true,
+["stalker_military_black"] = true,
+["stalker_military_green"] = true,
+["stalker_rus_spec"] = true,
+["stalker_zp_exoskeleton"] = true,
+["stalker_killer_antigas"] = true,
+["stalker_killer_exoskeleton"] = true,
+["stalker_killer_military"] = true,
+["stalker_sci_killer"] = true,
+["stalker_sci_svoboda"] = true,
+["stalker_sv_exoskeleton"] = true,
+["stalker_sv_hood_9"] = true,
+["stalker_sv_military"] = true,
+["zombie_exoskeleton"] = true,
+["stalker_sv_exoskeleton"] = true,
+["stalker_sv_hood_9"] = true,
+["stalker_sv_hood_91"] = true,
+["stalker_sv_nauchniy"] = true,
+["exoskelet_black"] = true,
+["stalker_ecologi_2exoskeleton"] = true,
+["stalker_kalinin_exoskeleton"] = true,
+["boss"] = true,
+["frits"] = true,
+["stalker_bandit_9"] = true,
+["stelsarmor_danekstalker"] = true,
+["zaton_prototip"] = true,
+["zaton_prototip1"] = true
+}
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+--	Схема лагерь. Чудак(и) у костра.
+--	автор: Диденко Руслан (Stohe)
+--	TODO: 
+----------------------------------------------------------------------------------------------------------------------
+local table_remove = table.remove
+local table_insert = table.insert
+local string_find = string.find
+local deadmanMovingBone = "bip01_spine1"
+local deadmanMovingBone2 = "bip01_pelvis"
+local deadmanAdditionalForce = {
+	["m_tushkano_e"] = 0.5,
+	["m_tushkano_normal"] = 0.5,
+	["tushkano_weak"] = 0.5,
+	["tushkano_normal"] = 0.5,
+	["tushkano_strong"] = 0.5,
+	["m_rat_e"] = -0.4,
+	["rat_weak"] = -0.4,
+	["rat_normal"] = -0.4,
+	["rat_strong"] = -0.4,
+}
+
+local scan_flag
+kamps = {}
+kamp_stalkers = {} -- могут ли сталкеры в лагере юзаться игроком.
+-- Объявления итераторов
+deadmansMoversIds={} -- кто какой труп оттаскивает
+deadmansidsuses={} -- сколько попыток оттащить было сделано
+local k,v,kk,vv = 0,0,0,0
+---------------------------------------------------------------------------------------------------------------------
+--Evaluators
+----------------------------------------------------------------------------------------------------------------------
+--' Условие завершения скрипта
+class "evaluator_kamp_end" (property_evaluator)
+function evaluator_kamp_end:__init(name, storage) super (nil, name) counterAdd("xr_kamp.evaluator_kamp_end:__init")
+	self.a = storage
+end
+function evaluator_kamp_end:evaluate() counterAdd("xr_kamp.evaluator_kamp_end:evaluate")
+	local kamp_end = not xr_logic.is_active(self.object, self.a)
+	return kamp_end
+end
+--' Находимся ли мы на заданной позиции
+class "evaluator_on_position" (property_evaluator)
+function evaluator_on_position:__init(name, storage) super (nil, name) counterAdd("xr_kamp.evaluator_on_position:__init")
+	self.a = storage
+end
+function evaluator_on_position:evaluate() counterAdd("xr_kamp.evaluator_on_position:evaluate")
+	return self.object:level_vertex_id() == self.a.pos_vertex
+end
+
+--added by xStream--
+--' Оп-па! Увидели труп поблизости от костра, непорядок...
+-- исключение чтобы не таскали и не тырили деньги
+exclude_corpses = {
+	["muha_die"] = true
+}
+class "evaluator_see_deadman" (property_evaluator)
+
+function evaluator_see_deadman:__init(name, storage) super (nil, name) counterAdd("xr_kamp.evaluator_see_deadman:__init")
+	self.a = storage
+	self.a.scan_time = time_global() + 5555
+end
+
+function evaluator_see_deadman:evaluate() counterAdd("xr_kamp.evaluator_see_deadman:evaluate")
+	local st = self.a
+	local npc = self.object
+	local npc_id = npc:id()
+	if self.mgr == nil then self.mgr = self.object:motivation_action_manager() end
+	-- Есть дела поважнее, чем трупы складировать...
+	if not xr_logic.is_active(self.object, st) or self.mgr:evaluator(stalker_ids.property_enemy):evaluate() or self.mgr:evaluator(stalker_ids.property_danger):evaluate() then
+		if st.choosed_deadman then 
+			deadmansMoversIds[st.choosed_deadman] = nil
+			deadmansidsuses[st.choosed_deadman] = 0
+			st.choosed_deadman = nil
+			st.reached = nil
+		end
+		return false
+	end
+
+	-- Труп себе уже выбрали, не спускаем с него глаз...
+	local center_pos = patrol(st.center_point):point(0)
+	local npc_pos = npc:position()
+	local actor_pos = db.actor:position()
+	local actor_alive = db.actor:alive()
+	if st.choosed_deadman then 
+		local obj = level.object_by_id(st.choosed_deadman)
+		--if obj and obj:position():distance_to_sqr(center_pos) < 400 then
+		local watcher = watcher_act and watcher_act.obj_owner and watcher_act.obj_owner[st.choosed_deadman] and level.object_by_id(watcher_act.obj_owner[st.choosed_deadman])
+		if obj and level.vertex_position(obj:level_vertex_id()):distance_to_sqr(center_pos) < 400
+		and (not watcher or not watcher:alive() or xr_wounded.is_wounded(watcher) or watcher:position():distance_to_sqr(level.vertex_position(obj:level_vertex_id())) > 4) then
+			return true
+		end
+		-- если утащен далеко, то ну его нафиг...
+		deadmansMoversIds[st.choosed_deadman] = nil
+		deadmansidsuses[st.choosed_deadman] = 0
+		st.choosed_deadman = nil
+		st.reached = nil
+		return false
+	end
+	
+	if st.scan_time > time_global() then
+		return false
+	else
+		st.scan_time = time_global() + 5555
+	end
+	
+	local deadmansMovableNearest, deadmansMovableDist = nil, 10000
+	
+	local function check_item(o)
+		local obj=o:object()
+		if obj then	--если есть рядом с костром труп сталкера или монстра, его еще никто не прихватил себе и трупец нигде не застрял, то забираем его...
+			local obj_id = obj:id()
+			
+			if npc_by_clsid[obj:clsid()] and not obj:alive() and not exclude_corpses[obj:name()] then
+				local obj_pos = level.vertex_position(obj:level_vertex_id()) --obj:position()
+				local deadman = deadmansMoversIds[obj_id] and level.object_by_id(deadmansMoversIds[obj_id])
+				local y = vector():sub(center_pos, obj_pos).y
+				if (not deadman or not deadman:alive() or xr_wounded.is_wounded(deadman)) and obj_pos:distance_to_sqr(center_pos)<100 and (not actor_alive or actor_pos:distance_to_sqr(obj_pos) > 4) and math.abs(y) < 2.5 then
+					if not deadmansidsuses[obj_id] or deadmansidsuses[obj_id] < 6 then
+						local watcher = watcher_act and watcher_act.obj_owner and watcher_act.obj_owner[obj_id] and level.object_by_id(watcher_act.obj_owner[obj_id])
+						if not watcher or not watcher:alive() or xr_wounded.is_wounded(watcher) or watcher:position():distance_to_sqr(level.vertex_position(obj:level_vertex_id())) > 25 then
+							if obj_pos:distance_to_sqr(npc_pos) < deadmansMovableDist then
+								deadmansMovableDist = obj_pos:distance_to_sqr(npc_pos)
+								deadmansMovableNearest = obj
+							end
+						end
+					end
+				end
+			end
+		end
+	end	
+	for o in npc:memory_visible_objects() do if check_item(o) then return true end end
+	--for o in npc:memory_sound_objects() do check_item(o) end
+	--for o in npc:not_yet_visible_objects() do check_item(o) end
+	
+	if deadmansMovableNearest ~= nil then
+		local obj_id = deadmansMovableNearest:id()
+		deadmansMoversIds[obj_id]=npc_id
+		st.choosed_deadman=obj_id
+		--deadmansidsuses[obj_id] = (deadmansidsuses[obj_id] or 0) +1
+		-- ...заодно сразу прикидываем, куда бы его оттащить от костра, желательно под забор, стену дома и т.п., 
+		-- за неимением таковых - будем тащить куда попало, главное - подальше от костра
+		st.drop_lvid=npc:level_vertex_id()
+		
+		local center = deadmansMovableNearest:level_vertex_id()
+		local max_dist=0
+		local tgt_vertex=nil
+		local base_dir = level.vertex_position(deadmansMovableNearest:level_vertex_id()):sub(center_pos)
+		----local base_dir=center_pos:sub(obj_pos)
+		----local base_point=npc:vertex_in_direction(center,obj_pos:sub(center_pos):mul(-1),20)
+		local base_point=deadmansMovableNearest:level_vertex_id()
+		local cur_vert
+		local dist
+		for ang = -120,120,20 do
+			cur_vert = npc:vertex_in_direction(base_point,vector_rotate_y(base_dir,ang),25)
+			dist = level.vertex_position(cur_vert):distance_to_sqr(center_pos)
+			----if dist>121 and dist<289 then
+			if dist > 121 and dist < 650 and dist > max_dist then
+				max_dist = dist
+				tgt_vertex = cur_vert
+			end
+		end
+		if tgt_vertex == nil then
+			tgt_vertex = npc:vertex_in_direction(base_point,vector_rotate_y(base_dir,math.random()*180-90),25)
+		end
+
+		st.drop_lvid = tgt_vertex
+		st.ps = deadmansMovableNearest:get_physics_shell()
+
+		return true
+	end
+	return false
+end
+
+--' Тащим труп
+class "evaluator_can_move_deadman" (property_evaluator)
+function evaluator_can_move_deadman:__init(name, storage) super (nil, name) counterAdd("xr_kamp.evaluator_can_move_deadman:__init")
+	self.a = storage
+end
+function evaluator_can_move_deadman:evaluate() counterAdd("xr_kamp.evaluator_can_move_deadman:evaluate")
+	local npc = self.object
+	local obj = level.object_by_id(self.a.choosed_deadman)
+	--если труп застрял (расстояние увеличилось), то возвращаемся к нему
+	--или если ГГ подошел, то уделяем ему чуточку внимания
+	if self.a.reached == 1 and obj then
+		local bone_pos = obj:bone_position(deadmanMovingBone)
+		local can = bone_pos:distance_to_sqr(npc:position()) < 9 and (not db.actor:alive() or bone_pos:distance_to_sqr(db.actor:position()) > 9)
+		return can
+	end
+	return false
+end
+--end--
+----------------------------------------------------------------------------------------------------------------------
+--Actions
+----------------------------------------------------------------------------------------------------------------------
+--[[local positionTemplate = {
+	-- радиус 1.2, начало в 360/5/2 градусов, поворот на 360/5
+	{0.9708203932,	0, -0.7053423028},
+	{0.9708203932,	0, 0.7053423028},
+	{-0.3708203932,	0, 1.1412678196},
+	{-1.2,			0, 0.0},
+	{-0.3708203932,	0, -1.1412678196},
+	-- радиус 0.8, начало в 0 градусов, поворот на 360/5
+	{0.8,			0, 0.0},
+	{0.2472135955,	0, 0,760845213},
+	{-0.6472135955,	0, 0,4702282018},
+	{-0.6472135955,	0, -0.4702282018},
+	{0.2472135955,	0, -0.760845213}
+}]]
+-- перемешанный вариант (диаметрально противоположные пары)
+	-- радиус 1.2, начало в 360/5/2 градусов, поворот на 360/5
+	-- радиус 0.8, начало в 0 градусов, поворот на 360/5
+local positionTemplate = {
+	{0.9708203932,	0, -0.7053423028},
+	{-0.6472135955,	0, 0,4702282018},
+
+	{0.9708203932,	0, 0.7053423028},
+	{-0.6472135955,	0, -0.4702282018},
+	
+	{-0.3708203932,	0, 1.1412678196},
+	{0.2472135955,	0, -0.760845213},
+	
+	{-1.2,			0, 0.0},
+	{0.8,			0, 0.0},
+	
+	{-0.3708203932,	0, -1.1412678196},
+	{0.2472135955,	0, 0,760845213}
+}
+--' Идет в заданную область
+class "action_go_position" (action_base)
+function action_go_position:__init (npc_name,action_name,storage) super (nil,action_name)
+	self.a = storage
+end
+function action_go_position:initialize()
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+	
+	self.a.pos_vertex = nil
+	kamps[self.a.center_point]:addNpc(self.object)
+	self.mv_timeout = time_global() + 5000
+end
+
+
+function action_go_position:execute ()
+	action_base.execute (self)
+	if db.actor then
+		if xr_logic.try_switch_to_another_section(self.object, self.a, db.actor) then
+			return
+		end
+	end	
+	
+	local tmp_pos_vertex = kamps[self.a.center_point]:getDestVertex(self.object:id(), self.a.radius)
+	if self.a.pos_vertex ~= tmp_pos_vertex then
+		self.a.pos_vertex = tmp_pos_vertex
+		
+		if not self.object:accessible(self.a.pos_vertex) then
+			local ttp = vector():set(0,0,0)
+			self.a.pos_vertex = self.object:accessible_nearest(level.vertex_position(self.a.pos_vertex), ttp)
+		end
+		
+		self.a.pp = patrol(self.a.center_point):level_vertex_id(0)
+		-- !!!TODO: проверить на занятость позиции (sapsan)
+		--local randomPosition = positionTemplate[math.random(#positionTemplate)]
+		--self.a.pp = level.vertex_in_direction(self.a.pp, vector():set(randomPosition[1], randomPosition[2], randomPosition[3]), 0.7)
+		self.object:set_dest_level_vertex_id(self.a.pos_vertex)
+		self.object:set_desired_direction(vector():sub(level.vertex_position(self.a.pp),level.vertex_position(self.a.pos_vertex)))
+		self.object:set_path_type(game_object.level_path)
+		state_mgr.set_state(self.object, self.a.def_state_moving)
+	end
+	local global_time = time_global()
+	if self.mv_timeout < global_time then
+		local npc = self.object
+		local st = self.a
+		local lvid = npc:level_vertex_id()
+		if lvid ~= self.mv_lvid then
+			npc:set_path_type( game_object.level_path )
+			state_mgr.set_state( npc, st.def_state_moving )
+			self.mv_timeout = global_time + 5000
+		else
+			npc:set_path_type( game_object.game_path )
+			state_mgr.set_state( npc, "run" )
+			self.mv_timeout = global_time + 15000
+		end
+		self.mv_lvid = lvid
+	end
+
+end
+
+
+function action_go_position:finalize () counterAdd("xr_kamp.action_go_position:finalize")
+	action_base.finalize (self)
+end
+
+--' Просто сидит и втыкает
+class "action_wait" (action_base)
+function action_wait:__init (npc_name,action_name,storage) super (nil,action_name) counterAdd("xr_kamp.action_wait:__init")
+	self.a = storage
+end
+function action_wait:initialize() counterAdd("xr_kamp.action_wait:initialize")
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+	kamps[self.a.center_point]:addNpc(self.object)
+	--kamps[self.a.center_point]:increasePops(self.object)
+end
+function action_wait:activate_scheme() counterAdd("xr_kamp.action_wait:activate_scheme")
+	--kamps[self.a.center_point]:addNpc(self.object)
+end
+function action_wait:execute() counterAdd("xr_kamp.action_wait:execute")
+	action_base.execute (self)
+	if db.actor then
+		if xr_logic.try_switch_to_another_section(self.object, self.a, db.actor) then
+			return
+		end
+	end
+	local state, sound, substate = kamps[self.a.center_point]:updateNpc(self.object,self.a)
+	--' повернуть его лицом к центру	
+	state_mgr.set_state(self.object, state, nil, nil, {look_position = level.vertex_position(self.a.pp)}, nil, nil, {subanim = substate})
+	xr_sound.set_sound(self.object, sound)
+end
+function action_wait:finalize() counterAdd("xr_kamp.action_wait:finalize")
+	--kamps[self.a.center_point]:decreasePops(self.object)
+	kamps[self.a.center_point]:removeNpc(self.object)
+	action_base.finalize (self)
+end
+function action_wait:deactivate(npc) counterAdd("xr_kamp.action_wait:deactivate")
+	kamps[self.a.center_point]:removeNpc(npc)
+end
+function action_wait:death_callback(npc) counterAdd("xr_kamp.action_wait:death_callback")
+	kamps[self.a.center_point]:removeNpc(npc)
+end
+function action_wait:hit_callback(npc) counterAdd("xr_kamp.action_wait:hit_callback")
+	kamps[self.a.center_point]:removeNpc(npc)
+end
+function action_wait:net_destroy(npc) counterAdd("xr_kamp.action_wait:net_destroy")
+	--kamps[self.a.center_point]:decreasePops(self.object)	--<< Dynamic campfire mod
+	kamps[self.a.center_point]:removeNpc(npc)
+end
+--added by xStream--
+--Идет к бездыханному товарищу
+class "action_go_to_deadman" (action_base)
+function action_go_to_deadman:__init (npc_name,action_name,storage) super (nil,action_name) counterAdd("xr_kamp.action_go_to_deadman:__init")
+	self.a = storage
+end
+function action_go_to_deadman:initialize() counterAdd("xr_kamp.action_go_to_deadman:initialize")
+	action_base.initialize(self)
+	local npc=self.object
+	local gi=level.object_by_id(self.a.choosed_deadman)
+	if gi then 
+		--попремся в сторону головы - за шкирятник тащить бум
+		self.a.dest_lvid=gi:level_vertex_id()
+		local diff=gi:bone_position("bip01_head"):sub(gi:position())
+		local len=diff:magnitude()*2
+		self.a.dest_lvid=npc:vertex_in_direction(self.a.dest_lvid,diff,len)
+		if not npc:accessible(self.a.dest_lvid) then
+			self.a.dest_lvid = npc:accessible_nearest(level.vertex_position(self.a.dest_lvid), vector():set(0,0,0))
+		end
+	else
+		self.a.dest_lvid=npc:level_vertex_id()
+	end
+	self.a.reached=0
+	self.a.cur_dead_lvid=gi:level_vertex_id()
+	--пойдем не спеша...
+	state_mgr.set_state(self.object, self.a.def_state_moving)
+	npc:set_detail_path_type(move.curve)
+			npc:set_path_type(game_object.level_path)
+				npc:set_mental_state(anim.danger)
+				npc:set_body_state(move.standing)
+				local mt = npc:movement_type()
+				if mt ~= move.walk and mt ~= move.run then
+	--				npc:set_movement_type(move.walk)
+				end
+	--			npc:set_sight(gi)
+				npc:movement_enabled(true)
+	--			npc:set_dest_level_vertex_id(self.a.dest_lvid)
+
+	--на все гулянки в сторону трупа дается 30 секунд, если не успел, то да ну нафиг заморачиваться :)
+	self.a.go_time_end=time_global()+300000
+	self.a.captures = (self.a.captures or 0) + 1
+	xr_sound.set_sound(npc, nil)
+	stop_play_sound(npc)
+end
+
+function action_go_to_deadman:execute () counterAdd("xr_kamp.action_go_to_deadman:execute")
+	action_base.execute (self)
+	local npc=self.object
+	local gi = self.a.choosed_deadman and level.object_by_id(self.a.choosed_deadman)
+	-- если уже задолбало дергать труп, а он застрял (дергаем 5 раз), то нафиг его
+	if not gi or self.a.captures==6 or self.a.go_time_end<time_global() then
+		deadmansidsuses[self.a.choosed_deadman] = (deadmansidsuses[self.a.choosed_deadman] or 0) +1
+		deadmansMoversIds[self.a.choosed_deadman]=nil
+		self.a.choosed_deadman=nil
+		self.a.reached=nil
+		self.a.captures=nil
+	else
+		-- корректировка (sapsan)
+		--попремся в сторону головы - за шкирятник тащить бум
+		self.a.dest_lvid=gi:level_vertex_id()
+		local diff=gi:bone_position("bip01_head"):sub(gi:position())
+		local len=diff:magnitude()*2
+		self.a.dest_lvid=npc:vertex_in_direction(self.a.dest_lvid,diff,len)
+		if not npc:accessible(self.a.dest_lvid) then
+			self.a.dest_lvid = npc:accessible_nearest(gi:bone_position("bip01_head"), vector():set(0,0,0))
+		end
+
+		npc:set_dest_level_vertex_id(self.a.dest_lvid)
+		-- долгое путешествие до трупа успешно завершилось, ура, товарищи
+		if self.a.dest_lvid and self.a.dest_lvid==npc:level_vertex_id() or npc:position():distance_to_sqr(level.vertex_position(self.a.dest_lvid)) < 1.5 then
+			self.a.reached=1
+		end
+	end
+end
+
+function action_go_to_deadman:finalize () counterAdd("xr_kamp.action_go_to_deadman:finalize")
+	local gi = self.a.choosed_deadman and level.object_by_id(self.a.choosed_deadman)
+	-- если уже задолбало дергать труп, а он застрял (дергаем 5 раз), то нафиг его
+	if not gi or self.a.captures==6 or self.a.go_time_end<time_global() then
+		if self.a.choosed_deadman then
+			deadmansMoversIds[self.a.choosed_deadman]=nil
+			self.a.choosed_deadman=nil
+		end
+		self.a.reached=nil
+		self.a.captures=nil
+	end
+
+	action_base.finalize (self)
+end
+
+--Тащит трупец
+class "action_moving_deadman" (action_base)
+function action_moving_deadman:__init (npc_name,action_name,storage) super (nil,action_name) counterAdd("xr_kamp.action_moving_deadman:__init")
+	self.a = storage
+end
+function action_moving_deadman:initialize() counterAdd("xr_kamp.action_moving_deadman:initialize")
+	action_base.initialize(self)
+  local npc=self.object
+  --если пушка в руках - прячем, а то тащить неудобно
+  if npc:weapon_unstrapped() then
+    npc:set_item(object.idle,nil)
+  end
+	--потащим медленно, осторожно и на карачках
+	npc:set_movement_type(move.walk)
+	npc:set_mental_state(anim.danger)
+	npc:set_body_state(move.crouch)
+	npc:movement_enabled(true)
+
+	--на таскание трупа в грязи даем 40 секунд
+  self.a.time_end=time_global()+40000
+  self.force=vector():set(0,0,0)
+	--на приседание рядом с трупом и разворот лицом дадим секунду
+  self.time_drag=time_global()+1000
+  
+  deadmansidsuses[self.a.choosed_deadman] = (deadmansidsuses[self.a.choosed_deadman] or 0) +1
+end
+
+function action_moving_deadman:execute () counterAdd("xr_kamp.action_moving_deadman:execute")
+	action_base.execute (self)
+	local npc=self.object
+	local gi = self.a.choosed_deadman and level.object_by_id(self.a.choosed_deadman)
+
+	if not gi or self.a.captures==6 or self.a.time_end<time_global() then	--хватит таскать труп - время истекло, пусть другие этим занимаются
+		deadmansidsuses[self.a.choosed_deadman] = (deadmansidsuses[self.a.choosed_deadman] or 0) +1
+		deadmansMoversIds[self.a.choosed_deadman] = nil
+		self.a.choosed_deadman = nil
+		self.a.reached = nil
+		self.a.captures=nil
+		return 
+	end
+
+
+	local dir=gi:position():sub(npc:position())	-- смотри мне в глаза !
+	dir.y=0
+	npc:set_movement_type(move.walk)
+	npc:set_mental_state(anim.danger)
+	npc:set_body_state(move.crouch)
+	npc:movement_enabled(true)
+	npc:set_sight(look.direction,dir,true)
+
+	if self.a.ps and self.time_drag<time_global() then
+		npc:set_dest_level_vertex_id(self.a.drop_lvid)
+		-- непись сильный - тащит левой рукой за туловище трупа
+		local dir=npc:bone_position("bip01_l_hand"):sub(gi:bone_position(deadmanMovingBone))
+		dir:mul(25000)
+		dir.y=9000
+		self.force:mul(0.5)
+		local addForce = npc:bone_position("bip01_l_hand"):distance_to(gi:bone_position(deadmanMovingBone))/1
+		dir:mul(math.min(addForce, 0.5)+(deadmanAdditionalForce[gi:section()] or 0))
+		--dir:mul(0.5)
+		self.force:add(dir)
+		if self.a.ps:get_element_by_bone_name(deadmanMovingBone) then
+			self.a.ps:get_element_by_bone_name(deadmanMovingBone):apply_force(self.force.x,self.force.y,self.force.z)
+		elseif self.a.ps:get_element_by_bone_name(deadmanMovingBone2) then
+			self.a.ps:get_element_by_bone_name(deadmanMovingBone2):apply_force(self.force.x,self.force.y,self.force.z)
+		else
+		end
+	end
+	
+	-- уф! дотащили... всем спасибо, все свободны...
+	if self.a.drop_lvid and self.a.drop_lvid==npc:level_vertex_id() then
+		deadmansidsuses[self.a.choosed_deadman] = (deadmansidsuses[self.a.choosed_deadman] or 0) +1
+		deadmansMoversIds[self.a.choosed_deadman]=nil
+		self.a.choosed_deadman=nil
+		self.a.reached=nil
+		self.a.captures=nil
+	end
+end
+
+function action_moving_deadman:finalize () counterAdd("xr_kamp.action_moving_deadman:finalize")
+--	self.object:set_dest_level_vertex_id()
+--	self.object:set_desired_position()
+--	self.object:set_desired_direction()
+
+	self.object:set_movement_type(move.walk)
+	self.object:set_mental_state(anim.free)
+	self.object:set_body_state(move.standing)
+	self.object:movement_enabled(true)
+--	self.object:set_sight(look.cur_dir, nil, 0)
+
+	local gi = self.a.choosed_deadman and level.object_by_id(self.a.choosed_deadman)
+	-- если уже задолбало дергать труп, а он застрял (дергаем 5 раз), то нафиг его
+	if not gi or self.a.captures==6 or self.a.go_time_end<time_global() then
+		if self.a.choosed_deadman then
+			deadmansMoversIds[self.a.choosed_deadman]=nil
+			self.a.choosed_deadman=nil
+		end
+		self.a.reached=nil
+		self.a.captures=nil
+	end
+	----state_mgr.set_state(self.object, self.a.def_state_moving)
+	action_base.finalize (self)
+end
+
+local npcDemoItemsCountMax = 3
+npcItems = {}
+local npcItemsAvaliable = {}
+local npcItemsAvaliableWithHemlet = {
+-- 	["device_pda"] = true,
+ 	
+ 	["guitar_a"] = false,
+ 	["harmonica_a"] = false,
+ 	
+ 	["bread"] = false,
+ 	["sandwich"] = false,
+ 	["sweetness"] = false,
+ 	["kolbasa"] = false,
+ 	
+ 	["sigaret"] = false,
+-- 	["cigara"] = false,
+ 	
+ 	["vodka"] = false,
+ 	["energy_drink"] = false,
+ 	["beer_a"] = false,
+ 	["flaska"] = false,
+}
+for k,v in pairs(npcItemsAvaliableWithHemlet) do
+	table.insert(npcItemsAvaliable, k)
+end
+
+artsToAttachable = {
+	["af_medusa"]					= "m",--
+	["af_cristall_flower"]			= "cf",--
+	["af_vyvert"]					= "v",--
+	["af_gravi"]					= "g",--
+	["af_gold_fish"]				= "gf",--
+	["af_green"]					= "gr",--
+	["af_drops"]					= "d",--
+	["af_fireball"]					= "f",--
+	["af_cristall"]					= "c",--
+	["af_black_cristall"]			= "bc",--
+	["af_blood"]					= "b",--
+	["af_mincer_meat"]				= "mm",--
+	["af_soul"]						= "s",--
+	["gold_art"]					= "ga",--
+	["af_electra_sparkler"]			= "es",--
+	["af_electra_flash"]			= "ef",--
+	["af_electra_moonlight"]		= "em",--
+	["af_electro_crystal_thorn"]	= "ect",--
+	["af_eye_voron"]				= "ev",--
+	["af_ameba_slime"]				= "as",--
+	["af_ameba_slug"]				= "asg",--
+	["af_ameba_mica"]				= "am",--
+	["af_rusty_thorn"]				= "rt",--
+	["af_rusty_kristall"]			= "rk",--
+	["af_rusty_sea_urchin"]			= "rsu",--
+	["af_fuzz_kolobok"]				= "fk",--
+	["af_dummy_dummy"]				= "dd",--
+	["af_dummy_spring"]				= "ds",--
+	["af_dummy_battery"]			= "db",--
+	["af_dummy_pellicle"]			= "dp",--+++
+	["af_dummy_glassbeads"]			= "dg",--++
+	["af_dummy_spring_red"]			= "dsr",--
+	["af_dummy_battery_red"]		= "dbr",--
+	["af_dummy_pellicle_red"]		= "dpr",--++
+	["af_caterpillar"]				= "cp",--
+	["af_armor_1"]					= "a1",--++
+	["af_armor_2"]					= "a2",--++
+	["af_armor_3"]					= "a3",--++
+	["af_armor_4"]					= "a4",--++
+	["af_babka_1"]					= "b1",--++
+	["af_babka_2"]					= "b2",--++
+	["af_babka_3"]					= "b3",--++
+	["af_babka_4"]					= "b4",--++
+	["af_cry_1"]					= "c1",--
+	["af_cry_2"]					= "c2",--
+	["af_cry_3"]					= "c3",--
+	["af_dik_1"]					= "d1",--oo
+	["af_dik_2"]					= "d2",--oo
+	["af_dik_3"]					= "d3",--oo
+	["af_dik_4"]					= "d4",--oo
+	["af_kol_1"]					= "k1",--
+	["af_kol_2"]					= "k2",--
+	["af_kol_3"]					= "k3",--
+	["af_kol_4"]					= "k4",--
+	["af_pudd_1"]					= "p1",--
+	["af_pudd_2"]					= "p2",--
+	["af_pudd_3"]					= "p3",--
+	["af_pudd_4"]					= "p4",--
+	["af_simbion"]					= "smb",--
+	["af_spirit_1"]					= "s1",--
+	["af_spirit_2"]					= "s2",--
+	["af_spirit_3"]					= "s3",--
+	["af_spirit_4"]					= "s4",--
+	["af_spirit_pes"]				= "sp",--
+	["af_buliz"]					= "bl",--
+	["af_part_monolit"]				= "pm",--
+	["af_part_monolit_pes"]			= "pmp",--
+	["af_part_monolit1"]			= "pm1",--
+	["af_part_monolit2"]			= "pm2",--
+	["af_water_flower"]				= "wf",--
+	["af_water_flower1"]			= "wf1",--
+	["af_spiral"]					= "sprl",--
+	["af_arhara_globus"]			= "ag",--
+	["af_acumm"]					= "ac",--
+}
+attachableToArts = {}
+for k,v in pairs(artsToAttachable) do
+	attachableToArts["aa_"..v] = k
+end
+
+npcArtsToAttachable = {}
+for k,v in pairs(artsToAttachable) do
+	npcArtsToAttachable[k] = {"aa_"..v, "look_art_aa_"..v}
+end
+
+npcArtsAttachableToState = {}
+for k,v in pairs(npcArtsToAttachable) do
+	npcArtsAttachableToState[v[1]] = v[2]
+end
+
+local undirected = { "wait", "sit", "sit_ass", "sit_knee", "eat_kolbasa", "checkpda", "eat_vodka", 
+			--"look_art_aa_b", 
+			"eat_energy", "eat_bread", "kurit_cigara", "eat_sandwich", "beer_a", "sweetness", "flaska", "kurit", "trans"}
+for artsAttachable, state in pairs(npcArtsAttachableToState) do 
+	table_insert(undirected, state)
+end
+
+local directed_art_attach = { "wait", "sit", "sit_ass", "sit_knee", "eat_kolbasa", "eat_vodka", 
+			--"look_art_aa_b", 
+			"eat_energy", "eat_bread", "kurit_cigara", "eat_sandwich", "beer_a", "sweetness", "flaska", "kurit", "trans"}
+for artsAttachable, state in pairs(npcArtsAttachableToState) do 
+	table_insert(directed_art_attach, state)
+end
+local avail_state = {
+	idle =
+		{ directed = directed_art_attach, 
+		undirected = undirected},
+	pre_harmonica =
+		{ directed = { "wait_harmonica"},
+		undirected = undirected},
+	harmonica =
+		{ directed = { "play_harmonica"},
+		undirected = undirected},
+	post_harmonica =
+		{ directed = { "wait_harmonica"},
+		undirected = undirected},
+	pre_guitar =
+		{ directed = { "wait_guitar"},
+		undirected = undirected},
+	guitar =
+		{ directed = { "play_guitar"},
+		undirected = undirected},
+	post_guitar =
+		{ directed = { "wait_guitar"},
+		undirected = undirected},
+	story =
+		{ directed	= { "declarate", "trans"},
+		undirected = undirected},
+	post_story =
+		{ directed	= { "declarate", "trans"},
+		undirected = undirected},
+	pre_joke =
+		{ directed	= { "declarate", "trans"},
+		undirected = undirected},
+	joke =
+		{ directed	= { "declarate", "trans"},
+		undirected = undirected},
+	post_joke =
+		{ directed	= { "declarate", "trans"},
+		undirected = undirected}}
+
+local state_weight = {
+	wait = 40, sit = 40, sit_ass = 40, sit_knee = 40, declarate = 30,
+	eat_kolbasa = 10, flaska = 10, sweetness = 10, beer_a = 10, kurit_cigara = 10, eat_sandwich = 10, checkpda = 7, eat_vodka = 10, 
+	--look_art_aa_b = 10000000, 
+	eat_energy = 10, eat_bread = 10, kurit = 10, trans = 40,
+	play_harmonica = 20, play_guitar = 20, play_joke = 20, play_story = 20, wait_harmonica = 100, wait_guitar = 100
+}
+for artsAttachable, state in pairs(npcArtsAttachableToState) do 
+	state_weight[state] = 10--000000
+end
+
+								
+	-- это можно вынести за пределы объекта (sapsan)
+local avail_sound = {
+	idle = { directed	= "idle", undirected="idle"},
+	pre_harmonica		= { directed = "pre_harmonica",		undirected = ""},
+	harmonica		= { directed = "play_harmonica",	undirected = ""},
+	post_harmonica		= { directed = "",			undirected = "reac_harmonica"},
+	pre_guitar		= { directed = "pre_guitar",		undirected = ""},
+	guitar			= { directed = "play_guitar",		undirected = ""},
+	post_guitar		= { directed = "",			undirected = "reac_guitar"},
+	story			= { directed = "play_story",		undirected = ""},
+	post_story		= { directed = "",			undirected = "reac_story"},
+	pre_joke		= { directed = "pre_joke",		undirected = ""},
+	joke			= { directed = "play_joke",		undirected = ""},
+	post_joke		= { directed = "",			undirected = "reac_joke"}}
+
+	
+---------------------------- выдача временных предметов неписям -------------------------------
+
+function giveNpcDemoItem(npc, itemSection) counterAdd("xr_kamp.giveNpcDemoItem")
+	if npc and itemSection then
+		local npcId = npc:id()
+		local npcGV = npc:game_vertex_id()
+		local npcLV = npc:level_vertex_id()
+		local npcPos = npc:position()
+		if not npcItems[npcId] then
+			npcItems[npcId] = {}
+		end
+		
+		local sobj = alife():create(itemSection, npcPos, npcLV, npcGV, npcId)
+		if sobj then
+			npcItems[npcId][itemSection] = 3 -- выдали
+		else
+			npcItems[npcId][itemSection] = nil -- забыли нафиг
+		end
+	end
+end
+
+function giveNpcDemoItems(npc) counterAdd("xr_kamp.giveNpcDemoItems")
+	if npc --[=[ and not npcItems[npc:id()] ]=] then
+		local npcId = npc:id()
+		local npcGV = npc:game_vertex_id()
+		local npcLV = npc:level_vertex_id()
+		local npcPos = npc:position()
+		if not npcItems[npcId] then
+			npcItems[npcId] = {}
+		end		
+		for i = 1, #npcItemsAvaliable do
+			local obj = npc:object(npcItemsAvaliable[i])
+			if obj then
+				if npcItems[npcId][npcItemsAvaliable[i]] ~= 2 then
+					-- разобраться откуда они взялись!!!
+					local sobj = alife():object(obj:id())
+					if sobj then
+						if npcItems[npcId][npcItemsAvaliable[i]] ~= 3 then
+							alife():release(sobj, true)
+							npcItems[npcId][npcItemsAvaliable[i]] = 1
+						end
+					end
+				end
+			end
+		end
+
+		local visual = sol_utils.getVisual(npcId, true)
+		local isVisualWithHemlet = visualWithHemlet[visual]
+		
+		-- выдаём то, что выдавалось ранее
+		local npcDemoItemsCount = npcDemoItemsCountMax
+		for k,v in pairs(npcItems[npcId]) do
+			if v == 2 then
+				giveNpcDemoItem(npc, k)
+				npcDemoItemsCount = npcDemoItemsCount - 1
+			end
+		end
+		
+		-- пять попыток выдать предметы
+		local itemSection
+		for i = 1, npcDemoItemsCount, 1 do
+			local try = 0
+			repeat
+				itemSection = npcItemsAvaliable[math.random(1, #npcItemsAvaliable)]
+				try = try + 1
+			until try > #npcItemsAvaliable or npcItems[npcId][itemSection] == nil and (not isVisualWithHemlet or npcItemsAvaliableWithHemlet[itemSection])
+			
+			if npcItems[npcId][itemSection] == nil and (not isVisualWithHemlet or npcItemsAvaliableWithHemlet[itemSection]) then
+				giveNpcDemoItem(npc, itemSection)
+			end
+			end
+
+		-- выдаём псевдоарты
+		for k,v in pairs(npcArtsToAttachable) do
+			if npc:object(k) then
+-- вызывает вылет
+-- ahtung !!!
+-- CInventory::DropItem pIItem->m_pCurrentInventory!=this
+--				giveNpcDemoItem(npc, v[1])
+			end
+		end
+	end
+end
+
+function removeNpcDemoItems(npc) counterAdd("xr_kamp.removeNpcDemoItems")
+	if npc then
+		local npcId = npc:id()
+		
+		if npcItems[npcId] then
+		for k,v in pairs(npcItems[npcId]) do
+			if v == 3 then -- если не было и выдали
+				local obj = npc:object(k)
+				if obj then
+					local sobj = alife():object(obj:id())
+					if sobj then
+						alife():release(sobj, true)
+						
+						--о псевдоартах нужно забыть
+						if attachableToArts[k] then
+							npcItems[npcId][k] = nil
+						else
+							npcItems[npcId][k] = 2 -- было выбрано чтобы повторить потом
+						end
+					end
+				end
+			end
+		end
+		end
+	end
+end
+---------------------------- выдача временных предметов неписям -------------------------------	
+
+class "CKampManager"
+function CKampManager:__init(path, radius) counterAdd("xr_kamp.CKampManager:__init")
+	self.kamp_name = path
+	self.radius = radius
+	self.patrol = patrol(path)
+	self.center = self.patrol:level_vertex_id(0)
+	self.position = {}
+	local vertex, vertexUsed, vertexUsed2, tmpVertex
+	local pos, pos2, dir, dir2
+	local center_pos = level.vertex_position(self.center)
+	local vertexDisabled = {}
+	if radius > 0.5 then
+		vertexDisabled[self.center] = true
+	end
+	for i = 1, #positionTemplate do
+		dir = vector():set(positionTemplate[i][1], positionTemplate[i][2], positionTemplate[i][3])
+		vertex = level.vertex_in_direction(self.center, dir, dir:magnitude() * radius)
+		--if vertex ~= self.center or radius < 0.5 then
+			-- проверяем на дубликаты вертексов (был ли ранее вертекс отмечен как занятый)
+			pos = level.vertex_position(vertex)
+			vertexUsed = vertexDisabled[vertex] or radius >= 0.5 and pos:distance_to_sqr(center_pos) <= 0.5
+			if not vertexUsed then
+				for j = 1, #self.position do
+					if vertex == self.position[j].vertex
+						or
+						radius >= 0.5
+						and
+						pos:distance_to_sqr(level.vertex_position(self.position[j].vertex)) <= 0.5
+					then
+						vertexUsed = true
+						vertexDisabled[vertex] = true
+						break
+					end
+				end
+			end
+			
+			if not vertexUsed then
+				local vrtx, vrtx_pos
+				
+				-- Где то здесь распарсим патрульный путь и проверим на запретные вертексы
+				-- 0 вершина - центр лагеря.
+				-- 1 флаг - сектор занят, в поинте можно сидеть.
+				-- 2 флаг - сектор занят, в поинте нельзя сидеть.
+				for k = 1, self.patrol:count() - 1 do
+					-- если есть 1 или 2 флажок - отметить сектор как занятый
+					if self.patrol:flag(k,1) or
+					   self.patrol:flag(k,2)
+					then
+						vrtx = self.patrol:level_vertex_id(k)
+						vrtx_pos = level.vertex_position(vrtx)
+						-- отметить сектор как занятый
+						if vrtx == vertex or vrtx_pos:distance_to_sqr(pos) <= 0.5 then
+							vertexUsed = true
+							vertexDisabled[vrtx] = true
+							break
+						else
+						end
+						--[[for k2 = 1, #self.position do
+							if vrtx == self.position[k2].vertex
+								or
+								vrtx_pos.distance_to_sqr(level.vertex_position(self.position[k2].vertex)) < 0.5
+							then
+								vertexUsed = true
+								vertexDisabled[vrtx] = true
+								break
+							end
+						end]]
+					end
+				end
+			end
+			
+			if vertexUsed then
+				-- попытка найти свободный вертекс рядом
+				for l = 1, 5 do
+					for j = 1, #positionTemplate do
+						--tmpVertex = level.vertex_in_direction(vertex, vector():set(math.random(-1,1), 0, math.random(-1,1)), 0.6+math.random()*0.6)
+						dir2 = vector():set(positionTemplate[j][1], positionTemplate[j][2], positionTemplate[j][3])
+						tmpVertex = level.vertex_in_direction(vertex, dir2, dir:magnitude()+math.random()+l/2)
+						pos2 = level.vertex_position(tmpVertex)
+						vertexUsed2 = vertexDisabled[tmpVertex] or radius >= 0.5 and pos2:distance_to_sqr(center_pos) <= 0.5
+						if not vertexUsed2 then
+							for j2 = 1, #self.position do
+								if tmpVertex == self.position[j2].vertex
+									or
+									radius >= 0.5
+									and
+									pos2:distance_to_sqr(level.vertex_position(self.position[j2].vertex)) <= 0.5
+								then
+									vertexUsed2 = true
+									vertexDisabled[tmpVertex] = true
+									break
+								end
+							end
+							
+							if not vertexUsed2 then
+								local vrtx, vrtx_pos
+								
+								-- Где то здесь распарсим патрульный путь и проверим на запретные вертексы
+								-- 0 вершина - центр лагеря.
+								-- 1 флаг - сектор занят, в поинте можно сидеть.
+								-- 2 флаг - сектор занят, в поинте нельзя сидеть.
+								for k = 1, self.patrol:count() - 1 do
+									-- если есть 1 или 2 флажок - отметить сектор как занятый
+									if self.patrol:flag(k,1) or
+										self.patrol:flag(k,2)
+									then
+										vrtx = self.patrol:level_vertex_id(k)
+										vrtx_pos = level.vertex_position(vrtx)
+										
+										if vrtx == tmpVertex or vrtx_pos:distance_to_sqr(pos2) <= 0.5 then
+											vertexUsed2 = true
+											vertexDisabled[vrtx] = true
+											break
+										end
+									end
+								end
+							end
+							
+							if not vertexUsed2 then
+								vertex = tmpVertex
+								vertexUsed = false
+								break
+							end
+						end
+					end
+					if not vertexUsed then
+						break
+					end
+				end
+			end
+			
+			if not vertexUsed then
+				vertexDisabled[vertex] = true
+				table_insert(self.position, {vertex = vertex, used = nil})
+			end
+		--end
+	end
+
+	-- !!! TODO: проверить на свободные вертексы как в getDestVertex и при занятости - помечать место занятым (sapsan)
+	
+	self.npc = {}
+	self.population = 0
+	self.kamp_state = "idle"
+	
+	self.timeout = {	-- Таблица таймаутов по состоянию. Если состояние установилось, то некоторое время оно не может быт изменено.						
+		idle		= { min = 30000 },
+		pre_harmonica	= { min = 3000 },
+		harmonica	= { min = 5000, soundstart = true },
+		post_harmonica	= { min = 3000 },
+		pre_guitar	= { min = 3000 },
+		guitar		= { min = 5000, soundstart = true },
+		post_guitar	= { min = 3000 },
+		story		= { min = 1000, soundstart = true },
+		post_story	= { min = 3000 },
+		pre_joke	= { min = 3000 },
+		joke		= { min = 5000, soundstart = true },
+		post_joke	= { min = 3000 }}
+
+	self.kamp_states = {	-- Таблица глобальных состояний лагеря.
+		idle		= true,		pre_harmonica	= false,	harmonica	= false,
+		post_harmonica	= false,	pre_guitar	= false,	guitar		= false,
+		post_guitar	= false,
+		story		= false,	post_story	= false,
+		pre_joke	= true,		joke		= true,		post_joke	= true}
+
+	-- Таблица допустимых переходов между состояниями с вероятностями.
+	self.trans_kamp = {
+		idle		= { idle = 50, pre_harmonica = 30, pre_guitar = 30, story = 20, pre_joke = 20 }, 
+		pre_harmonica	= { harmonica = 100 }, 
+		harmonica	= { post_harmonica = 100 }, 
+		post_harmonica	= { idle = 70, harmonica = 30 },
+		pre_guitar	= { guitar = 100 }, 
+		guitar		= { post_guitar = 100 }, 
+		post_guitar	= { idle = 70, guitar = 30 },
+		story		= { post_story = 100 }, 
+		post_story	= { idle = 100 },
+		pre_joke	= { joke = 100 }, 
+		joke		= { post_joke = 100 }, 
+		post_joke	= { idle = 100 }}
+
+	self.director = nil	-- Хранилище для режиссера лагеря. Режиссерем является сталкер, затеявший необычное поведение
+	create_kampfire_trinity(self.kamp_name, center_pos) --self.patrol:point(0))	-- ищем набор для костра
+end
+
+function CKampManager:selectPosition(npc) counterAdd("xr_kamp.CKampManager:selectPosition")
+	local npc_id = npc:id()
+	local npc_pos = npc:position()
+	-- создаем список доступных позиций
+	local table_insert = table_insert
+	--local free = {}
+	local free_nearest_alone = {}
+	local nearest_k, nearest_dist, dist
+	local c_pos = level.vertex_position(self.center)
+	for k,v in pairs(self.position) do
+		if v.used == nil --[[and npc:accessible(v.vertex)]] then
+			local current_pos = level.vertex_position(v.vertex)
+			local dir = vector():sub( level.vertex_position( v.vertex ), c_pos )
+			local alone_dist = 0
+			for k2,v2 in pairs(self.position) do
+				if v2.used then
+					local dir2 = vector():sub( level.vertex_position( v2.vertex ), c_pos )
+					local dist2 = level.vertex_position(v2.vertex):distance_to(current_pos)
+					local yaw_to_used = math.max(0.1, math.abs(yaw(dir, dir2)))
+					alone_dist = alone_dist --+ dist2 - 1 / dist2
+				end
+			end
+			dist = current_pos:distance_to_sqr(npc_pos)
+			local delta = math.abs(self.radius - current_pos:distance_to(c_pos))
+			alone_dist = alone_dist + sech(delta)*5 + sech(dist) + current_pos:distance_to(c_pos)/10
+			free_nearest_alone[k] = {npc_dist = dist, alone_dist = alone_dist}
+		end
+	end
+
+	local nearest_alone_position, nearest_alone_value
+	for k,v in pairs(free_nearest_alone) do
+		if nearest_alone_position == nil or nearest_alone_value < v.alone_dist then
+			nearest_alone_position = k
+			nearest_alone_value = v.alone_dist
+		end
+	end
+	--' затем из доступных позиций выбрать рандомно одну.
+	-- нет, выбираем ближайшую, а то ходють и двигають друг дружку (sapsan)
+	--[=[if #free > 0 then
+		local rr = math.random(#free)
+		self.position[free[rr]].used = npc_id
+		self.npc[npc_id].position = free[rr]
+	end]=]
+	
+	--[[if nearest_k then
+		self.position[nearest_k].used = npc_id
+		self.npc[npc_id].position = nearest_k
+	end]]
+	if nearest_alone_position then
+		self.position[nearest_alone_position].used = npc_id
+		self.npc[npc_id].position = nearest_alone_position
+	end
+end
+function CKampManager:getDestVertex(npc_id, radius) counterAdd("xr_kamp.CKampManager:getDestVertex")
+	if npc_id == nil then return nil end
+	if self.npc == nil or self.npc[npc_id] == nil then return nil end
+	if self.npc[npc_id].position == nil then
+		abort("CKampManager:getDestVertex(npc_id, radius) get dest Vertex: nil [%s]", npc_id)
+		return nil
+	end
+	
+	local position = self.position[self.npc[npc_id].position]
+	if position.vertex ~= nil then
+		return position.vertex
+	end
+	-- высчитываем вертех по направлению
+   	local pp = level.vertex_in_direction(self.center, self.position[self.npc[npc_id].position].dir, radius)
+	return pp		
+end
+function CKampManager:proceedState(npc) counterAdd("xr_kamp.CKampManager:proceedState")
+	-- Проверка на таймаут
+	local npc_id = npc:id()
+	if self.npc == nil or self.npc[npc_id] == nil then return end
+	local active_sound_count = npc:active_sound_count()
+	if self.npc[npc_id].need_sound_begin == true then
+		if active_sound_count == 0 then
+			return
+		else			
+			self.npc[npc_id].need_sound_begin = false
+		end
+	end
+	if self.begin ~= nil and
+	   time_global() - self.begin < self.timeout[self.kamp_state].min
+	then
+		return
+	end
+
+	-- Если режиссер не закончил говорить - ждем конца фразы.
+	if active_sound_count > 0 then
+		return
+	end
+	-- В случае с историей переход обрабатывается отдельно
+	if self.kamp_state == "post_story" then
+		if self.story_last < self.story_max - 1 then
+			self.npc[npc_id].begin = nil
+			self.npc[npc_id].need_sound_begin = true
+			self.director = npc_id
+			self.kamp_state = "story"
+			self.begin = time_global()
+			for kk,vv in pairs(self.npc) do
+				vv.new = true
+			end		
+			return
+		else
+			self.selected_story = nil
+		end
+	end
+	-- Определяются допустимые в данный момент переходы.
+	local temp = {}
+	local max_rnd = 0
+	for k,v in pairs(self.trans_kamp[self.kamp_state]) do		
+		-- Определяются допустимые состояния для лагеря.
+		if self.kamp_states[k] == true then
+			temp[k] = v
+			max_rnd = max_rnd + v
+		end
+	end
+	-- Осуществляется рандомный взвешенный переход.
+	if max_rnd == 0 then
+		-- Если переходить некуда - переходим в айдл
+		temp["idle"] = 100
+		max_rnd = 100
+	end
+	local math_random = math.random
+	local p = math_random(0,max_rnd)
+	local dep
+	for k,v in pairs(temp) do
+		p = p - v
+		if p <= 0 then
+			if k == "idle" then
+				self.director = nil
+				if self.kamp_state ~= "idle" then
+					self.npc[npc_id].begin = nil
+				end
+			else
+				self.npc[npc_id].begin = nil
+				if self.timeout[k].soundstart == true then
+					self.npc[npc_id].need_sound_begin = true
+				end
+				self.director = npc_id
+				self.censor = nil
+			end			
+			self.kamp_state = k
+			self.begin = time_global()
+			-- Меняем таймаут для истории
+			if k == "post_story" then
+				dep = sound_theme.theme[self.selected_story].depence[self.story_last]
+				if dep and dep.min and dep.max then
+					self.timeout["post_story"].min = math_random(dep.min, dep.max)*1000
+				end
+			end
+			for kk,vv in pairs(self.npc) do
+				vv.new = true
+			end
+			return
+		end
+	end
+end
+function CKampManager:proceedRole(npc, director) counterAdd("xr_kamp.CKampManager:proceedRole")
+	-- Определить список доступных анимаций по состоянию лагеря.
+	-- определить список доступных анимаций по наличию предметов
+	-- выбрать одну из них (то же самое со звуком).
+	local sound = ""
+	local state = ""
+	local npc_id = npc:id()
+	if self.npc == nil or self.npc[npc_id] == nil then return nil, nil end	
+	if self.npc[npc_id].begin == nil or
+	   time_global() - self.npc[npc_id].begin >= self.npc[npc_id].state_idle
+	then
+		local states
+		if director then
+			states = avail_state[self.kamp_state].directed
+			sound = avail_sound[self.kamp_state].directed
+		else
+			states = avail_state[self.kamp_state].undirected
+			sound = avail_sound[self.kamp_state].undirected
+		end
+		-- Выбирать новое состояние только раз в какое то время.
+		local temp = {}
+		local table_insert = table_insert
+		local weightTotal = 0
+		for k,v in pairs(states) do
+			if self.npc[npc_id].states[v] == true then
+				temp[v] = state_weight[v]
+				weightTotal = weightTotal + state_weight[v]
+				--table_insert(temp, v)
+			end
+		end
+		
+		-- Если мы решили говорить историю, надо выбрать какую именно говорить.
+		if sound == "play_story" and self.selected_story == nil and db.story_by_id[npc_id] ~= nil then
+			local story_num = #db.story_by_id[npc_id]
+			if story_num > 0 then
+				self.selected_story = db.story_by_id[npc_id][math.random(story_num)]
+			end			
+		end
+
+		self.npc[npc_id].begin = time_global()
+		--state = temp[math.random(#temp)]
+		
+		--[[local weightTotal = 0
+		for s,w in pairs(temp) do
+			weightTotal = weightTotal + w
+		end]]
+
+		local stateWeightSelected = math.random(0, weightTotal)
+		local stateWeightCount = 0
+		for s, w in pairs(temp) do
+			stateWeightCount = stateWeightCount + w
+			if stateWeightCount >= stateWeightSelected then
+				state = s
+				break
+			end
+		end
+		
+		
+		self.npc[npc_id].state_selected = state
+		self.npc[npc_id].state_idle = math.random(15000,20000)		
+	else
+		if director then
+			sound = avail_sound[self.kamp_state].directed
+		else
+			sound = avail_sound[self.kamp_state].undirected
+		end
+		state = self.npc[npc_id].state_selected	
+	end
+	return state, sound
+end
+function CKampManager:updateNpc(npc,st) counterAdd("xr_kamp.CKampManager:updateNpc")
+	-- Проверка что сталкер может делать, а что нет.
+	self:checkNpcAbility(npc,st)
+	-- Просим лагерь выбрать текущее состояние. Менять состояние лагеря
+	-- имеет право только режиссер.
+	local npc_id = npc:id()
+	if self.npc == nil or self.npc[npc_id] == nil then return nil, nil, nil end		
+	local director = self.director == nil or self.director == npc_id
+	if director	then
+		self:proceedState(npc)
+	end
+	-- Говорим чудаку выбрать себе состояние для текущего состояния лагеря.
+	local state, sound = self:proceedRole(npc, director)
+	
+	local substate = nil
+	if state == "wait_harmonica" then
+		if sound == "pre_harmonica" and self.npc[npc_id].new == true then
+			xr_sound.set_sound_play(npc, "intro_music", math.random(2000,3000))
+			self.npc[npc_id].new = false
+		end
+		state = "harmonica"
+		kamp_stalkers[npc_id] = false
+	elseif state == "play_harmonica" then
+		state = "harmonica"
+		substate = 1
+		kamp_stalkers[npc_id] = false
+	elseif state == "wait_guitar" then
+		if sound == "pre_guitar" and self.npc[npc_id].new == true then
+			xr_sound.set_sound_play(npc, "intro_music", math.random(2000,3000))
+			self.npc[npc_id].new = false
+		end
+		state = "guitar"
+		kamp_stalkers[npc_id] = false
+	elseif state == "play_guitar" then
+		state = "guitar"
+		substate = 1
+		kamp_stalkers[npc_id] = false
+	elseif state == "declarate" then
+		if self.npc[npc_id].new == true then
+			if sound == "pre_joke" then
+				xr_sound.set_sound_play(npc, "intro_joke", math.random(2000,3000))
+			elseif sound == "play_joke" then
+				xr_sound.set_sound_play(npc, "joke", math.random(2000,3000))
+			elseif sound == "play_story" then
+				xr_sound.set_sound_play(npc, self.selected_story)
+				self.story_last, self.story_max = xr_sound.get_last_IDS(npc, self.selected_story)
+				if self.story_last==nil then
+					self.story_last=0
+					self.story_max=1
+					xr_sound.set_sound_play(npc, "threat_back", math.random(1000,2000))
+					--- dirty hack
+					self.kamp_state="idle"
+					self.forbiddendirector=self.director
+					self.director=nil
+				end
+			end
+			self.npc[npc_id].new = false
+		end
+
+		if npc:character_community() == "monolith" then
+			local t = math.mod(npc_id, 2)
+			if t == 0 then
+				state = "trans_0"
+			else
+				state = "trans_1"
+			end
+		elseif npc:character_community() == "zombied" then
+			state = "trans_zombied"
+		else
+			local t = math.mod(npc_id, 3)
+			if t == 0 then
+				state = "sit"
+			elseif t == 1 then
+				state = "sit_ass"
+			else
+				state = "sit_knee"
+			end
+		end
+		kamp_stalkers[npc_id] = false
+	elseif state == "trans" then
+		if npc:character_community() == "monolith" then
+			local t = math.mod(npc_id, 2)
+			if t == 0 then
+				state = "trans_0"
+			else
+				state = "trans_1"
+			end
+		elseif npc:character_community() == "zombied" then
+			state = "trans_zombied"
+		end
+		kamp_stalkers[npc_id] = false
+	else
+		kamp_stalkers[npc_id] = true
+	end
+	-- Выбор реальных звуков
+	if sound == "idle" and state ~= "checkpda" then
+		sound = "weather, state"
+	elseif sound == "reac_guitar" then
+		sound = "reac_music"
+	elseif sound == "reac_harmonica" then
+		sound = "reac_music"
+	elseif sound == "reac_joke" then
+		sound = ""	
+		if self.npc[npc_id].new == true then
+			if self.censor == nil then
+				xr_sound.set_sound_play(npc, "reac_joke", math.random(2000,3000))
+				self.censor = npc_id
+			else
+				xr_sound.set_sound_play(npc, "story_reac_laughter", math.random(100,300))
+			end
+			self.npc[npc_id].new = false
+		end
+	elseif sound == "reac_story" then
+		sound = ""
+		if self.npc[npc_id].new == true then
+			local dep = sound_theme.theme[self.selected_story].depence[self.story_last+1]
+			if dep then
+				if dep.type == "all" then
+					xr_sound.set_sound_play(npc, dep.theme, math.random(100,300))
+				else
+					sound = dep.theme
+				end
+			end
+		end
+	elseif sound == "reac_story" then
+		sound = ""
+	else
+		sound = ""
+	end
+	return state, sound, substate
+end
+
+function CKampManager:getNpcStateSelected(npc,st) counterAdd("xr_kamp.CKampManager:getNpcStateSelected")
+	return self.npc[npc:id()].state_selected
+end
+
+function CKampManager:checkNpcAbility(npc,st) counterAdd("xr_kamp.CKampManager:checkNpcAbility")
+	local npc_id = npc:id()
+    if npc_id == nil then return end		
+	if self.npc == nil or self.npc[npc_id] == nil then return end
+	if npc:character_community() ~= "monolith" and
+	   npc:character_community() ~= "zombied"
+	then
+		local visual = sol_utils.getVisual(npc_id, true)
+		local isVisualWithHemlet = visualWithHemlet[visual]
+		-- есть колбасу
+		if not isVisualWithHemlet and npc:object("kolbasa") then
+			self.npc[npc_id].states["eat_kolbasa"] = true
+		else
+			self.npc[npc_id].states["eat_kolbasa"] = false
+		end
+		-- проверить ПДА
+		if npc:object("device_pda") then
+			self.npc[npc_id].states["checkpda"] = true
+		else
+			self.npc[npc_id].states["checkpda"] = false
+		end
+		
+		-- осмотреть арт
+		for artAttachable, state in pairs(npcArtsAttachableToState) do
+			if npc:object(artAttachable) then
+				self.npc[npc_id].states[state] = true
+			else
+				self.npc[npc_id].states[state] = false
+			end
+		end
+		
+		-- пить водку
+		if not isVisualWithHemlet and npc:object("vodka") then
+			self.npc[npc_id].states["eat_vodka"] = true
+		else
+			self.npc[npc_id].states["eat_vodka"] = false
+		end
+		-- пить енергитический напиток
+		if not isVisualWithHemlet and npc:object("energy_drink") then
+			self.npc[npc_id].states["eat_energy"] = true
+		else
+			self.npc[npc_id].states["eat_energy"] = false
+		end
+		-- есть хлеб
+		if not isVisualWithHemlet and npc:object("bread") then
+			self.npc[npc_id].states["eat_bread"] = true
+		else
+			self.npc[npc_id].states["eat_bread"] = false
+		end
+-- курит
+		if not isVisualWithHemlet and npc:object("sigaret") then
+                 self.npc[npc_id].states["kurit"] = true
+		  else
+                self.npc[npc_id].states["kurit"] = false
+		end
+                -- пить из фляжки
+		if not isVisualWithHemlet and npc:object("flaska") then
+			self.npc[npc_id].states["flaska"] = true
+		else
+			self.npc[npc_id].states["flaska"] = false
+		end
+                -- есть сладость
+		if not isVisualWithHemlet and npc:object("sweetness") then
+			self.npc[npc_id].states["sweetness"] = true
+		else
+			self.npc[npc_id].states["sweetness"] = false
+		end
+                -- пить пиво
+		if not isVisualWithHemlet and npc:object("beer_a") then
+			self.npc[npc_id].states["beer_a"] = true
+		else
+			self.npc[npc_id].states["beer_a"] = false
+		end
+                -- курит сигару
+		if not isVisualWithHemlet and npc:object("cigara") then
+                        self.npc[npc_id].states["kurit_cigara"] = true
+		  else
+                        self.npc[npc_id].states["kurit_cigara"] = false
+		end 
+		-- есть бутерброд
+		if not isVisualWithHemlet and npc:object("sandwich") then
+			self.npc[npc_id].states["eat_sandwich"] = true
+		else
+			self.npc[npc_id].states["eat_sandwich"] = false
+		end
+		if st.no_play ~= true and not isVisualWithHemlet then
+			-- играть на гармошке
+			if npc:object("harmonica_a") then
+				self.npc[npc_id].states["play_harmonica"] = true
+				self.npc[npc_id].states["wait_harmonica"] = true
+				self.kamp_states["pre_harmonica"] = true
+				self.kamp_states["harmonica"] = true
+				self.kamp_states["post_harmonica"] = true
+			else
+				self.npc[npc_id].states["play_harmonica"] = false
+				self.npc[npc_id].states["wait_harmonica"] = false
+				self.kamp_states["pre_harmonica"] = false
+				self.kamp_states["harmonica"] = false
+				self.kamp_states["post_harmonica"] = false
+			end
+			-- играть на гитаре
+			if npc:object("guitar_a") then
+				self.npc[npc_id].states["play_guitar"] = true
+				self.npc[npc_id].states["wait_guitar"] = true
+				self.kamp_states["pre_guitar"] = true
+				self.kamp_states["guitar"] = true
+				self.kamp_states["post_guitar"] = true
+			else
+				self.npc[npc_id].states["play_guitar"] = false
+				self.npc[npc_id].states["wait_guitar"] = false
+				self.kamp_states["pre_guitar"] = false
+				self.kamp_states["guitar"] = false
+				self.kamp_states["post_guitar"] = false
+			end
+		end
+		-- анекдоты
+		if self.population > 1 and st.no_declarate ~= true then
+			self.kamp_states["pre_joke"] = true
+			self.kamp_states["joke"] = true
+			self.kamp_states["post_joke"] = true
+		else
+			self.kamp_states["pre_joke"] = false
+			self.kamp_states["joke"] = false
+			self.kamp_states["post_joke"] = false
+		end	
+	end
+	
+	-- Если чувак знает истории, надо добавить их к лагерю
+	
+	if self.population > 1 and db.story_by_id[npc_id] ~= nil and st.no_declarate ~= true then
+		self.kamp_states["story"] = true
+		self.kamp_states["post_story"] = true
+	else
+		self.kamp_states["story"] = false
+		self.kamp_states["post_story"] = false	
+	end
+end
+function CKampManager:addNpc(npc) counterAdd("xr_kamp.CKampManager:addNpc")
+	local npc_id = npc:id()
+	if self.npc[npc_id] ~= nil then
+		return
+	end
+	self:increasePops(npc)
+	
+	if npc:character_community() == "monolith" or npc:character_community() == "zombied" then
+		local states = {stand_wait = false, sit = false, sit_ass = false, sit_knee = false, declarate = false,
+			eat_kolbasa = false, flaska = false, sweetness = false, beer_a = false, kurit_cigara = false, eat_sandwich = false, checkpda = false, eat_vodka = false, eat_energy = false, eat_bread = false, kurit = false, trans = true,
+			--look_art_aa_b = false, look_art_aa_em = false,
+			play_harmonica = false, play_guitar = false, play_joke = false, play_story = false}
+		for artsAttachable, state in pairs(npcArtsAttachableToState) do 
+			states[state] = false
+		end
+		self.npc[npc_id] = {name = npc:name(), position = nil, current = nil, speak = 0, ["states"] = states}
+	else
+		local states = {stand_wait = true, sit = true, sit_ass = true, sit_knee = true, declarate = true,
+			eat_kolbasa = false, flaska = false, sweetness = false, beer_a = false, kurit_cigara = false, eat_sandwich = false, checkpda = false, eat_vodka = false, eat_energy = false, eat_bread = false, kurit = false, trans = false,
+			--look_art_aa_b = true, look_art_aa_em = true,
+			play_harmonica = false, play_guitar = false, play_joke = false, play_story = false}
+		for artsAttachable, state in pairs(npcArtsAttachableToState) do 
+			states[state] = true
+		end
+		self.npc[npc_id] = {name = npc:name(), position = nil, current = nil, speak = 0, ["states"] = states}
+	end
+	self:selectPosition(npc)	
+	if db.story_by_id[npc_id] == nil then
+		local char_ini1 = g_ini_file("scripts\\stories.ltx")
+		xr_info.loadInfo(npc, char_ini1)
+	end
+	
+	-- выдаём неписям всякое для показухи у костра
+	giveNpcDemoItems(npc)
+end
+
+function CKampManager:removeNpc(npc) counterAdd("xr_kamp.CKampManager:removeNpc")
+	local npc_id = npc:id()
+	if self.npc[npc_id] ~= nil then
+		-- отбираем у непися показушное
+		removeNpcDemoItems(npc)
+		self:decreasePops(npc)
+		-- Если удаляем режиссера - необходимо форсированно перевести лагерь в идловое состояние.
+		if self.director == npc_id then
+			self.director = nil
+			self.npc[npc_id].begin = nil
+			self.censor = nil
+			self.kamp_state = "idle"
+			self.begin = time_global()
+			for kk,vv in pairs(self.npc) do
+				vv.new = true
+			end
+			xr_sound.set_sound(npc, nil)
+			stop_play_sound(npc)
+		end
+		-- nv 071105 - prevent crash if "defend border from Monolith" skipped
+		if self.npc[npc_id].position ~= nil then
+			self.position[self.npc[npc_id].position].used = nil
+		end
+		self.npc[npc_id] = nil
+          
+	end
+end
+
+-->> Dynamic campfire mod
+
+	local kamps_info = {}
+function CKampManager:increasePops(npc) counterAdd("xr_kamp.CKampManager:increasePops")
+	self.population = self.population + 1
+		if kamps_info[self.kamp_name] and not kamps_info[self.kamp_name].need_to_be_enabled then
+			kamps_info[self.kamp_name].time = time_global()
+			kamps_info[self.kamp_name].need_to_be_enabled = true
+		end
+end
+function CKampManager:decreasePops(npc) counterAdd("xr_kamp.CKampManager:decreasePops")
+	self.population = self.population - 1
+	if self.population < 1 then
+		if kamps_info[self.kamp_name] and kamps_info[self.kamp_name].need_to_be_enabled then
+			kamps_info[self.kamp_name].time = time_global()
+			kamps_info[self.kamp_name].need_to_be_enabled = false
+		end
+	end
+end
+
+local level_flames = {}
+local level_lights = {}
+local level_lights_no_r1_r2 = {}
+local isFlame = { ["zone_flame_small"] = true }
+local isLight = { ["lights_hanging_lamp"] = true }
+
+-- собираем лагерь, костёр и освещение в кучку sapsan
+function create_kampfire_trinity(name, pos) counterAdd("xr_kamp.create_kampfire_trinity")
+	
+	local sim = alife()
+	local flame_pos, light_pos
+	local radius = 0
+	local flame, light
+	repeat -- ищем по возрастающему радиусу - чтобы сразу не зацепить чужой костёр рядом
+		radius = radius + 1
+		for i = #level_flames, 1, -1 do
+			-- если координаты XY близки - пара лагеря и огня
+			flame = sim:object(level_flames[i].id)
+			if flame and isFlame[flame:section_name()] then
+				flame_pos = flame.position
+				if pos:distance_to_sqr(flame_pos) <= radius*radius then
+					kamps_info[name] = {obj_fire = level_flames[i].id, obj_light = level_flames[i].light, time = time_global(), need_to_be_enabled = true, state = 0, prtcl = particles_object("dyn_kfire\\dyingfire")}
+					table_remove(level_flames, i)
+					return
+					--[[
+					local radius_light = 0
+					repeat -- ищем по возрастающему радиусу - чтобы сразу не зацепить чужой свет рядом
+						radius_light = radius_light + 1
+						for j = #level_lights, 1, -1 do
+							light = sim:object(level_lights[j].id)
+							if light and isLight[light:section_name()] then
+								-- если координаты XY совпадают - пара огня и света
+								light_pos = light.position
+								if light_pos:distance_to_sqr(flame_pos) <= radius_light*radius_light then
+									kamps_info[name] = {obj_fire = level_flames[i].id, obj_light = level_lights[j].id, time = time_global(), need_to_be_enabled = true, state = 0, prtcl = particles_object("dyn_kfire\\dyingfire")}
+									table_remove(level_flames, i)
+									table_remove(level_lights, j)
+									return
+								end
+							else
+								table_remove(level_lights, j)
+							end
+						end
+					until radius_light > 5
+					-- не нашли освещение, которое с "r1_r2" - ищем без (самодеятельность, млин)
+					radius_light = 0
+					repeat -- ищем по возрастающему радиусу - чтобы сразу не зацепить чужой свет рядом
+						radius_light = radius_light + 1
+						for j = #level_lights_no_r1_r2, 1, -1 do
+							light = sim:object(level_lights_no_r1_r2[j].id)
+							if light and isLight[light:section_name()] then
+
+								-- если координаты XY совпадают - пара огня и света
+								light_pos = light.position
+								if light_pos:distance_to_sqr(flame_pos) <= radius_light*radius_light then
+									kamps_info[name] = {obj_fire = level_flames[i].id, obj_light = level_lights_no_r1_r2[j].id, time = time_global(), need_to_be_enabled = true, state = 0, prtcl = particles_object("dyn_kfire\\dyingfire")}
+									table_remove(level_flames, i)
+									table_remove(level_lights_no_r1_r2, j)
+									return
+								end
+							else
+								table_remove(level_lights_no_r1_r2, j)
+							end
+						end
+					until radius_light > 5
+					-- освещение не найдено - добавляем, но ругаемся.
+					kamps_info[name] = {obj_fire = level_flames[i].id, obj_light = nil, time = time_global(), need_to_be_enabled = true, state = 0, prtcl = particles_object("dyn_kfire\\dyingfire")}
+					]]
+				end
+			else
+				table_remove(level_flames, i)
+			end
+		end
+	until radius > 20
+end
+
+
+-- костры и свет от костров, которые не отключаются динамически
+local exclude_flame_light = {
+	[2] = {--"l02_garbage"
+		["voron_zone_campfire_grill"] = true,
+		["voron_koster_lights"] = true,
+	},
+	[7] = {--"l05_bar"
+		["zone_flame_small_0002"] = true,
+		["lights_camp_fire_omni_r1_r2_0002"] = true,
+	},
+	[8] = {--"l06_rostok"
+		["zone_flame_small_0005"] = true,
+		["zone_flame_small_0006"] = true,
+		["zone_flame_small_0007"] = true,
+		["zone_flame_small_0008"] = true,
+		["zone_flame_small_0010"] = true,
+	},
+	[14] = {--"l11_pripyat"
+		["zone_flame_small_0012"] = true,
+		["zone_flame_small_0013"] = true,
+		["zone_flame_small_0024"] = true,
+		["zone_flame_small_0025"] = true,
+		["lights_camp_fire_omni_r1_r2_0011"] = true,
+		["lights_camp_fire_omni_r1_r2_0012"] = true,
+	},
+	[9] = {--"l08_yantar"
+		["lights_camp_fire_omni_r1_r2_0031"] = true,
+	},
+	[25] = {--"aver"
+		["aver_arhara_boloto_ogon_1"] = true,-- в Огненной пещере
+		["aver_arhara_boloto_lights_1"] = true,-- в Огненной пещере
+		["aver_arhara_boloto_ogon_2"] = true,-- в Огненной пещере
+		["aver_arhara_boloto_lights_2"] = true,-- в Огненной пещере
+	},
+	[33] = {--"marsh"
+		["zone_flame_small_kamin"] = true,-- камин у Свиблова
+		["lights_campfire_marsh_omni"] = true,-- камин у Свиблова
+	},
+}
+
+-- локации, на который тушение костров отключено совсем
+local exclude_levels = {
+	[23] = true,	--peshera
+	[26] = true,	--av_peshera
+	[30] = true}	--warlab
+
+function collect_kamp_fire_single(sobj, actor_level, obj_level, sect) counterAdd("xr_kamp.collect_kamp_fire_single")
+
+	-- нужны костры только на текущей локации
+	if actor_level ~= obj_level then return end
+	
+	local name = sobj:name()
+	if exclude_levels[obj_level] or exclude_flame_light[obj_level] and exclude_flame_light[obj_level][name] then return end
+	
+	if isFlame[sect] then
+		table_insert(level_flames, {id = sobj.id, on = true, light = false})
+	elseif isLight[sect] then
+		if string_find(name, "r1_r2", 1, true) then
+			table_insert(level_lights, {id = sobj.id, on = true})
+		else
+			table_insert(level_lights_no_r1_r2, {id = sobj.id, on = true})
+		end
+	end
+end
+
+-- оставляем в списке источники света только возле костров
+-- при чем смотрим, какой ближе к вертикальной оси Y
+function keep_actual_lights() counterAdd("xr_kamp.keep_actual_lights")
+	local sim = alife()
+	local r1_r2, r1_r2_dist, no_r1_r2, no_r1_r2_dist, flame, flame_pos
+	local r1_r2_keeped, no_r1_r2_keeped = {}, {}
+	local r1_r2_for_flame, no_r1_r2_for_flame = {}, {}
+	local radius_light = 0
+	
+	for i = #level_flames, 1, -1 do
+		flame = sim:object(level_flames[i].id)
+		if flame and isFlame[flame:section_name()] then
+			flame_pos = flame.position
+			r1_r2_for_flame = {}
+			radius_light = 0
+			local r1_r2_for_flame_ids = {}
+			repeat
+				radius_light = radius_light + 1
+				for j = #level_lights, 1, -1 do
+					if not r1_r2_for_flame_ids[level_lights[j].id] then
+						r1_r2 = sim:object(level_lights[j].id)
+						if r1_r2 and isLight[r1_r2:section_name()] then
+							r1_r2_dist = flame_pos:distance_to_xz(r1_r2.position)
+							if r1_r2_dist <= radius_light then
+								r1_r2_for_flame_ids[level_lights[j].id] = true
+								table_insert(r1_r2_for_flame, {id = level_lights[j].id, dist = r1_r2_dist})
+							end
+						else
+							table_remove(level_lights, j)
+						end
+					end
+				end
+			until radius_light > 5
+			
+			no_r1_r2_for_flame = {}
+			radius_light = 0
+			local no_r1_r2_for_flame_ids = {}
+			repeat
+				radius_light = radius_light + 1
+				for j = #level_lights_no_r1_r2, 1, -1 do
+					if not no_r1_r2_for_flame_ids[level_lights_no_r1_r2[j].id] then
+						no_r1_r2 = sim:object(level_lights_no_r1_r2[j].id)
+						if no_r1_r2 and isLight[no_r1_r2:section_name()] then
+							no_r1_r2_dist = flame_pos:distance_to_xz(no_r1_r2.position)
+							if no_r1_r2_dist <= radius_light then
+								no_r1_r2_for_flame_ids[level_lights_no_r1_r2[j].id] = true
+								table_insert(no_r1_r2_for_flame, {id = level_lights_no_r1_r2[j].id, dist = no_r1_r2_dist})
+							end
+						else
+							table_remove(level_lights_no_r1_r2, j)
+						end
+					end
+				end
+			until radius_light > 5
+			
+			table.sort(r1_r2_for_flame, function(v1,v2) return v1.dist < v2.dist end)
+			table.sort(no_r1_r2_for_flame, function(v1,v2) return v1.dist < v2.dist end)
+
+			if #r1_r2_for_flame > 0 and #no_r1_r2_for_flame > 0 then
+				if r1_r2_for_flame[1].dist < no_r1_r2_for_flame[1].dist then
+					table_insert(r1_r2_keeped, {id = r1_r2_for_flame[1].id, on = true})
+					level_flames[i].light = r1_r2_for_flame[1].id
+				else
+					table_insert(no_r1_r2_keeped, {id = no_r1_r2_for_flame[1].id, on = true})
+					level_flames[i].light = no_r1_r2_for_flame[1].id
+				end
+			elseif #r1_r2_for_flame > 0 then
+				table_insert(r1_r2_keeped, {id = r1_r2_for_flame[1].id, on = true})
+				level_flames[i].light = r1_r2_for_flame[1].id
+			elseif #no_r1_r2_for_flame > 0 then
+				table_insert(no_r1_r2_keeped, {id = no_r1_r2_for_flame[1].id, on = true})
+				level_flames[i].light = no_r1_r2_for_flame[1].id
+			else
+				-- нет источников света рядом с огнем
+			end
+		else
+			table_remove(level_flames, i)
+		end
+	end
+	level_lights = r1_r2_keeped
+	level_lights_no_r1_r2 = no_r1_r2_keeped
+end
+
+
+local kostri_tushili = false
+local kostri_tushili_neispolz = false
+
+function update() counterAdd("xr_kamp.update")
+	if not game_options.kostri and not kostri_tushili then return end
+	kostri_tushili = true
+
+	amk.oau_watchdog = 19301
+	local time = time_global()
+
+	local online_light, online_flame, hanging_lamp
+	local level_object_by_id = level.object_by_id
+
+	for i, v in pairs(kamps_info) do
+		-- зажигаем
+		if v.need_to_be_enabled or not game_options.kostri then
+			-- не горит на полную
+			if v.state ~= 4 then
+				online_flame = level_object_by_id(v.obj_fire)
+				-- освещения может у костра и не быть (не критично)
+				if v.obj_light then
+					online_light = level_object_by_id(v.obj_light)
+				else
+					online_light = nil
+				end
+				
+				if online_flame and not isFlame[online_flame:section()] or online_light and not isLight[online_light:section()] then
+					kamps_info[i] = nil
+				else
+					if game_options.kostri then
+						if v.state == 0 then
+							if v.time + 23000 < time then
+								amk.oau_watchdog = 193010
+								v.prtcl:play_at_pos(online_flame:position())
+								if online_light then
+									hanging_lamp = online_light:get_hanging_lamp()
+									if hanging_lamp then
+										hanging_lamp:turn_on()
+									end
+								end
+								v.state = 1
+							end
+						elseif v.state == 1 then
+							if v.time + 27000 < time then
+								amk.oau_watchdog = 193011
+								if online_flame then online_flame:enable_anomaly() end
+								if online_light then
+									hanging_lamp = online_light:get_hanging_lamp()
+									if hanging_lamp then
+										hanging_lamp:turn_on()
+									end
+								end
+								v.state = 2
+							end
+						elseif v.state == 2 then
+							if v.time + 43000 < time then
+								amk.oau_watchdog = 193012
+								if online_flame then online_flame:enable_anomaly() end
+								if online_light then
+									hanging_lamp = online_light:get_hanging_lamp()
+									if hanging_lamp then
+										hanging_lamp:turn_on()
+									end
+								end
+								v.prtcl:stop()
+								v.state = 3
+							end
+						elseif v.state == 3 then
+							if v.time + 43000 < time then
+								amk.oau_watchdog = 193013
+								if online_flame then online_flame:enable_anomaly() end
+								if online_light then
+									hanging_lamp = online_light:get_hanging_lamp()
+									if hanging_lamp then
+										hanging_lamp:turn_on()
+									end
+								end
+								v.prtcl:stop()
+								v.state = 4
+							end
+						end
+					else
+						amk.oau_watchdog = 1930131
+						if online_flame then online_flame:enable_anomaly() end
+						if online_light then
+							hanging_lamp = online_light:get_hanging_lamp()
+							if hanging_lamp then
+								hanging_lamp:turn_on()
+							end
+						end
+						v.prtcl:stop()
+						v.state = 4
+					end
+				end
+			end
+			
+		-- тушим
+		else
+			-- не потушен полностью
+			if v.state ~= 0 then
+				online_flame = level_object_by_id(v.obj_fire)
+				-- освещения может у костра и не быть (не критично)
+				if v.obj_light then
+					online_light = level_object_by_id(v.obj_light)
+				else
+					online_light = nil
+				end
+				
+				if online_flame and not isFlame[online_flame:section()] or online_light and not isLight[online_light:section()] then
+					kamps_info[i] = nil
+				else
+					if v.state == 4 then
+						if v.time + 60000 < time then
+							amk.oau_watchdog = 193014
+							v.prtcl:play_at_pos(online_flame:position())
+							v.state = 3
+						end
+					elseif v.state == 3 then
+						if v.time + 120000 < time then
+							amk.oau_watchdog = 193015
+							if online_flame then online_flame:disable_anomaly() end
+							v.state = 2
+						end
+					elseif v.state == 2 then
+						if v.time + 180000 < time then
+							amk.oau_watchdog = 193016
+							if online_flame then online_flame:disable_anomaly() end
+							if online_light then
+								hanging_lamp = online_light:get_hanging_lamp()
+								if hanging_lamp then
+									hanging_lamp:turn_off()
+								end
+							end
+							v.state = 1
+						end
+					elseif v.state == 1 then
+						if v.time + 320000 < time then
+							amk.oau_watchdog = 193017
+							if online_flame then online_flame:disable_anomaly() end
+							if online_light then
+								hanging_lamp = online_light:get_hanging_lamp()
+								if hanging_lamp then
+									hanging_lamp:turn_off()
+								end
+							end
+							v.prtcl:stop()
+							v.state = 0
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	-- вырубаем неиспользуемые в лагерях
+	amk.oau_watchdog = 193018
+	for i = #level_flames, 1, -1 do
+		-- если нужно что-то делать
+		if game_options.kostri and level_flames[i].on or not game_options.kostri and not level_flames[i].on then
+			online_flame = level_object_by_id(level_flames[i].id)
+			online_light = level_flames[i].light and level_object_by_id(level_flames[i].light)
+			hanging_lamp = online_light and online_light.get_hanging_lamp and online_light:get_hanging_lamp()
+			if not hanging_lamp or not hanging_lamp.turn_off then
+				level_flames[i].light = false
+			end
+			
+			if online_flame then
+				if isFlame[online_flame:section()] and online_flame.disable_anomaly then
+					if game_options.kostri then
+						online_flame:disable_anomaly()
+						if hanging_lamp then hanging_lamp:turn_off() end
+						level_flames[i].on = false
+					else
+						online_flame:enable_anomaly()
+						if hanging_lamp then hanging_lamp:turn_on() end
+						level_flames[i].on = true
+					end
+				else
+					table_remove(level_flames, i)
+				end
+			end
+		end
+	end
+
+	--[[amk.oau_watchdog = 193019
+	for i = #level_lights, 1, -1 do
+		amk.oau_watchdog = 1930190
+		if level_lights[i].on and game_options.kostri or not game_options.kostri and not level_lights[i].on then
+			amk.oau_watchdog = 1930191
+			online_light = level_object_by_id(level_lights[i].id)
+			amk.oau_watchdog = 1930192
+			if online_light then
+				amk.oau_watchdog = 1930193
+				if isLight[online_light:section()] and online_light.get_hanging_lamp then
+					amk.oau_watchdog = 1930194
+					hanging_lamp = online_light:get_hanging_lamp()
+					amk.oau_watchdog = 1930195
+					if hanging_lamp and hanging_lamp.turn_off then
+						amk.oau_watchdog = 1930196
+						if game_options.kostri then
+							hanging_lamp:turn_off()
+							level_lights[i].on = false
+						else
+							hanging_lamp:turn_on()
+							level_lights[i].on = true
+						end
+						amk.oau_watchdog = 1930197
+					else
+						amk.oau_watchdog = 1930198
+						table_remove(level_lights, i)
+					end
+				else
+					amk.oau_watchdog = 1930199
+					table_remove(level_lights, i)
+				end
+			end
+		end
+	end]]
+		
+	amk.oau_watchdog = 193019
+	for i = #level_lights_no_r1_r2, 1, -1 do
+		amk.oau_watchdog = 1930190
+		if level_lights_no_r1_r2[i].on and game_options.kostri or not game_options.kostri and not level_lights_no_r1_r2[i].on then
+			amk.oau_watchdog = 1930191
+			online_light = level_object_by_id(level_lights_no_r1_r2[i].id)
+			amk.oau_watchdog = 1930192
+			if online_light then
+				amk.oau_watchdog = 1930193
+				if isLight[online_light:section()] and online_light.get_hanging_lamp then
+					amk.oau_watchdog = 1930194
+					hanging_lamp = online_light:get_hanging_lamp()
+					amk.oau_watchdog = 1930195
+					if hanging_lamp and hanging_lamp.turn_off then
+						amk.oau_watchdog = 1930196
+						if game_options.kostri then
+							hanging_lamp:turn_off()
+							level_lights_no_r1_r2[i].on = false
+						else
+							hanging_lamp:turn_on()
+							level_lights_no_r1_r2[i].on = true
+						end
+						amk.oau_watchdog = 1930197
+					else
+						amk.oau_watchdog = 1930198
+						table_remove(level_lights_no_r1_r2, i)
+					end
+				else
+					amk.oau_watchdog = 1930199
+					table_remove(level_lights_no_r1_r2, i)
+				end
+			end
+		end
+	end
+		
+	if not game_options.kostri then kostri_tushili = false end
+end
+--<< Dynamic campfire mod
+----------------------------------------------------------------------------------------------------------------------
+--Kamp binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(object, ini, scheme, section, storage) counterAdd("xr_kamp.add_to_binder")
+	local operators		= {}
+	local properties	= {}
+
+	local manager = object:motivation_action_manager()
+	
+	properties["kamp_end"]		= xr_evaluators_id.stohe_kamp_base + 1
+	properties["on_position"]	= xr_evaluators_id.stohe_kamp_base + 2
+	properties["contact"]		= xr_evaluators_id.stohe_meet_base + 1    
+
+	properties["see_deadman"]	= xr_evaluators_id.stohe_kamp_base + 3
+	properties["can_move_deadman"]	= xr_evaluators_id.stohe_kamp_base + 5
+	properties["state_mgr_off"]	= xr_evaluators_id.state_mgr+3
+
+	operators["go_position"]	= xr_actions_id.stohe_kamp_base + 1
+	operators["wait"]		= xr_actions_id.stohe_kamp_base + 3
+	
+	operators["go_to_deadman"]		= xr_actions_id.stohe_kamp_base + 4
+	operators["move_deadman"]		= xr_actions_id.stohe_kamp_base + 5
+
+	-- Evaluators                                                                            
+	manager:add_evaluator (properties["kamp_end"], 		this.evaluator_kamp_end		("kamp_end", storage, "kamp_end"))
+	manager:add_evaluator (properties["on_position"],	this.evaluator_on_position	("kamp_on_position", storage, "kamp_on_position"))
+	
+	local comm = object:character_community()
+	local name = object:name()
+	local zombi = comm == "zombied" or comm == "trader" or comm == "arena_enemy"
+		or name == "mil_stalker0012" or name == "yantar_ecolog_general"
+
+	if zombi then
+		manager:add_evaluator (properties["see_deadman"], property_evaluator_const(false))
+		manager:add_evaluator (properties["can_move_deadman"], property_evaluator_const(false))
+	else
+		manager:add_evaluator (properties["see_deadman"],	this.evaluator_see_deadman	("see_deadman", storage, "see_deadman"))
+		manager:add_evaluator (properties["can_move_deadman"],	this.evaluator_can_move_deadman	("can_move_deadman", storage, "can_move_deadman"))
+	end
+	-- Actions
+	local action = this.action_wait (name,"action_kamp_wait", storage)
+	action:add_precondition		(world_property(stalker_ids.property_alive, true))
+	action:add_precondition		(world_property(stalker_ids.property_danger,false))
+	action:add_precondition		(world_property(stalker_ids.property_enemy,	false))
+	action:add_precondition		(world_property(stalker_ids.property_anomaly,false))
+	action:add_precondition 	(world_property(properties["see_deadman"], 	false))
+	xr_motivator.addCommonPrecondition(action)
+	action:add_precondition		(world_property(properties["on_position"], 	true))
+	action:add_effect 		(world_property(properties["kamp_end"], 	true))
+	manager:add_action (operators["wait"], action)
+	xr_logic.subscribe_action_for_events(object, storage, action)
+	
+	action = this.action_go_position (name,"action_go_kamp", storage)
+	action:add_precondition		(world_property(stalker_ids.property_alive, true))
+	action:add_precondition		(world_property(stalker_ids.property_danger,false))
+	action:add_precondition		(world_property(stalker_ids.property_enemy,	false))
+	action:add_precondition		(world_property(stalker_ids.property_anomaly,false))
+	action:add_precondition 	(world_property(properties["see_deadman"], 	false))
+	xr_motivator.addCommonPrecondition(action)
+	action:add_precondition 	(world_property(properties["on_position"], 	false))
+	action:add_effect 		(world_property(properties["on_position"], 	true))
+	manager:add_action (operators["go_position"], action)
+	
+	-- видим труп - идем разбираться...
+	action = this.action_go_to_deadman (name,"action_go_to_deadman", storage)
+	action:add_precondition		(world_property(stalker_ids.property_alive, true))
+	action:add_precondition		(world_property(stalker_ids.property_danger,false))
+	action:add_precondition		(world_property(stalker_ids.property_enemy,	false))
+	action:add_precondition		(world_property(stalker_ids.property_anomaly,false))
+	action:add_precondition 	(world_property(properties["see_deadman"], 	true))
+	xr_motivator.addCommonPrecondition(action)
+	----action:remove_precondition 	(watcher_act.evid_see_stuff)
+	action:add_precondition 	(world_property(properties["can_move_deadman"], 	false))
+	action:add_precondition		(world_property(properties["kamp_end"],		false))
+	action:add_effect 		(world_property(properties["can_move_deadman"], 	true))
+	manager:add_action (operators["go_to_deadman"], action)
+
+	--тащим труп подальше от тусовки
+	action = this.action_moving_deadman (name,"action_moving_deadman", storage)
+	action:add_precondition		(world_property(stalker_ids.property_alive, true))
+	action:add_precondition		(world_property(stalker_ids.property_danger,false))
+	action:add_precondition		(world_property(stalker_ids.property_enemy,	false))
+	action:add_precondition		(world_property(stalker_ids.property_anomaly,false))
+	action:add_precondition 	(world_property(properties["see_deadman"], 	true))
+	xr_motivator.addCommonPrecondition(action)
+	action:add_precondition 	(world_property(properties["can_move_deadman"], 	true))
+	--action:add_precondition 	(world_property(properties["state_mgr_off"], 	true))
+	action:add_precondition		(world_property(properties["kamp_end"],		false))
+	action:add_effect 		(world_property(properties["see_deadman"], 	false))
+	action:add_effect 		(world_property(properties["can_move_deadman"], 	false))
+	manager:add_action (operators["move_deadman"], action)
+
+	action = manager:action (xr_actions_id.alife)	
+	action:add_precondition		(world_property(properties["kamp_end"],		true))
+
+end
+-- включение лагеря
+function set_scheme(npc, ini, scheme, section, gulag_name) counterAdd("xr_kamp.set_scheme")
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)		
+	st.center_point = utils.cfg_get_string(ini, section, "center_point", npc, true,  gulag_name)
+	st.radius = utils.cfg_get_number(ini, section, "radius", npc, false, 2)
+	if kamps[st.center_point] == nil then kamps[st.center_point] = CKampManager(st.center_point, st.radius) end
+	kamps[st.center_point]:addNpc(npc)
+	st.pos_vertex = nil
+	st.def_state_moving = utils.cfg_get_string(ini, section, "def_state_moving", npc, false, "", "walk")
+	st.no_declarate = utils.cfg_get_bool(ini, section, "no_declarate", npc, false)
+	st.no_play = utils.cfg_get_bool(ini, section, "no_play", npc, false)
+end

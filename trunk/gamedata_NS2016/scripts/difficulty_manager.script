@@ -1,0 +1,171 @@
+--local deathCountLimitDown = 13
+--local deathCountLimitUp = 1
+
+function deathStatCollect()
+	if not game_options.death_stat then return end
+	
+	local f = getFS()
+	amk.send_tip("%c[255,0,255,0]«афиксирована смерть сталкера по кличке ћеченый.%c[default]", "Ћќ јЋ№Ќјя —≈“№", 0, 15, "gen_info")
+	local flist = f:file_list_open_ex("$game_saves$", bit_or(FS.FS_ListFiles, FS.FS_RootOnly), "death_*.sta")
+	local f_cnt = flist:Size()
+
+	if f_cnt > 0 then
+		local file = flist:GetAt(0)
+		local fileName = file:NameFull()
+		--amk.send_tip(fileName, "”борщик", 0, 15, "gen_info")
+		local _first = string.find(fileName, "_", 1, true)
+		local _second = string.find(fileName, "_", _first + 1, true)
+
+		local lastDate = string.sub(fileName, _first + 1, _second - 1)
+		--amk.send_tip(lastDate, "”борщик", 0, 15, "gen_info")
+
+		local deathCount = string.sub(fileName, _second + 1, string.find(fileName, ".", 1, true) - 1)
+		--amk.send_tip(deathCount, "”борщик", 0, 15, "gen_info")
+
+		local fileNameNew = "death_"..lastDate.."_"..tostring(deathCount + 1)..".sta"
+		local f1 = f:update_path("$game_saves$", fileName)
+		local f2 = f:update_path("$game_saves$", fileNameNew)
+		--amk.send_tip(f1, "”борщик", 0, 15, "gen_info")
+		--amk.send_tip(f2, "”борщик", 0, 15, "gen_info")
+		f:file_rename(f1, f2, true)
+	else-- не актуально так как файл будет создан копированием при старте новой игры, но пусть будет :)
+		--amk.send_tip("√√ помер первый раз", "”борщик", 0, 15, "gen_info")
+		
+		local f1 = f:update_path("$game_config$", "narod_opt.ltx")
+
+		local gameTime = game.get_game_time()
+		local year,month,day,h,m,s,ms = gameTime:get()
+		local lastDate = string.format('%04d%02d%02d', year, month, day)
+
+		local f2 = f:update_path("$game_saves$", "death_"..lastDate.."_1.sta")
+		
+		f:file_copy(f1, f2)
+	end
+
+-- очень наглое использование трудов —апсана дл€ своих подлых целей от Ray
+
+	local flist = f:file_list_open_ex("$game_saves$", bit_or(FS.FS_ListFiles, FS.FS_RootOnly), "umer_*.sta")
+	local f_cnt = flist:Size()
+
+	if f_cnt > 0 then
+		local file = flist:GetAt(0)
+		local fileName = file:NameFull()
+		local _first = string.find(fileName, "_", 1, true)
+
+		local deathAll = string.sub(fileName, _first + 1, string.find(fileName, ".", 1, true) - 1)
+
+  		amk.send_tip("%c[255,0,255,0] оличество смертей ћеченого: "..tostring(deathAll+1)..".%c[default]", "Ћќ јЋ№Ќјя —≈“№", 0, 15, "gen_info")
+
+		local fileNameNew = "umer_"..tostring(deathAll + 1)..".sta"
+
+		local f1 = f:update_path("$game_saves$", fileName)
+		local f2 = f:update_path("$game_saves$", fileNameNew)
+
+		f:file_rename(f1, f2, true)
+	else
+		local f1 = f:update_path("$game_config$", "narod_opt.ltx")
+		local f2 = f:update_path("$game_saves$", "umer".."_1.sta")
+		
+		f:file_copy(f1, f2)
+	end
+
+
+end
+
+function deathStatChangeDifficulty()
+	if not game_options.death_stat then return end
+	
+	local difficultyNumber = level.get_game_difficulty()
+	--amk.send_tip(tostring(difficultyNumber), "”борщик", 0, 15, "gen_info")
+	
+	local f = getFS()
+	local flist = f:file_list_open_ex("$game_saves$", bit_or(FS.FS_ListFiles, FS.FS_RootOnly), "death_*.sta")
+	local f_cnt = flist:Size()
+	--amk.send_tip(tostring(f_cnt), "”борщик", 0, 15, "gen_info")
+
+	local gameTime = game.get_game_time()
+	local year,month,day,h,m,s,ms = gameTime:get()
+	local dateNow = string.format('%04d%02d%02d', year, month, day)
+	--amk.send_tip(dateNow, "”борщик", 0, 15, "gen_info")
+	
+	if f_cnt > 0 then
+		local file = flist:GetAt(0)
+		local fileName = file:NameFull()
+		--amk.send_tip(fileName, "”борщик", 0, 15, "gen_info")
+		local _first = string.find(fileName, "_", 1, true)
+		local _second = string.find(fileName, "_", _first + 1, true)
+
+		local lastDate = string.sub(fileName, _first + 1, _second - 1)
+		--amk.send_tip(lastDate, "”борщик", 0, 15, "gen_info")
+		
+		if lastDate > dateNow then --new game detected!!!
+			--amk.send_tip("%c[255,0,255,0]ѕривет, ћеченый! ѕосмотрим на что ты годишьс€...%c[default]", "”борщик", 0, 15, "gen_info")
+			
+			--clear statistics
+			local f1 = f:update_path("$game_saves$", fileName)
+			local f2 = f:update_path("$game_saves$", "death_"..dateNow.."_0.sta")
+			f:file_rename(f1, f2, true)
+		else
+			local deathCount = tonumber(string.sub(fileName, _second + 1, string.find(fileName, ".", 1, true) - 1))
+			--amk.send_tip(deathCount, "”борщик", 0, 15, "gen_info")
+
+			if deathCount ~= nil then
+				if string.len(lastDate) == 8 then
+					if deathCount >= game_options.death_stat_down then
+						if difficultyNumber > 0 then
+							amk.send_tip("%c[255,0,255,0]”ровень навыков сталкера ћеченого не соответствует данным услови€м. ”меньшение сложности.%c[default]", "Ћќ јЋ№Ќјя —≈“№", 0, 15, "gen_info")
+							difficultyNumber = difficultyNumber - 1
+						else
+							amk.send_tip("%c[255,0,255,0]”ровень навыков сталкера ћеченого не соответствует данным услови€м. Ќо проще уже некуда!%c[default]", "Ћќ јЋ№Ќјя —≈“№", 0, 15, "gen_info")
+						end
+						
+						--clear statistics
+						local f1 = f:update_path("$game_saves$", fileName)
+						local f2 = f:update_path("$game_saves$", "death_"..dateNow.."_0.sta")
+						f:file_rename(f1, f2, true)
+					else
+						if lastDate ~= dateNow then
+							if deathCount <= game_options.death_stat_up then
+								if difficultyNumber < 3 then
+									amk.send_tip("%c[255,0,255,0]”ровень навыков сталкера ћеченого слишком высок дл€ текущих условий. ”сложнение уровней «оны.%c[default]", "Ћќ јЋ№Ќјя —≈“№", 0, 15, "gen_info")
+									difficultyNumber = difficultyNumber + 1
+								else
+									amk.send_tip("%c[255,0,255,0]”ровень навыков сталкера ћеченого слишком высок дл€ текущих условий. Ќо сложнее уже некуда! ѕоумерь пыл.%c[default]", "Ћќ јЋ№Ќјя —≈“№", 0, 15, "gen_info")
+								end
+								
+								--clear statistics
+								local f1 = f:update_path("$game_saves$", fileName)
+								local f2 = f:update_path("$game_saves$", "death_"..dateNow.."_0.sta")
+								f:file_rename(f1, f2, true)
+							end
+						end
+					end
+				else
+					amk.send_tip("%c[255,0,255,0] то трогал мою статистику ? Ќайду - накажу !!!%c[default]", "”борщик", 0, 15, "gen_info")
+					
+					--clear statistics
+					local f1 = f:update_path("$game_saves$", fileName)
+					local f2 = f:update_path("$game_saves$", "death_"..dateNow.."_0.sta")
+					f:file_rename(f1, f2, true)
+				end
+			else
+				amk.send_tip("%c[255,0,255,0] то трогал мою статистику ? Ќайду - накажу !!!%c[default]", "”борщик", 0, 15, "gen_info")
+			
+				--clear statistics
+				local f1 = f:update_path("$game_saves$", fileName)
+				local f2 = f:update_path("$game_saves$", "death_"..dateNow.."_0.sta")
+				f:file_rename(f1, f2, true)
+			end
+		end
+	else
+		amk.send_tip("%c[255,0,255,0]ќбнаружен новый сталкер в сети: ћеченый. ƒобавлен в базу данных сети.%c[default]", "Ћќ јЋ№Ќјя —≈“№", 0, 15, "gen_info")
+		
+		local f1 = f:update_path("$game_config$", "narod_opt.ltx")
+		local f2 = f:update_path("$game_saves$", "death_"..dateNow.."_0.sta")
+		
+		f:file_copy(f1, f2)
+	end
+	
+	level.set_game_difficulty(difficultyNumber)
+	sol_utils.minimapSpotReset()
+end

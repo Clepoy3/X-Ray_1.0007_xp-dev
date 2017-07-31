@@ -1,0 +1,242 @@
+--[[
+	Меченому хочется пить. (c) Monnoroch.
+	Переделал sapsan
+]]
+
+local last_outfit
+local last_outfit_additional_inventory_weight
+local max_weight = 100 -- максимально переносимый вес (стартовое значение)
+
+-- общий коефициент
+local time_koef = 1 -- 0.5 - медленнее захочет пить, 2 - быстрее
+
+--local time_delta = 1777
+
+local last_pos
+
+-- коефициент в зависимости от сложности игры (умножается на time_koef)
+local difficulty_koef = {
+	[0] = 0.9,
+	[1] = 1.0,
+	[2] = 1.1,
+	[3] = 1.2
+	}
+
+local drinks_cnt = {
+ ["medkit"] = 0.1,
+ ["medkit_army"] = 0.2,
+ ["medkit_scientic"] = 0.3,
+ ["bread"] = 2,
+ ["bread_a"] = 2,
+ ["mushroom"] = 1,
+ ["kolbasa"] = 1,
+ ["kolbasa_a"] = 1,
+ ["conserva"] = 1,
+ ["sandwich"] = 1,
+ ["sweetness"] = 2,
+ ["mozg"] = 1,
+ ["vodka"] = 2,
+ ["vodka_a"] = 2,
+ ["oceanic815"] = -2,
+ ["beer_a"] = -2,
+ ["energy_drink"] = -1,
+ ["flaska"] = -3
+}
+
+local thirst_hit = {
+	["power"] = {
+		["hit"] = -0.031,
+		["border"] = 0.1
+	},
+	["health"] = {
+		["hit"] = -0.001,
+		["border"] = 0.3
+	},
+	["psy_health"] = {
+		["hit"] = -0.003,
+		["border"] = 0.5
+	}
+}
+
+class "mon_thirst"
+
+function mon_thirst:net_spawn()
+	--max_weight = getIniValueFloatSimple("inventory", "max_weight", 100) -- а чтобы не читерили с весом ;)
+	self.thirst_v = getIniValueFloatSimple("actor_condition", "thirst_v", 0.000005) -- скорость уменьшения водной сытости
+	thirst_hit["psy_health"]["hit"] = getIniValueFloatSimple("actor_condition", "thirst_hit_psy_health", -0.003) -- наносимый хит на психику от жажды
+	thirst_hit["psy_health"]["border"] = getIniValueFloatSimple("actor_condition", "thirst_border_psy_health", 0.5) -- граница, ниже которой хит на психику от жажды не наносится
+	thirst_hit["health"]["hit"] = getIniValueFloatSimple("actor_condition", "thirst_hit_health", -0.001) -- наносимый хит по здоровью от жажды
+	thirst_hit["health"]["border"] = getIniValueFloatSimple("actor_condition", "thirst_border_health", 0.3) -- граница, ниже которой хит по здоровью от жажды не наносится
+	thirst_hit["power"]["hit"] = getIniValueFloatSimple("actor_condition", "thirst_hit_power", -0.031) -- наносимый хит на выносливость от жажды
+	thirst_hit["power"]["border"] = getIniValueFloatSimple("actor_condition", "thirst_border_power", 0.1) -- граница, ниже которой хит по выносливости от жажды не наносится
+	self.thirst = amk.load_variable("thirst",0)
+	if not game_options.thirst_enable then
+		amk.remove_timer("thirst_change")
+		return
+	end
+    self.lastTimeWork = time_global()
+    self.nextTimeSave = time_global() + 35222
+end
+
+function mon_thirst:thirst_change(delta)
+	self.thirst = self.thirst + delta
+end
+
+function mon_thirst:on_use_object(obj)
+	if not game_options.thirst_enable then
+		self.lastTimeWork = nil
+		self.nextTimeSave = nil
+		return
+	end
+	if self.lastTimeWork == nil then
+		self.lastTimeWork = time_global()
+		self.nextTimeSave = time_global() + 35222
+	end
+	local sect = obj:section() 
+	if drinks_cnt[sect] ~= nil then
+		amk.start_timer("thirst_change", 10, drinks_cnt[sect])
+		--self:thirst_change(drinks_cnt[sect])
+	end
+end
+
+function mon_thirst:thirst_change_slow(delta)
+	if not game_options.thirst_enable then
+		amk.remove_timer("thirst_change")
+		self.lastTimeWork = nil
+		self.nextTimeSave = nil
+		return
+	end
+	if self.lastTimeWork == nil then
+		self.lastTimeWork = time_global()
+		self.nextTimeSave = time_global() + 35222
+	end
+	local change = delta * 0.3
+	if math.abs(delta - change) < 0.1 then
+		self:thirst_change(delta)
+	else
+		self:thirst_change(change)
+		amk.start_timer("thirst_change", 10, delta - change)
+	end
+end
+
+function mon_thirst:update()
+	if not game_options.thirst_enable then
+		self.lastTimeWork = nil
+		self.nextTimeSave = nil
+		return
+	end
+	local t = time_global()
+	if self.lastTimeWork == nil then
+		self.lastTimeWork = t
+		self.nextTimeSave = t + 35222
+		return
+	end
+	
+		local actor = db.actor
+		if actor and actor:alive() then
+			local koef_global = time_koef * difficulty_koef[level.get_game_difficulty()]
+			local koef = monnoroch_utils.mon_weight:get_weight() / self.get_max_weight() -- относительна загруженность ГГ (чем меньшая загруженность, тем медленнее приходит жажда)
+			koef = koef * (1 + db.actor:get_bleeding()) -- кровотечение увеличивает скорость прихода жажды
+			koef = koef * koef_global
+			if sleep_manager.is_sleep_active() then
+				koef = koef / 10
+			end
+			
+			-- определяем скорость передвижения ГГ
+			local actor_pos = db.actor:position()
+			if last_pos then
+				local dist = actor_pos:distance_to_xz(last_pos)
+				if dist < 20 then -- защита от телепортаций и прыжков от лагов
+				local vel = dist / (t - self.lastTimeWork) * 1000
+					--db.actor:give_game_news("vel: "..vel, "ui\\ui_iconsTotal", Frect():set(83,47,83,47), 0, 15000)
+					-- ходьба: 3,57, бег: 9,28
+					koef = koef * (0.5 + vel / 9)
+				end
+			end
+			last_pos = actor_pos
+			
+		local thirst_delta = self.thirst_v * (t - self.lastTimeWork) * koef
+			self:thirst_change(thirst_delta)
+			
+			--db.actor:give_game_news("thirst_delta: "..thirst_delta.."thirst: "..self.thirst.." koef: "..koef.." bleeding: "..db.actor:get_bleeding().." health:"..actor.health.." power:"..actor.power.." psy:"..actor.psy_health, "ui\\ui_iconsTotal", Frect():set(83,47,83,47), 0, 15000)
+			
+			-- наносим хит актору
+			if self.thirst > 0 then
+				for k,v in pairs(thirst_hit) do
+					if db.actor[k] > v["border"] then
+					db.actor[k] = v["hit"] * (self.thirst / (5000 / (t - self.lastTimeWork))) * koef_global
+					end
+				end
+			end
+			
+			-- выводим иконку
+			local hud = get_hud()
+			local icon
+			
+			if self.thirst > 2 then
+				local is_thirst_change, timer_time, delta = amk.has_timer("thirst_change")
+				if is_thirst_change and delta < 0 then
+					icon = hud:GetCustomStatic("thirst_icon")
+					if icon then
+						icon = hud:RemoveCustomStatic("thirst_icon", true)
+					end
+					icon = hud:GetCustomStatic("thirst_down_icon")
+					if not icon then
+						icon = hud:AddCustomStatic("thirst_down_icon", true)
+					end
+				else
+					icon = hud:GetCustomStatic("thirst_down_icon")
+					if icon then
+						icon = hud:RemoveCustomStatic("thirst_down_icon", true)
+					end
+					icon = hud:GetCustomStatic("thirst_icon")
+					if not icon then
+						icon = hud:AddCustomStatic("thirst_icon", true)
+					end
+				end
+				if icon then
+					local color_level = math.ceil(255*math.min(10, self.thirst) / 10)
+					icon:wnd():SetColor(GetARGB(255, color_level, 255 - color_level, 0))
+				end
+			else
+				icon = hud:GetCustomStatic("thirst_icon")
+				if icon then
+					hud:RemoveCustomStatic("thirst_icon", true)
+				end
+				icon = hud:GetCustomStatic("thirst_down_icon")
+				if icon then
+					icon = hud:RemoveCustomStatic("thirst_down_icon", true)
+				end
+			end
+			
+			-- сохраняем переменную
+			if self.nextTimeSave < t then
+				amk.save_variable("thirst", self.thirst)
+				self.nextTimeSave = t + 35222
+			end
+		end
+		
+	self.lastTimeWork = t
+end
+
+function mon_thirst:get_thirst()
+	return self.thirst
+end
+
+function mon_thirst:get_max_weight()
+	local result = max_weight
+	local actor = db.actor
+	
+	if actor then
+		local outfit = actor:item_in_slot(6)
+		if outfit then
+			if last_outfit ~= outfit:id() then
+				last_outfit = outfit:id()
+				last_outfit_additional_inventory_weight = getIniValueFloatSimple(outfit:section(), "additional_inventory_weight", 0)
+			end
+			result = result + last_outfit_additional_inventory_weight * outfit:condition()
+		end
+	end
+	
+	return result
+end

@@ -1,0 +1,697 @@
+-- какую часть патронов оставлять в стволах в зависимости от сложности игры
+local ammo_dfcy = { ["default"] = 1, ["stalker"] = 0.8, ["veteran"] = 0.6, ["master"] = 0.4 }
+
+-- общий модификатор вероятности появления предмета от сложности игры
+local item_dfcy = { ["default"] = 1, ["stalker"] = 0.8, ["veteran"] = 0.6, ["master"] = 0.4 }
+
+local names_info = {	-- Таблица выдачи инфопорций по части имени погибшего непися
+["snip_esc1"]	= "snip_esc1_dead",
+["snip_esc2"]	= "snip_esc2_dead",
+["snip_esc3"]	= "snip_esc3_dead",
+["snip_esc4"]	= "snip_esc4_dead",
+["snip_esc5"]	= "snip_esc5_dead",
+["snip_esc6"]	= "snip_esc6_dead",
+["snip_esc7"]	= "snip_esc7_dead",
+["snip_esc8"]	= "snip_esc8_dead",
+["snip_esc9"]	= "snip_esc9_dead",
+["snip_esc10"]	= "snip_esc10_dead",
+["snip_esc11"]	= "snip_esc11_dead",
+["snip_esc12"]	= "snip_esc12_dead",
+["naem_zahar1"]	= "naem_zahar1_dead",
+["naem_zahar2"]	= "naem_zahar2_dead",
+["naem_zahar3"]	= "naem_zahar3_dead",
+["naem_zahar4"]	= "naem_zahar4_dead",
+["naem_zahar5"]	= "naem_zahar5_dead",
+["naem_zahar6"]	= "naem_zahar6_dead",
+["ecolog_wound_bunker"] = "ucen_talk_est",
+["mitya"]	= "mitya_dead"}
+
+
+local del_always = {	-- удалять всегда
+["device_pda"]	= true,
+["hand_radio"]	= true,
+["device_torch"]= true,
+["yad"]		= true }
+
+-- можно удалять, если превышают лимит, или лимит не указан в death_items_count.ltx
+-- патроны удаляются незнаю кем, но уже после, так что если раскомментировать - будут вылеты по "e-parent..."
+
+local del_items = {
+["guitar_a"]		= true,
+["harmonica_a"]		= true,
+["wpn_binoc"]		= true,
+--["bolt"]		= true,	-- существует только для клиента
+["grenade_f1"]		= true,
+["grenade_rgd5"]	= true,
+["grenade_gd-05"]	= true,
+--["ammo_og-7b"]	= true,
+--["ammo_m209"]		= true,
+--["ammo_vog25"]	= true,
+--["ammo_vog25p"]	= true,
+["bandage"]		= true,
+["medkit"]		= true,
+["medkit_army"]		= true,
+["medkit_scientic"]	= true,
+["antirad"]		= true,
+["bread"]		= true,
+["kolbasa"]		= true,
+["conserva"]		= true,
+["vodka"]		= true,
+["sigaret"]		= true,
+--["player"]		= true,
+["energy_drink"]	= true,
+["sandwich"]		= true,
+["cigara"]		= true,
+["beer_a"]		= true,
+["sweetness"]		= true }
+
+function get_ammo_dfcy() return ammo_dfcy end
+function get_item_dfcy() return item_dfcy end
+
+function get_names_info() return names_info end
+
+function get_del_items() return del_items end
+
+function get_del_always() return del_always end
+
+
+-- Ящики
+-- "def_box",		-- ничего не выпадает.
+-- "small_box_generic",	-- любые патроны и стандартные медикаменты
+-- "small_box_ussr",	-- отечественные патроны и стандартные медикаменты. Рекомендую ставить у Долга.
+-- "small_box_nato",	-- НАТОвские патроны и стандартные медикаменты. Рекомендую ставить у наёмников, Свободы.
+-- "small_box_army",	-- то же, но аптечки - только армейские. Рекомендую ставить у военных.
+-- "small_box_science",	-- то же, но аптечки - только научные. Рекомендую ставить у учёных.
+-- "big_box_generic",	-- артефакты, гранаты обычные и подствольные, броня.
+-- "big_box_dungeons",	-- то же, плюс оружие и больший шанс на хороший артефакт.(заброшенные либо труднодоступные места).
+-- "big_box_arsenal",	-- гранаты обычные и подствольные, броня, больший шанс получить оружие.(последние уровни).
+
+
+local tbox_items_def = {	-- подставляем значения, если не указаны
+["ammo_9x18_pmm"]	= 0.13,
+["ammo_9x19_pbp"]	= 0.13,
+["ammo_9x19_fmj"]	= 0.10,
+["ammo_11.43x23_hydro"]	= 0.10,
+["ammo_11.43x23_fmj"]	= 0.13,
+["ammo_12x70_buck"]	= 0.09,
+["ammo_12x76_dart"]	= 0.06,
+["ammo_12x76_zhekan"]	= 0.075,
+["ammo_5.45x39_ap"]	= 0.10,
+["ammo_5.45x39_fmj"]	= 0.13,
+["ammo_9x39_sp5"]	= 0.10,
+["ammo_9x39_ap"]	= 0.08,
+["ammo_9x39_pab9"]	= 0.13,
+["ammo_5.56x45_ss190"]	= 0.13,	
+["ammo_5.56x45_ap"]	= 0.10,	
+["ammo_7.62x54_7h14"]	= 0.05,
+["ammo_7.62x54_7h1"]	= 0.06,
+["ammo_7.62x54_ap"]	= 0.04,
+["ammo_gauss"]		= 0.03,
+["bandage"]	= 0.13,
+["medkit"]	= 0.05,
+["antirad"]	= 0.05 }
+
+local tbox_items = {
+
+["small_box_generic"] = {}, -- У бандитов, нейтралов, Монолита
+
+
+["small_box_ussr"] = { -- у Долга
+
+["ammo_9x18_pmm"]	= 0.26,
+["ammo_9x19_pbp"]	= 0,
+["ammo_9x19_fmj"]	= 0,
+["ammo_12x70_buck"]	= 0,
+["ammo_12x76_dart"]	= 0,
+["ammo_12x76_zhekan"]	= 0,
+["ammo_11.43x23_hydro"]	= 0,
+["ammo_11.43x23_fmj"]	= 0,
+["ammo_12x70_buck"]	= 0,
+["ammo_12x76_dart"]	= 0,
+["ammo_12x76_zhekan"]	= 0,
+["ammo_5.56x45_ss190"]	= 0,
+["ammo_5.56x45_ap"]	= 0 },
+
+
+["small_box_nato"] = { -- у наёмников, Свободы
+
+["ammo_9x18_pmm"]	= 0,
+["ammo_12x70_buck"]	= 0,
+["ammo_12x76_dart"]	= 0,
+["ammo_12x76_zhekan"]	= 0,
+["ammo_5.45x39_ap"]	= 0,
+["ammo_5.45x39_fmj"]	= 0,
+["ammo_9x39_sp5"]	= 0,
+["ammo_9x39_ap"]	= 0,
+["ammo_9x39_pab9"]	= 0,
+["ammo_7.62x54_7h14"]	= 0,
+["ammo_7.62x54_7h1"]	= 0,
+["ammo_7.62x54_ap"]	= 0 },
+
+
+["small_box_army"] = { -- у военных
+
+["medkit"]	= 0,
+["medkit_army"]	= 0.05 },
+
+
+["small_box_science"] = { -- у  учёных
+
+["medkit"]		= 0,
+["medkit_scientic"]	= 0.8,
+["bandage"]		= 0.25,
+["antirad"]		= 0.25 },
+
+
+["big_box_generic"] = { -- где присутствуют люди
+
+["af_medusa"]		= 0.03,
+["af_cristall_flower"]	= 0.012,
+["af_night_star"]	= 0.009,
+["af_vyvert"]		= 0.03,
+["af_gravi"]		= 0.012,
+["af_gold_fish"]	= 0.009,
+["af_blood"]		= 0.03,
+["af_mincer_meat"]	= 0.012,
+["af_soul"]		= 0.009,
+["af_electra_sparkler"]	= 0.03,
+["af_electra_flash"]	= 0.012,
+["af_electra_moonlight"]= 0.009,
+["af_rusty_thorn"]	= 0.03,
+["af_rusty_kristall"]	= 0.012,
+["af_rusty_sea_urchin"]	= 0.009,
+["af_ameba_slime"]	= 0.03,
+["af_ameba_slug"]	= 0.012,
+["af_ameba_mica"]	= 0.009,
+["af_drops"]		= 0.03,
+["af_fireball"]		= 0.012,
+["af_cristall"]		= 0.009,
+
+["ammo_vog25p"]	= 0.05,
+["ammo_vog25"]		= 0.05,
+["grenade_f1"]		= 0.1,
+["grenade_rgd5"]	= 0.1,
+["ammo_m209"]		= 0.05,
+
+["killer_outfit"]	= 0.003,
+["monolit_outfit"]	= 0.003,
+["specops_outfit"]	= 0.003,
+["stalker_outfit"]	= 0.003,
+["svoboda_light_outfit"]= 0.003,
+["svoboda_heavy_outfit"]= 0.003,
+["dolg_outfit"]		= 0.003 },
+
+
+["big_box_dungeons"] = { -- где людей нет
+
+["af_medusa"]		= 0.03,
+["af_cristall_flower"]	= 0.018,
+["af_night_star"]	= 0.012,
+["af_vyvert"]		= 0.03,
+["af_gravi"]		= 0.018,
+["af_gold_fish"]	= 0.012,
+["af_blood"]		= 0.03,
+["af_mincer_meat"]	= 0.018,
+["af_soul"]		= 0.012,
+["af_electra_sparkler"]	= 0.03,
+["af_electra_flash"]	= 0.018,
+["af_electra_moonlight"]= 0.012,
+["af_rusty_thorn"]	= 0.03,
+["af_rusty_kristall"]	= 0.018,
+["af_rusty_sea_urchin"]	= 0.012,
+["af_ameba_slime"]	= 0.03,
+["af_ameba_slug"]	= 0.018,
+["af_ameba_mica"]	= 0.012,
+["af_drops"]		= 0.03,
+["af_fireball"]		= 0.018,
+["af_cristall"]		= 0.012,
+
+["wpn_walther"]		= 0.003,
+["wpn_sig220"]		= 0.003,
+["wpn_colt1911"]	= 0.003,
+["wpn_usp"]		= 0.003,
+["wpn_desert_eagle"]	= 0.003,
+["wpn_wincheaster1300"]	= 0.003,
+["wpn_spas12"]		= 0.003,
+["wpn_ak74u"]		= 0.003,
+["wpn_mp5"]		= 0.003,
+["wpn_ak74"]		= 0.003,
+["wpn_abakan"]		= 0.003,
+["wpn_l85"]		= 0.003,
+["wpn_lr300"]		= 0.003,
+["wpn_sig550"]		= 0.003,
+["wpn_groza"]		= 0.003,
+["wpn_val"]		= 0.003,
+["wpn_vintorez"]	= 0.003,
+["wpn_svu"]		= 0.003,
+["wpn_svd"]		= 0.003,
+["wpn_g36"]		= 0.003,
+["wpn_fn2000"]		= 0.003,
+
+["ammo_vog25p"]	= 0.05,
+["ammo_vog25"]		= 0.05,
+["grenade_f1"]		= 0.1,
+["grenade_rgd5"]	= 0.1,
+["ammo_m209"]		= 0.05,
+
+["killer_outfit"]	= 0.003,
+["monolit_outfit"]	= 0.003,
+["specops_outfit"]	= 0.003,
+["stalker_outfit"]	= 0.003,
+["svoboda_light_outfit"]= 0.003,
+["svoboda_heavy_outfit"]= 0.003,
+["dolg_outfit"]		= 0.003 },
+
+
+["big_box_arsenal"] = {	-- у Монолитовцев
+
+["wpn_walther"]		= 0.01,
+["wpn_sig220"]		= 0.01,
+["wpn_colt1911"]	= 0.01,
+["wpn_usp"]		= 0.01,
+["wpn_desert_eagle"]	= 0.01,
+["wpn_wincheaster1300"]	= 0.01,
+["wpn_spas12"]		= 0.01,
+["wpn_ak74u"]		= 0.01,
+["wpn_mp5"]		= 0.01,
+["wpn_ak74"]		= 0.01,
+["wpn_abakan"]		= 0.01,
+["wpn_l85"]		= 0.01,
+["wpn_lr300"]		= 0.01,
+["wpn_sig550"]		= 0.01,
+["wpn_groza"]		= 0.01,
+["wpn_val"]		= 0.01,
+["wpn_vintorez"]	= 0.01,
+["wpn_svu"]		= 0.01,
+["wpn_svd"]		= 0.01,
+["wpn_g36"]		= 0.01,
+["wpn_fn2000"]		= 0.01,
+
+["ammo_vog25p"]	= 0.05,
+["ammo_vog25"]		= 0.05,
+["grenade_f1"]		= 0.1,
+["grenade_rgd5"]	= 0.1,
+["ammo_m209"]		= 0.05,
+
+["killer_outfit"]	= 0.003,
+["monolit_outfit"]	= 0.003,
+["specops_outfit"]	= 0.003,
+["stalker_outfit"]	= 0.003,
+["svoboda_light_outfit"]= 0.003,
+["svoboda_heavy_outfit"]= 0.003,
+["dolg_outfit"]		= 0.003 } }
+
+
+
+local tbox_maps = {	-- вероятности встретить на уровне
+
+["l01_escape"] = {
+["af_medusa"]		= 1,
+["af_vyvert"]		= 1,
+["af_blood"]		= 1,
+["ammo_9x18_fmj"]	= 0,
+["ammo_9x18_pmm"]	= 1,
+["ammo_9x19_fmj"]	= 1,
+["ammo_12x70_buck"]	= 1,
+["ammo_5.45x39_fmj"]	= 0.5,
+["wpn_walther"]		= 0.5,
+["wpn_ak74u"]		= 1,
+["stalker_outfit"]	= 0.5,
+["bandage"]		= 1,
+["medkit"]		= 1 },
+
+["l02_garbage"] = {
+["af_electra_sparkler"]	= 1,
+["grenade_rgd5"]	= 1,
+["killer_outfit"]	= 1,
+["medkit_army"]		= 1,
+["wpn_walther"]		= 0.7,
+["wpn_ak74"]		= 1 },
+
+["l03_agroprom"] = {
+["af_rusty_thorn"]	= 1,
+["wpn_ak74"]		= 0,
+["wpn_abakan"]		= 1,
+["killer_outfit"]	= 0 },
+
+["l03u_agr_underground"] = {
+["af_ameba_slime"]	= 1,
+["af_drops"]		= 1 },
+
+["l04_darkvalley"] = {
+["af_cristall_flower"]	= 1,
+["af_gravi"]		= 1,
+["af_mincer_meat"]	= 1,
+["af_electra_flash"]	= 1,
+["wpn_abakan"]		= 0,
+["wpn_colt1911"]	= 1,
+["wpn_l85"]		= 1,
+["wpn_sig220"]		= 1,
+["stalker_outfit"]	= 1,
+["specops_outfit"]	= 1,
+["antirad"]		= 1 },
+
+["l04u_labx18"] = {
+["wpn_lr300"]		= 1 },
+
+["l05_bar"] = {
+["af_night_star"]	= 1,
+["af_gold_fish"]	= 1,
+["af_soul"]		= 1,
+["af_electra_moonlight"]= 1,
+["af_rusty_kristall"]	= 1,
+["af_rusty_sea_urchin"]	= 1,
+["af_ameba_slug"]	= 1,
+["af_ameba_mica"]	= 1,
+["af_fireball"]		= 1,
+["af_cristall"]		= 1,
+["ammo_9x19_pbp"]	= 1,
+["ammo_11.43x23_hydro"]	= 1,
+["ammo_11.43x23_fmj"]	= 1,
+["ammo_9x39_sp5"]	= 1,
+["ammo_9x39_pab9"]	= 1,
+["ammo_12x76_zhekan"]	= 1,
+["ammo_5.56x45_ss190"]	= 1,
+["grenade_f1"]		= 1 },
+
+["l06_Rostok"] = {
+["ammo_7.62x54_7h14"]	= 1,
+["ammo_vog25"]		= 1,
+["ammo_9x18_pmm"]	= 0,
+["ammo_9x19_pbp"]	= 0,
+["ammo_9x19_fmj"]	= 0,
+["wpn_lr300"]		= 0,
+["wpn_l85"]		= 0,
+["stalker_outfit"]	= 0,
+["specops_outfit"]	= 0,
+["killer_outfit"]	= 1,
+["svoboda_light_outfit"]= 1,
+["dolg_outfit"]		= 1,
+["medkit_scientic"]	= 1 },
+
+["l07_military"] = {
+["ammo_5.56x45_ap"]	= 1,
+["ammo_5.45x39_ap"]	= 1,
+["wpn_colt1911"]	= 0,
+["wpn_usp"]		= 1,
+["wpn_sig550"]		= 1,
+["wpn_svu"]		= 1,
+["wpn_groza"]		= 1,
+["monolit_outfit"]	= 1 },
+
+["l08_yantar"] = {
+["ammo_m209"]		= 1,
+["ammo_vog25p"]	= 1,
+["ammo_12x70_buck"]	= 0 },
+
+["l08u_brainlab"] = {},
+
+["l10_radar"] = {
+["ammo_7.62x54_7h1"]	= 1,
+["ammo_12x76_dart"]	= 1,
+["ammo_9x39_ap"]	= 1,
+["wpn_sig220"]		= 0,
+["wpn_sig550"]		= 0,
+["wpn_spas12"]		= 1,
+["wpn_val"]		= 1,
+["wpn_svd"]		= 1,
+["killer_outfit"]	= 0,
+["svoboda_light_outfit"]= 0,
+["dolg_outfit"]		= 0,
+["svoboda_heavy_outfit"]= 1 },
+
+["l10u_bunker"] = {
+["wpn_svu"]		= 0,
+["wpn_groza"]		= 0,
+["wpn_vintorez"]	= 1 },
+
+["l11_pripyat"] = {
+["ammo_7.62x54_ap"]	= 1,
+["ammo_5.45x39_ap"]	= 0,
+["ammo_5.45x39_fmj"]	= 0,
+["ammo_9x39_sp5"]	= 0,
+["ammo_9x39_pab9"]	= 0,
+["ammo_7.62x54_ap"]	= 0,
+["wpn_svd"]		= 0,
+["wpn_spas12"]		= 0,
+["wpn_val"]		= 0,
+["wpn_wincheaster1300"]	= 1,
+["wpn_g36"]		= 1,
+["wpn_fn2000"]		= 1,
+["wpn_desert_eagle"]	= 1 },
+
+["l12_stancia"] = {
+["ammo_gauss"]		= 1,
+["wpn_gauss"]		= 1 } }
+
+
+local tbox_map_subst = {	-- уровень, берущийся за основу;
+-- все последующие наследуют от ВСЕХ предыдущих: соблюдать порядок !
+{ "l02_garbage",	"l01_escape" },
+{ "l03_agroprom",	"l02_garbage" },
+{ "l03u_agr_underground", "l03_agroprom" },
+{ "l04_darkvalley",	"l03u_agr_underground" },
+{ "l04u_labx18",	"l04_darkvalley" },
+{ "l05_bar",		"l04u_labx18" },
+{ "l06_Rostok",		"l05_bar" },
+{ "l07_military",	"l06_Rostok" },
+{ "l08_yantar",		"l07_military" },
+{ "l08u_brainlab",	"l08_yantar" },
+{ "l10_radar",		"l08u_brainlab" },
+{ "l10u_bunker",	"l10_radar" },
+{ "l11_pripyat",	"l10u_bunker" },
+{ "l12_stancia",	"l11_pripyat" },
+{ "l12u_sarcofag",	"l12_stancia" },
+{ "l12u_control_monolith", "l12u_sarcofag" },
+{ "l12_stancia_2",	"l12u_control_monolith" },
+{ "stohe_selo",		"l12_stancia" },
+{ "plecha_selo",	"l02_garbage" },
+{ "l06_rostok_demo",	"l06_Rostok" } }
+
+
+local tbox_cnt = {	-- количества по уровням сложности
+
+{	-- 0
+
+["af_medusa"]		= { 1 },
+["af_cristall_flower"]	= { 1 },
+["af_night_star"]	= { 1 },
+["af_vyvert"]		= { 1 },
+["af_gravi"]		= { 1 },
+["af_gold_fish"]	= { 1 },
+["af_blood"]		= { 1 },
+["af_mincer_meat"]	= { 1 },
+["af_soul"]		= { 1 },
+["af_electra_sparkler"]	= { 1 },
+["af_electra_flash"]	= { 1 },
+["af_electra_moonlight"]= { 1 },
+["af_rusty_thorn"]	= { 1 },
+["af_rusty_kristall"]	= { 1 },
+["af_rusty_sea_urchin"]	= { 1 },
+["af_ameba_slime"]	= { 1 },
+["af_ameba_slug"]	= { 1 },
+["af_ameba_mica"]	= { 1 },
+["af_drops"]		= { 1 },
+["af_fireball"]		= { 1 },
+["af_cristall"]		= { 1 },
+["af_dummy_glassbeads"]	= { 1 },
+["af_dummy_pellicle"]	= { 1 },
+["af_dummy_battery"]	= { 1 },
+["af_dummy_dummy"]	= { 1 },
+["af_dummy_spring"]	= { 1 },
+["af_fuzz_kolobok"]	= { 1 },
+
+["ammo_9x18_fmj"]	= { 0 },
+["ammo_9x18_pmm"]	= { 1 },
+["ammo_9x19_pbp"]	= { 1,	2 },
+["ammo_9x19_fmj"]	= { 1,	2 },
+["ammo_11.43x23_hydro"]	= { 0 },
+["ammo_11.43x23_fmj"]	= { 1,	2 },
+["ammo_12x70_buck"]	= { 1,	2 },
+["ammo_12x76_dart"]	= { 0 },
+["ammo_12x76_zhekan"]	= { 1, 2 },
+["ammo_5.45x39_ap"]	= { 0 },
+["ammo_5.45x39_fmj"]	= { 1,	2 },
+["ammo_9x39_sp5"]	= { 0 },
+["ammo_9x39_ap"]	= { 0 },
+["ammo_9x39_pab9"]	= { 0 },
+["ammo_5.56x45_ss190"]	= { 1,	2 },
+["ammo_5.56x45_ap"]	= { 0 },
+["ammo_7.62x54_7h14"]	= { 0 },
+["ammo_7.62x54_7h1"]	= { 1,	2 },
+["ammo_7.62x54_ap"]	= { 0 },
+["ammo_og-7b"]		= { 1 },
+["ammo_vog25p"]	= { 1 },
+["ammo_vog25"]		= { 1 },
+["grenade_f1"]		= { 0 },
+["grenade_rgd5"]	= { 1 },
+["ammo_m209"]		= { 1 },
+["ammo_gauss"]		= { 0 },
+
+["wpn_walther"]		= { 1 },
+["wpn_sig220"]		= { 1 },
+["wpn_colt1911"]	= { 1 },
+["wpn_usp"]		= { 1 },
+["wpn_desert_eagle"]	= { 0 },
+["wpn_wincheaster1300"] = { 1 },
+["wpn_spas12"]		= { 1 },
+["wpn_ak74u"]		= { 1 },
+["wpn_mp5"]		= { 1 },
+["wpn_ak74"]		= { 1 },
+["wpn_abakan"]		= { 0 },
+["wpn_l85"]		= { 1 },
+["wpn_lr300"]		= { 1 },
+["wpn_sig550"]		= { 0 },
+["wpn_groza"]		= { 0 },
+["wpn_val"]		= { 0 },
+["wpn_vintorez"]	= { 0 },
+["wpn_svu"]		= { 0 },
+["wpn_svd"]		= { 0 },
+["wpn_g36"]		= { 0 },
+["wpn_fn2000"]		= { 0 },
+
+["killer_outfit"]	= { 1 },
+["monolit_outfit"]	= { 1 },
+["specops_outfit"]	= { 1 },
+["stalker_outfit"]	= { 1 },
+["svoboda_light_outfit"]= { 1 },
+["svoboda_heavy_outfit"]= { 1 },
+["dolg_outfit"]		= { 1 },
+
+["bandage"]		= { 2 },
+["medkit"]		= { 1 },
+["antirad"]		= { 1 },
+["medkit_army"]		= { 1 },
+["medkit_scientic"]	= { 0 },
+
+["conserva"]		= { 1 },
+["vodka"]		= { 1 },
+["energy_drink"]	= { 1 } },
+
+{	-- 1
+
+["ammo_9x18_fmj"]	= { 0 },
+["ammo_9x18_pmm"]	= { 1 },
+["ammo_9x19_pbp"]	= { 1 },
+["ammo_9x19_fmj"]	= { 1 },
+["ammo_11.43x23_hydro"]	= { 0 },
+["ammo_11.43x23_fmj"]	= { 1 },
+["ammo_12x70_buck"]	= { 1 },
+["ammo_12x76_dart"]	= { 0 },
+["ammo_12x76_zhekan"]	= { 1 },
+["ammo_5.45x39_ap"]	= { 0 },
+["ammo_5.45x39_fmj"]	= { 1 },
+["ammo_9x39_sp5"]	= { 0 },
+["ammo_9x39_ap"]	= { 0 },
+["ammo_9x39_pab9"]	= { 0 },
+["ammo_5.56x45_ss190"]	= { 1 },
+["ammo_5.56x45_ap"]	= { 0 },
+["ammo_7.62x54_7h14"]	= { 0 },
+["ammo_7.62x54_7h1"]	= { 0 },
+["ammo_7.62x54_ap"]	= { 0 },
+["ammo_og-7b"]		= { 1 },
+["ammo_vog25p"]	= { 1 },
+["ammo_vog25"]		= { 1 },
+["grenade_f1"]		= { 0 },
+["grenade_rgd5"]	= { 1 },
+["ammo_m209"]		= { 1 },
+["ammo_gauss"]		= { 0 },
+
+["bandage"]		= { 2 },
+["medkit"]		= { 1 },
+["antirad"]		= { 1 },
+["medkit_army"]		= { 1 },
+["medkit_scientic"]	= { 1 } },
+
+{	-- 2
+
+["ammo_9x18_fmj"]	= { 0 },
+["ammo_9x18_pmm"]	= { 1 },
+["ammo_9x19_pbp"]	= { 0 },
+["ammo_9x19_fmj"]	= { 1 },
+["ammo_11.43x23_hydro"]	= { 0 },
+["ammo_11.43x23_fmj"]	= { 1 },
+["ammo_12x70_buck"]	= { 1 },
+["ammo_12x76_dart"]	= { 0 },
+["ammo_12x76_zhekan"]	= { 0 },
+["ammo_5.45x39_ap"]	= { 0 },
+["ammo_5.45x39_fmj"]	= { 1 },
+["ammo_9x39_sp5"]	= { 0 },
+["ammo_9x39_ap"]	= { 0 },
+["ammo_9x39_pab9"]	= { 0 },
+["ammo_5.56x45_ss190"]	= { 1 },
+["ammo_5.56x45_ap"]	= { 0 },
+["ammo_7.62x54_7h14"]	= { 0 },
+["ammo_7.62x54_7h1"]	= { 0 },
+["ammo_7.62x54_ap"]	= { 0 },
+["ammo_og-7b"]		= { 1 },
+["ammo_vog25p"]	= { 1 },
+["ammo_vog25"]		= { 1 },
+["grenade_f1"]		= { 1 },
+["grenade_rgd5"]	= { 1 },
+["ammo_m209"]		= { 1 },
+["ammo_gauss"]		= { 0 },
+
+["bandage"]		= { 1 },
+["medkit"]		= { 1 },
+["antirad"]		= { 1 },
+["medkit_army"]		= { 0 },
+["medkit_scientic"]	= { 0 } },
+
+{	-- 3
+
+["ammo_9x18_fmj"]	= { 0 },
+["ammo_9x18_pmm"]	= { 1 },
+["ammo_9x19_pbp"]	= { 0 },
+["ammo_9x19_fmj"]	= { 1 },
+["ammo_11.43x23_hydro"]	= { 0 },
+["ammo_11.43x23_fmj"]	= { 1 },
+["ammo_12x70_buck"]	= { 1 },
+["ammo_12x76_dart"]	= { 0 },
+["ammo_12x76_zhekan"]	= { 0 },
+["ammo_5.45x39_ap"]	= { 0 },
+["ammo_5.45x39_fmj"]	= { 1 },
+["ammo_9x39_sp5"]	= { 0 },
+["ammo_9x39_ap"]	= { 0 },
+["ammo_9x39_pab9"]	= { 0 },
+["ammo_5.56x45_ss190"]	= { 1 },
+["ammo_5.56x45_ap"]	= { 0 },
+["ammo_7.62x54_7h14"]	= { 0 },
+["ammo_7.62x54_7h1"]	= { 0 },
+["ammo_7.62x54_ap"]	= { 0 },
+["ammo_og-7b"]		= { 0 },
+["ammo_vog25p"]	= { 1 },
+["ammo_vog25"]		= { 1 },
+["grenade_f1"]		= { 0 },
+["grenade_rgd5"]	= { 1 },
+["ammo_m209"]		= { 1 },
+["ammo_gauss"]		= { 0 },
+
+["bandage"]		= { 1 },
+["medkit"]		= { 1 },
+["antirad"]		= { 1 },
+["medkit_army"]		= { 1 },
+["medkit_scientic"]	= { 1 } } }
+
+function get_tbox_items() return tbox_items end
+function get_tbox_map( map ) return tbox_maps[map] end
+function get_tbox_cnt( df ) return tbox_cnt[df] end
+
+function init()
+	local t, tt
+	for k, v in pairs( tbox_items ) do
+		for kk, vv in pairs( v ) do
+			if not tbox_items_def[kk] then tbox_items_def[kk] = 0 end
+	end	end
+	tbox_items.default = tbox_items_def
+
+	for i = 1, #tbox_map_subst do
+		t = tbox_map_subst[i]
+		tt = tbox_maps[ t[1] ]
+		if not tt then tt = {}; tbox_maps[ t[1] ] = tt end
+		if tbox_maps[ t[2] ] then
+			for k, v in pairs( tbox_maps[ t[2] ] ) do
+				if not tt[k] then tt[k] = v end
+	end	end	end
+	return true
+end

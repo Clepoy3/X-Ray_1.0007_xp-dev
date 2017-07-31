@@ -1,0 +1,221 @@
+;--------------------------------------
+; Модуль weapon manager
+; Rulix aka Bak
+;--------------------------------------
+#include "rx_weapon_mgr_ws.ltx"
+[main]
+; технические параметры:
+enabled = true
+update_period = 2222 ;2000 ;мс время между апдейтами
+combat_period = 414 ;400  ; минимальное время между апдейтами в бою
+reload_period = 2525 ;2500 ; минимальное время между апдейтами при перезарядке
+idle_period = 11111 ;10000 ; минимальное время между апдейтами в спокойном состоянии
+return_period = 444344 ;400000 ; максимальное время между возвращениями, для профилактики
+sees_time = 4144 ;4000      ; сколько помнить врага, для mode2 = 2
+forbidden_weapons = none ; запрещенное к использованию оружие
+min_condition = 0.2    ; минимальное состояние, при котором можно использовать
+weapon_minmaxr = false ; брать параметры min_radius и max_radius из конфига оружия
+;
+[types] ; типы
+list = 1,5,6,7,8,9 ; список типов - только целые числа
+line = ef_weapon_type ; параметр в конфиге ствола, который будет считаться его типом
+
+; для динамического режима выбора
+
+; min_radius,max_radius ; для типа, если weapon_minmaxr = false
+;minmaxr_1 = 0,2
+minmaxr_5 = 0,50
+minmaxr_6 = 1,300
+minmaxr_7 = 0,35
+minmaxr_8 = 25,1025
+minmaxr_9 = 10,900
+
+; модификоторы расстояния
+;rsec_1 = 100,300,0
+rsec_5 = 50,45,30,30,30,25,20,20,20,15,10,5
+rsec_6 = 2,20,30,30,30,30,25,25,25,25,20,4
+rsec_7 = 2,50,60,65,60,55,45,40,30,15,5,-20
+rsec_8 = -100,-40,20,30,45,55,60,60,70,80,90,100,120,140,160,180,200,220,250,200
+rsec_9 = 0,10,30,50,50,50,50,50,50,30,20,0
+
+;модификаторы противника
+; actor,stalker,boar,bloodsucker,flesh,dog,pseudodog,cat,chimera,giant,zombie,burer,controller,poltergeist,snork,fracture,tushkano,psy_dog,psy_dog_phantom
+
+enemy_5 = dog:20,tushkano:5,bloodsucker:-10,giant:-20
+enemy_6 = fracture:10,psy_dog_phantom:20
+enemy_7 = flesh:20,dog:30,pseudodog:25,zombie:20,bloodsucker:30,snork:40
+enemy_8 = controller:5,dog:-30,pseudodog:-15,snork:-50,tushkano:-80,chimera:-30
+enemy_9 = tushkano:20,giant:10,zombie:5,burer:5,actor:10
+
+
+[default]
+;+++++++++++
+
+; определение приоритета оружия:
+; 0 - отключено, 1 - по цене, 2 - по параметрам, 3 - заданный вручную
+mode1 = 2
+
+;+++++++++++
+
+; режим выбора оружия:
+; в бою
+; 0 - движок(), 1 - наибольший приоритет, 2 - "долго заряжать", 3 - динамический
+mode2	= 3
+; в спокойном состоянии
+; 0 - движок(), 1 - наибольший приоритет , 2 - лучшее наиболее приоритетного типа
+mode2_idle	= 2
+
+;++++++++++++
+
+; приоритет типов, соответственно [types]- list
+types = 0,1,5,7,15,20
+
+;++++++++++++
+
+; коэффициенты расчетных параметров оружия, для определения приоритета
+; используется для mode1 = 2
+koeffs = koefs_def ; секция в этом файле
+
+;++++++++++++
+
+; приоритет оружия, больше значение - выше приоритет
+; используется для mode1 = 3
+priors = priors_def ; секция в этом файле
+
+;++++++++++++
+
+; увеличение приоритета при наличии обвеса, %
+scope = 10 ;5 ; оптический прицел
+silencer = 5 ; глушитель
+grenadelauncher = 15 ; гранатомет
+
+;++++++++++++
+
+; насторйки динамического режима (mode2 = 3)
+max_pr_weapons = 8 ; максимальное кол-во учитываемого оружия ; не работает
+mag_lowering = 12 ; на сколько процентов снизится приоритет при пустом магазине
+mag_lowering_fc = 35 ; на сколько процентов снизится приоритет при пустом магазине(прямой контакт с врагом)
+active_add = 10 ; добавка для оружия, которое уже в руках
+tchange_time = 1111 ; 4000 ; время работы тормоза смены оружия, мс
+tchange_time_fc = 3333 ; 5500 ; время работы тормоза смены оружия(прямой контакт с врагом)
+change_rest_time = 0 ; минимальное время между сменой оружия, мс
+
+;++++++++++++
+addcost = 4000 ; значение прибавляется к цене оружия, используется для mode1 = 1
+process_mode = 2 ; 0 - отключено, 1 - только во время боя, 2 - всегда, 3 - полный
+disabled = false
+
+; секции группировок, рангов
+
+[stalker_veteran]
+mag_lowering_fc = 45
+
+[zombied]
+mode2	= 1
+
+[dolg]
+mode1	= 2
+
+[novice]
+
+[master]
+scope = 15
+
+;++++++++++++
+[koefs_def]
+damage		= 1.3
+rpm			= 1.3
+distance	= 0.3
+dispersion	= 1.8
+
+;++++++++++++
+[priors_def]
+wpn_kuinia = 90
+wpn_abakan		    = 27
+wpn_abakan_up2		    = 30
+wpn_ak74			    = 26
+;wpn_ak74_up		    = 28
+;wpn_ak74_up2		    = 29
+wpn_ak74u			    = 23
+wpn_ak74u_m1		= 24
+wpn_aks74m		    = 26
+wpn_ak47		         = 34
+wpn_bm16			    = 20
+wpn_fn2000		    = 46
+wpn_g36			    = 40
+wpn_g36_up2		    = 43
+wpn_gauss			    = 45
+wpn_gauss_krayzis	    = 48
+wpn_gauss_aes		    = 68
+wpn_groza			    = 33
+wpn_groza_m3			= 34
+wpn_l85			    = 31
+wpn_lr300			    = 32
+wpn_lr300_up2		    = 34
+wpn_mp5			    = 22
+wpn_mp5sd			    = 26
+wpn_ppsh41_sk2		    = 27
+wpn_pkm			    = 47
+wpn_m_134			    = 48
+wpn_rg6			    = 49
+wpn_rpg7			    = 50
+wpn_sig550		    = 35
+wpn_tavor	     	    = 31
+;wpn_sig_with_scope	    = 36
+wpn_sig550_up2		    = 38
+wpn_spas12		    = 37
+wpn_svd			    = 42
+wpn_svu			    = 41
+wpn_toz34			    = 21
+wpn_val			    = 34
+wpn_vintorez		    = 39
+wpn_vintorez_up	    = 42
+wpn_wincheaster1300    = 28
+wpn_m4super90          = 34
+wpn_saiga12c		    = 36
+wpn_aek973		    = 39
+
+wpn_famas_p3_sk1	    = 32
+wpn_m16a2_sk1		    = 35
+wpn_m16a2_sk12		    = 36
+wpn_sg552_sk1		    = 31
+wpn_mg42			    = 45
+wpn_xm8_para_sk2	    = 46
+wpn_hk417_sk1		    = 30
+wpn_sr25_mk11_mod0_sk1 = 31
+wpn_b94			    = 35
+wpn_vuhlop			= 36
+wpn_awm			    = 28
+wpn_bizon			    = 26
+wpn_bizon1		    = 33
+wpn_kriss_super_v	    = 24
+wpn_uzi			    = 29
+wpn_scorpion	         = 24
+wpn_p90			    = 23
+wpn_mp7a3			    = 23
+wpn_m1891_30_scope	    = 20
+wpn_m4			    = 41
+wpn_walther_wa2000	    = 24
+wpn_ptrd			    = 41
+
+wpn_beretta			= 18
+wpn_colt1911			= 17
+wpn_colt1911_up2		= 19
+wpn_desert_eagle		= 20
+wpn_eagle_m1		     = 21
+wpn_fort				= 12
+wpn_fort_up			= 13
+wpn_hpsa				= 17
+wpn_pb				= 12
+wpn_pm				= 11
+wpn_pm_up				= 12
+wpn_pm_9x19			= 12
+wpn_sig220			= 15
+wpn_usp				= 16
+wpn_gungauss			= 16
+wpn_walther			= 14
+wpn_walther_up2		= 14
+mounted_weapon			= 11
+wpn_raging_bull		= 18
+wpn_aps_sk1			= 17
+

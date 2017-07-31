@@ -1,0 +1,93 @@
+; Базавая зона жарки
+[zone_ogon]
+GroupControlSection = spawn_group_zone
+$spawn              = "zones\ogon"
+$prefetch           = 16
+class               = ZS_MBALD
+script_binding      = amk_anoms.bind
+
+hit_impulse_scale = 0
+effective_radius  = 1
+
+sound       = zone_mosquito_bald
+postprocess = postprocess_flame
+
+ef_anomaly_type = 1
+ef_weapon_type = 13
+
+artefacts        =
+BirthProbability = 0
+
+min_start_power    = 0.25
+max_start_power    = 0.3
+attenuation        = 1
+period             = 1
+min_artefact_count = 0
+max_artefact_count = 0
+
+idle_particles    = explosions\campfire_boar_grill
+blowout_particles = static\zharka_static
+
+hit_small_particles  = damage_fx\burn_creatures
+hit_big_particles    = damage_fx\burn_creatures00
+idle_small_particles = damage_fx\burn_creatures
+idle_big_particles   = damage_fx\burn_creatures00
+
+idle_particles_dont_stop = true
+
+idle_sound      = ambient\zhar
+blowout_sound   = ambient\zhar
+hit_sound       = ambient\zhar
+entrance_sound  = ambient\zhar
+
+hit_type = burn
+
+disable_time       = 10000
+disable_time_small = -1
+disable_idle_time  = 50000
+
+ignore_nonalive  = false
+ignore_small     = false
+ignore_artefacts = true
+
+idle_light = off
+blowout_light = off
+
+awaking_time = 45
+blowout_time = 400
+accamulate_time = 85
+
+visible_by_detector = on
+
+blowout_wind = off
+
+spawn_blowout_artefacts = off
+
+
+[zone_ogon_weak]:zone_ogon
+$spawn = "zones\ogon_weak"
+
+[zone_ogon_average]:zone_ogon
+$spawn = "zones\ogon_average"
+
+min_start_power = 0.35
+max_start_power = 0.45
+
+
+[zone_ogon_strong]:zone_ogon
+$spawn = "zones\ogon_strong"
+
+min_start_power = 0.6
+max_start_power = 0.7
+
+idle_particles    = static\buble_distort001
+
+
+[amk_zone_ogon_weak]:zone_ogon_weak
+$spawn = "zones\amk_ogon_weak"
+
+[amk_zone_ogon_average]:zone_ogon_average
+$spawn = "zones\amk_ogon_average"
+
+[amk_zone_ogon_strong]:zone_ogon_strong
+$spawn = "zones\amk_ogon_strong"

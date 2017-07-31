@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+esc_heli_go} nil, sr_idle@wait %+esc_heli_go%
+
+[sr_idle@wait]
+on_info = {+esc_heli_direct} sr_sound_act@attack
+
+[sr_sound_act@attack]
+snd = characters_voice\scenario\escape\heli_radio_part_1
+on_signal = sound_end| nil

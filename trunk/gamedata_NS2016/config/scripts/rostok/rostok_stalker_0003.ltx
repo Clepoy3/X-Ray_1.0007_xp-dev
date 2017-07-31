@@ -1,0 +1,34 @@
+[logic]
+active = camper
+on_death = death
+
+[camper]
+path_walk = rostok_sniper_2_walk
+path_look = rostok_sniper_2_look
+radius = 0
+attack_sound =
+on_info = {+rostok_sniper_to_walker} walker@sniper , {+rostok_sniper_cheat} camper@2
+
+[camper@2]
+path_walk = rostok_sniper_2_walk
+path_look = rostok_sniper_2_cheat_look
+on_info = {-rostok_sniper_cheat} camper
+on_info2 = {+rostok_sniper_to_walker} walker@sniper
+radius = 0
+no_retreat = true
+attack_sound =
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 150
+ignore_distance_sound = 0
+ignore_distance_hit = 150
+ignore_distance_corpse = 0
+ignore_distance_grenade = 0
+
+[walker@sniper]
+path_walk = rostok_sniper_2_walk
+path_look = rostok_sniper_2_look
+
+[death]
+on_info = %+rostok_sniper_2_die%

@@ -1,0 +1,694 @@
+--[[
+Inspired by Refresh and AMK-Team
+Developed by Shadowman for Narodnaya Solyanka
+Copyright: © NS-Team 
+April, 2011
+]]
+local aWpn_slot1 = nil	-- table стволы в пистолетный слот
+local aWpn_slot2 = nil	-- table стволы в автоматный слот
+local aOutfits = nil	-- table броники
+
+--local sini = system_ini()
+local rep_wpn
+local rep_out
+local iBar_act
+
+
+--[[
+--	Инфа для кнопок на скроллбарах.
+--  два оружейных и броники
+--]]
+local aTblScrollBars = {} 	-- таблица скроллбаров
+-- х,у - координаты левой верхней точки иконки на подложке
+-- к oSlot аттачим кнопки; nSlot - номер слота
+-- aIndex - порядковый номер активного предмета (при первом запуске - активный элемент в слоте)
+-- tabl - табличка с объектом и его свойствами иконки, заполняется в SaveInfo(<имя скроллбара>)
+aTblScrollBars["aScrollBar1"] = { -- пистолеты
+	{x = 75, y = 540, oSlot = nil, bUp = nil, bDw = nil, bRep1x = nil, bRepMax = nil, nSlot = 1},
+	 aIndex = 0,
+	 tabl = {},
+	 -- buttons = {bx = 310, bUpy = 460, bDwy = 485} -- 
+	 buttons = {bx = 310, bUpy = 550, bDwy = 575} -- 
+	}
+aTblScrollBars["aScrollBar2"] = { -- автоматы
+	{x = 55, y = 320, oSlot = nil, bUp = nil, bDw = nil, bRep1x = nil, bRepMax = nil, nSlot = 2},
+	 aIndex = 0,
+	 tabl = {},
+	 buttons = {bx = 325, bUpy = 330, bDwy = 355}
+	}
+aTblScrollBars["aScrollBar3"] = { -- броньки
+	{x = 75,  y = 100,  oSlot = nil, bUp = nil, bDw = nil, bRep1x = nil, bRepMax = nil, nSlot = 6},
+	 aIndex = 0,
+	 tabl = {},
+	 -- buttons = {bx = 220, bUpy = 180, bDwy = 205}
+	 buttons = {bx = 220, bUpy = 150, bDwy = 175}
+	}
+
+local r_abil = 0.1			-- доля ремонта от одного ремкомплекта
+local r_cond_min = 0.599999	-- минимально возможное значение для полевого ремонта
+local r_cond_max = 0.99		-- максимальное
+
+function EnableDevice(iLevelDevice)
+	if oDevice or db.actor==nil or db.actor:alive()~=true then return end
+	amkCreateItemActor("sh_remnabor")
+	aWpn_slot1 = {}
+	aWpn_slot2 = {}
+	aOutfits = {}
+	local ti = table.insert	
+	-- заполним таблички по наличию в инвентаре
+	db.actor:iterate_inventory(function (dummy, vItem)
+		if isWeapon(vItem) or get_clsid(vItem) == clsid.wpn_binocular_s then
+			if getIniValueFloatSimple(vItem:section(), "slot") == 1 then
+				ti(aWpn_slot1, vItem)
+			elseif getIniValueFloatSimple(vItem:section(), "slot") == 2 then
+				ti(aWpn_slot2, vItem)
+			end
+		elseif get_clsid(vItem) == clsid.equ_stalker_s then
+			ti(aOutfits, vItem)
+		end 
+	end, nil)
+	
+	if #aWpn_slot1 > 0 then
+		-- на каждый скролл ставим указатель на первый предмет
+		aTblScrollBars["aScrollBar1"]["aIndex"] = 1
+	end
+	if #aWpn_slot2 > 0 then
+		aTblScrollBars["aScrollBar2"]["aIndex"] = 1
+	end
+	if #aOutfits > 0 then
+		aTblScrollBars["aScrollBar3"]["aIndex"] = 1
+	end
+
+	-- если нужна сортировка, пишем здесь логику, потом сортируем 
+--[[		local function sSort(a,b)
+		return (a.name < b.name)
+	end]]
+	-- local wi = bind_stalker.UInvWnd
+--[[	if bind_stalker.UInvWnd then
+		bind_stalker.UInvWnd:GetHolder():start_stop_menu(bind_stalker.UInvWnd, true)
+		-- level.start_stop_menu(wi, true)
+    end]]
+	oDevice = DeviceRemnabor(iLevelDevice)
+	level.start_stop_menu(oDevice, true)	
+end
+
+function DisableDevice()
+	oDevice	= nil
+	aWpn_slot1 = nil
+	aWpn_slot2 = nil
+	aOutfits = nil
+	for k,tbl in pairs(aTblScrollBars) do
+		aTblScrollBars[k][1].oSlot = nil
+		aTblScrollBars[k][1].bUp = nil
+		aTblScrollBars[k][1].bDw = nil
+		aTblScrollBars[k][1].bRep1x = nil
+		aTblScrollBars[k][1].bRepMax = nil
+		aTblScrollBars[k]["aIndex"] = 0
+		aTblScrollBars[k]["tabl"] = {}
+	end
+end
+
+function UseRemnabor(oItem)
+	if oItem:section() == "sh_remnabor" then		
+		amk.start_timer("UseRemnabor", 0.5, oItem:id())
+	end
+end
+
+class "DeviceRemnabor" (CUIScriptWnd)
+function DeviceRemnabor:__init(iLevelDevice) super()	
+	self.iLevelDevice = iLevelDevice
+	self:InitInterface()	
+	for k, v in pairs(aTblScrollBars) do
+		self:SaveInfo(k)
+		-- self:UpdScrollBar(1, k)
+		self:UpdScrollBar(aTblScrollBars[k]["aIndex"], k)
+	end
+end
+
+function DeviceRemnabor:SaveInfo(iBar)
+	local aTmpTbl = {}
+	local oTbl
+	-- local searchTbl, fillTbl
+	local fillTbl = aTblScrollBars[iBar]["tabl"]
+	-- for iKey, oItem in pairs(aTblScrollBars[iBar]) do
+	if iBar == "aScrollBar1" then
+		oTbl = aWpn_slot1
+	elseif iBar == "aScrollBar2" then
+		oTbl = aWpn_slot2
+	elseif iBar == "aScrollBar3" then
+		oTbl = aOutfits
+	end
+	local sSection = nil
+	if oTbl == nil then return end
+	for i = 1, #oTbl do
+		sSection = oTbl[i]:section()
+		if iniSectionExistSimple(sSection) then			
+			-- if not aTmpTbl[sSection] then
+				aTbl = {}
+				aTbl.sSection = sSection
+				aTbl.x = getIniValueU32Simple(sSection, "inv_grid_x")				
+				aTbl.y = getIniValueU32Simple(sSection, "inv_grid_y")
+				aTbl.wt = getIniValueU32Simple(sSection, "inv_grid_width")
+				aTbl.hg = getIniValueU32Simple(sSection, "inv_grid_height")
+				-- local x      = ini:r_u32     (sSection, "inv_grid_x")*50				
+				--[[aTbl.x = sini:r_u32(sSection, "inv_grid_x")	 --для АМК
+				aTbl.y = sini:r_u32(sSection, "inv_grid_y")		 --для АМК
+				aTbl.wt = sini:r_u32(sSection, "inv_grid_width")	 --для АМК
+				aTbl.hg = sini:r_u32(sSection, "inv_grid_height")	 --для АМК]]
+				aTbl.aItem = oTbl[i]
+				-- table.insert(aTbl.aItem, oTbl[i])
+				-- все предметы по отдельности, а не по видам
+				aTmpTbl[sSection..oTbl[i]:id()] = aTbl
+			-- end
+		end
+	end
+	-- end
+	for sKey, aValue in pairs(aTmpTbl) do
+		table.insert(fillTbl, aValue)
+	end
+	-- попытка определить, что в слотах у актора
+	local nSlot = tonumber(aTblScrollBars[iBar][1]["nSlot"])
+	for i = 1, #fillTbl do
+		if db.actor:item_in_slot(nSlot) then
+			if fillTbl[i]["aItem"]:id() == db.actor:item_in_slot(nSlot):id() then
+				aTblScrollBars[iBar]["aIndex"] = i
+			end
+		end
+	end
+end
+
+function DeviceRemnabor:__finalize() 
+end
+
+function DeviceRemnabor:InitInterface()	
+	self:Init(20,15,741,736)
+	--[[
+	--	CUIStatic()
+	--	Прикрепляем статический элемент 'фон'.
+	--]]	
+	self.oBackGround = CUIStatic()
+    self.oBackGround:SetWindowName("oBackGround") 
+    self.oBackGround:SetAutoDelete(true)
+    self.oBackGround:InitTexture("ui\\duster")	
+	self.oBackGround:SetStretchTexture(true)
+    self.oBackGround:Init(20,15,720,720) 
+    self:AttachChild(self.oBackGround)
+
+	--[[
+	--	CUIStatic()
+	--	Прикрепляем текстовый индикатор.
+	--]]		
+	self.oText = CUIStatic()
+	self.oText:SetWindowName("oText")
+	self.oText:SetAutoDelete(true)
+	self.oText:SetText("Ремнабор сталкера универсальный")
+
+	self.oText:SetTextColor(255,168,230,29)
+	self.oText:SetFont(GetFontGraffiti32Russian())	 		
+    self.oText:Init(160,35,400,25)
+    self:AttachChild(self.oText)
+	--[[
+	--	CUIStatic()
+	--	Еще текстурка.
+	--]]		
+--[[	 -- №1
+	self.oBox = CUIStatic()
+    self.oBox:SetWindowName("oBox") 
+    self.oBox:SetAutoDelete(true)
+    self.oBox:InitTexture("ui\\open_remb")
+	-- self.oPicture:SetOriginalRect(13,15,302,464)
+	self.oBox:SetStretchTexture(true)
+    self.oBox:Init(380,160,324,512)	
+    self:AttachChild(self.oBox)]]
+	-- №2
+	self.oBox = CUIStatic()
+    self.oBox:SetWindowName("oBox") 
+    self.oBox:SetAutoDelete(true)
+    self.oBox:InitTexture("ui\\open_remb1")
+	-- self.oPicture:SetOriginalRect(13,15,302,464)
+	self.oBox:SetStretchTexture(true)
+    self.oBox:Init(345,160,400,416)
+    self:AttachChild(self.oBox)
+	--[[
+	--	CUIButton()
+	--	Прикрепляем кнопку завершения работы'выход'.
+	--]]		
+	self.oButtonQuit = CUIButton()
+	self.oButtonQuit:SetWindowName("oButtonQuit")  
+	self.oButtonQuit:SetAutoDelete(true)
+	self.oButtonQuit:InitTexture("ui\\ui_common")
+	self.oButtonQuit:SetOriginalRect(1,423,158,41)
+	self.oButtonQuit:SetText("Закрыть")
+	self.oButtonQuit:SetTextColor(255,0,0,0)
+	self.oButtonQuit:SetFont(GetFontGraffiti19Russian())
+	self.oButtonQuit:Init(470,660,158,41)
+    self:AttachChild(self.oButtonQuit)
+    self:AddCallback("oButtonQuit", ui_events.BUTTON_CLICKED, self.Quit, self)
+	
+	self:UpdIcons()
+end
+
+function DeviceRemnabor:UpdIcons()
+	-- сколько есть ремкомплектов?
+	rep_wpn = amk.load_variable("repair_item_weapon", 0)
+	rep_out = amk.load_variable("repair_item_outfit", 0)
+	--[[
+	--	CUIStatic()
+	--	иконки ремкомплектов
+	--]]		
+	self.oPicture = CUIButton()
+    self.oPicture:SetWindowName("oPicture") 
+    self.oPicture:SetAutoDelete(true)
+    self.oPicture:InitTexture("ui\\remnabor")
+	self.oPicture:SetOriginalRect(0,0,100,100)
+	self.oPicture:SetText(rep_out)
+	self.oPicture:SetTextColor(255,255,0,0)
+	self.oPicture:SetFont(GetFontGraffiti32Russian())
+    self.oPicture:Init(500,65,100,100)	
+    self:AttachChild(self.oPicture)	
+	
+	self.oPicture1 = CUIButton()
+    self.oPicture1:SetWindowName("oPicture1") 
+    self.oPicture1:SetAutoDelete(true)
+    self.oPicture1:InitTexture("ui\\remnabor")
+	self.oPicture1:SetOriginalRect(100,0,100,100)
+	self.oPicture1:SetText(rep_wpn)
+	self.oPicture1:SetTextColor(255,255,0,0)
+	self.oPicture1:SetFont(GetFontGraffiti32Russian())
+    self.oPicture1:Init(600,65,100,100)	
+    self:AttachChild(self.oPicture1)
+end
+
+--[[
+--	UpdScrollBar(iTable, iBarName)
+--	Инициализируем элементы скроллБара.
+--	@param	string	iBarName	скроллбар
+--	iStartIndex	индекс для таблицы
+--]]
+function DeviceRemnabor:UpdScrollBar(iStartIndex, iBarName)
+	-- local sim = alife()
+	local aButton, aSectInfo
+	--	iTable таблица итемов
+	local iTable = aTblScrollBars[iBarName]
+	aButton = iTable[1]
+	-- iStartIndex = iTable["aIndex"]
+	aSectInfo = iTable["tabl"][iStartIndex]
+	aButtInfo = iTable["buttons"]
+	-- amk.dump_table(aSectInfo)
+	--[[
+	--	Очищаем обьект кнопки из таблицы видимых элементов.
+	--]]
+	if aButton.oSlot then
+		self:DetachChild(aButton.oSlot)
+		aButton.oSlot = nil
+	end
+	if aButton.bUp then
+		self:DetachChild(aButton.bUp)
+		aButton.bUp = nil
+	end
+	if aButton.bDw then
+		self:DetachChild(aButton.bDw)
+		aButton.bDw = nil
+	end
+	if aButton.bRep1x then
+		self:DetachChild(aButton.bRep1x)
+		aButton.bRep1x = nil
+	end
+	if aButton.bRepMax then
+		self:DetachChild(aButton.bRepMax)
+		aButton.bRepMax = nil
+	end
+	--[[
+	--	Завершаем апдейт скролла если уже нет
+	--	элементов для инициализации.
+	--]]		
+	if not aSectInfo then
+		return
+	end
+	--[[
+	--	Получаем позицию и размеры иконки.
+	--]]			 
+	local x = aSectInfo.x * 50
+	local y = aSectInfo.y * 50
+	local wt = aSectInfo.wt * 50
+	local hg = aSectInfo.hg * 50
+	local cond = aSectInfo.aItem:condition()
+	if cond < 0 then cond = 0 end -- на случай отрицательного состояния %/
+	
+	--[[
+	--	Создаем псевдо слот.
+	--]]	
+	local oScrollButton = CUIStatic()
+	-- oScrollButton:SetWindowName("oScrollButton"..iBarName)
+	oScrollButton:SetAutoDelete(true)
+	oScrollButton:InitTexture("ui\\ui_icon_equipment")
+	oScrollButton:SetOriginalRect(x, y, wt, hg)
+	local text = math.ceil(cond*100).."%"
+	local nSlot = tonumber(iTable[1].nSlot)
+	if db.actor:item_in_slot(nSlot) then
+		local InSlot = db.actor:item_in_slot(nSlot)
+		if aSectInfo.aItem:id() == InSlot:id() then
+			text = text.." (экипировано)"
+		end
+	end
+	oScrollButton:SetText(tostring(text))
+	oScrollButton:SetTextColor(255,168,230,29)
+	oScrollButton:SetFont(GetFontGraffiti32Russian())
+	oScrollButton:SetFont(GetFontLetterica25())
+	oScrollButton:Init(aButton.x, aButton.y, wt, hg)
+	self:AttachChild(oScrollButton)
+--[[		if not db.actor:has_info("repair_start") then
+		local sFuncString = "sh_remnabor.oDevice:DoAction(\""..iBarName.."\")"
+		self:AddCallback("oScrollButton"..iBarName, ui_events.BUTTON_CLICKED, loadstring(sFuncString), self)
+	end]]
+	aButton.oSlot = oScrollButton
+	iTable["aIndex"] = iStartIndex		
+	if cond >= r_cond_min and cond < r_cond_max then
+	-- кнопка ремонта 1x
+		-- local x = aButtInfo.bx + 42
+		-- local y = aButtInfo.bUpy + 9			
+		local x = 65
+		local y
+		if iBarName == "aScrollBar1" then
+			y = aButton.y + 80
+		else
+			y = aButton.y + 120
+		end
+		local oButtonRep1x = CUIButton()
+		oButtonRep1x:SetWindowName("oButtonRep1x"..iBarName)
+		oButtonRep1x:SetAutoDelete(true)
+		if iBarName == "aScrollBar3" then
+			oButtonRep1x:InitTexture("ui\\rmbutt1")
+		else
+			oButtonRep1x:InitTexture("ui\\rmbutt")
+		end
+		oButtonRep1x:SetOriginalRect(0,0,128,85)
+		oButtonRep1x:Init(x, y, 128, 85)
+		self:AttachChild(oButtonRep1x)
+		local sFuncString = "sh_remnabor.oDevice:DoAction(\"bRep1x\",\""..iBarName.."\")"
+		self:AddCallback("oButtonRep1x"..iBarName, ui_events.BUTTON_CLICKED, loadstring(sFuncString), self)
+		aButton.bRep1x = oButtonRep1x
+	-- кнопка ремонта Max			
+		local x = 200
+		local y
+		if iBarName == "aScrollBar1" then
+			y = aButton.y + 80
+		else
+			y = aButton.y + 120
+		end
+		local oButtonRepMax = CUIButton()
+		oButtonRepMax:SetWindowName("oButtonRepMax"..iBarName)
+		oButtonRepMax:SetAutoDelete(true)
+		if iBarName == "aScrollBar3" then
+			oButtonRepMax:InitTexture("ui\\rmbutt1")
+		else
+			oButtonRepMax:InitTexture("ui\\rmbutt")
+		end
+		oButtonRepMax:SetOriginalRect(128,0,128,85)
+		oButtonRepMax:Init(x, y, 128, 85)
+		self:AttachChild(oButtonRepMax)
+		local sFuncString = "sh_remnabor.oDevice:DoAction(\"bRepMax\",\""..iBarName.."\")"
+		self:AddCallback("oButtonRepMax"..iBarName, ui_events.BUTTON_CLICKED, loadstring(sFuncString), self)
+		aButton.bRepMax = oButtonRepMax		
+	end
+	-- Кнопка "вверх", если есть куда листать
+	if iTable["tabl"][iStartIndex - 1] then
+		local x = aButtInfo.bx
+		local y = aButtInfo.bUpy
+		local oButtonUp = CUIButton()
+		oButtonUp:SetWindowName("oButtonUp"..iBarName)
+		oButtonUp:SetAutoDelete(true)
+		oButtonUp:InitTexture("ui\\ui_common")
+		oButtonUp:SetOriginalRect(975,78,40,25) --769,107
+		oButtonUp:Init(x, y, 40, 25)
+		self:AttachChild(oButtonUp)
+		local sFuncStrUp = "sh_remnabor.oDevice:ScrollBarUp(\""..iBarName.."\")"
+		self:AddCallback("oButtonUp"..iBarName, ui_events.BUTTON_CLICKED, loadstring(sFuncStrUp), self)
+		aButton.bUp = oButtonUp
+	else
+	-- затычка
+--[[			local x = aButtInfo.bx
+		local y = aButtInfo.bUpy
+		local oButtonUp = CUIStatic()
+		-- oButtonUp:SetWindowName("oButtonUp"..iBarName)
+		oButtonUp:SetAutoDelete(true)
+		oButtonUp:InitTexture("ui\\ui_common")
+		oButtonUp:SetOriginalRect(769,107,40,25)
+		oButtonUp:Init(x, y, 40, 25)
+		self:AttachChild(oButtonUp)
+		aButton.bUp = oButtonUp]]
+	end
+	-- Кнопка "вниз", если есть куда листать
+	if iTable["tabl"][iStartIndex + 1] then
+		local x = aButtInfo.bx
+		local y = aButtInfo.bDwy
+		local oButtonDw = CUIButton()
+		oButtonDw:SetWindowName("oButtonDw"..iBarName)
+		oButtonDw:SetAutoDelete(true)
+		oButtonDw:InitTexture("ui\\ui_common")
+		oButtonDw:SetOriginalRect(813,107,40,25) -- 901,107
+		oButtonDw:Init(x, y, 40, 25)
+		self:AttachChild(oButtonDw)
+		local sFuncStrDw = "sh_remnabor.oDevice:ScrollBarDw(\""..iBarName.."\")"
+		self:AddCallback("oButtonDw"..iBarName, ui_events.BUTTON_CLICKED, loadstring(sFuncStrDw), self)
+		aButton.bDw = oButtonDw
+	else
+	-- затычка
+--[[			local x = aButtInfo.bx
+		local y = aButtInfo.bDwy
+		local oButtonDw = CUIStatic()
+		-- oButtonDw:SetWindowName("oButtonDw"..iBarName)
+		oButtonDw:SetAutoDelete(true)
+		oButtonDw:InitTexture("ui\\ui_common")
+		oButtonDw:SetOriginalRect(901,107,40,25)
+		oButtonDw:Init(x, y, 40, 25)
+		self:AttachChild(oButtonDw)
+		aButton.bDw = oButtonDw]]
+	end
+end
+
+
+--[[
+--	PreviewScrollUp()
+--	Полистать СкроллБар вверх.
+--]]
+function DeviceRemnabor:ScrollBarUp(iBar)
+	if not db.actor:has_info("repair_start") then
+		sol_sound.queue_clear("list")
+		sol_sound.play_sound_on_actor([[interface\inv_slot]], 0, true, "list")
+		local aInterval = aTblScrollBars[iBar]["aIndex"]
+		aTblScrollBars[iBar]["aIndex"] = aInterval-1
+		self:UpdScrollBar(aInterval-1, iBar)
+	end
+end
+function DeviceRemnabor:PreviewScrollUp()
+	-- local function upd_dev()
+	sol_sound.queue_clear("list")
+	sol_sound.play_sound_on_actor([[interface\inv_slot]], 0, true, "list")
+	for k, v in pairs(aTblScrollBars) do
+		local aInterval = aTblScrollBars[k]["aIndex"]
+		if aTblScrollBars[k]["tabl"][aInterval-1] then
+			aTblScrollBars[k]["aIndex"] = aInterval-1
+			self:UpdScrollBar(aInterval-1, k)
+		end
+	end
+	-- end
+	-- пока прокручиваем все три скролла сразу
+end
+
+function DeviceRemnabor:ScrollBarDw(iBar)
+	if not db.actor:has_info("repair_start") then
+		sol_sound.queue_clear("list")
+		sol_sound.play_sound_on_actor([[interface\inv_slot]], 0, true, "list")
+		local aInterval = aTblScrollBars[iBar]["aIndex"]
+		aTblScrollBars[iBar]["aIndex"] = aInterval+1
+		self:UpdScrollBar(aInterval+1, iBar)
+	end
+end
+function DeviceRemnabor:PreviewScrollDown()
+	sol_sound.queue_clear("list")
+	sol_sound.play_sound_on_actor([[interface\inv_slot]], 0, true, "list")
+	for k, v in pairs(aTblScrollBars) do
+		local aInterval = aTblScrollBars[k]["aIndex"]
+		if aTblScrollBars[k]["tabl"][aInterval+1] then
+			aTblScrollBars[k]["aIndex"] = aInterval+1
+			self:UpdScrollBar(aInterval+1, k)
+		end
+	end
+end
+
+--[[
+--	OnKeyboard(DIK, KeyboardAction)
+--	Виндим клавиши для управления.
+--]]
+function DeviceRemnabor:OnKeyboard(DIK, KeyboardAction)
+	CUIScriptWnd.OnKeyboard(self, DIK, KeyboardAction)
+	if KeyboardAction == ui_events.WINDOW_KEY_PRESSED then
+		if not db.actor:has_info("repair_start") then
+			if DIK == DIK_keys.DIK_ESCAPE then
+				self:Quit()
+			elseif DIK == DIK_keys.DIK_DOWN or DIK == DIK_keys.DIK_S then
+				self:PreviewScrollDown()
+			elseif DIK == DIK_keys.DIK_UP or DIK == DIK_keys.DIK_W then
+				self:PreviewScrollUp()
+			end
+		end
+	end
+	return true
+end
+
+--[[function DeviceRemnabor:UpdateDevice()
+	aWpn_slot1 = {}
+	aWpn_slot2 = {}
+	aOutfits = {}		
+	-- очищаем скроллы
+	for k,tbl in pairs(aTblScrollBars) do
+		if aTblScrollBars[k][1]["oSlot"] then
+			self:DetachChild(aTblScrollBars[k][1]["oSlot"])
+			aTblScrollBars[k][1]["oSlot"] = nil
+		end		
+		aTblScrollBars[k]["aIndex"] = 0
+		aTblScrollBars[k]["tabl"] = {}
+	end
+	-- здесь нужно перебрать инвентарь
+	-- заполняем по-новой
+	for k, v in pairs(aTblScrollBars) do
+		self:SaveInfo(k)
+		self:UpdScrollBar(1, k)
+	end
+end]]
+
+function DeviceRemnabor:r_done(aIndex)
+	-- if db.actor:has_info("repair_start") then
+		db.actor:give_info_portion("repair_done")
+	-- end
+	if self.rText then
+		self:DetachChild(self.rText)
+		self.rText = nil
+	end
+--[[	xr_sound.set_sound(db.actor, nil)
+	stop_play_sound(db.actor)]]
+	sol_sound.queue_clear("repair")
+	self:UpdIcons()
+	self:UpdScrollBar(aIndex, iBar_act)
+end
+
+function DeviceRemnabor:DoAction(action,iBar)
+	-- два ремонта сразу не делаем )
+	if db.actor:has_info("repair_start") then return end
+	iBar_act = iBar
+	local bTbl = aTblScrollBars[iBar]
+	local oSect = bTbl["tabl"][aTblScrollBars[iBar]["aIndex"]]
+	local aIndex = aTblScrollBars[iBar]["aIndex"]
+	local armor = db.actor:item_in_slot(6)
+	local rep_use
+	-- local oSect = bTbl["tabl"][tonumber(iNum)]
+	-- local r_abil = 0.1 -- ремонта от одного ремкомплекта
+	-- local r_cond_min = 0.599999 -- ограничение состояния предмета (при таком состоянии отображается 60%)
+	-- local r_cond_max = 0.99
+	local cond = oSect["aItem"]:condition()
+	--ремонт от r_cond_min до r_cond_max состояния
+	if cond < r_cond_min or cond > r_cond_max then return end	
+	-- ремонтируем броньку 
+	if get_clsid(oSect["aItem"]) == clsid.equ_stalker_s then		
+		-- если нет ремкомплектов
+		if rep_out == 0 then return	end
+		if armor and oSect["aItem"]:id() == armor:id() then
+			-- броньку надо снять, потом - ремонтировать
+			--[[
+			--	CUIStatic()
+			--	Прикрепляем текстовый индикатор.
+			--]]		
+			self.rText = CUIStatic()
+			self.rText:SetWindowName("rText")
+			self.rText:SetAutoDelete(true)
+			self.rText:SetText("Сначала снимите бронежилет!")
+			self.rText:SetTextColor(255,255,0,0)
+			self.rText:SetFont(GetFontGraffiti32Russian())	 		
+			-- self.rText:Init(50,100,100,25)
+			self.rText:Init(50,60,100,25)
+			self:AttachChild(self.rText)
+			amk.g_start_timer("RepairEnd",0,0,0.1,aIndex)
+			-- всё равно надо выдать, иначе - вылет, если выйти до пропадания надписи
+			db.actor:give_info_portion("repair_start")
+			return
+		end
+--[[		if armor then			
+			if oSect["aItem"]:id() == armor:id() then
+				return
+			end
+		end]]
+		rep_have = rep_out
+		varname = "repair_item_outfit"
+	--раз не бронька - то стволы
+	else
+		-- если нет ремкомплектов
+		if rep_wpn == 0 then return	end
+		rep_have = rep_wpn
+		varname = "repair_item_weapon"
+	end
+	--максимум нужно восстановить
+	local cond_need = 1 - cond
+	-- local rem_time = cond_need*60*2 -- секунды
+	-- время ремонта в игровых минутах
+	local rem_time = cond_need*2
+	--сколько нужно ремкомплектов
+	local rep_out_need = math.floor(cond_need/r_abil)	
+	-- на 0.1 состояния не буду тратить лишний ремкомплект - дарю))
+	-- if cond_need/r_abil - rep_out_need > 0.1 then
+	if cond > 1 - r_abil then
+		rep_out_need = rep_out_need + 1
+	end
+	--сколько будет использовано ремнаборов (выдаст сколько нужно до полного ремонта, либо все, что есть)
+	if action == "bRep1x" then
+		rep_use = 1
+		rem_time = 0.2
+	elseif action == "bRepMax" then
+		rep_use = (rep_out_need <= rep_have and rep_out_need) or rep_have
+	end
+	local rem_cond = cond + rep_use*r_abil
+	--нормализуем
+	if rem_cond > 1 then rem_cond = 1 end
+	--[[
+	--	CUIStatic()
+	--	Прикрепляем текстовый индикатор.
+	--]]		
+	self.rText = CUIStatic()
+	self.rText:SetWindowName("rText")
+	self.rText:SetAutoDelete(true)
+	self.rText:SetText("Идёт ремонт...")
+	self.rText:SetTextColor(255,255,0,0)
+	self.rText:SetFont(GetFontGraffiti50Russian())	 		
+    self.rText:Init(300,350,100,25)
+    self:AttachChild(self.rText)
+	-- Запуск таймера о_О	
+	-- _g.set_inactivate_input_time(rem_time)
+	-- amk.g_start_timer("RepairEnd",0,0,rem_time/60)
+	amk.g_start_timer("RepairEnd",0,0,rem_time,aIndex)
+	db.actor:give_info_portion("repair_start")
+	-- ремонтируем	
+		sol_sound.play_sound_on_actor([[weapons\rembox]], 0, true, "repair")
+		oSect["aItem"]:set_condition(rem_cond)
+		-- записываем новые значения
+		amk.save_variable(varname, rep_have-rep_use)
+		-- обновляем интерфейс
+	-- self:UpdIcons()
+	-- self:UpdScrollBar(aTblScrollBars[iBar]["aIndex"], iBar)
+end
+
+function DeviceRemnabor:Quit()
+	-- идёт ремонт - не выходим
+	if db.actor:has_info("repair_start") then return end
+	DisableDevice()
+	self:GetHolder():start_stop_menu(self,true)
+end
+
+--[[
+-- 	Заспавнить предмет в инвентарь к актору.
+-- 	@param  string  sItemSection  Секция предмета который нужно заспавнить.
+--]]
+function amkCreateItemActor(sItemSection)
+	if alife() and sItemSection then		
+		return alife():create(sItemSection, db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id(),db.actor:id())
+	end
+end

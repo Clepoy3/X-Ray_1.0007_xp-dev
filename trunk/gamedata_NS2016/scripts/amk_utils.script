@@ -1,0 +1,244 @@
+--[[
+
+File:  amk_utils .script
+Created:  23.05.2008
+Copyright:  © 2008 AMK team
+Version:  1.1.0.5
+
+--]]
+
+
+--* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+-- *			                         Menu 					                 *
+--* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+RestrictionStock = nil   --Ограничения на вместимость инвентаря
+
+
+
+
+
+--* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+-- *			                         Callback 					                 *
+--* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+--Callback на апдейт монстров (работает постоянно)
+function monster_update(delta)
+end
+
+--Callback на смерть монстров
+function monster_death(victim, who)
+end
+
+--Callback на хит монстра
+function monster_hit(obj, amount, local_direction, who, bone_index)
+end
+
+--Callback на инфопоршен
+function actor_info(npc, info_id)
+end
+
+--Callback на заход на уровень
+function actor_level_border_enter(npc, info_id)
+end
+
+--Callback на выход с уровня
+function actor_level_border_exit(npc, info_id)
+end
+
+--Callback на полученияе артикла
+function actor_article(npc, group, name)
+end
+
+--Callback на взятие предмета в инвентарь гг
+function actor_item_take(obj)
+	inventory_update(obj, 1)
+end
+
+--Callback на потерю предмета из инвенаря гг
+function actor_item_drop(obj)
+	inventory_update(obj, -1)
+end
+
+--Callback на получение тасков
+function actor_task(_task, _objective, _state)
+end
+
+--Callback на апдейт актора  (работает постоянно)
+function actor_update(delta)
+end
+
+
+--* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+-- *			                         Inventory					       *
+--* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+--Кеш текущего состояния инвентаря ГГ (только предметы проверяемые функцией inventory_search, их обычно немного)
+--Структура: [секция_предмета] = количество_в_инвентаре
+InventoryState = {}
+InventoryStateByCLSID = {}
+
+--Проверка на количество предметов в инвентаре гг
+function inventory_search(iItemSection, iNeededCount) counterAdd("amk_utils.inventory_search")
+	--get_console():execute("load ~~~ inventory_search: " .. iItemSection .. ", " .. iNeededCount .. ", " .. type(iItemSection))
+	--Взятие из кеша текущего состояния инвентаря:
+	local vCount = InventoryState[iItemSection]
+	--get_console():execute("load ~~~ inventory_search: cached vCount = " .. (vCount or "(null)"))
+	--Загрузка текущего состояния инвентаря в кеш:
+	if vCount == nil then
+		vCount = 0
+		db.actor:iterate_inventory(function (dummy, vItem)
+				if vItem:section() == iItemSection then
+					vCount = vCount + 1 
+				end 
+			end, nil)
+		InventoryState[iItemSection] = vCount
+		--get_console():execute("load ~~~ inventory_search: saved in cache: " .. vCount)
+	end
+	--Выдача результата проверки:
+	return vCount >= iNeededCount
+end
+
+--Обработчик появления или исчезновения предмета в инвентаре (нужно обновить кеш):
+function inventory_update(iObject, iCountDelta) counterAdd("amk_utils.inventory_update")
+	if iObject == nil then return end
+	local vItemSection = iObject:section()
+	--get_console():execute("load ~~~ inventory_update: " .. tostring(vItemSection) .. ", " .. tostring(iCountDelta) .. ", " .. type(vItemSection))
+	--Взятие из кеша текущего состояния инвентаря:
+	local vCount = InventoryState[vItemSection]
+	--get_console():execute("load ~~~ inventory_update: cached vCount = " .. tostring(vCount))
+	--Обновление текущего состояния инвентаря в кеше:
+	local object_type = trade_generic.getObjectType(iObject)
+	--get_console():execute("load ~~~ inventory_update: " .. tostring(vItemSection) .. ", " .. tostring(iCountDelta) .. ", " .. type(vItemSection)..", "..tostring(object_type))
+	
+	if InventoryStateByCLSID[object_type] == nil then
+		InventoryStateByCLSID[object_type] = {}
+	end
+	local priority = trade_generic.object_priority_function(db.actor, iObject)
+	if InventoryStateByCLSID[object_type][vItemSection] == nil then
+		InventoryStateByCLSID[object_type][vItemSection] = {
+			-- ["count"]		= 0,
+			-- ["priority"]	= priority
+		}
+	end
+	
+	InventoryState[vItemSection] = (vCount or 0) + iCountDelta
+	-- if vCount ~= nil then
+		-- vCount = vCount + iCountDelta
+		-- InventoryState[vItemSection] = vCount
+		-- -- InventoryStateByCLSID[object_type][vItemSection]["count"] = vCount
+		-- -- InventoryStateByCLSID[object_type][vItemSection]["priority"] = priority
+	-- elseif iCountDelta > 0 then
+		-- InventoryState[vItemSection] = iCountDelta
+
+		-- --if InventoryStateByCLSID[object_type][vItemSection] == nil then
+			-- -- InventoryStateByCLSID[object_type][vItemSection] = {
+				-- -- ["count"]		= iCountDelta,
+				-- -- ["priority"]	= priority
+			-- -- }
+		-- --end
+		
+	-- end
+	InventoryStateByCLSID[object_type][vItemSection]["count"] = InventoryState[vItemSection]
+	InventoryStateByCLSID[object_type][vItemSection]["priority"] = priority
+	--get_console():execute("load ~~~ inventory_update: saved in cache: " .. InventoryState[vItemSection])
+	--amk.dump_table(InventoryState, 1, "InventoryState")
+	--amk.dump_table(InventoryStateByCLSID, 1, "InventoryStateByCLSID")
+end
+
+--Проверка на предмет в инвентаре гг
+function have_a_item(itemS) counterAdd("amk_utils.have_a_item")
+    local actor = db.actor
+    if actor ~= nil and actor:object(itemS) ~= nil then
+		return true
+	else
+		return false
+	end
+end
+
+--Проверка на предмет в инветаре и выдачу инфопоршена
+function have_a_item_info(itemS, info) counterAdd("amk_utils.have_a_item_info")
+    local actor = db.actor
+    if actor ~= nil and actor:object(itemS) ~= nil and actor:dont_has_info(info) then
+		actor:give_info_portion(info)
+	end
+end
+
+--Проверка инфопоршенов
+function have_a_info(info_has, not_info_has) counterAdd("amk_utils.have_a_info")
+	local actor = db.actor
+	if has_alife_info(info_has) and not has_alife_info(not_info_has) then
+		return true
+	else
+		return false
+	end
+end
+
+--Проверка денег у гг
+function actor_has_money(money) counterAdd("amk_utils.actor_has_money")
+	local actor = db.actor
+	if actor:money() >= money then
+		return true
+	else
+		return false
+	end
+end
+
+--* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+-- *			                         Transfers					       *
+--* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+--Трансфер денег между гг и нпс
+function actor_give_money(npcObj, actorObj, money, Type) counterAdd("amk_utils.actor_give_money")
+	local actor, npc
+	if db.actor and db.actor:id() == npc:id() then
+		actor = npcObj
+		npc = actorObj
+	else
+		actor = actorObj
+		npc = npcObj
+	end
+	
+	if Type == "out" then
+		dialogs.relocate_money(npc, money, "out")
+	elseif Type == "in" then 
+		dialogs.relocate_money(npc, money, "in")
+	end
+end
+
+--Трансфер предмета между гг и нпс
+function actor_give_item(npcObj, actorObj, itemS, Type) counterAdd("amk_utils.actor_give_item")
+	local actor, npc
+	if db.actor and db.actor:id() == npc:id() then
+		actor = npcObj
+		npc = actorObj
+	else
+		actor = actorObj
+		npc = npcObj
+	end
+	
+	if 	   Type == "out" then
+		dialogs.relocate_item_section(npc, itemS, "out")
+	elseif Type == "in" then 
+		dialogs.relocate_item_section(npc, itemS, "in")
+	end
+end
+
+--Трансфер предметов между гг и нпс
+function relocate_n_items_section(victim, section, Type, count) counterAdd("amk_utils.relocate_n_items_section")
+    if db.actor and victim then
+		if Type == "in" then
+			local sim = alife()
+			local pos = db.actor:position()
+			local lv = db.actor:level_vertex_id()
+			local gv = db.actor:game_vertex_id()
+			local id = db.actor:id()
+			for i=1, count do
+                sim:create(section, pos, lv, gv, id)
+			end
+		elseif Type == "out" then
+			db.actor:iterate_inventory(function (dummy,item) if item:section() == section and count > 0 then 
+			db.actor:transfer_item(item, victim) count = count - 1 end end, nil)
+		end
+		news_manager.relocate_item(db.actor, Type, section)
+    end
+end

@@ -1,0 +1,159 @@
+;-- Гулаг сталков в деревне у костра
+[logic@village_gulag_small_walker1]
+active = walker1@village_gulag_small
+
+[walker1@village_gulag_small]
+path_walk = uxar1_walk
+path_look = uxar1_look
+on_timer = 70000 | kamp1@village_gulag_small
+
+[kamp1@village_gulag_small]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0 
+on_timer = 90000 | walker1@village_gulag_small
+
+[logic@village_gulag_small_walker2]
+active = walker2@village_gulag_small
+
+[walker2@village_gulag_small]
+path_walk = uxar2_walk
+path_look = uxar2_look
+on_timer = 65000 | kamp2@village_gulag_small
+
+[kamp2@village_gulag_small]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0
+on_timer = 95000 | walker2@village_gulag_small
+
+[logic@village_gulag_small_kamp3]
+active = kamp3@village_gulag_small
+
+[kamp3@village_gulag_small]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0
+on_timer = 100000 | walker3@village_gulag_small
+
+[walker3@village_gulag_small]
+path_walk = uxar3_walk
+path_look = uxar3_look
+on_timer = 70000 | kamp3@village_gulag_small
+
+;-- Гулаг бандитов в деревне
+[logic@lost_village_bandit_walker1]
+active = walker1@lost_village_bandit
+
+[walker1@lost_village_bandit]
+path_walk = vor1_walk
+path_look = vor1_look
+on_timer = 70000 | kamp1@lost_village_bandit
+
+[kamp1@lost_village_bandit]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0 
+on_timer = 80000 | walker1@lost_village_bandit
+
+[logic@lost_village_bandit_walker2]
+active = walker2@lost_village_bandit
+
+[walker2@lost_village_bandit]
+path_walk = vor2_walk
+path_look = vor2_look
+on_timer = 65000 | kamp2@lost_village_bandit
+
+[kamp2@lost_village_bandit]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0
+on_timer = 95000 | walker2@lost_village_bandit
+
+[logic@lost_village_bandit_kamp3]
+active = kamp3@lost_village_bandit
+
+[kamp3@lost_village_bandit]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0
+on_timer = 80000 | walker3@lost_village_bandit
+
+[walker3@lost_village_bandit]
+path_walk = vor3_walk
+path_look = vor3_look
+on_timer = 70000 | kamp3@lost_village_bandit
+
+[logic@lost_village_bandit_kamp4]
+active = kamp4@lost_village_bandit
+
+[kamp4@lost_village_bandit]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.0
+
+;-- Гулаг сталков в деревне у штаба
+[logic@village_gulag_big_walker1]
+active = walker1@village_gulag_big
+
+[walker1@village_gulag_big]
+path_walk = kazak1_walk
+path_look = kazak1_look
+
+[logic@village_gulag_big_walker2]
+active = walker2@village_gulag_big
+
+[walker2@village_gulag_big]
+path_walk = kazak2_walk
+path_look = kazak2_look
+
+[logic@village_gulag_big_kamp3]
+active = kamp3@village_gulag_big
+
+[kamp3@village_gulag_big]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.2
+on_timer = 70000 | walker9@village_gulag_big
+
+[walker9@village_gulag_big]
+path_walk = kazak9_walk
+path_look = kazak9_look
+on_timer = 50000 | kamp3@village_gulag_big
+
+[logic@village_gulag_big_kamp4]
+active = kamp4@village_gulag_big
+
+[kamp4@village_gulag_big]
+center_point  = camp_center
+path_walk = camp_center_task
+radius = 2.2
+on_timer = 90000 | walker8@village_gulag_big
+
+[walker8@village_gulag_big]
+path_walk = kazak8_walk
+path_look = kazak8_look
+on_timer = 60000 | kamp4@village_gulag_big
+
+[logic@village_gulag_big_walker5]
+active = walker5@village_gulag_big
+
+[walker5@village_gulag_big]
+path_walk = kazak5_walk
+path_look = kazak5_look
+
+[logic@village_gulag_big_walker6]
+active = walker6@village_gulag_big
+
+[walker6@village_gulag_big]
+path_walk = kazak6_walk
+path_look = kazak6_look
+
+
+[logic@village_gulag_big_walker7]
+active = walker7@village_gulag_big
+
+[walker7@village_gulag_big]
+path_walk = kazak7_walk
+path_look = kazak7_look
+

@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+forest_psu_perex} sr_idle@time
+
+[sr_idle@time]
+on_timer = 8000 | sr_idle@nil %=arhara_dialog.superzhekan_sms1%
+single = true
+
+[sr_idle@nil]

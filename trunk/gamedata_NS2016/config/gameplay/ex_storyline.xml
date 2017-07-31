@@ -1,0 +1,151 @@
+<!--EX_HOARD Article-->
+<article id = 'ex_hoard_article1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article1_text</text>
+</article>
+
+<article id = 'ex_hoard_article2_1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article21_text</text>
+</article>
+<article id = 'ex_hoard_article2_2' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article22_text</text>
+</article>
+<article id = 'ex_hoard_article2_3' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article23_text</text>
+</article>
+
+<article id = 'ex_hoard_article3_1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article31_text</text>
+</article>
+<article id = 'ex_hoard_article3_2' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article32_text</text>
+</article>
+<article id = 'ex_hoard_article3_3' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article33_text</text>
+</article>
+<article id = 'ex_hoard_article3_4' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article34_text</text>
+</article>
+
+<article id = 'ex_hoard_article4_1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article41_text</text>
+</article>
+<article id = 'ex_hoard_article4_2' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article42_text</text>
+</article>
+<article id = 'ex_hoard_article4_3' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article43_text</text>
+</article>
+<article id = 'ex_hoard_article4_4' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article44_text</text>
+</article>
+
+<article id = 'ex_hoard_article5_1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article51_text</text>
+</article>
+<article id = 'ex_hoard_article5_2' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article52_text</text>
+</article>
+<article id = 'ex_hoard_article5_3' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article53_text</text>
+</article>
+<article id = 'ex_hoard_article5_4' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article54_text</text>
+</article>
+
+<article id = 'ex_hoard_article6_1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article61_text</text>
+</article>
+<article id = 'ex_hoard_article6_2' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article62_text</text>
+</article>
+<article id = 'ex_hoard_article6_3' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article63_text</text>
+</article>
+
+<article id = 'ex_hoard_article7_1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article71_text</text>
+</article>
+<article id = 'ex_hoard_article7_2' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article72_text</text>
+</article>
+<article id = 'ex_hoard_article7_3' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article73_text</text>
+</article>
+<article id = 'ex_hoard_article7_4' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article74_text</text>
+</article>
+
+<article id = 'ex_hoard_article8_1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article81_text</text>
+</article>
+<article id = 'ex_hoard_article8_2' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article82_text</text>
+</article>
+<article id = 'ex_hoard_article8_3' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article83_text</text>
+</article>
+
+<article id = 'ex_hoard_article9_1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article91_text</text>
+</article>
+<article id = 'ex_hoard_article9_2' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article92_text</text>
+</article>
+<article id = 'ex_hoard_article9_3' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article93_text</text>
+</article>
+
+<article id = 'ex_hoard_article10_1' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article101_text</text>
+</article>
+<article id = 'ex_hoard_article10_2' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article102_text</text>
+</article>
+<article id = 'ex_hoard_article10_3' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article103_text</text>
+</article>
+
+<article id = 'ex_hoard_article11' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article11_text</text>
+</article>
+<article id = 'ex_hoard_article12' name = ex_hoard_article_name article_type = 'task'>
+	<text>ex_hoard_article12_text</text>
+</article>
+
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal1' name = ex_hoard_journal1_name>
+	<text>ex_hoard_journal1_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal2' name = ex_hoard_journal2_name>
+	<text>ex_hoard_journal2_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal3' name = ex_hoard_journal3_name>
+	<text>ex_hoard_journal3_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal4' name = ex_hoard_journal4_name>
+	<text>ex_hoard_journal4_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal5' name = ex_hoard_journal5_name>
+	<text>ex_hoard_journal5_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal6' name = ex_hoard_journal6_name>
+	<text>ex_hoard_journal6_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal7' name = ex_hoard_journal7_name>
+	<text>ex_hoard_journal7_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal8' name = ex_hoard_journal8_name>
+	<text>ex_hoard_journal8_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal9' name = ex_hoard_journal9_name>
+	<text>ex_hoard_journal9_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal10' name = ex_hoard_journal10_name>
+	<text>ex_hoard_journal10_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal11' name = ex_hoard_journal11_name>
+	<text>ex_hoard_journal11_text</text>
+</article>
+<article article_type = 'journal' group = ex_hoard_journal_group id = 'ex_hoard_journal12' name = ex_hoard_journal12_name>
+	<text>ex_hoard_journal12_text</text>
+</article>
+<!--EX_HOARD Article end-->

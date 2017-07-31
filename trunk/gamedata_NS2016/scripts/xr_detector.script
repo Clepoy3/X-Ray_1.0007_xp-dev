@@ -1,0 +1,50 @@
+--' —хема: детектор на опасную зону: граница уровн€.
+--' dead_zone.ppe
+
+local start_time	= 0		--'¬рем€, с которого начинаетс€ возрастание интенсивности
+local max_time		= 100	--'¬рем€, в которое интенсивность станет максимальной
+local threshold		= 0.2	--'ѕорог, с которого начинаетс€ заражение
+local idle_time		= 10	--'¬рем€ между хитами. ¬ игровых секундах.
+
+function actor_enter()
+	--' »грок покидает опасную территорию (входит в разрешенную границу уровн€)
+	amk.remove_timer("border_exit")
+	level.remove_pp_effector(1001)
+	xr_sound.set_actor_sound("")
+end
+
+function actor_exit()
+	--' »грок входит на опасную территорию (покидает разрешенную границу уровн€)
+	level.add_pp_effector("dead_zone.ppe", 1001, true)
+	level.set_pp_effector_factor(1001, 0.01)
+	
+	xr_sound.set_actor_sound("level_border_detector")
+	xr_sound.set_actor_sound_factor(10)
+	
+	amk.start_timer("border_exit", 10, {init_time = amk.game_seconds(), base_time = max_time - start_time})
+end
+
+function hit_actor(params)
+  -- дл€ совместимости оставлен старый способ с распаковкой
+  local tbl
+  if type(params) == "table" then
+    tbl = params
+  else
+    tbl = amk.unpack_array_from_string(params)
+  end
+  
+	--' ¬ зависимости от времени нахождени€ игрока внутри возрастает интенсивность.
+	--' »нтенсивность возрастает от 0 до 1. ѕри достижении порога начинает хитовать радиаци€.
+	local intence = math.min(1,math.max(0.01,(amk.game_seconds() - tbl.init_time)/tbl.base_time))
+		
+	level.set_pp_effector_factor(1001, intence, 0.3)
+	xr_sound.set_actor_sound_factor(10 - intence*9)
+	
+	if intence > threshold then
+		local h = hit()
+		h.draftsman = db.actor
+		h.type = hit.radiation
+		h.power = 0.05
+		db.actor:hit(h)	
+	end
+end

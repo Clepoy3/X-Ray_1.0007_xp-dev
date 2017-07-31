@@ -1,0 +1,568 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<xml>
+
+<!--Artem Kulinar-->
+<specific_character id="amk_artem_kulinar" team_default = "1">
+	<name>Артём Кулинар</name>
+	<icon>ui_npc_u_artem_kulinar</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>mil_Stalker_veteran_bio</bio>
+
+	<class>amk_artem_kulinar</class>
+	<community>stalker</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>100</reputation>
+	<money min="100000" max="100000" infinitive="1"/>
+
+	<visual>amk\kulinar</visual>
+	<snd_config>characters_voice\human_01\stalker\</snd_config>
+	<crouch_type>-1</crouch_type>
+	<panic_treshold>-1</panic_treshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_pm \n
+		ammo_9x18_fmj = 1\n
+		device_torch \n
+	</supplies>
+
+	<start_dialog>artem_kulinar</start_dialog>
+	<start_dialog>dm_hello_dialog</start_dialog>
+	<actor_dialog>dm_cool_info_dialog</actor_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+</specific_character>
+
+<!--Vitek Voron-->
+<specific_character id="amk_vitek_voron" team_default = "1">
+	<name>Витёк Ворон</name>
+	<icon>ui_arhara_vitek_voron</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>mil_Stalker_veteran_bio</bio>
+
+	<class>amk_vitek_voron</class>
+	<community>stalker</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>100</reputation>
+	<money min="100000" max="100000" infinitive="1"/>
+
+	<visual>new\vitek_voron</visual>
+	<snd_config>characters_voice\human_01\stalker\</snd_config>
+	<crouch_type>-1</crouch_type>
+	<panic_treshold>-1</panic_treshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_pm \n
+		ammo_9x18_fmj = 1\n
+		device_torch \n
+	</supplies>
+
+	<start_dialog>vitek_voron</start_dialog>
+	<start_dialog>dm_hello_dialog</start_dialog>
+	<actor_dialog>mosinka</actor_dialog>
+	<actor_dialog>trade_dialog_voron</actor_dialog>
+	<actor_dialog>dm_cool_info_dialog</actor_dialog>
+	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+</specific_character>
+
+<!--Matvei Kulinar-->
+<specific_character id="matvei_kulinar" team_default = "1">
+	<name>Матвей Кулинар</name>
+	<icon>ui_npc_u_stalker_neytral_balon_8</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>mil_Stalker_veteran_bio</bio>
+
+	<class>matvei_kulinar</class>
+	<community>stalker</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>100</reputation>
+	<money min="100000" max="100000" infinitive="1"/>
+
+	<visual>amk\kulinar</visual>
+	<snd_config>characters_voice\human_01\stalker\</snd_config>
+	<crouch_type>-1</crouch_type>
+	<panic_treshold>-1</panic_treshold>
+
+	<supplies>
+		[spawn] \n
+		wpn_pm \n
+		ammo_9x18_fmj = 1\n
+		device_torch \n
+	</supplies>
+
+	<start_dialog>dm_hello_dialog</start_dialog>
+	<actor_dialog>matvei_kulinar</actor_dialog>
+	<actor_dialog>matvei_dialog2</actor_dialog>
+	<actor_dialog>matvei_dialog3</actor_dialog>
+	<actor_dialog>matvei_zakaz</actor_dialog>
+	<actor_dialog>matvei_zakaz_est</actor_dialog>
+	<actor_dialog>matvei_zakaz2</actor_dialog>
+	<actor_dialog>matvei_zakaz2_est</actor_dialog>
+	<actor_dialog>matvei_zakaz3</actor_dialog>
+	<actor_dialog>matvei_zakaz3_est</actor_dialog>
+	<actor_dialog>matvei_zakaz4</actor_dialog>
+	<actor_dialog>matvei_zakaz4_est</actor_dialog>
+	<actor_dialog>matvei_zakaz5</actor_dialog>
+	<actor_dialog>matvei_zakaz5_est</actor_dialog>
+	<actor_dialog>matvei_zakaz6</actor_dialog>
+	<actor_dialog>matvei_zakaz6_est</actor_dialog>
+	<actor_dialog>matvei_zakaz7</actor_dialog>
+	<actor_dialog>matvei_zakaz7_est</actor_dialog>
+	<actor_dialog>rasskaz_matvei</actor_dialog>
+</specific_character>
+
+<!--Неписи по квестам на убийства-->
+
+<!--снайпер на Болотах-->
+<specific_character id="kill_lukash1" team_default = "1">
+	<name>Бешенный</name>
+	<icon>ui_npc_u_stalker_bandit_master</icon>
+	<map_icon x="5" y="0"></map_icon>
+	<bio>mil_Stalker_master_bio</bio>
+
+	<class>kill_lukash1</class>
+	<community>sniper</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>100</reputation>
+	<money min="200" max="3600" infinitive="0"></money>
+
+	<visual>actors\bandit\stalker_bandit_master</visual>
+	<snd_config>characters_voice\human_03\bandit\</snd_config>
+	<panic_treshold>0</panic_treshold>
+	<crouch_type>0</crouch_type>
+
+	<supplies>
+		[spawn] \n
+		wpn_val \n
+		ammo_9x39_pab9 \n
+	</supplies>
+
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+<!--наёмник на Ростке-->
+	<specific_character id="kill_lukash2" team_default = "1">
+		<name>Тристан</name>
+		<icon>ui_npc_u_stalker_ki_nauchniy</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>sim_killer_master_bio</bio>
+
+		<class>kill_lukash2</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+		
+		<rank>909</rank>
+		<reputation>-132</reputation>
+	
+		<snd_config>characters_voice\human_03\killer\</snd_config>
+		<crouch_type>-1</crouch_type>		
+		<visual>actors\killer\stalker_ki_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_m16a2_sk1 = 1 \n
+			ammo_5.56x45_ss190 = 1 \n
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+<!--военный на Радаре-->
+	<specific_character id="kill_lukash3" team_default = "1">
+		<name>Сержант Голозадов</name>
+		<icon>ui_npc_u_stalker_militari_antigas_2</icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio>sim_Soldier_master_bio</bio>
+		
+		<class>kill_lukash3</class>
+		<community>military</community> <terrain_sect>stalker_military_terrain</terrain_sect>
+
+        <snd_config>characters_voice\human_03\military\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<rank>911</rank>
+		<reputation>0</reputation>
+		<visual>actors\militari\stalker_militari_antigas_2</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+		</supplies>
+		
+#include "gameplay\character_criticals_5.xml"						
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+<!--военный на Агропроме-->
+	<specific_character id="kill_barmen1" team_default = "1">
+		<name>Рядовой Крысиков</name>
+		<icon>ui_npc_u_soldier_mask</icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>val_soldier_regular_bio</bio>		
+
+        <class>kill_barmen1</class>
+    <community>military</community> <terrain_sect>stalker_military_terrain</terrain_sect>    
+    
+    <rank>322</rank>
+    <reputation>-13</reputation>
+
+    <visual>actors\soldier\soldier_mask</visual>
+    <snd_config>characters_voice\human_02\military\</snd_config>
+    <crouch_type>-1</crouch_type>
+    <panic_treshold>0</panic_treshold>
+
+    <supplies>
+    [spawn] \n
+    wpn_ak74u \n
+    ammo_5.45x39_fmj = 1 \n
+    </supplies>
+    
+#include "gameplay\character_criticals_5.xml"
+#include "gameplay\character_dialogs.xml"	
+</specific_character> 
+
+<!--бандит на АТП-->
+<specific_character id="kill_barmen2" team_default = "1">
+	<name>Чебурек</name>
+	<icon>ui_npc_u_hunter_62_novice</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>sim_bandit_master_bio</bio>
+
+	<class>kill_barmen2</class>
+	<community>bandit</community>
+	<terrain_sect>stalker_bandit_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>-138</reputation>
+	<money min="1000" max="2000" infinitive="0"/>
+
+	<visual>actors\bandit\stalker_bandit_exoskeleton</visual>
+	<snd_config>characters_voice\human_03\bandit\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_treshold>-1</panic_treshold>
+
+		<supplies>
+		[spawn] \n
+		wpn_ak47 \n
+		ammo_7.62x39_fmj \n
+	</supplies>
+
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+<!--бандит в Тёмной лощине-->
+<specific_character id="kill_barmen3" team_default = "1">
+	<name>Лютый</name>
+	<icon>ui_npc_u_hunter_62_novice</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>sim_bandit_master_bio</bio>
+
+	<class>kill_barmen3</class>
+	<community>bandit</community>
+	<terrain_sect>stalker_bandit_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>-138</reputation>
+	<money min="1000" max="2000" infinitive="0"/>
+
+	<visual>actors\bandit\stalker_bandit_exoskeleton</visual>
+	<snd_config>characters_voice\human_03\bandit\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_treshold>-1</panic_treshold>
+
+		<supplies>
+		[spawn] \n
+		wpn_ak47 \n
+		ammo_7.62x39_fmj \n
+	</supplies>
+
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+<!--наёмник на Радаре-->
+	<specific_character id="kill_barmen4" team_default = "1">
+		<name>Покемон</name>
+		<icon>ui_npc_u_stalker_ki_nauchniy</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>sim_killer_master_bio</bio>
+
+		<class>kill_barmen4</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+		
+		<rank>909</rank>
+		<reputation>-132</reputation>
+	
+		<snd_config>characters_voice\human_03\killer\</snd_config>
+		<crouch_type>-1</crouch_type>		
+		<visual>actors\killer\stalker_ki_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_m16a2_sk1 = 1 \n
+			ammo_5.56x45_ss190 = 1 \n
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+<!--монолитовец в Лабиринте-->
+	<specific_character id="kill_barmen5" team_default = "1">
+    <name>Тусклый</name>
+    <icon>ui_npc_u_stalker_mo_exo</icon>
+    <map_icon x="3" y="0"></map_icon>
+    <bio>pri_monolith_exo_bio</bio>
+
+    <class>kill_barmen5</class>
+    <community>monolith</community>
+
+    <rank>934</rank>
+    <reputation>-564</reputation>
+    <money min="50" max="500" infinitive="0"/>
+
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+  	<crouch_type>0</crouch_type>
+
+    <visual>actors\monolit\stalker_mo_exo</visual>
+    <supplies>
+             [spawn] \n
+		   wpn_g36 \n
+		   ammo_5.56x45_ss190 = 1 \n
+    </supplies>
+    
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+<!--бандит на Болотах-->
+<specific_character id="kill_trader1" team_default = "1">
+	<name>Буржуй</name>
+	<icon>ui_npc_u_hunter_62_novice</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>sim_bandit_master_bio</bio>
+
+	<class>kill_trader1</class>
+	<community>bandit</community>
+	<terrain_sect>stalker_bandit_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>-138</reputation>
+	<money min="1000" max="2000" infinitive="0"/>
+
+	<visual>actors\bandit\stalker_bandit_exoskeleton</visual>
+	<snd_config>characters_voice\human_03\bandit\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_treshold>-1</panic_treshold>
+
+		<supplies>
+		[spawn] \n
+		wpn_abakan \n
+		ammo_5.45x39_fmj \n
+	</supplies>
+
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+<!--военный в подземке Агропрома-->
+	<specific_character id="kill_trader2" team_default = "1">
+		<name>Рядовой Пустышка</name>
+		<icon>ui_npc_u_soldier_mask</icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>val_soldier_regular_bio</bio>		
+
+        <class>kill_trader2</class>
+    <community>military</community> <terrain_sect>stalker_military_terrain</terrain_sect>    
+    
+    <rank>322</rank>
+    <reputation>-13</reputation>
+
+    <visual>actors\soldier\soldier_mask</visual>
+    <snd_config>characters_voice\human_02\military\</snd_config>
+    <crouch_type>-1</crouch_type>
+    <panic_treshold>0</panic_treshold>
+
+    <supplies>
+    [spawn] \n
+    wpn_ak74u \n
+    ammo_5.45x39_fmj = 1 \n
+    </supplies>
+    
+#include "gameplay\character_criticals_5.xml"
+#include "gameplay\character_dialogs.xml"	
+</specific_character> 
+
+
+<!--наёмник на Армейских складах-->
+	<specific_character id="kill_trader3" team_default = "1">
+		<name>Шарпей</name>
+		<icon>ui_npc_u_stalker_ki_mask</icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>mil_killer_sniper_bio</bio>
+
+        <snd_config>characters_voice\human_03\killer\</snd_config>
+  		<crouch_type>-1</crouch_type>
+		
+		<class>kill_trader3</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+
+		<rank>820</rank>
+		<reputation>-102</reputation>
+
+		<visual>actors\killer\stalker_ki_mask</visual>
+		<supplies>
+			[spawn] \n
+			wpn_sr25_mk11_mod0_sk1 \n
+			ammo_7.62x51_fmj = 1 \n	
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"				
+</specific_character>
+
+<!--монолитовец в Саркофаге-->
+	<specific_character id="kill_trader4" team_default = "1">
+    <name>Суровый</name>
+    <icon>ui_npc_u_stalker_mo_exo</icon>
+    <map_icon x="3" y="0"></map_icon>
+    <bio>pri_monolith_exo_bio</bio>
+
+    <class>kill_trader4</class>
+    <community>monolith</community>
+
+    <rank>934</rank>
+    <reputation>-564</reputation>
+    <money min="50" max="500" infinitive="0"/>
+
+    <snd_config>characters_voice\human_03\monolith\</snd_config>
+  	<crouch_type>0</crouch_type>
+
+    <visual>actors\monolit\stalker_mo_exo</visual>
+    <supplies>
+             [spawn] \n
+		   wpn_g36 \n
+		   ammo_5.56x45_ss190 = 1 \n
+    </supplies>
+    
+#include "gameplay\character_dialogs.xml"
+  </specific_character>
+
+<!--военный в Припяти-->
+	<specific_character id="kill_trader5" team_default = "1">
+		<name>Сержант Скорпионов</name>
+		<icon>ui_npc_u_stalker_militari_antigas_2</icon>
+		<map_icon x="2" y="2"></map_icon>
+		<bio>sim_Soldier_master_bio</bio>
+		
+		<class>kill_trader5</class>
+		<community>military</community> <terrain_sect>stalker_military_terrain</terrain_sect>
+
+        <snd_config>characters_voice\human_03\military\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<rank>911</rank>
+		<reputation>0</reputation>
+		<visual>actors\militari\stalker_militari_antigas_2</visual>		
+		<supplies>
+			[spawn] \n
+			wpn_val \n
+			ammo_9x39_pab9 \n
+		</supplies>
+		
+#include "gameplay\character_criticals_5.xml"						
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+<!--зомби на Янтаре-->
+<specific_character id="kill_petrenko" team_default = "1">
+		<name>Лёха Мазай</name>
+		<icon>ui_npc_u_stalker_zombie2</icon>
+		<map_icon x="7" y="0"></map_icon>
+		<bio>sim_zombied_veteran_bio</bio>
+
+		<class>kill_petrenko</class>
+		<community>zombied</community> <terrain_sect>stalker_zombied_terrain</terrain_sect>
+	
+		<rank>200</rank>
+		<reputation>20</reputation>
+
+		<visual>actors\stalker_zombi\stalker_zombie2</visual>
+		<snd_config>characters_voice\human_02\zombied\</snd_config>
+		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_abakan \n
+			ammo_5.45x39_fmj \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+<!--мститель на Неразведанной земле-->
+<specific_character id="kill_lisiy" team_default = "1">
+		<name>Бубен</name>
+		<icon>ui_npc_u_land_arhara_sniper</icon>
+		<map_icon x="5" y="0"></map_icon>
+		<bio>sim_land_arhara_sniper_veteran_bio</bio>		
+
+     <class>kill_lisiy</class>
+    <community>sniper</community> <terrain_sect>stalker_terrain</terrain_sect>
+    <money min="20" max="360" infinitive="0"></money>
+    
+    <rank>996</rank>
+    <reputation>-950</reputation>
+ 
+    <visual>new\holo_plash</visual>
+    <snd_config>characters_voice\human_02\bandit\</snd_config>
+    <crouch_type>0</crouch_type>
+
+    <supplies>
+      [spawn] \n
+      wpn_bizon1 \n
+      ammo_9x18_pmm \n
+    </supplies>
+    
+#include "gameplay\character_criticals_6.xml"    
+#include "gameplay\character_dialogs.xml"
+</specific_character> 
+
+<!--бандит в Тёмной долине-->
+<specific_character id="kill_mercenary" team_default = "1">
+	<name>Матёрый</name>
+	<icon>ui_npc_u_hunter_62_novice</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>sim_bandit_master_bio</bio>
+
+	<class>kill_mercenary</class>
+	<community>bandit</community>
+	<terrain_sect>stalker_bandit_terrain</terrain_sect>
+
+	<rank>901</rank>
+	<reputation>-138</reputation>
+	<money min="1000" max="2000" infinitive="0"/>
+
+	<visual>actors\bandit\stalker_bandit_exoskeleton</visual>
+	<snd_config>characters_voice\human_03\bandit\</snd_config>
+	<crouch_type>1</crouch_type>
+	<panic_treshold>-1</panic_treshold>
+
+		<supplies>
+		[spawn] \n
+		wpn_abakan \n
+		ammo_5.45x39_fmj \n
+	</supplies>
+
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+</specific_character>
+
+</xml>

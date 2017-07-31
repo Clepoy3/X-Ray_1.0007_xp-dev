@@ -1,0 +1,234 @@
+; Гаусс-винтовка ПЫСа.
+[wpn_gauss]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn                  = "weapons\gauss"
+$npc			 		= on	
+$prefetch 		 	= 8
+scheduled               = off 
+cform                   = skeleton
+class                   = WP_SVD
+min_radius              = 0
+max_radius              = 50
+description			= enc_weapons1_wpn-gauss
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		 = 3
+ef_weapon_type			 = 8
+
+holder_range_modifier	= 2.85            
+holder_fov_modifier		= 0.3              
+
+cost					= 35000
+weapon_class			= sniper_rifle
+
+ammo_limit				= 60
+ammo_current			= 10
+ammo_elapsed			= 0
+
+ammo_mag_size			= 10
+ammo_class				= ammo_gauss
+
+f_mode				= 1
+
+sprint_allowed			= true
+
+;базовая дисперсия
+fire_dispersion_base		= 0.009 
+control_inertion_factor		= 1.4f
+disp_rate = 1.95
+
+;отдача
+cam_relax_speed         	= 3
+cam_dispersion          	= 0.05	
+cam_max_angle			= 4.0	
+cam_max_angle_horz		= 5.0	
+cam_step_angle_horz		= 0.5	
+
+fire_dispersion_condition_factor = 3	 
+misfire_probability 		= 0.003  
+misfire_condition_k			= 0.1
+condition_shot_dec 			= 0.0005 
+
+hand_dependence 		= 1
+single_handed				= 0
+
+slot 					= 2		
+animation_slot			= 2		
+
+inv_name				= wpn-gauss
+inv_name_short			= wpn-gauss
+inv_weight				= 6.5
+
+inv_grid_width     = 4
+inv_grid_height    = 1
+inv_grid_x         = 31
+inv_grid_y         = 38
+
+kill_msg_x			= 166
+kill_msg_y			= 59
+kill_msg_width		= 82
+kill_msg_height		= 23
+
+direction               = 0, 0, 1
+
+fire_point				= 0.00,0.12,0.69
+flame_particles         = weapons\generic_weapon_gauss
+shell_point		 		= 0.00,0.12,0.174				
+smoke_particles	 		= weapons\generic_weapon07	
+rpm_empty_click 		= 120
+
+PDM_disp_base 			= 5.0
+PDM_disp_vel_factor 		= 1.8
+PDM_disp_accel_factor 		= 1.0
+PDM_crouch	 		= 1.8
+PDM_crouch_no_acc 		= 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power           = 20
+hit_impulse		 	= 5
+hit_type 			= fire_wound
+hit_rate	        = 1.85
+fire_distance       = 1000
+bullet_speed		= 15000
+rpm                 = 30
+
+hud                     = wpn_gauss_hud
+normal                  = 0, 1, 0
+position                = -0.026, -0.070, 0.0
+orientation             = 0, 0, 0
+
+;под мишкой
+strap_position         		= -0.26,-0.11,0.15			
+strap_orientation      		= -15,-9,110				
+
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo            = 10
+visual                  = weapons\gauss\wpn_gauss.ogf
+
+light_color		 		= 1.3,1.5,2
+light_range		 		= 4.0
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.5
+
+ph_mass			 		= 3
+
+;addons
+scope_status			= 1
+silencer_status			= 0
+grenade_launcher_status	= 0
+
+zoom_enabled			= true
+scope_zoom_factor	    = 7.5		;8X
+
+scope_texture			= wpn\crosshairs\gauss
+
+scope_name 				= wpn_addon_scope
+scope_x 				= 60
+scope_y 				= -2
+
+;звуки
+snd_draw				= weapons\gauss\gauss_draw
+snd_holster				= weapons\gauss\gauss_holster
+snd_shoot				= weapons\gauss\gauss_shoot
+snd_empty				= weapons\gauss\gauss_empty, 0.5
+snd_reload				= weapons\gauss\gauss_reload, 1.0, 1.0
+ 
+[wpn_gauss_hud]
+fire_point			= -0.00800,0.060000,0.155000
+fire_bone               = wpn_body
+position			= 0.007,-0.024,0.0
+orientation			= 0,0,0
+visual                  = weapons\gauss\wpn_gauss_hud.ogf
+
+shell_point			= -0.042000,0.103000,0.267000
+
+anim_holster	= holster
+anim_idle		= idle
+anim_idle_aim	= idle
+anim_reload		= reload
+anim_draw		= draw
+anim_shoot		= shoot
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.101,0.02,-0.13
+zoom_rotate_x		= 0.000000
+zoom_rotate_y		= 0.000000
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.3
+rotate_time			= 0.3
+
+; Уники
+
+[wpn_dark_gauss]:wpn_gauss
+$spawn 								= "weapons\dark_gauss"
+visual                  = weapons\gauss\wpn_gausx.ogf
+class 								=WP_LR300
+inv_name 							= wpn_dark_gauss
+inv_name_short 				= wpn_dark_gauss
+description 					= enc_weapons1_wpn_dark_gauss
+cost 									= 100000
+can_trade 						= true
+ammo_mag_size 				= 20
+ammo_class 						= ammo_gauss
+fire_modes 						= 1, -1
+sprint_allowed 				= true
+fire_dispersion_base 	= 0.05
+cam_relax_speed 			= 3
+cam_dispersion 				= 0.5
+condition_shot_dec 		= 0.0001
+inv_weight 						= 6.0
+inv_grid_width     = 4
+inv_grid_height    = 1
+inv_grid_x         = 23
+inv_grid_y         = 38
+fire_point				= 0.00,0.12,0.69
+hit_power 						= 23
+hit_impulse 					= 15
+bullet_speed 					= 7500
+rpm 	                             = 500
+fire_point				= 0.00,0.12,0.69
+flame_particles         = weapons\generic_weapon_gauss_0
+shell_point		 		= 0.00,0.12,0.174				
+smoke_particles	 		= weapons\generic_weapon07
+shell_point		 		= 0.00,0.12,0.174	
+shell_particles	 	= weapons\generic_sigarets_00
+;addons
+scope_status			= 0
+zoom_enabled			= true
+scope_zoom_factor	    = 85		;8X
+fov for zoom mode 			= 35.0
+
+scope_texture			= wpn\crosshairs\gauss
+
+scope_name 				= wpn_addon_scope
+scope_x 				= 60
+scope_y 				= -2
+
+hud                      	= wpn_dark_gauss_hud
+
+[wpn_dark_gauss_hud]
+fire_point			= 0.01,0.07,0.155
+fire_bone               = wpn_body
+orientation             = 0, 0, 0
+position                = 0, 0, 0
+visual                  = weapons\gauss\wpn_gausx_hud.ogf
+
+shell_point			= -0.042000,0.103000,0.267000				
+
+anim_holster	= holster
+anim_idle		= idle
+anim_idle_aim	= idle
+anim_reload		= reload
+anim_draw		= draw
+anim_shoot		= shoot
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.103,0.021000,0.000000
+zoom_rotate_x		= -0.002800
+zoom_rotate_y		= -0.0021000

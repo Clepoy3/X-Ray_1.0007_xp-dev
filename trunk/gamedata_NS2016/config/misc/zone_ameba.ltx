@@ -1,0 +1,91 @@
+[zone_ameba_base]
+GroupControlSection = spawn_group_zone
+class  = Z_AMEBA
+visual = physics\anomaly\anomaly_studen
+
+hit_impulse_scale = 0
+effective_radius  = 0.75
+
+ef_anomaly_type = 1
+ef_weapon_type  = 13
+
+artefacts =
+BirthProbability = 0
+
+sound       = zone_mosquito_bald
+postprocess = postprocess_new
+
+max_velocity_in_zone = 0.5
+
+min_start_power    = 60
+max_start_power    = 100
+attenuation        = 1
+period             = 1
+min_artefact_count = 0
+max_artefact_count = 0
+
+attack_animation_start = 0
+attack_animation_end   = 5000
+
+idle_sound         = anomaly\gravi_idle00
+blowout_sound      = anomaly\teleport_work_2
+hit_sound          = anomaly\anomaly_gravy_hit1
+entrance_sound     = anomaly\swamp_appear_1
+body_tearing_sound = anomaly\anomaly_body_tear_1
+
+hit_type = chemical_burn
+
+disable_time       = -1
+disable_time_small = 500
+disable_idle_time  = -1
+
+ignore_nonalive  = false
+ignore_small     = false
+ignore_artefacts = true
+
+blowout_light = on
+light_color   = 1.4,1.6,1.3
+light_range   = 12.0
+light_time    = 5.0
+light_height  = 1.5
+
+idle_light = off
+
+awaking_time    = 10
+blowout_time    = 5000
+accamulate_time = 4000
+
+
+visible_by_detector     = on
+blowout_wind            = off
+spawn_blowout_artefacts = off
+
+
+[zone_ameba]:zone_ameba_base
+$spawn = "zones\ameba"
+
+
+[zone_ameba1]:zone_ameba_base
+$spawn = "zones\ameba1"
+visual = physics\anomaly\anomaly_hvatalka
+
+blowout_sound = anomaly\anomaly_body_tear_1
+
+light_color = 4.0,1.6,1.3
+light_range = 5.0
+light_time  = 2.0
+
+
+[zone_ameba2]:zone_ameba_base
+$spawn = "zones\ameba2"
+visual = physics\anomaly\anomaly_hvatalka_2
+
+idle_particles       = ogsm\ogsm_flies_myxi
+blowout_particles    = ogsm\ogsm_flies_myxi_01
+idle_small_particles = ogsm\ogsm_flies_myxi
+idle_big_particles   = ogsm\ogsm_flies_myxi_00
+
+idle_sound    = nature\new_flies3
+blowout_sound = anomaly\anomaly_body_tear_1
+
+blowout_light = off

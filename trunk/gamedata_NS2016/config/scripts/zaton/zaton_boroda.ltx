@@ -1,0 +1,30 @@
+[logic]
+active = walker
+meet = meet
+danger = danger_ignore
+
+[walker]
+path_walk = zaton_boroda_walk
+path_look = zaton_boroda_look
+def_state_standing = ward
+on_info = {+boroda_go2} walker2
+
+[walker2]
+path_walk = zaton_boroda2_walk
+path_look = zaton_boroda2_look
+def_state_standing = ward
+on_info = {+boroda_go3} walker3
+meet = no_meet
+
+[walker3]
+path_walk = zaton_boroda_walk
+path_look = zaton_boroda_look
+def_state_standing = ward
+
+[danger_ignore]
+ignore_distance = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true

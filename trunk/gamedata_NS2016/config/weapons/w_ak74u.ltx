@@ -1,0 +1,261 @@
+; АКС74У "Спецназ"
+; Модели - ArmA II и mongol.
+; Текстуры - ПСЕВДО-S.T.A.L.K.E.R. и mongol.
+; Звуки, иконки и правка моделей - Exiu.
+; Конфиг - Buusty.
+; Анимации - KF.
+
+[wpn_ak74u]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	= 
+$spawn              	= "weapons\ak_74u"	
+$npc					= on				
+$prefetch 			= 8
+scheduled				= off         
+cform               	= skeleton
+class               	= WP_LR300	
+min_radius          	= 30		
+max_radius          	= 100	
+description			= enc_weapons1_wpn-ak74u
+
+script_binding  = bind_wpn.init
+	
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier	= 1.0		        
+holder_fov_modifier		= 0.7              
+
+cost					= 1000			
+weapon_class			= assault_rifle		
+	
+ammo_limit			= 210	
+ammo_elapsed			= 30			
+	
+ammo_mag_size			= 30			
+fire_modes			= 1, -1
+
+ammo_class			= ammo_5.45x39_fmj, ammo_5.45x39_ap, ammo_5.45x39_izomorf 
+
+hand_dependence		= 1	
+single_handed			= 0
+	
+slot 				= 2	
+animation_slot			= 2	
+
+inv_name	        	     = wpn-ak74u		
+inv_name_short			= wpn-ak74u	
+inv_weight			= 2.7		
+
+inv_grid_width     = 3
+inv_grid_height    = 2
+inv_grid_x         = 14
+inv_grid_y         = 30
+
+kill_msg_x			= 0
+kill_msg_y			= 123
+kill_msg_width		     = 69
+kill_msg_height		= 30
+
+;params of weapon recoil
+fire_dispersion_base			= 0.26		
+control_inertion_factor			= 1.09f
+
+;отдача
+cam_relax_speed         		= 5.5		
+cam_dispersion          		= 0.6		
+cam_dispersion_inc			     = 0.20		
+cam_dispertion_frac			     = 0.95		
+cam_max_angle				= 14		
+cam_max_angle_horz			= 25		
+cam_step_angle_horz			= 1.5		
+
+fire_dispersion_condition_factor 	= 3		 
+misfire_probability 		= 0.0011	 
+misfire_condition_k			= 0.15
+condition_shot_dec 			= 0.00011	
+
+fire_point             		=  0,0.216,0.46			 
+flame_particles				= weapons\generic_weapon05
+shell_particles	 		= weapons\shells_r_ns_556  
+smoke_particles			= weapons\generic_shoot_00
+	
+shell_point		 			= 0,0.226,0.114			
+
+PDM_disp_base 				= 7.5
+PDM_disp_vel_factor 		= 1.3
+PDM_disp_accel_factor 		= 1.3
+PDM_crouch	 			= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+; ttc
+hit_power               = 0.72		
+hit_impulse		 	= 3			
+hit_type 				= fire_wound 	
+
+fire_distance           = 175
+bullet_speed			= 735		
+rpm                     = 700		
+
+use_aim_bullet				= true		
+time_to_aim					= 1.0	
+
+silencer_hit_power       		= 0.64
+silencer_hit_impulse	 		= 2
+silencer_fire_distance   		= 150
+silencer_bullet_speed	 		= 665
+
+hud                      	= wpn_ak74u_hud_new	
+
+position         	        = -0.026,-0.172,0			
+orientation      	        = 0,0,0						
+
+strap_position         		= -0.16,-0.40,0.15			
+strap_orientation      		= -10,-5,10					
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+visual         		        = weapons\ak74u_specnaz\ak74u.ogf	
+
+
+ph_mass						= 5							
+
+;addons
+scope_status				= 0							; 0 - no addon
+silencer_status			= 2							
+grenade_launcher_status		= 0							
+
+scope_texture					= wpn\crosshairs\pso1
+
+zoom_enabled				= true						
+scope_zoom_factor	     	= 50						
+
+scope_name 			= wpn_addon_scope			
+scope_x                     = 22
+scope_y                     = 0
+silencer_name  			= wpn_addon_silencer			
+silencer_x                  = 133  ; offset in inventory icon
+silencer_y                  = 16				
+
+snd_draw					= weapons\ak_74u_new\draw
+snd_holster				= weapons\ak_74u_new\holster
+snd_shoot					= weapons\ak_74u_new\shot0
+snd_shoot1				= weapons\ak_74u_new\shot1
+snd_shoot2				= weapons\ak_74u_new\shot2
+snd_shoot3				= weapons\ak_74u_new\shot3
+snd_empty					= weapons\ak_74u_new\empty
+snd_reload				= weapons\ak_74u_new\reload
+snd_shoot_grenade			= weapons\gp30\gp30_grenshoot
+snd_reload_grenade			= weapons\gp30\GP30_grenload, 1.0, 0.8
+snd_switch				= weapons\gp30\gp30_switch, 1.0, 0.5
+snd_silncer_shot			= weapons\ak74u\ak74u_shot_sil, 0.7
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+light_color					= 0.6,0.5,0.3				
+light_range					= 5							
+light_var_color				= 0.05						
+light_var_range				= 0.5
+light_time 					= 0.2						
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+ 
+[wpn_ak74u_hud_new]
+shell_point					=  0.04, 0.08, -0.13
+shell_dir			     	= 0.0, 1.0, 0.0
+
+fire_point               	= 0.07,0.09,0.07
+fire_point2              	= 0.30, 0.00, 0.05
+fire_bone               	= wpn_body
+
+orientation             	= 1, 2, 0		
+position                	= 0.09, -0.04, -0.01
+visual                  	= weapons\ak74u_specnaz\wpn_ak74u_hud.ogf
+
+; animation names
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload				= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset			= -0.089887,0.0397,-0.115
+zoom_rotate_x		= 0.033
+zoom_rotate_y		= 0.01648
+
+zoom_hide_crosshair	= true						
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.3
+rotate_time			= 0.3
+
+;----апгрейды----
+
+; Смена калибра с 5.45 на 5.56
+[wpn_ak74u_kalibr]:wpn_ak74u
+$spawn = "weapons\ak_74u\wpn_ak74u_kalibr"
+ammo_class		 	= ammo_5.56x45_ss190, ammo_5.56x45_ap
+inv_name	        		= wpn-ak74u_kalibr
+inv_name_short			= wpn-ak74u_kalibr
+description			= enc_kalibr_wpn_ak74u
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 1700
+hit_power                	= 0.74
+silencer_name  				= wpn_addon_sil_556_ar
+silencer_hit_power       		= 0.66
+condition_shot_dec 			= 0.00014	
+
+; Снижение отдачи
+[wpn_ak74u_otdaca]:wpn_ak74u
+$spawn = "weapons\ak_74u\wpn_ak74u_otdaca"
+fire_dispersion_base         = 0.13
+cam_relax_speed              = 2.75
+cam_dispersion          	= 0.3		
+cam_dispersion_inc	          = 0.1		
+cam_max_angle	               = 7		
+inv_name	        			= wpn-ak74u_otdaca
+inv_name_short			     = wpn-ak74u_otdaca
+description				= enc_otdaca_wpn_ak74u
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 2100
+
+; Повышение скорострельности
+[wpn_ak74u_skorost]:wpn_ak74u
+$spawn = "weapons\ak_74u\wpn_ak74u_skorost"
+rpm                 = 850
+inv_name	        			= wpn-ak74u_skorost
+inv_name_short			     = wpn-ak74u_skorost
+description				= enc_skorost_wpn_ak74u
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 2000
+
+; Снижение веса
+[wpn_ak74u_ves]:wpn_ak74u
+$spawn = "weapons\ak_74u\wpn_ak74u_ves"
+inv_weight				=  2
+inv_name	        			= wpn-ak74u_ves
+inv_name_short			     = wpn-ak74u_ves
+description				= enc_ves_wpn_ak74u
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 1900
+
+
+; Отдача и вес
+[wpn_ak74u_otdaca_ves]:wpn_ak74u_otdaca
+$spawn = "weapons\ak_74u\wpn_ak74u_otdaca_ves"
+inv_weight				= 2
+inv_name	        			= wpn-ak74u_otdaca_ves
+inv_name_short			     = wpn-ak74u_otdaca_ves
+description				= enc_otdaca_ves_wpn_ak74u
+cost					= 4300
+

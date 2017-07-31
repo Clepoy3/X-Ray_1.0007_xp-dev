@@ -1,0 +1,30 @@
+[logic]
+active = walker
+meet = meet
+combat_ignore = combat_ignore
+danger = danger_ignore
+on_death = death
+
+[walker]
+path_walk = zat_amerika_walk
+path_look = zat_amerika_look
+combat_ignore_cond = always
+show_spot = false
+on_info = {!is_day} amerika@sleeper
+
+[amerika@sleeper]
+path_walk = zat_amerika_sleeper
+combat_ignore_cond = always
+show_spot = false
+on_info = {=is_day} walker
+
+[danger_ignore]
+ignore_distance = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[death]
+on_info = %+zaton_amerika_dead%

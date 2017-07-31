@@ -1,0 +1,26 @@
+[logic]
+active = heli_move@idle
+
+[heli_move@idle]
+path_move = esc_heli_idle_move
+engine_sound = false
+on_info = {+esc_heli_go} heli_move@fly
+combat_safe_altitude = -50
+
+[heli_move@fly]
+path_move = esc_heli_fly
+on_signal = heli_radio| %+esc_heli_direct%
+on_signal2 = fly_end| heli_move@patrol
+combat_safe_altitude = -50
+
+[heli_move@patrol]
+path_move = esc_heli_sleep
+on_signal = heli_sig| heli_move@sleep
+combat_safe_altitude = -50
+invulnerable = true
+mute = true
+
+[heli_move@sleep]
+path_move = esc_heli_sleep2
+engine_sound = false
+combat_safe_altitude = -50

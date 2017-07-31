@@ -1,0 +1,131 @@
+;--- base zone ------------------------------------------------------------
+[zone_fountain]
+GroupControlSection	= spawn_group_zone
+$spawn			= "zones\fountain"
+$prefetch			= 16
+class				= ZS_ZHARK
+script_binding		= amk_anoms.bind
+
+hit_impulse_scale		= 0
+effective_radius		= 3
+ef_anomaly_type		= 1
+ef_weapon_type		= 13
+
+sound				= zone_mosquito_bald
+postprocess			= postprocess_flame
+
+artefacts			= af_ameba_slime, 0.5, af_ameba_slug, 0.3, af_ameba_mica, 0.2
+BirthProbability		= 0.1
+
+min_start_power		= 0.99
+max_start_power		= 1
+attenuation			= 1
+period			= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+idle_particles		= ;static\buble_distort001
+blowout_particles		= ;anomaly2\artefact\anom_fontan
+
+hit_small_particles	= anomaly2\electra_entrance_small
+hit_big_particles		= anomaly2\electra_entrance_small
+idle_small_particles	= anomaly2\artefact\fontan_aya
+idle_big_particles	= anomaly2\artefact\fontan_aya
+
+;idle_particles_dont_stop	= true
+
+idle_sound			= anomaly\fountain_idle		;постоянный звук
+blowout_sound		= anomaly\fountain_blowout	;во время выброса(удара) в центре аномалии
+hit_sound			= anomaly\fountain_hit		;на персонаже, когда тот получает хит
+entrance_sound		= anomaly\fountain_hit		;при попадании объекта в аномалию
+
+hit_type			= strike
+
+disable_time		= 50000		;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small	= 50000		;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time		= 700			;время отключения idle партиклов
+
+ignore_nonalive		= true
+ignore_small		= false
+ignore_artefacts		= true
+
+blowout_light		= on
+light_color			= 0.5,0.7,0.9
+light_range			= 10
+light_time			= 3
+light_height		= 3			;подъем источника света на высоту
+
+idle_light			= off
+
+awaking_time		= 45
+blowout_time		= 300
+accamulate_time		= 800
+
+visible_by_detector	= off
+
+;; ветер
+blowout_wind		= off
+
+blowout_wind_time_start	= 0
+blowout_wind_time_peak	= 5900
+blowout_wind_time_end	= 1000
+blowout_wind_power	= 0.5			;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak
+
+;рождение артефактов во время срабатывания
+spawn_blowout_artefacts		= off
+
+artefact_spawn_probability	= 0.09					;вероятность, что во время срабатывания аномалии будет рожден артефакт
+artefact_spawn_particles	= anomaly2\gravi_anomaly_shield_00	;партиклы, которые отыграются на месте рождения артефакта (опционально)
+artefact_born_sound		= anomaly\pux_blast			;звук, который отыграются на месте рождения артефакта (опционально)
+throw_out_power			= 15						;импульс с которым артефакт будет выброшен из зоны в произвольном направлении
+artefact_spawn_height		= 10						;(м) высота на центром зоны где будет рожден артефакт
+;--- base zone ---------------------------------------------------- end ---
+
+;--- variable zone --------------------------------------------------------
+[zone_fountain_weak]:zone_fountain
+$spawn			= "zones\fountain_weak"
+
+artefacts			= af_ameba_slime, 0.7, af_ameba_slug, 0.3, af_ameba_mica, 0.0
+
+min_start_power		= 0.2
+max_start_power		= 0.25
+
+idle_particles		= 1935\fontan_01
+blowout_particles		= anomaly2\electra2_blast
+
+[zone_fountain_average]:zone_fountain
+$spawn			= "zones\fountain_average"
+
+artefacts			= af_ameba_slime, 0.7, af_ameba_slug, 0.2, af_ameba_mica, 0.1
+
+min_start_power		= 0.25
+max_start_power		= 0.35
+
+idle_particles		= 1935\fontan_01
+blowout_particles		= anomaly2\artefact\anom_fontan
+
+[zone_fountain_strong]:zone_fountain
+$spawn			= "zones\fountain_strong"
+
+artefacts			= af_ameba_slime, 0.5, af_ameba_slug, 0.3, af_ameba_mica, 0.2
+
+min_start_power		= 0.65
+max_start_power		= 0.95
+
+idle_particles		= 1935\fontan_02
+blowout_particles		= anomaly2\artefact\anom_fontan
+;--- variable zone ------------------------------------------------ end ---
+
+;--- amk_zone -------------------------------------------------------------
+[amk_zone_fountain]:zone_fountain
+$spawn			= "zones\amk_fountain"
+
+[amk_zone_fountain_weak]:zone_fountain_weak
+$spawn			= "zones\amk_fountain_weak"
+
+[amk_zone_fountain_average]:zone_fountain_average
+$spawn			= "zones\amk_fountain_average"
+
+[amk_zone_fountain_strong]:zone_fountain_strong
+$spawn			= "zones\amk_fountain_strong"
+;--- amk_zone ----------------------------------------------------- end ---

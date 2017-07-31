@@ -1,0 +1,219 @@
+--' Sapsan
+---' revision and adaptation for NS_2016 lsclon 14.11.16 '---
+--' Bind_wpn. Биндер оружия. Изменение кондиции при первом апдейде.
+--[[
+Описание:
+	В net_spawn при любой кондиции self.object:condition() = 1, поэтому вся работа перенесена на первый апдейд.
+	Флаг sobj.condition_already_set ставится на серверный объект, но не сохраняется.
+		Инициализация биндера происходит один раз, но при каждом заходе на локацию.
+		Для ГГ биндер сработает только один раз - при спавне в инвентарь.
+	Игнорируются ящики, квестовики, Сидор и Василий, торговцы, спавн оружия в ГГ(в том числе от менял и ремонтников)
+	У оружия, заспавненного в объект(кроме в НПС и ГГ), а именно функцией alife():create(section,pos,lv,gv,parent_id)
+		не происходит инициализация серверной стороны, а соответственно неопределяется парент и нет биндера.
+		К такому оружию биндер подключается после изъятия его из "родителя" и перезагрузки
+	Снижение кондиции только для НПС, и зависит от группировки и ранга непися.
+Дилемма:
+	От состояния оружия зависит шанс осечки оружия в руках непися, а также его меткость.
+		С неисправным оружием НПС чаще перезаряжается и стреляет мимо цели, становясь легкой добычей для ГГ.
+	С каждым выстрелом оружие портится на параметр "condition_shot_dec" из конфига оружия.
+		Значит и без того убитый ствол, при длительной перестрелке, становится безполезной палкой
+	Оружие у НПС не востанавливается, но при перезаходе на локацию пройдет новый просчет.
+	Надо править параметры cam_...(подъем ствола при каждом выстреле), а то НПС с автоматами просто стреляют в небо.
+		В этом случае, можно уменьшить минимальный порог кондиции.
+Таблицы:
+	condition_group - разброс состояния оружия по группировкам. Значения для ранга 900:
+["bandit"]   - 12 место, разрыв 15%, Что отобрал, то моё :: 78 - 93
+["bandos"]   - 11 место, разрыв 14%, Пьяницы и задиры :: 79 - 93
+["dolg"]     -  7 место, разрыв 10%, Хорошее снабжение и вооружение :: 84 - 94
+["ecolog"]   -  Отдельная категория. Пистолет?! А что это такое? :: 84 - 99
+["freedom"]  -  8 место, разрыв 11%, Хорошее снабжение и вооружение, но лаботрясы :: 83 - 94
+["green"]    -  5 место, разрыв  8%, На медведя без памперсов? Вся надежда на ружьё! :: 87 - 95
+["killer"]   -  3 место, разрыв  6%, Обученный наёмник и неисправный автомат? :: 91 - 97
+["lastday"]  -  лучше всех, 1 место, Разрыв 4% отличное снабжение и вооружение :: 95 - 99
+["military"] - 10 место, разрыв 13%, Если не пропили, то продали! :: 80 - 93
+["monolith"] -  2 место, разрыв  5%, Кто и как их снабжает? Но технологии... :: 93 - 98
+["nebo"]     -  9 место, разрыв 12%, Плохое снабжение вооружения :: 81 - 93
+["sniper"]   -  4 место, разрыв  7%, Жизнь, это снайперка! :: 89 - 96
+["stalker"]  - 12 место, разрыв 15%, Чем богаты, тому рады :: 78 - 93
+["voin"]     -  6 место, разрыв  9%, Опытные военные с отличным снабжением :: 85 - 94
+["zombied"]  -  отдельная категория. :: 43 - 55
+}
+--]]
+
+local condition_group = {
+["bandit"]   = {78, 93},
+["bandos"]   = {79, 93},
+["dolg"]     = {84, 94},
+["ecolog"]   = {84, 99},
+["freedom"]  = {83, 94},
+["green"]    = {87, 95},
+["killer"]   = {91, 97},
+["lastday"]  = {95, 99},
+["military"] = {80, 93},
+["monolith"] = {93, 98},
+["nebo"]     = {81, 93},
+["sniper"]   = {89, 96},
+["stalker"]  = {78, 93},
+["voin"]     = {85, 94},
+["zombied"]  = {43, 55}
+}
+
+function init(obj)
+	local sobj = alife():object(obj:id())
+	-- Спавн в ящик - нет регистрации серверного объекта. Или повторный выход в онлайн.
+	if not sobj or sobj.condition_already_set then
+		return
+	end
+	local new_binder = wpn_binder(obj)
+	obj:bind_object(new_binder)
+end
+
+class "wpn_binder" (object_binder)
+function wpn_binder:__init(obj) super(obj)
+	self.condition_set = nil  -- Флаг присвоения новой кондиции
+	self.new_cond = nil       -- Вычисленная кондиция
+	self.wpn = nil            -- Серверный объект
+end
+
+function wpn_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function wpn_binder:reinit()
+	object_binder.reinit(self)
+end
+
+
+function wpn_binder:net_spawn(data)
+	if not object_binder.net_spawn(self, data) then
+		return false
+	end
+	-- Получаем серверный объект
+	self.wpn = alife():object(data.id)
+	return true
+end
+
+function wpn_binder:get_group(cls,parent)
+	local min_cond, max_cond, ignore = self:ignore_group(cls,parent)
+	if not ignore then
+		-- Остальных проверяем по коммъюнити.
+		if cls == clsid.script_stalker then
+			local group_cond = condition_group[parent:community()]
+			if group_cond then
+				local cond_min = group_cond[1]
+				local cond_max = group_cond[2]
+				local rank = tonumber(parent:rank())
+				local rank_k = 3 * (cond_max - cond_min) * (1 - rank/900)
+				min_cond = math.max((cond_min - rank_k),  10)
+				max_cond = math.min((cond_max - rank_k), 100)
+				if min_cond > max_cond then
+					min_cond = max_cond
+				end
+			end
+		end
+	end
+	return min_cond, max_cond
+end
+
+function wpn_binder:ignore_group(cls,parent)
+	local cnd = 99.999958276749
+	-- Отсекаем Сидора с Василием, и спавн оружия в ГГ.
+	if cls == clsid.script_trader or cls == clsid.actor then
+		cnd = self.object:condition() * 100
+		return cnd, cnd, true
+	end
+	if cls == clsid.script_stalker then
+		local npc = level.object_by_id(parent.id)
+		-- Проверим торговцев. Перевести на "stalker_trader"!
+		if npc then
+			local st = db.storage[npc:id()]
+			if st then
+				local ini = st.ini
+				local sect_logic = st.section_logic
+				if ini and sect_logic and ini:section_exist(sect_logic) and ini:line_exist(sect_logic, "trade") then
+					if self.object:name() ~= self.object:section() or not parent:alive() then
+ 						cnd = self.object:condition() * 100
+					end
+					return cnd, cnd, true
+				end
+			end
+		end
+		local sect = npc and npc:section()
+		-- Отсекаем квестовиков.
+		if sect and (sect == "stalker_personal" or sect == "stalker_sakharov" or sect == "m_barman") then
+			if not parent:alive() then
+ 				cnd = self.object:condition() * 100
+			end
+			return cnd, cnd, true
+		end
+	end
+	return cnd, cnd, nil
+end
+
+function wpn_binder:update(delta)
+	object_binder.update(self, delta)
+	-- Еще не проверялись.
+	if not self.condition_set then
+		local sobj = self.wpn
+		if sobj then
+			self.new_cond = self.object:condition()
+			-- Запрашиваем парент у серверного объекта.
+			local npc_id = sobj.parent_id
+			local parent = npc_id and npc_id ~= 65535 and alife():object(npc_id)
+			if parent then
+				local cls = parent:clsid()
+				-- Отсекаем ящики. Что положили, то и взяли.
+				if cls == clsid.inventory_box then
+					self:fulfil()
+					return true
+				else
+					-- Отсекаем обысканный труп.
+					if cls == clsid.script_stalker and not parent:alive() and parent.cut_part then
+						self:fulfil()
+						return true
+					end
+					local min_cond, max_cond = self:get_group(cls,parent)
+					self.new_cond = math.random(min_cond, max_cond) / 100
+					self:fulfil()
+					return true
+				end
+			end
+			-- Безхозное оружие и переспавн с ящика Бака
+			if npc_id == 65535 then
+				self:fulfil()
+				return true
+			end
+		end
+	end
+end
+
+-- Смена состояния оружия
+function wpn_binder:fulfil()
+	if self.new_cond then
+		self.object:set_condition(self.new_cond)
+		self.condition_set = true
+		if self.wpn then
+			self.wpn.condition_already_set = true
+		end
+	end
+end
+
+-- Уход в оффлайн
+function wpn_binder:net_destroy()
+	object_binder.net_destroy(self)
+end
+
+function wpn_binder:net_save_relevant()
+	return true
+end
+
+-- Квиксейв, именная сохранка. Для ГГ и автосейв.
+function wpn_binder:load(reader)
+	object_binder.load(self, reader)
+	self.condition_set = true
+end
+
+-- Квиксейв, именная сохранка. Для ГГ также и при автосейве сработает wpn_binder:load
+function wpn_binder:save(packet)
+	object_binder.save(self, packet)
+end

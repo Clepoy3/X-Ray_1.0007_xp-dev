@@ -1,0 +1,35 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_npc_in_zone = 19052 |boroda_dilog_bandos_restrictor| sr_idle@time
+single = true
+
+[sr_idle@time]
+on_timer = 5000 | sr_idle@time1 %=arhara_dialog.sms_boroda_obmorok1%
+
+[sr_idle@time1]
+on_timer = 10000 | sr_idle@time2 %=arhara_dialog.sms_boroda_obmorok2%
+
+[sr_idle@time2]
+on_timer = 10000 | sr_idle@time3 %+stand_ap =arhara_dialog.sms_boroda_obmorok3%
+
+[sr_idle@time3]
+on_timer = 10000 | sr_idle@time4 %=arhara_dialog.sms_boroda_obmorok4%
+
+[sr_idle@time4]
+on_timer = 10000 | sr_idle@time5 %=arhara_dialog.sms_boroda_obmorok5%
+
+[sr_idle@time5]
+on_timer = 7000 | sr_idle@time7 %=arhara_dialog.sms_boroda_obmorok6%
+
+;[sr_idle@time6]
+;on_timer = 7000 | sr_idle@time7 %=arhara_dialog.sms_boroda_obmorok7%
+
+[sr_idle@time7]
+on_timer = 2000 | sr_idle@time8 %+kit_play%
+
+[sr_idle@time8]
+on_timer = 7000 | sr_idle@nil %+obmorok_sit%
+
+[sr_idle@nil]

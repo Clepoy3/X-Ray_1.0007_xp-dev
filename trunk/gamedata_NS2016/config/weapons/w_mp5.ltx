@@ -1,0 +1,349 @@
+; Пистолет-пулемет МП5А3
+; Модель: FPSBanana
+; Текстуры: FPSBanana
+; Анимации: KingFriday
+; Компиляция: pyo1966
+
+[wpn_mp5]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency 	= 
+$spawn                  = "weapons\mp5"
+$npc			 		= on			
+$prefetch 		 	= 8
+scheduled               = off          
+cform                   = skeleton
+class                   = WP_LR300
+min_radius              = 0
+max_radius              = 150
+description			= enc_weapons1_wpn-mp5
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier	= 1.0		        
+holder_fov_modifier		= 0.7              
+
+weapon_class			= assault_rifle
+
+cost					= 3000
+
+ammo_limit		 	= 210
+ammo_current			= 30
+ammo_elapsed		 	= 30
+
+ammo_mag_size		 	= 30
+ammo_class		 			= ammo_9x19_fmj, ammo_9x19_pbp
+fire_modes			= 1, 3, -1
+f_mode				= 2
+
+hand_dependence		= 1
+single_handed			= 0
+
+inv_name				= wpn-mp5
+inv_name_short			= wpn-mp5
+inv_weight			= 2.5
+
+inv_grid_width     = 3
+inv_grid_height    = 2
+inv_grid_x         = 12
+inv_grid_y         = 20
+
+
+kill_msg_x		= 72
+kill_msg_y		= 82
+kill_msg_width		= 56
+kill_msg_height	= 23
+
+slot 				= 2
+animation_slot			= 2		
+
+;базовая дисперсия
+fire_dispersion_base		= 0.2
+control_inertion_factor		= 1.07f
+disp_rate = 1.75
+
+;отдача
+cam_relax_speed        		= 6.5	
+cam_dispersion         		= 0.55	
+cam_dispersion_inc			= 0.12	
+cam_dispertion_frac			= 0.6	
+cam_max_angle				= 12	
+cam_max_angle_horz			= 15	
+cam_step_angle_horz			= 0.6	
+
+fire_dispersion_condition_factor = 3	 
+misfire_probability 		= 0.002	 
+misfire_condition_k			= 0.07
+condition_shot_dec 			= 0.00016 
+
+direction               = 0, 0, 1
+fire_point              = 0.0, 0.168, 0.412
+
+flame_particles		= weapons\generic_weapon03
+
+shell_point		 	= 0.0, 0.188, 0.082
+shell_dir		 		= 0.0, 1.0, 0.0
+shell_particles	 	= weapons\shells_r_ns_9mm
+
+rpm_empty_click 	 	= 200
+
+PDM_disp_base 			= 4.0
+PDM_disp_vel_factor 	= 1.8
+PDM_disp_accel_factor 	= 1.2
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power        	     = 0.67
+hit_impulse		 	= 3
+hit_type 			     = fire_wound
+hit_rate	              = 1.75
+fire_distance          	= 100
+bullet_speed			= 430
+rpm                     = 800
+
+silencer_hit_power       	= 0.62
+silencer_hit_impulse	 	= 2
+silencer_fire_distance   	= 90
+silencer_bullet_speed	 	= 390
+
+use_aim_bullet			= true
+time_to_aim			= 1.0	
+
+hud                     = wpn_hk53_hud
+normal                  = 0, 1, 0
+position                = -0.026, -0.125, 0.0
+orientation             = 0, 0, 0
+
+strap_position         	= -0.16,-0.36,0.15		
+strap_orientation      	= -10,-5,10					
+strap_bone0			= bip01_spine2
+strap_bone1			= bip01_spine1
+
+startup_ammo            = 1000
+visual                  = weapons\mp5a3\wpn_hk53.ogf
+
+
+ph_mass			 		= 3
+
+;addons
+scope_status			= 0
+silencer_status		= 2
+grenade_launcher_status	= 0
+
+silencer_name  				= wpn_addon_sil_9_p
+silencer_x                  = 126
+silencer_y                  = 11
+
+silencer_flame_particles 	= weapons\generic_shoot_00
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 5
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.2
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+zoom_enabled			= true
+scope_zoom_factor	    = 55
+
+;звуки
+snd_draw			= weapons\hk53\draw
+snd_holster		= weapons\hk53\holster
+snd_shoot		= weapons\mp5\mp5_shoot  
+snd_shoot1		= weapons\mp5\mp5_shoot1    
+snd_shoot2		= weapons\mp5\mp5_shoot2   
+snd_shoot3		= weapons\mp5\mp5_shoot3 
+snd_empty			= weapons\hk53\empty
+snd_reload		= weapons\hk53\reload
+snd_silncer_shot	= weapons\mp5\mp5_shot_sil
+
+[wpn_hk53_hud]
+shell_point          	= 0.03, 0.00, -0.6
+shell_dir		 		= 0.0, 0.0, 0.0
+
+fire_point			= 0,0.02,-0.5
+fire_bone               = muzzle
+orientation             = 0, 4, 0
+position                = 0.1,-0.06,0.0
+visual                  = weapons\mp5a3\wpn_hk53_hud.ogf
+
+anim_idle			= idle
+anim_idle_aim		= idle_aim
+anim_reload		= reload
+anim_draw			= draw
+anim_holster		= holster
+anim_shoot		= shoot
+anim_idle_sprint	= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset		= -0.101,0.0275,-0.05
+zoom_rotate_x		= 0.014
+zoom_rotate_y		= 0
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2
+
+;-уники--
+
+;Модифицированный МП5
+[wpn_mp5_m1]:wpn_mp5	
+$spawn             			= "weapons\w_mp5\wpn_mp5_m1"
+description				= enc_weapons1_wpn-mp5_m1
+inv_name	        			= wpn-mp5_m1
+inv_name_short				= wpn-mp5_m1
+ammo_class		 		= ammo_9x18_pmm, ammo_9x18_fmj
+cost					 	= 5000
+
+; ttc
+hit_power        	     = 0.64
+hit_impulse		 	= 3
+fire_distance          	= 100
+bullet_speed			= 330
+
+
+silencer_hit_power       	= 0.6
+silencer_hit_impulse	 	= 2
+silencer_fire_distance   	= 85
+silencer_bullet_speed	 	= 300
+
+condition_shot_dec 			= 0.00018
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 11
+inv_grid_y         = 20
+
+snd_shoot			     = weapons\mp5\mp5_m1_shoot       
+snd_shoot1			= weapons\mp5\mp5_m1_shoot1       
+snd_shoot2			= weapons\mp5\mp5_m1_shoot2       
+snd_shoot3			= weapons\mp5\mp5_m1_shoot3       
+snd_silncer_shot		= weapons\mp5\mp5_m1_shot_sil
+
+;Гадюка Борова
+[wpn_mp5sd]:wpn_mp5	         
+$spawn             			= "weapons\w_mp5\wpn_mp5sd"
+description				= enc_weapons1_wpn-mp5sd
+inv_name	        			= "Гадюка Борова"
+inv_name_short				= "Гадюка Борова"
+cost					 	= 4800
+
+scope_status			     = 0
+silencer_status			= 0
+grenade_launcher_status	     = 0
+fire_dispersion_base		= 0.22
+inv_grid_width     = 4
+inv_grid_height    = 2
+inv_grid_x         = 22
+inv_grid_y         = 22
+
+ammo_mag_size		  = 60
+ammo_class		 			= ammo_9x19_pbp, ammo_9x19_fmj
+inv_weight		  = 3.48
+
+; ttc
+hit_power        	     = 0.6
+hit_impulse		 	= 3
+fire_distance          	= 85
+bullet_speed			= 300
+rpm                     = 800
+
+flame_particles		  = weapons\generic_shoot_00
+
+fire_point              = 0.0, 0.188, 0.412
+visual                  = weapons\mp5sd_borov\wpn_mp5.ogf
+hud                     = wpn_mp5sd_hud
+normal                  = 0, 1, 0
+position                = -0.016, -0.125, 0.0
+orientation             = 0, 0, 0
+
+snd_shoot						= weapons\mp5sd\mp5sd_shot_sil
+snd_shoot1						= weapons\mp5sd\mp5sd_shot_sil
+snd_shoot2						= weapons\mp5sd\mp5sd_shot_sil
+snd_shoot3						= weapons\mp5sd\mp5sd_shot_sil
+snd_reload						= weapons\mp5\mp5_reload, 0.9, 0.8
+
+[wpn_mp5sd_hud]
+shell_point          	= 0.01, 0.12, -0.20
+shell_dir		 	= 0.0, 0.0, 0.0
+
+fire_point			  = 0.010000,0.080000,-0.200000
+fire_bone               = wpn_body
+orientation             = 0, 0, 0
+position                = 0, 0, 0
+visual                  = weapons\mp5sd_borov\wpn_mp5_hud.ogf
+
+anim_idle			= idle
+anim_idle_aim		= idle_aim
+anim_reload		= reload
+anim_draw			= draw
+anim_holster		= holster
+anim_shoot			= shoot
+anim_idle_sprint		= idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset		= -0.113000, -0.02, -0.065100
+zoom_rotate_x		= -0.012800
+zoom_rotate_y		= 0.000400
+
+;апгрейды-
+
+; Смена калибра с 9х19 на 9х18
+[wpn_mp5_kalibr]:wpn_mp5
+$spawn             		= "weapons\mp5\wpn_mp5_kalibr"
+ammo_class		 	= ammo_9x18_fmj, ammo_9x18_pmm
+inv_name	        		= wpn-mp5_kalibr
+inv_name_short			= wpn-mp5_kalibr
+description			= enc_kalibr_wpn_mp5
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 4000
+hit_power        			= 0.65
+silencer_hit_power       	= 0.6
+condition_shot_dec 	= 0.00018
+
+; Снижение отдачи
+[wpn_mp5_otdaca]:wpn_mp5
+$spawn             		     = "weapons\mp5\wpn_mp5_otdaca"
+fire_dispersion_base         = 0.1
+cam_relax_speed              = 3.25
+cam_dispersion          	= 0.275		
+cam_dispersion_inc	          = 0.06		
+cam_max_angle	               = 6		
+inv_name	        			= wpn-mp5_otdaca
+inv_name_short			     = wpn-mp5_otdaca
+description				= enc_otdaca_wpn_mp5
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 3600
+
+
+; Снижение веса
+[wpn_mp5_ves]:wpn_mp5
+$spawn             		     = "weapons\mp5\wpn_mp5_ves"
+inv_weight				= 1.9
+inv_name	        			= wpn-mp5_ves
+inv_name_short			     = wpn-mp5_ves
+description				= enc_ves_wpn_mp5
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 3800
+
+; Отдача и вес
+[wpn_mp5_otdaca_ves]:wpn_mp5_otdaca
+$spawn             		     = "weapons\mp5\wpn_mp5_otdaca_ves"
+inv_weight				= 1.9
+inv_name	        			= wpn-mp5_otdaca_ves
+inv_name_short			     = wpn-mp5_otdaca_ves
+description				= enc_otdaca_ves_wpn_mp5
+inv_grid_width     = 4
+inv_grid_height    = 2
+cost				= 4300
+

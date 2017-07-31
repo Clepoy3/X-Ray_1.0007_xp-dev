@@ -1,0 +1,30 @@
+
+<!-- Новый апгрейд/ремонт-->
+
+<article article_type="journal" id="tabl_stvol" name="Список оружия" group="remont_stvol">
+		<text>text_tabl_stvol</text>
+	</article>
+	<article article_type="journal" id="tabl_upgrade" name="Оружие для апгрейда" group="uprgade_stvol">
+		<text>upgrade_tabl_stvol</text>
+	</article>
+
+	
+	<article article_type="journal" id="price_upgrade_sidor" name="Сидор предлагает" group="enc_price_upgrade">
+        <text>price_upgrade_sidor_text</text>
+  </article>
+	<article article_type="journal" id="price_upgrade_dolgovyazyj" name="Долговязый предлагает" group="enc_price_upgrade">
+        <text>price_upgrade_dolgovyazyj_text</text>
+  </article>
+  <article article_type="journal" id="price_upgrade_shurup" name="Шуруп предлагает" group="enc_price_upgrade">
+        <text>price_upgrade_shurup_text</text>
+  </article>
+  <article article_type="journal" id="price_upgrade_vasiliy" name="Василий предлагает" group="enc_price_upgrade">
+        <text>price_upgrade_vasiliy_text</text>
+  </article>
+  <article article_type="journal" id="price_upgrade_petr" name="Петр предлагает" group="enc_price_upgrade">
+        <text>price_upgrade_petr_text</text>
+  </article>
+  <article article_type="journal" id="price_upgrade_jupiter_rem" name="Ремонтник на Юпитере предлагает" group="enc_price_upgrade">
+        <text>price_upgrade_jupiter_rem_text</text>
+  </article>
+

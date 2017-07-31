@@ -1,0 +1,727 @@
+		---- *** Идея - Час Ужаса из MECENIY_IN_HELL.SKRIPT *** ----
+---** Функции таймеров, фаз и звукового сопровождения сделаны на основе выброса из AMK_MOD.SCRIPT **---   
+-- * За основу спавна монстров взят принцип спавна аномалий из AMK_ANOMS.SKRIPT * --
+-- * Фантомы - из AMK_MOD.SCRIPT * --
+-- * Текстуры погоды - ATMOSFEAR BY CROMM CRUAC - переработанные(спасибо CHORIK-у) * --
+-- * Можно отключить/включить ЧУ и удаление монстов после ЧУ в GAME_OPTIONS.SKRIPT * --
+
+--[[ Для спавна в таблице локации - три секции:
+	 [1] - основная(зомби,гули и бабуси),
+	 [2] - дополнительная, рандомно разные зверушки,
+	 [3] - зверушки стайкой(коты,собаки,крысы и тушканы) - рандомно одна стая
+
+	Таблица level_activity{} - ориентир по затуханию активности ЧУ,
+	так например количество монстров для каждой секции в зависимости от локации - от 9-ти до 3-х штук
+	Отправная точка спавна - положение ГГ
+	**Принципиально не пробовала спавнить бюрера, химеру, контролёра и псевдогиганта**
+	Все зверушки из таблицы mops_sections{} исправно спавнятся
+--]]
+
+--- Таблицы и переменные --------------------------------------------------
+level_activity={
+l12_stancia=90,
+generators=80,
+l11_pripyat=70,
+hospital=70,
+lost_village=70,
+pripyat=70,
+limansk=60,
+l10_radar=60,
+red_forest=60,
+l07_military=60,
+atp_for_test22=60,
+jupiter=50,
+zaton=50,
+dead_city=50,
+l05_bar=50,
+l06_rostok=50,
+l08_yantar=40,
+aver=40,
+l04_darkvalley=40,
+l02_garbage=40,
+l03_agroprom=40,
+l03u_agr_underground=40,
+mine=40,
+puzir=40,
+la15_darkscape=30,
+l01_escape=30,
+marsh=30
+}
+level_horror={
+--[[ Заполнение:
+	min-max - количество монстров для спавна(параметр max-необязателный)
+	dis_min-dis_max - растояние(скриптово ограничено 10-60) от центра(ГГ) на котором будет производиться спавн
+	mops-smops{} - таблицы зверушек(количество монстров не ограничено)
+	в mops{} можно задавать разный шанс для каждого элемента
+--]]
+l01_escape={
+  [1]={min=3,max=5,dis_min=16,dis_max=32,mops={zombie=1}},
+  [2]={min=3,max=5,dis_min=30,dis_max=60,mops={boar=1,cat=1,dog=1,flesh=1,pseudodog=1}},
+  [3]={min=2,max=3,dis_min=23,dis_max=46,smops={"cat","dog","rat","tushkano"}}
+},
+l02_garbage={
+  [1]={min=4,max=6,dis_min=15,dis_max=30,mops={zombie=1}},
+  [2]={min=4,max=6,dis_min=27,dis_max=54,mops={boar=1,cat=1,dog=1,flesh=1,pseudodog=1,tushkano=1}},
+  [3]={min=3,max=4,dis_min=21,dis_max=42,smops={"cat","dog","flesh","rat","tushkano"}}
+},
+l03_agroprom={
+  [1]={min=4,max=6,dis_min=15,dis_max=30,mops={zombie=1}},
+  [2]={min=4,max=6,dis_min=27,dis_max=54,mops={boar=1,cat=1,dog=1,flesh=1,pseudodog=1,tushkano=1}},
+  [3]={min=3,max=4,dis_min=21,dis_max=42,smops={"cat","dog","rat","snork","tushkano"}}
+},
+l04_darkvalley={
+  [1]={min=4,max=6,dis_min=15,dis_max=30,mops={zombie=1}},
+  [2]={min=4,max=6,dis_min=27,dis_max=54,mops={bloodsucker=1,boar=1,dog=1,flesh=1,pseudodog=1,tushkano=1}},
+  [3]={min=3,max=4,dis_min=21,dis_max=42,smops={"cat","dog","flesh","rat","snork","tushkano"}}
+},
+l05_bar={
+  [1]={min=5,max=7,dis_min=14,dis_max=28,mops={babka=1,zombie=1}},
+  [2]={min=5,max=7,dis_min=24,dis_max=48,mops={cat=1,cockroach=1,dog=1,poltergeist=1,pseudodog=1,rat=1}},
+  [3]={min=4,max=5,dis_min=19,dis_max=38,smops={"cat","cockroach","dog","rat"}}
+},
+l06_rostok={
+  [1]={min=5,max=7,dis_min=14,dis_max=28,mops={babka=1,zombie=1}},
+  [2]={min=5,max=7,dis_min=24,dis_max=48,mops={bloodsucker=1,cat=1,dog=1,poltergeist=1,pseudodog=1,rat=1,tushkano=1}},
+  [3]={min=4,max=5,dis_min=19,dis_max=38,smops={"cat","dog","rat","tushkano"}}
+},
+l07_military={
+  [1]={min=6,max=9,dis_min=13,dis_max=26,mops={babka=1,zombie=1}},
+  [2]={min=6,max=9,dis_min=21,dis_max=42,mops={bloodsucker=1,boar=1,cat=1,dog=1,flesh=1,fracture=1,pseudodog=1,rat=1,tushkano=1}},
+  [3]={min=5,max=6,dis_min=17,dis_max=34,smops={"cat","cockroach","dog","rat","snork","tushkano"}}
+},
+l08_yantar={
+  [1]={min=4,max=6,dis_min=15,dis_max=30,mops={zombie=1}},
+  [2]={min=4,max=6,dis_min=27,dis_max=54,mops={bloodsucker=1,cat=1,poltergeist=1,pseudodog=1,rat=1,snork=1}},
+  [3]={min=3,max=4,dis_min=21,dis_max=42,smops={"cat","rat","snork"}}
+},
+l10_radar={
+  [1]={min=6,max=9,dis_min=13,dis_max=26,mops={babka=1,zombie=1}},
+  [2]={min=6,max=9,dis_min=21,dis_max=42,mops={bloodsucker=1,cat=1,dog=1,pseudodog=1,snork=1}},
+  [3]={min=5,max=6,dis_min=17,dis_max=34,smops={"cat","dog","snork"}}
+},
+l11_pripyat={
+  [1]={min=7,max=9,dis_min=12,dis_max=24,mops={babka=1,ghoul=1,skeleton=1,zombie=1}},
+  [2]={min=7,max=10,dis_min=19,dis_max=38,mops={bloodsucker=1,cat=1,cockroach=1,dog=1,fracture=1,poltergeist=1,pseudodog=1,rat=1}},
+  [3]={min=6,dis_min=16,dis_max=32,smops={"cat","cockroach","dog","rat"}}
+},
+l12_stancia={
+  [1]={min=9,dis_min=10,dis_max=20,mops={babka=1,ghoul=1,zombie=1}},
+  [2]={min=6,dis_min=15,dis_max=30,mops={bloodsucker=1,fracture=1,poltergeist=1,pseudodog=1}},
+  [3]={min=6,dis_min=13,dis_max=26,smops={"cat","dog","rat","snork","tushkano"}}
+},
+l12_stancia_2={
+  [1]={min=9,dis_min=10,dis_max=20,mops={babka=1,ghoul=1,zombie=1}},
+  [2]={min=6,dis_min=15,dis_max=30,mops={bloodsucker=1,fracture=1,poltergeist=1,pseudodog=1}},
+  [3]={min=6,dis_min=13,dis_max=26,smops={"cat","dog","rat","snork","tushkano"}}
+},
+atp_for_test22={
+  [1]={min=6,max=9,dis_min=13,dis_max=26,mops={babka=1,zombie=1}},
+  [2]={min=6,max=9,dis_min=21,dis_max=42,mops={bloodsucker=1,boar=1,cat=1,dog=1,flesh=1,fracture=1,pseudodog=1,snork=1,tushkano=1}},
+  [3]={min=5,max=6,dis_min=17,dis_max=34,smops={"cat","dog","flesh","snork","tushkano"}}
+},
+aver={
+  [1]={min=4,max=6,dis_min=15,dis_max=30,mops={zombie=1}},
+  [2]={min=4,max=6,dis_min=27,dis_max=54,mops={bloodsucker=1,boar=1,cat=1,dog=1,flesh=1,pseudodog=1,snork=1}},
+  [3]={min=3,max=4,dis_min=21,dis_max=42,smops={"boar","cat","dog","snork"}}
+},
+dead_city={
+  [1]={min=5,max=7,dis_min=14,dis_max=28,mops={babka=1,zombie=1}},
+  [2]={min=5,max=7,dis_min=24,dis_max=48,mops={bloodsucker=1,boar=1,cat=1,cockroach=1,dog=1,poltergeist=1,pseudodog=1,rat=1}},
+  [3]={min=4,max=5,dis_min=19,dis_max=38,smops={"cat","cockroach","dog","rat","tushkano"}}
+},
+generators={
+  [1]={min=8,max=9,dis_min=11,dis_max=22,mops={babka=1,ghoul=1,zombie=1}},
+  [2]={min=8,max=12,dis_min=17,dis_max=34,mops={bloodsucker=1,boar=1,cat=1,dog=1,pseudodog=1,snork=1}},
+  [3]={min=6,dis_min=15,dis_max=30,smops={"boar","cat","dog","snork"}}
+},
+hospital={
+  [1]={min=7,max=9,dis_min=12,dis_max=24,mops={babka=1,ghoul=1,skeleton=1,zombie=1}},
+  [2]={min=7,max=10,dis_min=19,dis_max=38,mops={bloodsucker=1,cat=1,cockroach=1,poltergeist=1,rat=1}},
+  [3]={min=6,dis_min=16,dis_max=32,smops={"cat","cockroach","rat"}}
+},
+jupiter={
+  [1]={min=5,max=7,dis_min=14,dis_max=28,mops={babka=1,zombie=1}},
+  [2]={min=5,max=7,dis_min=24,dis_max=48,mops={bloodsucker=1,boar=1,cat=1,dog=1,flesh=1,poltergeist=1,pseudodog=1}},
+  [3]={min=4,max=5,dis_min=19,dis_max=38,smops={"cat","cockroach","dog","rat","snork","tushkano"}}
+},
+la15_darkscape={
+  [1]={min=3,max=5,dis_min=16,dis_max=32,mops={zombie=1}},
+  [2]={min=3,max=5,dis_min=30,dis_max=60,mops={boar=1,cat=1,dog=1,flesh=1,pseudodog=1}},
+  [3]={min=2,max=3,dis_min=23,dis_max=46,smops={"cat","dog","rat","tushkano"}}
+},
+limansk={
+  [1]={min=6,max=9,dis_min=13,dis_max=26,mops={babka=1,skeleton=1,zombie=1}},
+  [2]={min=6,max=9,dis_min=21,dis_max=42,mops={bloodsucker=1,cat=1,cockroach=1,dog=1,fracture=1,poltergeist=1,pseudodog=1,rat=1}},
+  [3]={min=5,max=6,dis_min=17,dis_max=34,smops={"cat","cockroach","dog","rat"}}
+},
+lost_village={
+  [1]={min=7,max=9,dis_min=12,dis_max=24,mops={babka=1,ghoul=1,zombie=1}},
+  [2]={min=7,max=10,dis_min=19,dis_max=38,mops={bloodsucker=1,boar=1,cat=1,cockroach=1,dog=1,flesh=1,fracture=1,pseudodog=1,rat=1}},
+  [3]={min=6,dis_min=16,dis_max=32,smops={"cat","cockroach","dog","flesh","rat"}}
+},
+marsh={
+  [1]={min=3,max=5,dis_min=16,dis_max=32,mops={zombie=1}},
+  [2]={min=3,max=5,dis_min=30,dis_max=60,mops={bloodsucker=1,boar=1,flesh=1,poltergeist=1,pseudodog=1}},
+  [3]={min=2,max=3,dis_min=23,dis_max=46,smops={"cat","flesh","snork","tushkano"}}
+},
+pripyat={
+  [1]={min=7,max=9,dis_min=12,dis_max=24,mops={babka=1,ghoul=1,skeleton=1,zombie=1}},
+  [2]={min=7,max=10,dis_min=19,dis_max=38,mops={bloodsucker=1,cat=1,cockroach=1,dog=1,fracture=1,poltergeist=1,pseudodog=1,rat=1}},
+  [3]={min=6,dis_min=16,dis_max=32,smops={"cat","cockroach","dog","rat"}}
+},
+puzir={
+  [1]={min=4,max=6,dis_min=15,dis_max=30,mops={zombie=1}},
+  [2]={min=4,max=6,dis_min=27,dis_max=54,mops={bloodsucker=1,boar=1,cat=1,dog=1,pseudodog=1,snork=1}},
+  [3]={min=3,max=4,dis_min=21,dis_max=42,smops={"boar","cat","dog","snork"}}
+},
+red_forest={
+  [1]={min=6,max=9,dis_min=13,dis_max=26,mops={babka=1,zombie=1}},
+  [2]={min=6,max=9,dis_min=21,dis_max=42,mops={bloodsucker=1,boar=1,cat=1,dog=1,pseudodog=1,snork=1}},
+  [3]={min=5,max=6,dis_min=17,dis_max=34,smops={"boar","cat","dog","snork"}}
+},
+zaton={
+  [1]={min=5,max=7,dis_min=14,dis_max=28,mops={babka=1,zombie=1}},
+  [2]={min=5,max=7,dis_min=24,dis_max=48,mops={bloodsucker=1,boar=1,cat=1,dog=1,flesh=1,poltergeist=1,pseudodog=1}},
+  [3]={min=4,max=5,dis_min=19,dis_max=38,smops={"cat","dog","rat","snork","tushkano"}}
+}
+}
+local horror_koef={
+[0]=0.75,
+[1]=1.0,
+[2]=1.25,
+[3]=1.5
+}
+local horror_phantoms={
+l01_escape={count=3,radius=60,height=1},
+l02_garbage={count=4,radius=54,height=3},
+l03_agroprom={count=4,radius=54,height=3},
+l03u_agr_underground={count=4,radius=54,height=3},
+l04_darkvalley={count=4,radius=54,height=3},
+l04u_labx18={count=4,radius=54,height=3},
+l05_bar={count=5,radius=48,height=6},
+l06_rostok={count=5,radius=48,height=6},
+l07_military={count=6,radius=42,height=10},
+l08_yantar={count=4,radius=54,height=3},
+l08u_brainlab={count=4,radius=54,height=3},
+l10_radar={count=6,radius=42,height=10},
+l10u_bunker={count=6,radius=42,height=10},
+l11_pripyat={count=7,radius=38,height=15},
+l12_stancia={count=9,radius=30,height=20},
+l12_stancia_2={count=9,radius=30,height=20},
+l12u_control_monolith={count=9,radius=30,height=20},
+l12u_sarcofag={count=9,radius=30,height=20},
+atp_for_test22={count=6,radius=42,height=10},
+av_peshera={count=4,radius=54,height=3},
+aver={count=4,radius=54,height=3},
+dead_city={count=5,radius=48,height=6},
+generators={count=8,radius=34,height=20},
+hospital={count=7,radius=38,height=15},
+jupiter={count=5,radius=48,height=6},
+jupiter_underground={count=5,radius=48,height=6},
+la15_darkscape={count=4,radius=60,height=2},
+labx8={count=6,radius=42,height=10},
+limansk={count=6,radius=42,height=10},
+lost_village={count=7,radius=38,height=15},
+marsh={count=3,radius=60,height=1},
+mine={count=5,radius=48,height=6},
+peshera={count=4,radius=54,height=3},
+pripyat={count=7,radius=38,height=15},
+puzir={count=4,radius=54,height=3},
+red_forest={count=6,radius=42,height=10},
+warlab={count=6,radius=42,height=10},
+zaton={count=5,radius=48,height=6}
+}
+local horror_sounds={
+"horror\\h01",
+"horror\\h02",
+"horror\\h03",
+"horror\\h04",
+"horror\\h05",
+"horror\\h06",
+"horror\\h07",
+"horror\\h08",
+"horror\\h09",
+"horror\\h10",
+"horror\\h11",
+"horror\\h12",
+"horror\\h13",
+"horror\\h14",
+"horror\\h15",
+"horror\\h16",
+"horror\\h17",
+"horror\\h18",
+"horror\\h19",
+"horror\\h20",
+"horror\\h21",
+"horror\\h22",
+"horror\\h23",
+"horror\\h24"
+}
+level_setting={
+--[[ Заполнение:
+	[1] - тип локации(0 - частичные эффекты ЧУ, 1 - ЧУ в полном объеме)
+	[2] - секция монстов(1 - weak, 2 - weak и normal, 3 - все, 4 - normal и strong, 5 - strong)
+	[3] - минимальный game_vertexes
+	[4] - максимальный game_vertexes
+	[5] - максимальный level_vertexes
+--]]
+l01_escape={1,1,0,251,595499},
+l02_garbage={1,1,252,415,382663},
+l03_agroprom={1,1,416,702,437421},
+l03u_agr_underground={0,1,703,810,4932},
+l04_darkvalley={1,2,811,1108,390125},
+l04u_labx18={0,2,1109,1167,7581},
+l05_bar={1,2,1168,1307,99539},
+l06_rostok={1,2,1308,1437,67713},
+l07_military={1,3,1545,1861,418268},
+l08_yantar={1,2,1438,1528,141471},
+l08u_brainlab={0,2,1529,1544,8008},
+l10_radar={1,3,1862,2116,227189},
+l10u_bunker={0,3,2661,2791,8821},
+l11_pripyat={1,4,2117,2272,261219},
+l12_stancia={1,5,2273,2401,477923},
+l12_stancia_2={1,5,2517,2660,264577},
+l12u_control_monolith={0,5,2467,2516,3982},
+l12u_sarcofag={0,5,2402,2466,10672},
+atp_for_test22={1,3,2792,2861,1049687},
+av_peshera={0,2,2909,2987,172637},
+aver={1,2,2886,2908,1790762},
+dead_city={1,3,3582,3659,551769},
+generators={1,4,3076,3152,752337},
+hospital={1,3,3028,3075,7865},
+jupiter={1,3,3700,3747,1486320},
+jupiter_underground={0,3,3771,3829,41001},
+la15_darkscape={1,1,4154,4475,1205118},
+labx8={0,1,3830,3850,6781},
+limansk={1,3,2988,3027,61524},
+lost_village={1,3,3324,3336,49127},
+marsh={1,1,3337,3581,528961},
+mine={0,1,3851,4153,15294},
+peshera={0,1,2862,2880,32341},
+pripyat={1,3,3748,3770,487255},
+puzir={1,1,2881,2885,377572},
+red_forest={1,3,3224,3323,166431},
+warlab={0,1,3153,3223,7776},
+zaton={1,3,3660,3699,1851251}
+}
+local monstr_sounds={
+"horror\\m01",
+"horror\\m02",
+"horror\\m03",
+"horror\\m04",
+"horror\\m05",
+"horror\\m06",
+"horror\\m07",
+"horror\\m08",
+"horror\\m09",
+"horror\\m10",
+"horror\\m11",
+"horror\\m12",
+"horror\\m13"
+}
+local mops_sections={
+babka="horror_babka",
+bloodsucker="horror_bloodsucker",
+boar="horror_boar",
+cat="horror_cat",
+cockroach="horror_tarakan",
+dog="horror_dog",
+flesh="horror_flesh",
+fracture="horror_fracture",
+ghoul="horror_ghoul",
+poltergeist="horror_poltergeist",
+pseudodog="horror_pseudodog",
+rat="horror_rat",
+skeleton="horror_scelet",
+snork="horror_snork",
+tushkano="horror_tushkano",
+zombie="horror_zombie"
+}
+local suffix_mops={
+"_weak",
+"_normal",
+"_strong"
+}
+--- variable and table -------------------------------------------- end ---
+
+--- Старт часа ужаса ------------------------------------------------------
+function run_horror_effect()
+  local lname=level.name()
+  local blow=amk.load_variable("blowout",-1)
+  local horr_type=level_setting[lname][1]
+  local hours=level.get_time_hours()
+  if not game_options.run_horror_effect or (blow>0 and blow<6) or (hours>=4 and hours<=20) or (sleep_manager.is_sleep_active() and horr_type==0) then
+    start_horror_timer() return
+  end
+  sleep_manager.stopper()
+  amk.save_variable("horror",1)
+  level.set_weather("horror",true)
+  local snd_obj1=xr_sound.get_safe_sound_object([[horror\start01]])
+  local snd_obj2=xr_sound.get_safe_sound_object([[ambient\fx2]])
+  if horr_type==1 then
+    level.add_pp_effector("radar_psi.ppe",2001,false)
+    snd_obj1:play_no_feedback(db.actor,sound_object.s2d,0,vector(),3.0)
+    snd_obj2:play_no_feedback(db.actor,sound_object.s2d,0,vector(),2.0)
+    level.add_cam_effector("camera_effects\\shell_shock.anm",2004,false,"")
+  else
+    snd_obj1:play_no_feedback(db.actor,sound_object.s2d,0,vector(),1.0)
+    snd_obj2:play_no_feedback(db.actor,sound_object.s2d,0,vector(),0.5)
+  end
+  amk.start_timer("horror",5,0)
+  amk.start_timer("horror_ss",math.random(2,5),0)
+  start_horror_timer()
+end
+--- run_horror_effect --------------------------------------------- end ---
+
+--- 1 звуковое сопровождение для ЧУ ---------------------------------------
+function horror_scary_sounds()
+  local lname=level.name()
+  local horr=amk.load_variable("horror",-1)
+  local horr_type=level_setting[lname][1]
+  if horr>0 and horr<7 then
+    if horr_type==0 or horr==3 then
+	amk.start_timer("horror_ss",math.random(5,10),0)
+	return
+    end
+  local snd_obj=xr_sound.get_safe_sound_object(horror_sounds[math.random(#horror_sounds)])
+  snd_obj:play_no_feedback(db.actor,sound_object.s2d,0,vector(),3.0)
+  amk.start_timer("horror_ss",math.random(5,10),0)
+  end
+end
+--- horror_scary_sounds ------------------------------------------- end ---
+
+--- 2 звуковое сопровождение для ЧУ ---------------------------------------
+function monstr_scary_sounds()
+  local lname=level.name()
+  local horr=amk.load_variable("horror",-1)
+  local horr_type=level_setting[lname][1]
+  if horr>3 and horr<7 then
+    if horr_type==0 then
+	amk.start_timer("monstr_ss",math.random(5,10),0)
+	return
+    end
+  local snd_obj=xr_sound.get_safe_sound_object(monstr_sounds[math.random(#monstr_sounds)])
+  local pos=vector()
+  pos.x=math.random(5,20)
+  pos.y=math.random(5,20)
+  pos.z=math.random(5,20)
+  snd_obj:play_at_pos(db.actor,db.actor:position():add(pos))
+  amk.start_timer("monstr_ss",math.random(3,8),0)
+  end
+end
+--- monstr_scary_sounds ------------------------------------------- end ---
+
+--- Запуск таймера до следующего ЧУ ---------------------------------------
+function start_horror_timer()
+  local resuls=1200+((math.random()*2100)-780)
+  amk.g_start_timer("horror_shift",0,0,resuls)
+end
+--- start_horror_timer -------------------------------------------- end ---
+
+--- Эффекты для ЧУ --------------------------------------------------------
+function horror_effects(phase)
+  local resuls=8+((math.random()*4)-2)
+  if resuls<1 then resuls=1 elseif resuls>12 then resuls=12 end
+  local lname=level.name()
+  local horr=amk.load_variable("horror",-1)
+  local horr_type=level_setting[lname][1]
+  local cur_weather=level.get_weather() 
+
+--Начало: 1минута
+if phase==0 then
+level.set_weather_fx("surge_horr_1")
+ex_news.news_blow()
+amk.g_start_timer("horror",0,0,1,1)
+
+--Первая фаза: 2минуты
+elseif phase==1 then
+amk.save_variable("horror",2)
+level.set_weather_fx("surge_horr_2")
+amk.g_start_timer("horror",0,0,2,2)
+
+--Вторая фаза: 2минуты - затишье перед бурей	
+elseif phase==2 then
+amk.save_variable("horror",3)
+level.set_weather_fx("surge_horr_3")
+amk.g_start_timer("horror",0,0,2,3)
+
+--Третья фаза: 2минуты 
+elseif phase==3 then
+amk.save_variable("horror",4)
+level.set_weather("horror",true)
+local snd_obj1=xr_sound.get_safe_sound_object([[ambient\rnd_outdoor\rnd_howling_1]])
+local snd_obj2=xr_sound.get_safe_sound_object([[ambient\rnd_outdoor\rnd_howling_2]])
+if horr_type==1 then
+  snd_obj1:play_no_feedback(db.actor,sound_object.s2d,0,vector(),1.0)
+  level.add_pp_effector ("teleport.ppe", 3001, false)
+  amk.start_timer("phantom_init",math.random(1,3),0)
+  amk.start_timer("monstr_ss",math.random(5,10),0)
+  snd_obj2:play_no_feedback(db.actor,sound_object.s2d,0,vector(),1.0)
+else
+  snd_obj1:play_no_feedback(db.actor,sound_object.s2d,0,vector(),0.5)
+  snd_obj2:play_no_feedback(db.actor,sound_object.s2d,0,vector(),0.5)
+end
+amk.g_start_timer("horror",0,0,2,4)
+
+--Четвёртая фаза:
+elseif phase==4 then
+amk.save_variable("horror",5)
+if horr_type==1 then
+if game_options.zombie_team then tag_spb.zombie_team() end
+end
+init_mops()
+amk.g_start_timer("horror",0,0,resuls,5)
+
+--Пятая фаза:
+elseif phase==5 then
+amk.save_variable("horror",6)
+amk.start_timer("phantom_init",math.random(1,3),0)
+amk.g_start_timer("horror",0,0,resuls,6)
+
+--Шестая фаза: убираем все эффекты.
+elseif phase==6 then
+amk.save_variable("horror",7)
+local snd_obj=xr_sound.get_safe_sound_object([[horror\stop01]])
+if horr_type==1 then
+  level.add_pp_effector ("deadcity_wake_old.ppe", 2001, false)
+  del_mops()
+  snd_obj:play_no_feedback(db.actor,sound_object.s2d,0,vector(),1.0)
+else
+  snd_obj:play_no_feedback(db.actor,sound_object.s2d,0,vector(),0.5)
+end
+amk.start_timer("horror",11,7)
+
+--Окончание ЧУ
+elseif phase==7 then
+local weather_manager = level_weathers.get_weather_manager()
+weather_manager:weather_set()
+amk.del_variable("horror") 
+end
+end
+--- horror_effects ------------------------------------------------ end ---
+
+--- Фуннция запускающая спавн монстров ------------------------------------
+function init_mops()
+
+--Определяем локацию
+local lname=level.name()
+
+  --Проверка на наличие локи в таблице(нет локи - нет спавна - выход): 
+  if not level_horror[lname] then return
+  end
+
+  --Определим цифровые переменные:
+  local max_mops=0
+
+  --Определим переменные с постоянным значением для данной локи:
+  local gv_min=level_setting[lname][3]
+  local gv_max=level_setting[lname][4]
+  local lv_max=level_setting[lname][5]
+  local min_dist=10
+  local max_dist=60
+
+    --Расмотрим каждую область спавна по отдельности:
+    for i,elem in ipairs(level_horror[lname]) do 
+
+	--Определим цифровые переменные:
+	local mops_cnt,gv_pos,new_gv,new_lv,lv_pos,rnd_max,smops_cnt=0,0,0,0,0,0,0
+
+	--Определим переменные с постоянным значением:
+
+	  --Количество элементов в секции стайных монстров
+	  if elem.smops then
+	  local elem_cnt=#elem.smops
+	  smops_cnt=math.random(1,elem_cnt)
+	  end
+
+	  --Условие по ограничению мин.макс дистанции
+	  local lmin_dist=elem.dis_min
+	  local lmax_dist=elem.dis_max
+	  if lmin_dist<min_dist then lmin_dist=min_dist
+	  end
+	  if lmax_dist>max_dist then lmax_dist=max_dist
+	  end
+
+	  --Переменная для левел вертекса
+	  local lv_stack=lmax_dist*10000
+
+	  --Максимальное значение для рандомного выбора монстра
+	  if elem.mops then
+	    for mops,chance in pairs(elem.mops) do
+	    rnd_max=rnd_max+chance
+	    end
+	  end
+
+	  --Вычислим количество будующих монстров
+	  --Вариант1: точное количество монстров
+	  if not elem.max then max_mops=elem.min
+	  --Вариант2: рандомное количество
+	  else max_mops=math.random(elem.min,elem.max)
+	  end
+	  max_mops=max_mops*horror_koef[level.get_game_difficulty()]
+
+	    --Запускаем цикл счета заспавненых монстров
+	    while mops_cnt<max_mops do
+
+		--Запускаем цикл генерации новой координаты с проверкой на пригодность
+		repeat
+
+		  --Переменная остановки цикла
+		  local stop=0
+		  local gvm_dist=100
+
+		    --Новая координата
+		    local actor_pos=db.actor:position()
+		    local actor_lv=db.actor:level_vertex_id()
+		    local min_lv=actor_lv-lv_stack
+		    if min_lv<0 then min_lv=0 end
+		    local max_lv=actor_lv+lv_stack
+		    if max_lv>lv_max then max_lv=lv_max end
+
+			--Находим левел вертекс
+			local lv=math.random(min_lv,max_lv)
+			lv_pos=level.vertex_position(lv)
+			if lv_pos:distance_to(actor_pos)<lmin_dist or lv_pos:distance_to(actor_pos)>lmax_dist then
+			stop=0
+			else
+			new_lv=lv
+			local new_pos=level.vertex_position(new_lv)
+
+			--Находим гейм вертекс
+			for gv=gv_min,gv_max do
+			gv_pos=game_graph():vertex(gv):level_point()
+			  if gv_pos:distance_to(new_pos)<gvm_dist then
+			  gvm_dist=gv_pos:distance_to(new_pos)
+			  new_gv=gv
+			  end
+			end
+
+			  --Запускаем проверки
+			  if not game_graph():valid_vertex_id(new_gv) or not check_coordinates(new_pos) then
+			  stop=0
+			  else
+
+			    --запускаем генерацию монстров
+			    local section
+			    if elem.smops then
+			    section=mops_sections[elem.smops[smops_cnt]]
+			    end
+
+			    if elem.mops then
+			    local rnd=0
+			    rnd=math.random()*rnd_max
+
+				for k,v in pairs(elem.mops) do
+				  if rnd<=v then section=mops_sections[k] break
+				  end
+				  rnd=rnd-v 
+				end
+			    end
+				local suffix=mops_suffix()
+				local section=section..suffix
+
+				--Есть все данные - можно спавнить:
+				alife():create(section,new_pos,new_lv,new_gv)
+				stop=1
+			  end
+			end
+		until stop==1
+		mops_cnt=mops_cnt+1
+	    end
+    end
+end
+--- init_mops ----------------------------------------------------- end ---
+
+--- Фуннция выбора секции монстра -----------------------------------------
+function mops_suffix()
+  local lname=level.name()
+  local num=level_setting[lname][2]
+  local rnd=0
+    if num==1 then rnd=1
+    elseif num==2 then rnd=math.random(1,2)
+    elseif num==3 then rnd=math.random(1,3)
+    elseif num==4 then rnd=math.random(2,3)
+    else rnd=3
+    end
+  return suffix_mops[rnd]
+end
+--- mops_suffix --------------------------------------------------- end ---
+
+--- Фуннция проверки координат укрытий ------------------------------------
+function check_coordinates(pos)
+  local lname=level.name()
+  local hides=amk_hideouts.hide[lname]
+  local check
+  if hides then
+    for i,elem in ipairs(hides) do
+	if elem.zone then
+	  for j,tally in ipairs(elem.zone) do
+	    if tally.p3 then
+		check=amk.check_npc_in_box(pos,vector():set(unpack(tally.p1)),vector():set(unpack(tally.p2)),vector():set(unpack(tally.p3)))
+	    else
+		check=amk.check_npc_in_box(pos,vector():set(unpack(tally.p1)),vector():set(unpack(tally.p2)))
+	    end
+		if check==true then return false end
+	  end
+	end
+    end
+  end
+  return true
+end
+--- check_coordinates --------------------------------------------- end ---
+
+--- Фуннция генерации фантомов --------------------------------------------
+function init_phantoms()
+	local blow=amk.load_variable("blowout",-1)
+	local horr=amk.load_variable("horror",-1)
+	if blow == 4 or horr == 3 or horr == 6 then
+		local lname=level.name()
+		local actor_pos=db.actor:position()
+		if not horror_phantoms[lname] or not check_coordinates(actor_pos) then
+			amk.start_timer("phantom_init",math.random(5,5),0)
+			return
+		end
+		local phantoms=horror_phantoms[lname]
+		local phantom_cnt=phantoms.count*horror_koef[level.get_game_difficulty()]
+		local ph_cnt=phantom_manager:phantom_count()
+		repeat
+			local stop=0
+			if phantom_cnt>0 then
+				if ph_cnt<phantom_cnt then
+					local offset=math.pi*2.0*math.random()
+					local radius=phantoms.radius*(math.random()/2.0+0.5)
+					local height=math.random(-phantoms.height/4,phantoms.height)
+					local actor_pos=db.actor:position()
+					local pos=vector():set(math.sin(offset)*radius+actor_pos.x,actor_pos.y+height,math.cos(offset)*radius+actor_pos.z)
+					phantom_manager.spawn_phantom(pos)
+					ph_cnt=ph_cnt+1
+				else stop=1
+				end
+			end
+		until stop==1
+		amk.start_timer("phantom_init",math.random(10,25),0)
+	end
+end
+--- init_phantoms ------------------------------------------------- end ---
+
+--- Функция удаления монстров ---------------------------------------------
+function del_mops()
+  if game_options.del_horror_mops then
+    local sim = alife()
+    local obj, lobj
+    local string_sub = string.sub
+    for i=1,65534 do
+      obj=sim:object(i)
+      if obj then
+        if string_sub(obj:name(),1,7) == "horror_" and obj:alive() then
+          lobj = level.object_by_id(i)
+          if lobj then
+              lobj:kill(lobj)
+          end
+          sim:release(obj,true)
+        end
+      end
+    end
+  end
+end
+--- del_mops ----------------------------------------------------- end ---

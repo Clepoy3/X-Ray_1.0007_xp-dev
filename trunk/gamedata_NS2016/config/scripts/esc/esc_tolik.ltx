@@ -1,0 +1,53 @@
+[logic]
+active = {-tutorial_wounded_heal} walker1, nil
+danger = danger_condition
+meet = meet
+on_death = death
+
+[walker1]
+path_walk = esc_tolik_walk1
+path_look = esc_tolik_look1
+wounded = wounded
+on_info = {+tutorial_wounded_help} remark1
+on_info2 = {+esc_kill_bandits_quest_kill} %=hit_npc(esc_killers_kamp_wait:bip01_spine1:1000:0)%
+
+[remark1]
+abuse = false
+anim = wait
+meet = no_meet
+snd = esc_tolik_thanks
+target = actor
+on_signal = sound_end| remark2 %=run_tutorial_if_newbie(part_12_relations)%
+
+[remark2]
+abuse = false
+anim = wait
+target = actor
+on_info = {!talking} sleeper1 %+tutorial_wounded_heal%
+
+[sleeper1]
+path_main = esc_lager_sleep2
+
+[wounded]
+hp_state = 35|wounded_heavy@help_heavy
+hp_state_see = 35|wounded_heavy@esc_tolik_help
+hp_victim = 35|nil
+hp_cover = 35|false
+hp_fight = 35|false
+help_dialog = tutorial_wounded_give_medkit
+
+[meet]
+meet_state = 2|wait@wait
+meet_state_wpn = 2|wait@wait
+victim = 2|actor
+victim_wpn = 2|actor
+use = true
+use_wpn = true
+
+[danger_condition]
+ignore_distance = 0
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+
+[death]
+on_info = {=killed_by_actor} %+tutorial_wounded_die%, %+tutorial_wounded_death%

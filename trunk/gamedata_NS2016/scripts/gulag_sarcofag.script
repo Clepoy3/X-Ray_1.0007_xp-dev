@@ -1,0 +1,132 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+	
+	-- Монолитовцы в саркофаге первый заход
+	if type == "sar_monolith1" then
+		--' 33 работы
+		for i = 1, 33 do
+			t = {section = "logic@sar_monolith1_camper"..i, idle = 0, prior = 9, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Монолитовцы в саркофаге постоянный гулаг
+	if type == "sar_monolith2" then
+		--' 20 работ
+        	for i = 1, 13 do
+			t = {section = "logic@sar_monolith2_walker"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@sar_monolith2_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@sar_monolith2_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+    	end
+	-- Монолитовцы возле идола постоянный гулаг
+	if type == "sar_monolith3" then
+		--' 8 работ
+        	for i = 1, 8 do
+			t = {section = "logic@sar_monolith3_walker"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+    	end
+	-- Монолитовцы в БУМе
+	if type == "mon_monolith" then
+		--' 30 работ
+        	for i = 1, 18 do
+			t = {section = "logic@mon_monolith_camper"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+        	for i = 19, 30 do
+			t = {section = "logic@mon_monolith_walker"..i, idle = 0, prior = 7, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+    	end
+
+---'''' Гулаги с переменным состоянием ''''---
+
+end
+
+function load_states(gname,type)
+
+	if type == "sar_monolith1" then
+		return function(gulag)
+			return 0
+		end
+    	end
+	if type == "sar_monolith2" then
+		return function(gulag)
+			return 0
+		end
+    	end
+	if type == "sar_monolith3" then
+		return function(gulag)
+			return 0
+		end
+    	end
+	if type == "mon_monolith" then
+		return function(gulag)
+			return 0
+		end
+    	end
+
+ end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	if gulag_type == "sar_monolith1" then
+		return npc_community == "monolith"
+	end
+	if gulag_type == "sar_monolith2" then
+		return npc_community == "monolith"
+	end
+	if gulag_type == "sar_monolith3" then
+		return npc_community == "monolith"
+	end
+	if gulag_type == "mon_monolith" then
+		return npc_community == "monolith"
+	end
+
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+      
+	return false
+end

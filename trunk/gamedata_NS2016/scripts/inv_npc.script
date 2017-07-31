@@ -1,0 +1,187 @@
+local string_sub = string.sub
+local string_format = string.format
+local lobj_by_id
+
+local npcs = {}
+local inv_t = {}
+local npcs_to_upd, npcs_disabled, upd_id= {}, {}, nil
+
+function disable_npc(npc_id) counterAdd("inv_npc.disable_npc")
+	npcs_disabled[npc_id] = true
+	npcs_to_upd[npc_id] = check_npc
+end
+
+local npc, npc_t
+function update() counterAdd("inv_npc.update")
+	local v
+	upd_id, v = next(npcs_to_upd, upd_id)
+	if v then
+		lobj_by_id = level.object_by_id
+		npc = lobj_by_id(upd_id)	-- есть ли непись в онлайне ?
+		local npc_name
+		if npc and IAmAStalker[npc:clsid()] and not npcs_disabled[upd_id] then
+			npc_name = npc:name()
+			npc_t = npcs[upd_id]	--	это вообще он ?
+			if not (npc_t and npc_t["name"] == npc_name) then
+				npc_t = { ["name"] = npc_name, ["npc"] = npc }
+				npcs[upd_id] = npc_t
+			end
+			v(upd_id)
+		else	-- удаляем
+			npcs[upd_id], npcs_to_upd[upd_id], npcs_disabled[upd_id] = nil, nil, nil
+			upd_id = nil
+	end	end
+end
+
+function check_inv(npc, item) counterAdd("inv_npc.check_inv")
+	local i_class = item:clsid()
+	local i_sect = item:section()
+	local i_type = object_type_i[i_class] or ( (string_sub(i_sect,1,3) == "_af") and "arts" ) or "misc"
+	local t = inv_t[i_type]
+	if t then t[#t+1] = { ["item"] = item, ["name"] = item:name(), ["section"] = i_sect, ["class"] = i_class, ["id"] = item:id() }
+	else
+		string_format("%s")
+	end
+end
+
+function check_npc() counterAdd("inv_npc.check_npc")
+	-- получим актуальный инвентарь (npc, npc_t заданы в update)
+	inv_t = { ["arts"] = {}, ["misc"] = {} }
+	for k,v in pairs(object_type_i) do inv_t[v] = {} end
+	npc_t["inv"] = inv_t
+	npc:iterate_inventory(check_inv, npc)
+	npcs_to_upd[upd_id] = check_weapon	-- дальше будем строить актуальную таблицу оружия
+end
+
+function check_weapon() counterAdd("inv_npc.check_weapon")
+	local wpns = {}
+	npc_t["wpns"] = wpns
+	local wpn_old, wpn_one
+	local section, item, ammo, cnd
+	local cnt = 0
+	local wpn_t = npc_t["inv"]["wpn"]
+	npcs_to_upd[upd_id] = false
+	for k,v in pairs(wpn_t) do
+		item = lobj_by_id(v["id"])
+		if item then
+			section = v["section"] 
+			ammo, cnd = item:get_ammo_total(), item:condition()
+			v["cnd"], v["ammo"] = cnd, ammo
+			wpn_old = wpns[section]
+			if ammo > 0 and (wpn_old == nil or (wpn_old["cnd"] < cnd)) then
+				wpns[section] = v
+				cnt = cnt + 1
+			end
+			wpn_one = v
+		else npcs_to_upd[upd_id] = check_npc
+	end	end
+	if cnt == 0 and wpn_one then wpns[wpn_one["section"]] = wpn_one end
+end
+
+function get_wpn(npc_id) counterAdd("inv_npc.get_wpn")
+	if npcs_disabled[npc_id] then return end	-- нет уже такого
+	lobj_by_id = level.object_by_id
+	local npc_t = npcs[npc_id]
+	local wpns = npc_t and npc_t["wpns"]
+	local cnt = 0
+	local need_update = npcs_to_upd[npc_id]
+	if wpns then
+		local item, parent
+		local t = {}
+		for k,v in pairs(wpns) do
+			item = v and lobj_by_id(v["id"])
+			parent = item and item:parent()
+			if parent and parent:id() == npc_id then
+				v["cnd"], v["ammo"], v["item"] = item:condition(), item:get_ammo_total(), item
+				t[k] = v
+				cnt = cnt + 1
+			else need_update = check_npc
+		end	end
+		wpns = t
+	end
+	if cnt == 0 then
+		local npc = lobj_by_id(npc_id)
+		if npc then
+			if not wpns then	-- непись не кэширован, сейчас создаем по-минимуму, а потом уже - как надо
+				wpns = {}
+				npc_t = { ["name"] = npc:name(), ["npc"] = npc, ["wpns"] = wpns }
+				npcs[npc_id] = npc_t
+				need_update = check_npc
+			end
+			local item = npc:best_weapon()
+			local i_class = item and item:clsid()
+			if i_class and IAmAWeaponFireOnly[i_class] then
+				local i_sect = item:section()
+				wpns[i_sect] = { ["item"] = item, ["name"] = item:name(),  ["section"] = i_sect,
+						["class"] = i_class, ["id"] = item:id(), ["cnd"] = item:condition(),
+						["ammo"] = item:get_ammo_total() }
+				cnt = 1
+			end
+		else
+			npcs_disabled[npc_id], npcs_to_upd[npc_id] = true, check_npc
+			return
+		end
+	end
+	npc_t["wpns"] = wpns
+	npcs_to_upd[npc_id] = need_update
+	return wpns, cnt
+end
+
+function get_misc(npc_id) counterAdd("inv_npc.get_misc")
+	if npcs_disabled[npc_id] then return end	-- нет уже такого
+	lobj_by_id = level.object_by_id
+
+	local npc_t = npcs[npc_id]
+	local misc, inv
+	inv = npc_t and npc_t["inv"]
+	misc = inv and inv["misc"]
+	if not misc then	-- нужно обновление
+		npcs_to_upd[npc_id] = check_npc
+		return
+	end
+	local cnt = 0
+	local item, parent
+	local t = {}
+	for k,v in pairs(misc) do
+		item = v and lobj_by_id(v["id"])
+		parent = item and item:parent()
+		if parent and parent:id() == npc_id then
+			v["item"] = item
+			t[#t+1] = v
+			cnt = cnt + 1
+	end	end
+	inv["misc"] = t
+	return t, cnt
+end
+
+function get_outfit(npc_id) counterAdd("inv_npc.get_outfit")
+	if npcs_disabled[npc_id] then return end	-- нет уже такого
+	lobj_by_id = level.object_by_id
+
+	local npc_t = npcs[npc_id]
+	local outfit, inv
+	inv = npc_t and npc_t["inv"]
+	outfit = inv and inv["outfit"]
+	if not outfit then	-- нужно обновление
+		npcs_to_upd[npc_id] = check_npc
+		return
+	end
+
+	local cnt = 0
+	local item, parent
+	local t = {}
+	for k,v in pairs(outfit) do
+		item = v and lobj_by_id(v["id"])
+		parent = item and item:parent()
+		if parent and parent:id() == npc_id then
+			v["item"] = item
+			t[#t+1] = v
+			cnt = cnt + 1
+	end	end
+	inv["outfit"] = t
+	return t, cnt
+end
+
+function set_need_update(npc_id) counterAdd("inv_npc.set_need_update")
+	npcs_to_upd[npc_id] = check_npc
+end

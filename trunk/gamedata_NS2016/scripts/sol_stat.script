@@ -1,0 +1,253 @@
+-- собирает информацию для анализа
+
+local info = {
+	["clsid"]  = {}
+}
+
+local clsid_to_str = {
+
+    [clsid.actor] = "actor",
+    [clsid.aem_lamp] = "aem_lamp",
+    [clsid.ameba_zone] = "ameba_zone",
+    [clsid.art_bast_artefact] = "art_bast_artefact",
+    [clsid.art_black_drops] = "art_black_drops",
+    [clsid.art_dummy] = "art_dummy",
+    [clsid.art_electric_ball] = "art_electric_ball",
+    [clsid.art_faded_ball] = "art_faded_ball",
+    [clsid.art_galantine] = "art_galantine",
+    [clsid.art_gravi] = "art_gravi",
+    [clsid.art_gravi_black] = "art_gravi_black",
+    [clsid.art_mercury_ball] = "art_mercury_ball",
+    [clsid.art_needles] = "art_needles",
+    [clsid.art_rusty_hair] = "art_rusty_hair",
+    [clsid.art_thorn] = "art_thorn",
+    [clsid.art_zuda] = "art_zuda",
+    [clsid.artefact] = "artefact",
+    [clsid.artefact_s] = "artefact_s",
+    [clsid.bloodsucker] = "bloodsucker",
+    [clsid.bloodsucker_s] = "bloodsucker_s",
+    [clsid.boar] = "boar",
+    [clsid.boar_s] = "boar_s",
+    [clsid.burer] = "burer",
+    [clsid.burer_s] = "burer_s",
+    [clsid.car] = "car",
+    [clsid.car_s] = "car_s",
+    [clsid.cat] = "cat",
+    [clsid.cat_s] = "cat_s",
+    [clsid.chimera] = "chimera",
+    [clsid.chimera_s] = "chimera_s",
+    [clsid.controller] = "controller",
+    [clsid.controller_s] = "controller_s",
+    [clsid.crow] = "crow",
+    [clsid.device_detector_simple] = "device_detector_simple",
+    [clsid.device_pda] = "device_pda",
+    [clsid.device_torch] = "device_torch",
+    [clsid.device_torch_s] = "device_torch_s",
+    [clsid.dog_black] = "dog_black",
+    [clsid.dog_red] = "dog_red",
+    [clsid.dog_s] = "dog_s",
+    [clsid.equ_exo] = "equ_exo",
+    [clsid.equ_military] = "equ_military",
+    [clsid.equ_scientific] = "equ_scientific",
+    [clsid.equ_stalker] = "equ_stalker",
+    [clsid.equ_stalker_s] = "equ_stalker_s",
+    [clsid.flesh] = "flesh",
+    [clsid.flesh_group] = "flesh_group",
+    [clsid.flesh_s] = "flesh_s",
+    [clsid.fracture] = "fracture",
+    [clsid.fracture_s] = "fracture_s",
+    [clsid.game] = "game",
+    [clsid.game_cl_LastStanding] = "game_cl_LastStanding",
+    [clsid.game_cl_artefact_hunt] = "game_cl_artefact_hunt",
+    [clsid.game_cl_deathmatch] = "game_cl_deathmatch",
+    [clsid.game_cl_single] = "game_cl_single",
+    [clsid.game_cl_team_deathmatch] = "game_cl_team_deathmatch",
+    [clsid.game_sv_LastStanding] = "game_sv_LastStanding",
+    [clsid.game_sv_artefact_hunt] = "game_sv_artefact_hunt",
+    [clsid.game_sv_deathmatch] = "game_sv_deathmatch",
+    [clsid.game_sv_single] = "game_sv_single",
+    [clsid.game_sv_team_deathmatch] = "game_sv_team_deathmatch",
+    [clsid.game_ui_artefact_hunt] = "game_ui_artefact_hunt",
+    [clsid.game_ui_deathmatch] = "game_ui_deathmatch",
+    [clsid.game_ui_single] = "game_ui_single",
+    [clsid.game_ui_team_deathmatch] = "game_ui_team_deathmatch",
+    [clsid.gigant_s] = "gigant_s",
+    [clsid.graph_point] = "graph_point",
+    [clsid.hanging_lamp] = "hanging_lamp",
+    [clsid.helicopter] = "helicopter",
+    [clsid.hud_manager] = "hud_manager",
+    [clsid.inventory_box] = "inventory_box",
+    [clsid.level] = "level",
+    [clsid.level_changer] = "level_changer",
+    [clsid.main_menu] = "main_menu",
+    [clsid.mp_players_bag] = "mp_players_bag",
+    [clsid.nogravity_zone] = "nogravity_zone",
+    [clsid.obj_antirad] = "obj_antirad",
+    [clsid.obj_attachable] = "obj_attachable",
+    [clsid.obj_bandage] = "obj_bandage",
+    [clsid.obj_bolt] = "obj_bolt",
+    [clsid.obj_bottle] = "obj_bottle",
+    [clsid.obj_breakable] = "obj_breakable",
+    [clsid.obj_climable] = "obj_climable",
+    [clsid.obj_document] = "obj_document",
+    [clsid.obj_explosive] = "obj_explosive",
+    [clsid.obj_food] = "obj_food",
+    [clsid.obj_medkit] = "obj_medkit",
+    [clsid.obj_phskeleton] = "obj_phskeleton",
+    [clsid.obj_phys_destroyable] = "obj_phys_destroyable",
+    [clsid.obj_physic] = "obj_physic",
+    [clsid.online_offline_group] = "online_offline_group",
+    [clsid.phantom] = "phantom",
+    [clsid.poltergeist] = "poltergeist",
+    [clsid.poltergeist_s] = "poltergeist_s",
+    [clsid.projector] = "projector",
+    [clsid.pseudo_gigant] = "pseudo_gigant",
+    [clsid.pseudodog_s] = "pseudodog_s",
+    [clsid.psy_dog] = "psy_dog",
+    [clsid.psy_dog_phantom] = "psy_dog_phantom",
+    [clsid.psy_dog_phantom_s] = "psy_dog_phantom_s",
+    [clsid.psy_dog_s] = "psy_dog_s",
+    [clsid.respawn] = "respawn",
+    [clsid.script_heli] = "script_heli",
+    [clsid.script_object] = "script_object",
+    [clsid.script_phys] = "script_phys",
+    [clsid.script_restr] = "script_restr",
+    [clsid.script_stalker] = "script_stalker",
+    [clsid.script_trader] = "script_trader",
+    [clsid.script_zone] = "script_zone",
+    [clsid.smart_terrain] = "smart_terrain",
+    [clsid.smart_zone] = "smart_zone",
+    [clsid.snork] = "snork",
+    [clsid.snork_s] = "snork_s",
+    [clsid.space_restrictor] = "space_restrictor",
+    [clsid.spectator] = "spectator",
+    [clsid.stalker] = "stalker",
+    [clsid.switcher] = "switcher",
+    [clsid.team_base_zone] = "team_base_zone",
+    [clsid.torrid_zone] = "torrid_zone",
+    [clsid.trader] = "trader",
+    [clsid.turret_mgun] = "turret_mgun",
+    [clsid.tushkano] = "tushkano",
+    [clsid.tushkano_s] = "tushkano_s",
+    [clsid.wpn_ak74] = "wpn_ak74",
+    [clsid.wpn_ak74_s] = "wpn_ak74_s",
+    [clsid.wpn_ammo] = "wpn_ammo",
+    [clsid.wpn_ammo_m209] = "wpn_ammo_m209",
+    [clsid.wpn_ammo_og7b] = "wpn_ammo_og7b",
+    [clsid.wpn_ammo_vog25] = "wpn_ammo_vog25",
+    [clsid.wpn_binocular] = "wpn_binocular",
+    [clsid.wpn_binocular_s] = "wpn_binocular_s",
+    [clsid.wpn_bm16] = "wpn_bm16",
+    [clsid.wpn_bm16_s] = "wpn_bm16_s",
+    [clsid.wpn_fn2000] = "wpn_fn2000",
+    [clsid.wpn_fort] = "wpn_fort",
+    [clsid.wpn_grenade_f1] = "wpn_grenade_f1",
+    [clsid.wpn_grenade_fake] = "wpn_grenade_fake",
+    [clsid.wpn_grenade_launcher] = "wpn_grenade_launcher",
+    [clsid.wpn_grenade_rgd5] = "wpn_grenade_rgd5",
+    [clsid.wpn_grenade_rpg7] = "wpn_grenade_rpg7",
+    [clsid.wpn_groza] = "wpn_groza",
+    [clsid.wpn_groza_s] = "wpn_groza_s",
+    [clsid.wpn_hpsa] = "wpn_hpsa",
+    [clsid.wpn_hpsa_s] = "wpn_hpsa_s",
+    [clsid.wpn_knife] = "wpn_knife",
+    [clsid.wpn_knife_s] = "wpn_knife_s",
+    [clsid.wpn_lr300] = "wpn_lr300",
+    [clsid.wpn_lr300_s] = "wpn_lr300_s",
+    --[clsid.wpn_magazined_s] = "wpn_magazined_s",
+    [clsid.wpn_mounted] = "wpn_mounted",
+    [clsid.wpn_pm] = "wpn_pm",
+    [clsid.wpn_pm_s] = "wpn_pm_s",
+    [clsid.wpn_rg6] = "wpn_rg6",
+    [clsid.wpn_rg6_s] = "wpn_rg6_s",
+    [clsid.wpn_rpg7] = "wpn_rpg7",
+    [clsid.wpn_rpg7_s] = "wpn_rpg7_s",
+    [clsid.wpn_scope] = "wpn_scope",
+    [clsid.wpn_scope_s] = "wpn_scope_s",
+    [clsid.wpn_shotgun] = "wpn_shotgun",
+    [clsid.wpn_shotgun_s] = "wpn_shotgun_s",
+    [clsid.wpn_silencer] = "wpn_silencer",
+    [clsid.wpn_stat_mgun] = "wpn_stat_mgun",
+    [clsid.wpn_svd] = "wpn_svd",
+    [clsid.wpn_svd_s] = "wpn_svd_s",
+    [clsid.wpn_svu] = "wpn_svu",
+    [clsid.wpn_svu_s] = "wpn_svu_s",
+    [clsid.wpn_usp45] = "wpn_usp45",
+    [clsid.wpn_usp45_s] = "wpn_usp45_s",
+    [clsid.wpn_val] = "wpn_val",
+    [clsid.wpn_val_s] = "wpn_val_s",
+    [clsid.wpn_vintorez] = "wpn_vintorez",
+    [clsid.wpn_vintorez_s] = "wpn_vintorez_s",
+    [clsid.wpn_walther] = "wpn_walther",
+    [clsid.wpn_walther_s] = "wpn_walther_s",
+    [clsid.wpn_wmagaz] = "wpn_wmagaz",
+    [clsid.wpn_wmaggl] = "wpn_wmaggl",
+    [clsid.zombie] = "zombie",
+    [clsid.zombie_s] = "zombie_s",
+    [clsid.zone] = "zone",
+    [clsid.zone_acid_fog] = "zone_acid_fog",
+    [clsid.zone_bfuzz] = "zone_bfuzz",
+    [clsid.zone_bfuzz_s] = "zone_bfuzz_s",
+    [clsid.zone_dead] = "zone_dead",
+    [clsid.zone_galant_s] = "zone_galant_s",
+    [clsid.zone_galantine] = "zone_galantine",
+    [clsid.zone_mbald_s] = "zone_mbald_s",
+    [clsid.zone_mincer] = "zone_mincer",
+    [clsid.zone_mincer_s] = "zone_mincer_s",
+    [clsid.zone_mosquito_bald] = "zone_mosquito_bald",
+    [clsid.zone_radioactive] = "zone_radioactive",
+    [clsid.zone_rusty_hair] = "zone_rusty_hair",
+    --[clsid.zone_buzz_s] = "zone_buzz_s",
+    [clsid.zone_zharka_s] = "zone_zharka_s",
+    [clsid.zone_electra_s] = "zone_electra_s",
+    --[clsid.zone_ice] = "zone_ice",
+    [clsid.zone_ice_s] = "zone_ice_s"
+
+}
+
+function collectInfoSingle(sobj, lvl, lvl_name)
+	local clsid_name = clsid_to_str[sobj:clsid()] or tostring(sobj:clsid())--.."["..tostring(sobj:section_name()).."]"
+    local sect = tostring(sobj:section_name())
+	if not info["clsid"][clsid_name] then
+		info["clsid"][clsid_name] = {["count"] = 0, ["sections"] = {[sect] = {["count"] = 0}}}
+	end
+	if not info["clsid"][clsid_name]["sections"][sect] then
+		info["clsid"][clsid_name]["sections"][sect] = {["count"] = 0}
+	end
+	
+	info["clsid"][clsid_name]["count"] = info["clsid"][clsid_name]["count"] + 1
+	info["clsid"][clsid_name]["sections"][sect]["count"] = info["clsid"][clsid_name]["sections"][sect]["count"] + 1
+end
+
+function printInfo()
+	local tg = time_global()/1000
+
+	get_console():execute("load ~~~ ")
+	get_console():execute("load ~~~ sol Stat")
+	get_console():execute("load ~~~ ")
+	get_console():execute(string_format("load ~~~ %60s %10s", string.rep("_", 60 - string.len("name")).."name", string.rep("_", 10 - string.len("count")).."count"))
+
+	local clsidStatisticByCount = {}
+	for k,v in pairs(info["clsid"]) do
+		table_insert(clsidStatisticByCount, {clsid = k, count = v.count, sections = v.sections})
+	end
+	table.sort(clsidStatisticByCount, function(v1, v2) return v2.count < v1.count end)
+
+	for i = 1, #clsidStatisticByCount do
+        get_console():execute("load ~~~ ")
+        get_console():execute("load ~~~ ")
+		get_console():execute(string_format("load ~~~ %60s %10s", string.rep("_", 60 - string.len(clsidStatisticByCount[i]["clsid"]))..clsidStatisticByCount[i]["clsid"], string.rep("_", 10 - string.len(tostring(clsidStatisticByCount[i]["count"])))..tostring(clsidStatisticByCount[i]["count"])))
+        local clsidSectionStatisticByCount = {}
+        for k,v in pairs(clsidStatisticByCount[i]["sections"]) do
+            table_insert(clsidSectionStatisticByCount, {section = k, count = v.count})
+        end
+        table.sort(clsidSectionStatisticByCount, function(v1, v2) return v2.count < v1.count end)
+        for i = 1, #clsidSectionStatisticByCount do
+            get_console():execute(string_format("load ~~~ %60s %10s", string.rep("_", 60 - string.len(clsidSectionStatisticByCount[i]["section"]))..clsidSectionStatisticByCount[i]["section"], string.rep("_", 10 - string.len(tostring(clsidSectionStatisticByCount[i]["count"])))..tostring(clsidSectionStatisticByCount[i]["count"])))
+        end
+	end
+	
+end
+
+
+

@@ -1,0 +1,244 @@
+----------------------------------------------------------------------------------------------------------------------
+--	Схема реакции сталкеров на надоедания игрока
+--	автор: Диденко Руслан (Stohe)
+--	TODO:
+----------------------------------------------------------------------------------------------------------------------
+--Evaluators
+----------------------------------------------------------------------------------------------------------------------
+--' Нужно ли пнуть кого то в лицо
+class "evaluator_abuse" (property_evaluator)
+function evaluator_abuse:__init(name, storage) super (nil, name)
+	self.a = storage
+end
+function evaluator_abuse:evaluate()
+	return self.a.abuse_manager:update()
+end
+
+----------------------------------------------------------------------------------------------------------------------
+--Actions
+----------------------------------------------------------------------------------------------------------------------
+--' Удар в лицо
+class "action_abuse_hit" (action_base)
+function action_abuse_hit:__init (npc_name,action_name, storage, char_ini) super (nil, action_name)
+	self.a = storage
+end
+function action_abuse_hit:initialize()
+	action_base.initialize(self)
+	self.last_lv = nil
+	local npc = self.object
+		state_mgr.set_state(npc,"assault_fire",nil,nil,{look_object=db.actor})
+
+		self.dest_lv = utils.send_to_nearest_accessible_vertex(npc, db.actor:level_vertex_id())
+		npc:set_detail_path_type(move.curve)
+		--npc:set_sight(db.actor, true, true)
+		self.last_lv = db.actor:level_vertex_id()
+		if self.not_meet then
+		else
+			xr_sound.set_sound_play(self.object, "use_abuse")
+		end
+	self.abuser_reached = false
+	self.abuse_start = 0
+end
+
+function action_abuse_hit:execute ()
+	action_base.execute(self)
+	
+	local npc = self.object
+	if not self.abuser_reached and npc:accessible(self.dest_lv) and (not self.last_lv or self.last_lv ~= db.actor:level_vertex_id()) then
+		self.last_lv = db.actor:level_vertex_id()
+		-- npc:clear_animations()
+		-- npc:set_detail_path_type(move.curve)
+		-- npc:set_path_type(game_object.level_path)
+		-- npc:set_movement_type(move.run)
+		-- npc:set_body_state(move.standing)
+		-- npc:movement_enabled(true)
+		-- npc:set_mental_state(anim.free)
+		self.dest_lv = utils.send_to_nearest_accessible_vertex(npc, db.actor:level_vertex_id())
+		npc:set_detail_path_type(move.curve)
+	end
+	
+	local npcPos = npc:position()
+	local aPos = db.actor:position()
+	if npcPos:distance_to_sqr(aPos) < 3.8 and math.abs(npcPos.y - aPos.y) < 0.8 then
+		if not self.abuser_reached then
+			self.abuser_reached = true
+			--npc:set_desired_position()
+			--npc:set_desired_direction()
+			--npc:clear_animations()
+			state_mgr.set_state(npc, "punch", nil, nil, {look_object = db.actor}, {animation = true})
+			if self.not_meet then
+				if math.random() < 0.3 then xr_sound.set_sound_play(npc, "threat_stop") end
+			end
+
+			if (news_main and news_main.on_abuse) then
+				news_main.on_abuse(npc)
+			end
+			self.abuse_start = time_global()
+		end
+	end
+	if self.abuser_reached and self.abuse_start + 10000 < time_global() then
+		self:cancel()
+	end
+end
+
+function action_abuse_hit:cancel ()
+	local npc = self.object
+	clear_abuse(npc)
+	if not xr_wounded.is_wounded(npc) then -- or state_mgr.get_state(npc) == "idle"
+		--npc:clear_animations()
+	end
+	if rx_wmgr then
+---		rx_wmgr.get_wm(npc):enable()
+	end
+end
+
+function action_abuse_hit:finalize ()
+	action_base.finalize(self)
+	self:cancel()
+end
+
+class "CAbuseManager"
+function CAbuseManager:__init(npc, storage)
+	self.npc = npc
+	self.a = storage
+	self.enable = true
+	self.abuse_rate = 1
+	self.abuse_value = 0
+	self.abuse_threshold = 1
+	self.last_update = nil
+end
+function CAbuseManager:SetAbuseRate(rate)
+	self.abuse_rate = rate
+end
+function CAbuseManager:abused()
+	return self.abuse_value >= self.abuse_threshold
+end
+function CAbuseManager:abuse()
+	return self.abuse_value
+end
+function CAbuseManager:update()
+	if not self.enable then return false end
+	if self.last_update == nil then
+		self.last_update = time_global()
+	end
+	if self.abuse_value > 0 then
+		if db.actor:alive() and self.npc:relation(db.actor) ~= game_object.enemy then
+			self.abuse_value = self.abuse_value - (time_global() - self.last_update)*0.00005
+		else
+			self:clearAbuse()
+		end
+	end
+	self.last_update = time_global()
+
+	if self:abused() then
+		return true
+	end
+	
+	return false
+end
+function CAbuseManager:addAbuse(value, not_meet)
+	if self.enable == true then
+		self.abuse_value = self.abuse_value + value*self.abuse_rate
+		self.not_meet = not_meet
+	end
+end
+function CAbuseManager:clearAbuse()
+	self.abuse_value = 0
+	xr_danger.actor_danger[self.npc:id()] = nil
+end
+function CAbuseManager:disableAbuse()
+	self.enable = false
+end
+function CAbuseManager:enableAbuse()
+	self.enable = true
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(object, char_ini, scheme, section, st)
+	local operators		= {}
+	local properties	= {}
+
+	local manager = object:motivation_action_manager()
+
+	properties["abuse"]		= xr_evaluators_id.abuse_base
+	properties["wounded"]	= xr_evaluators_id.sidor_wounded_base
+	properties["kamp_end"]		= xr_evaluators_id.stohe_kamp_base + 1
+
+	operators["abuse"]		= xr_actions_id.abuse_base
+
+	-- Evaluators
+	manager:add_evaluator (properties["abuse"], 		evaluator_abuse("evaluator_abuse", st))
+	
+	-- Actions
+	local action = action_abuse_hit(object:name(),"action_abuse_hit", st, char_ini)
+	action:add_precondition		(world_property(stalker_ids.property_alive, true))
+	--action:add_precondition		(world_property(stalker_ids.property_danger,false))
+	action:add_precondition		(world_property(properties["wounded"], 		false))
+---	action:add_precondition		(world_property(properties["kamp_end"], 		true))
+	if ricochet_scheme then action:add_precondition(world_property(ricochet_scheme.evid_ricochet_danger, false)) end
+		action:add_precondition (world_property(xr_evaluators_id.chugai_heli_hunter_base, false))
+		action:add_precondition(world_property(stalker_ids.property_enemy, false))
+		action:add_precondition(world_property(blowout_scheme.evid_anomaly, false))
+		action:add_precondition(world_property(blowout_scheme.evid_outside, false))
+		action:add_precondition(world_property(blowout_scheme.evid_blowout, false))
+		action:add_precondition(world_property(blowout_scheme.evid_preblowout, false))
+		action:add_precondition(world_property(xrs_medic.evid_medic, false))
+		action:add_precondition(world_property(xrs_medic.evid_self_medic, false))
+		action:add_precondition(world_property(rx_facer.evid_facer, false))
+		action:add_precondition(world_property(rx_facer.evid_steal_up_facer, false))
+	action:add_precondition		(world_property(properties["abuse"],		true))
+	action:add_effect (world_property(properties["abuse"], false))
+	manager:add_action (operators["abuse"], action)
+
+	action = manager:action (xr_actions_id.alife)
+	action:add_precondition		(world_property(properties["abuse"],		false))
+	
+	st.abuse_manager = CAbuseManager(object, st)
+end
+
+
+
+------------
+-- Вызывается только в начале на чтении логики, создает экшены, эвалуаторы и производит
+-- первичную настройку.
+function set_abuse(npc, ini, scheme, section)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+end
+-- Вызывается при переключении на новую секцию. Производит вычитывание настроек из текущей секции.
+function reset_abuse(npc, scheme, st, section)
+end
+
+
+function add_abuse(npc, value, not_meet)
+	local t = db.storage[npc:id()].abuse
+	if t then
+		t.abuse_manager:addAbuse(value, not_meet)
+	end
+end
+function clear_abuse(npc)
+	local t = db.storage[npc:id()].abuse
+	if t then
+		t.abuse_manager:clearAbuse()
+	end
+end
+function disable_abuse(npc)
+	local t = db.storage[npc:id()].abuse
+	if t then
+		t.abuse_manager:disableAbuse()
+	end
+end
+function enable_abuse(npc)
+	local t = db.storage[npc:id()].abuse
+	if t then
+		t.abuse_manager:enableAbuse()
+	end
+end
+function is_abuse(npc)
+	local t = db.storage[npc:id()].abuse
+	if t == nil then
+		return false
+	end
+	return t.abuse_manager.enable
+end

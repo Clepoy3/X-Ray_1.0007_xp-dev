@@ -1,0 +1,2247 @@
+[box_af_medusa]:af_medusa
+GroupControlSection	= spawn_group
+$spawn		= "artifacts\moscito medusa"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_blackdrip.ogf  
+description	= enc_zone_artifact_af-medusa
+inv_name	= box-af-medusa
+inv_name_short	= box-af-medusa-s
+inv_weight	= 4.0
+
+cost		= 11000
+
+jump_height	= .5
+
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true	
+trail_light_color	= 2.5, 2.4, 0
+trail_light_range	= 3.0
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_medusa_absorbation
+
+inventory_radiation	= 0.001
+
+
+artefact_activation_seq	= af_activation_bold
+
+[box_af_medusa_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.97
+
+; "Каменный цветок"
+[box_af_cristall_flower]:af_cristall_flower
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\moscito flower"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_blackdrip_2.ogf  
+description	= enc_zone_artifact_af-cristall-flower
+inv_name	= box-af-cristall-flower
+inv_name_short	= box-af-cristall-flower-s
+inv_weight	= 3.0
+
+cost		= 25000
+
+jump_height	= .4
+
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true	
+trail_light_color	= 2.5, 2.4, 0
+trail_light_range	= 4.0
+
+artefact_activation_seq	= af_activation_bold
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+
+inventory_radiation	= 0.003
+
+hit_absorbation_sect	= box_af_cristall_flower_absorbation
+
+[box_af_cristall_flower_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.95
+
+
+; "Ночная звезда"
+[box_af_night_star]:af_night_star
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\moscito star"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_blackdrip_1.ogf  
+description	= enc_zone_artifact_af-night-star
+inv_name	= box-af-night-star
+inv_name_short	= box-af-night-star-s
+inv_weight	= 5.0
+
+cost		= 50000
+
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true		
+trail_light_color	= 2.6, 2.5, 0
+trail_light_range	= 5.0
+
+
+artefact_activation_seq	= af_activation_bold
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+
+inventory_radiation	= 0.006
+
+hit_absorbation_sect	= box_af_night_star_absorbation
+
+[box_af_night_star_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.92
+
+
+; "Выверт"
+[box_af_vyvert]:af_vyvert
+GroupControlSection	= spawn_group
+$spawn		= "artifacts\gravy vyvert"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_gravy1.ogf  
+description	= enc_zone_artifact_af-vyvert
+inv_name	= box-af-vyvert
+inv_name_short	= box-af-vyvert-s
+inv_weight	= 4.0
+
+cost		= 10000
+
+jump_height	= .3
+
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true		
+trail_light_color	= 0, 1.5, 3.6
+trail_light_range	= 2.0
+
+artefact_activation_seq		= af_activation_gravi
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+
+inventory_radiation	= 0.001
+
+hit_absorbation_sect	= box_af_vyvert_absorbation
+
+[box_af_vyvert_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 0.96
+shock_immunity		= 1.0
+wound_immunity		= 0.96
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Грави"
+[box_af_gravi]:af_gravi
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\gravy gravi"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_gravy2.ogf  
+description	= enc_zone_artifact_af-gravi
+inv_name	= box-af-gravi
+inv_name_short	= box-af-gravi-s
+inv_weight	= 5.0
+
+cost		= 25000
+
+jump_height	= .3
+
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true		
+trail_light_color	= 0, 1.6, 3.7
+trail_light_range	= 3.0
+
+artefact_activation_seq		= af_activation_gravi
+
+;скорости увеличения (уменьшения)
+health_restore_speed	= 0.0			
+radiation_restore_speed = 0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+
+inventory_radiation	= 0.003
+
+hit_absorbation_sect	= box_af_gravi_absorbation
+
+[box_af_gravi_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 0.93
+shock_immunity		= 1.0
+wound_immunity		= 0.94
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Золотая рыбка"
+[box_af_gold_fish]:af_gold_fish
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\gravy fish"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_gravy3.ogf  
+description	= enc_zone_artifact_af-gold-fish
+inv_name	= box-af-gold-fish
+inv_name_short	= box-af-gold-fish-s
+inv_weight	= 5.0
+
+cost		= 50000
+
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true		
+trail_light_color	= 0, 1.5 ,3.6
+trail_light_range	= 5.0
+
+artefact_activation_seq	= af_activation_gravi
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.003
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+
+inventory_radiation	= 0.005
+
+hit_absorbation_sect	= box_af_gold_fish_absorbation
+
+[box_af_gold_fish_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 0.9
+shock_immunity		= 1.0
+wound_immunity		= 0.92		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; Артефакты для аномалии "Жарка"
+; "Капля"
+[box_af_drops]:af_drops
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\zharka drops"
+
+$npc		= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_kaply.ogf
+description	= enc_zone_artifact_af-drops
+inv_name	= box-af-drops
+inv_name_short	= box-af-drops-s
+inv_weight	= 2.0
+
+cost		= 10000
+jump_height	= .2
+
+;particles		= anomaly2\artefact\artefact_zharka
+lights_enabled		= true	
+trail_light_color	= 3.55, 1.1, 1.1
+trail_light_range	= 3.5
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0
+radiation_restore_speed	= -0.001
+satiety_restore_speed	= 0.0
+power_restore_speed	= -0.003
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_drops_absorbation
+
+[box_af_drops_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Огненный шар"
+[box_af_fireball]:af_fireball
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\zharka fireball"
+
+$npc		= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_fire.ogf
+description	= enc_zone_artifact_af-fireball
+inv_name	= box-af-fireball
+inv_name_short	= box-af-fireball-s
+inv_weight	= 4.0
+
+cost		= 25000
+
+impulse_threshold	= 10
+radius			= 10
+strike_impulse		= 20
+jump_height		= .2
+
+particles		= anomaly2\artefact\artefact_zharka
+lights_enabled		= true	
+trail_light_color	= 3.55,1.1,1.1
+trail_light_range	= 5.5
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= -0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= -0.002
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_fireball_absorbation
+
+[box_af_fireball_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Кристалл"
+[box_af_cristall]:af_cristall
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\zharka cristall"
+
+$npc		= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_cristall.ogf
+description	= enc_zone_artifact_af-cristall
+inv_name	= box-af-cristall
+inv_name_short	= box-af-cristall-s
+inv_weight	= 4.0
+
+cost		= 50000
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_zharka
+
+lights_enabled		= true	
+trail_light_color	= 3.55,1.1,1.1
+trail_light_range	= 7
+
+artefact_activation_seq	= af_activation_mincer
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= -0.003
+satiety_restore_speed	= 0.0
+power_restore_speed	= -0.001
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_cristall_absorbation
+
+[box_af_cristall_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+; "Кровь камня"
+[box_af_blood]:af_blood
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\mincer blood"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_myasorubka1.ogf
+description	= enc_zone_artifact_af-blood
+inv_name	= box-af-blood
+inv_name_short	= box-af-blood-s
+inv_weight	= 4.0
+
+cost		= 10000
+
+jump_height	= .1
+
+particles	= anomaly2\artefact\artefact_mincer
+
+lights_enabled		= true	
+trail_light_color	= 2.55,1.2,0
+trail_light_range	= 2.5
+
+artefact_activation_seq	= af_activation_mincer
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.00015
+radiation_restore_speed	= -0.003
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_blood_absorbation
+
+[box_af_blood_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.03
+shock_immunity		= 1.0
+wound_immunity		= 1.03		
+radiation_immunity	= 0.97
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Ломоть мяса"
+[box_af_mincer_meat]:af_mincer_meat
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\mincer meatloaf"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_myasorubka2.ogf
+description	= enc_zone_artifact_af-mincer-meat
+inv_name	= box-af-mincer-meat
+inv_name_short	= box-af-mincer-meat-s
+inv_weight	= 3.0
+
+cost		= 25000
+
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_mincer
+
+lights_enabled		= true	
+trail_light_color	= 2.55,1.2,0
+trail_light_range	= 3 
+
+artefact_activation_seq	= af_activation_mincer
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.00035
+radiation_restore_speed	= -0.005
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_mincer_meat_absorbation
+
+[box_af_mincer_meat_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.05
+shock_immunity		= 1.0
+wound_immunity		= 1.05		
+radiation_immunity	= 0.95
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Душа"
+[box_af_soul]:af_soul
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\mincer soul"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_myasorubka3.ogf 
+description	= enc_zone_artifact_af-soul
+inv_name	= box-af-soul
+inv_name_short	= box-af-soul-s
+inv_weight	= 4.0
+
+cost		= 50000
+
+jump_height	= .1
+
+particles	= anomaly2\artefact\artefact_mincer
+
+lights_enabled		= true	
+trail_light_color	= 3.55,2.2,0
+trail_light_range	= 4.0
+
+artefact_activation_seq	= af_activation_mincer
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0004
+radiation_restore_speed	= -0.01
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_soul_absorbation
+
+[box_af_soul_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.05
+shock_immunity		= 1.0
+wound_immunity		= 1.05		
+radiation_immunity	= 0.9
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; Артефакты для аномалии "Электра"
+; "Бенгальский огонь"
+[box_af_electra_sparkler]:af_electra_sparkler
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\electra sparkler"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra4.ogf
+description	= enc_zone_artifact_af-electra-sparkler 
+inv_name	= box-af-electra-sparkler
+inv_name_short	= box-af-electra-sparkler-s
+inv_weight	= 1
+
+cost		= 7000
+
+jump_height	= .5
+
+particles	= anomaly2\artefact\artefact_electra
+
+lights_enabled		= true	 
+trail_light_color	= 0.5,1.5,1.9
+trail_light_range	= 2.50
+
+artefact_activation_seq	= af_activation_electra
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0015
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_electra_sparkler_absorbation
+
+[box_af_electra_sparkler_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.1
+wound_immunity		= 1.0		
+radiation_immunity	= 1.02
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Вспышка"
+[box_af_electra_flash]:af_electra_flash
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\electra flash"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra3.ogf
+description	= enc_zone_artifact_af-electra-flash
+
+inv_name	= box-af-electra-flash
+inv_name_short	= box-af-electra-flash-s
+inv_weight	= 2
+
+cost		= 25000
+
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_electra
+
+lights_enabled		= true	 
+trail_light_color	= 0.6,1.7,1.9
+trail_light_range	= 4.5
+
+artefact_activation_seq	= af_activation_electra
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0035
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_electra_flash_absorbation
+
+[box_af_electra_flash_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.1
+wound_immunity		= 1.0		
+radiation_immunity	= 1.01
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Лунный свет"
+[box_af_electra_moonlight]:af_electra_moonlight
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\electra moonlight"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra1.ogf 
+description	= enc_zone_artifact_af-electra-moonlight
+inv_name	= box-af-electra-moonlight
+inv_name_short	= box-af-electra-moonlight-s
+inv_weight	= 3
+
+cost		= 50000
+
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_electra
+
+lights_enabled		= true	 
+trail_light_color	= 0.6,1.7,1.9
+trail_light_range	= 6.0
+
+artefact_activation_seq	= af_activation_electra
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0055
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_electra_moonlight_absorbation
+
+[box_af_electra_moonlight_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.1
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; Артефакты для аномалии "Амебы"
+; "Слизь"
+[box_af_ameba_slime]:af_ameba_slime
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\ameba slime"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_ameba3.ogf
+description	= enc_zone_artifact_af-ameba-slime
+inv_name	= box-af-ameba-slime
+inv_name_short	= box-af-ameba-slime-s
+inv_weight	= 4
+
+cost		= 9000
+
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled		= true
+trail_light_color	= 0, 2.55, 0.2
+trail_light_range	= 3.0
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.003
+hit_absorbation_sect	= box_af_ameba_slime_absorbation
+
+[box_af_ameba_slime_absorbation]
+burn_immunity		= 1.2	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.1
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Слизняк"
+[box_af_ameba_slug]:af_ameba_slug
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\ameba slug"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_ameba2.ogf
+description	= enc_zone_artifact_af-ameba-slug
+inv_name	= box-af-ameba-slug
+inv_name_short	= box-af-ameba-slug-s
+inv_weight	= 4.5
+
+cost		= 25000
+
+jump_height	= 0.2
+
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled		= true	 
+trail_light_color	= 0.6,2.6,0.5
+trail_light_range	= 4.0
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.006
+hit_absorbation_sect	= box_af_ameba_absorbation
+
+[box_af_ameba_absorbation]
+burn_immunity		= 1.1	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.1
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Слюда"
+[box_af_ameba_mica]:af_ameba_mica
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\ameba mica"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_ameba1.ogf
+description	= enc_zone_artifact_af-ameba-mica
+inv_name	= box-af-ameba-mica
+inv_name_short	= box-af-ameba-mica-s
+inv_weight	= 4.8
+
+cost		= 50000
+
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled		= true	 
+trail_light_color	= 0.6,2.7,0.6
+trail_light_range	= 5
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0				
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.01
+hit_absorbation_sect	= box_af_ameba_mica_absorbation
+
+[box_af_ameba_mica_absorbation]
+burn_immunity		= 1.05	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.1
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; " Пустышки"
+; "Рубиновая пружина"
+[box_af_dummy_spring_red]:af_dummy_spring_red
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy spring"
+$npc		= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_pustishkaR.ogf
+description	= af_dummy_spring_red
+inv_name	= box-af_dummy_spring
+inv_name_short	= box-af_dummy_spring-s
+inv_weight	= 10
+
+cost		= 200000
+jump_height	= .2
+
+lights_enabled		= true	 
+trail_light_color	= 2.6,1.7,1.6
+trail_light_range	= 2
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+
+inventory_radiation	= 0.0003
+
+hit_absorbation_sect = box_af_dummy_spring_red_absorbation
+
+[box_af_dummy_spring_red_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 0.8
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 0.92
+fire_wound_immunity	= 0.9
+
+
+; "Пружина"
+[box_af_dummy_spring]:af_dummy_spring
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy spring"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform 		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_pustishka.ogf
+description	= enc_zone_artifact_af-dummy-spring
+inv_name	= box-af-dummy-spring
+inv_name_short	= box-af-dummy-spring-s
+inv_weight	= 7
+
+cost		= 50000
+jump_height	= .2
+
+lights_enabled		= true
+trail_light_color	= 1.55,1.45,2.0
+trail_light_range	= 4.5
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_dummy_spring_absorbation
+
+[box_af_dummy_spring_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 0.75
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Пустышка"
+[box_af_dummy_dummy]:af_dummy_dummy
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy dummy"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_pustishka1.ogf
+description	= enc_zone_artifact_af-dummy-dummy
+inv_name	= box-af-dummy-dummy
+inv_name_short	= box-af-dummy-dummy-s
+inv_weight	= 4.5
+
+cost		= 50000
+jump_height	= .2
+
+lights_enabled		= true
+trail_light_color	= 1.55,1.45,2.0
+trail_light_range	= 4.5
+	
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_dummy_dummy_absorbation
+
+[box_af_dummy_dummy_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 0.96
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 0.7
+fire_wound_immunity	= 1.0
+
+
+; "Рубиновая батарейка"
+[box_af_dummy_battery_red]:af_dummy_battery_red
+GroupControlSection	= spawn_group
+$spawn 			= "artifacts\dummy battery"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_batteryR.ogf
+description	= af_dummy_battery_red
+inv_name	= box-af_red_battery
+inv_name_short	= box-af_red_battery-s
+inv_weight	= 3
+
+jump_height	= .2
+
+cost		= 200000	;200
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true 
+trail_light_color	= 2.6,1.7,1.6
+trail_light_range	= 2
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0		
+radiation_restore_speed	= 0.0002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.01
+bleeding_restore_speed	= 0.0
+
+inventory_radiation	= 0.0003
+
+hit_absorbation_sect	= box_af_dummy_battery_red_absorbation
+
+[box_af_dummy_battery_red_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 0.92
+shock_immunity		= 0.8
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 0.95
+fire_wound_immunity	= 0.95
+
+
+; "Батарейка"
+[box_af_dummy_battery]:af_dummy_battery
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy battery"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+;visual		= physics\anomaly\artefact_battery.ogf
+visual		= physics\anomaly\af_dummy_battery.ogf
+description	= enc_zone_artifact_af-dummy-battery
+inv_name	= box-af-dummy-battery
+inv_name_short	= box-af-dummy-battery-s
+inv_weight	= 4
+
+jump_height	= .2
+
+cost		= 55000	
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true
+trail_light_color	= 1.55,1.45,2.0
+trail_light_range	= 4.5
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0		
+radiation_restore_speed	= -0.001
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_dummy_battery_absorbation
+
+[box_af_dummy_battery_absorbation]
+burn_immunity 		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 0.7
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Рубиновая пленка"
+[box_af_dummy_pellicle_red]:af_dummy_pellicle_red
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy pellicle"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_plenkaR.ogf
+description	= af_pellicle_red
+inv_name	= box-af_pellicle
+inv_name_short	= box-af_pellicle-s
+inv_weight	= 2
+
+jump_height	= .2
+
+cost		= 200000
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled		= true	 
+trail_light_color	= 2.5, 1.25, 1.50
+trail_light_range	= 2
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.001			
+radiation_restore_speed	= 0.0002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.001
+
+inventory_radiation	= 0.0003
+
+hit_absorbation_sect	= box_af_dummy_pellicle_red_absorbation
+
+[box_af_dummy_pellicle_red_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 0.95
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.1
+
+
+; "Плёнка"
+[box_af_dummy_pellicle]:af_dummy_pellicle
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy pellicle"
+$npc			= on
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_plenka.ogf
+description	= enc_zone_artifact_af-dummy-pellicle
+inv_name	= box-af-dummy-pellicle
+inv_name_short	= box-af-dummy-pellicle-s
+inv_weight	= 2
+
+jump_height	= .2
+
+cost		= 50000
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled		= true
+trail_light_color	= 0, 2.55, 1.6
+trail_light_range	= 5.0
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_dummy_pellicle_absorbation
+
+[box_af_dummy_pellicle_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 0.5
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+; "Мамины бусы"
+[box_af_dummy_glassbeads]:af_dummy_glassbeads
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy glassbeads"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_spiral.ogf
+description	= enc_zone_artifact_af-dummy-glassbeads
+inv_name	= box-af-dummy-glassbeads
+inv_name_short	= box-af-dummy-glassbeads-s
+inv_weight	= 3
+
+cost		= 50000
+
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_mincer
+
+lights_enabled		= true	
+trail_light_color	= 1.95,1.9,2.1
+trail_light_range	= 5.5
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.05
+power_restore_speed	= 0.006
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_dummy_glassbeads_absorbation
+
+[box_af_dummy_glassbeads_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.95
+
+
+; " Ржавые волосы аномалия "
+; "Колючка"
+[box_af_rusty_thorn]:af_rusty_thorn
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\rusty thorn"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_needles1.ogf
+description			= enc_zone_artifact_af-rusty-thorn
+inv_name			= box-af-rusty-thorn
+inv_name_short		= box-af-rusty-thorn-s
+inv_weight			= 3
+
+cost				= 10000
+jump_height			= .3
+
+lights_enabled = true	
+trail_light_color = 2.75,0,2.2
+trail_light_range = 3.5
+
+;скорости увеличения (уменьшения) 
+health_restore_speed = 0.0
+radiation_restore_speed = -0.001
+satiety_restore_speed = 0.0
+power_restore_speed = 0.0
+bleeding_restore_speed = -0.003
+hit_absorbation_sect = box_af_rusty_thorn_absorbation
+
+[box_af_rusty_thorn_absorbation]
+burn_immunity = 1.0				;коэффициенты иммунитета 
+strike_immunity = 1.0
+shock_immunity = 1.0
+wound_immunity = 1.0		
+radiation_immunity = 1.0
+telepatic_immunity = 1.0
+chemical_burn_immunity = 1.0
+explosion_immunity = 1.0
+fire_wound_immunity  = 1.0
+
+
+; "Кристальная колючка"
+[box_af_rusty_kristall]:af_rusty_kristall
+GroupControlSection	= spawn_group
+$spawn 			= "artifacts\rusty cristall"
+$npc			= on				; option for Level Editor
+;$prefetch 		= 3
+cform           = skeleton
+class   		= ARTEFACT
+
+visual				= physics\anomaly\artefact_needles2.ogf
+description			= enc_zone_artifact_af-rusty-kristall
+inv_name			= box-af-rusty-kristall
+inv_name_short		= box-af-rusty-kristall-s
+inv_weight			= 3
+
+cost				= 25000
+jump_height			= .4
+
+lights_enabled = true
+trail_light_color = 2.75,0,2.2
+trail_light_range = 4.5
+
+;скорости увеличения (уменьшения) 
+health_restore_speed = 0.0			
+radiation_restore_speed = -0.002
+satiety_restore_speed = 0.0
+power_restore_speed = 0.0
+bleeding_restore_speed = -0.003
+hit_absorbation_sect = box_af_rusty_kristall_absorbation
+
+[box_af_rusty_kristall_absorbation]
+burn_immunity = 1.0				;коэффициенты иммунитета 
+strike_immunity = 1.0
+shock_immunity = 1.0
+wound_immunity = 1.0		
+radiation_immunity = 1.0
+telepatic_immunity = 1.0
+chemical_burn_immunity = 1.0
+explosion_immunity = 1.0
+fire_wound_immunity  = 1.0
+
+
+; "Морской ёж"
+[box_af_rusty_sea_urchin]:af_rusty_sea_urchin
+GroupControlSection	= spawn_group
+$spawn 			= "artifacts\rusty sea-urchin"
+$npc			= on				; option for Level Editor
+;$prefetch 		= 3
+cform           = skeleton
+class   		= ARTEFACT
+
+visual				= physics\anomaly\artefact_rusty_hairs.ogf
+description			= enc_zone_artifact_af-rusty-sea-urchin
+inv_name			= box-af-rusty-sea-urchin
+inv_name_short		= box-af-rusty-sea-urchin-s
+inv_weight			= 4
+
+cost				= 50000
+jump_height			= .5
+
+lights_enabled = true
+trail_light_color = 2.75,0,2.2
+trail_light_range = 5.5
+
+;скорости увеличения (уменьшения) 
+health_restore_speed = 0.0			
+radiation_restore_speed = -0.003
+satiety_restore_speed = 0.0
+power_restore_speed = 0.0
+bleeding_restore_speed = -0.003
+hit_absorbation_sect = box_af_rusty_sea_urchin_absorbation
+
+[box_af_rusty_sea_urchin_absorbation]
+burn_immunity = 1.0				;коэффициенты иммунитета 
+strike_immunity = 1.0
+shock_immunity = 1.0
+wound_immunity = 1.0		
+radiation_immunity = 1.0
+telepatic_immunity = 1.0
+chemical_burn_immunity = 1.0
+explosion_immunity = 1.0
+fire_wound_immunity  = 1.0
+
+
+; "Жгучий Пух аномалия"
+; "Колобок"
+[box_af_fuzz_kolobok]:af_fuzz_kolobok
+GroupControlSection	= spawn_group
+$spawn 			= "artifacts\fuzz kolobok"
+$npc			= on				; option for Level Editor
+;$prefetch 		= 3
+cform           = skeleton
+class   		= ARTEFACT
+
+visual				= physics\anomaly\artefact_rusty_hairs.ogf
+description			= enc_zone_artifact_af-fuzz-kolobok
+inv_name			= box-af-fuzz-kolobok
+inv_name_short		= box-af-fuzz-kolobok-s
+inv_weight			= 4
+
+cost				= 50000
+jump_height			= .5
+
+particles			= anomaly2\artefact\artefact_puxx
+lights_enabled = true	
+trail_light_color = 0.75,0.4,1.2
+trail_light_range = 5.5		
+
+;скорости увеличения (уменьшения) 
+health_restore_speed = 0.0			
+radiation_restore_speed = 0.0
+satiety_restore_speed = 0.0
+power_restore_speed = 0.0
+bleeding_restore_speed = 0.0
+hit_absorbation_sect = box_af_fuzz_kolobok_absorbation
+
+[box_af_fuzz_kolobok_absorbation]
+burn_immunity = 1.0				;коэффициенты иммунитета 
+strike_immunity = 1.0
+shock_immunity = 1.0
+wound_immunity = 0.9	
+radiation_immunity = 1.0
+telepatic_immunity = 1.0
+chemical_burn_immunity = 1.0
+explosion_immunity = 1.0
+fire_wound_immunity  = 0.93
+
+[box_af_armor_1]:af_armor_1
+GroupControlSection	= spawn_group
+$spawn		= "artifacts\dummy pellicle"
+$npc		= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_plenka3.ogf
+description	= enc_zone_artifact_armor_1
+inv_name	= box_af_armor_1
+inv_name_short	= box-af-armor-1
+inv_weight	= 4
+
+jump_height	= .2
+
+cost		= 80000	;200
+
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled = true	;true
+trail_light_color =  1.325, 2, 1.203
+trail_light_range = 2
+
+;скорости увеличения (уменьшения)
+health_restore_speed	= 0.0
+radiation_restore_speed	= 0.001
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+inventory_radiation	= 0.001
+		
+hit_absorbation_sect	= af_armor_1_absorbation
+
+artefact_activation_seq	= box_af_activation_bold
+
+[box_af_armor_1_absorbation]
+burn_immunity		= 0.94	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 0.79
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.95
+
+
+[box_af_armor_2]:af_armor_2
+GroupControlSection	= spawn_group
+$spawn		= "artifacts\dummy pellicle"
+$npc		= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_plenka2.ogf
+description	= enc_zone_artifact_armor_2
+inv_name	= box_af_armor_2
+inv_name_short	= box-af-armor-2
+inv_weight	= 3
+
+jump_height	= .4
+
+cost		= 120000 ;200
+
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled		= true	;true
+trail_light_color	= 1.670, 1.403, 2
+trail_light_range	= 2
+
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0001
+radiation_restore_speed	= 0.001
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= -0.00333
+inventory_radiation	= 0.002
+
+hit_absorbation_sect	= box_af_armor_2_absorbation
+
+artefact_activation_seq	= af_activation_bold
+
+[box_af_armor_2_absorbation]
+burn_immunity		= 0.98	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 0.72
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.95
+
+
+[box_af_armor_3]:af_base
+GroupControlSection	= spawn_group
+$spawn		= "artifacts\dummy pellicle"
+$npc		= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_plenka4.ogf
+description	= enc_zone_artifact_armor_3
+inv_name	= box_af_armor_3
+inv_name_short	= box-af-armor-3
+inv_weight	= 3
+
+jump_height	= 0.7
+
+cost		= 150000
+
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled		= true	;true
+trail_light_color	= 1.525, 1.1, 1.403
+trail_light_range	= 2
+
+
+;скорости увеличения (уменьшения) 
+health_restore_speed		= 0.00005
+radiation_restore_speed		= 0.001
+satiety_restore_speed		= 0.0
+power_restore_speed		= 0.0
+bleeding_restore_speed		= 0.004
+inventory_radiation		= 0.001
+
+hit_absorbation_sect		= box_af_armor_3_absorbation
+
+artefact_activation_seq		= af_activation_bold
+
+[box_af_armor_3_absorbation]
+burn_immunity = 0.96				;коэффициенты иммунитета 
+strike_immunity = 1.0
+shock_immunity = 1.0
+wound_immunity = 1.0		
+radiation_immunity = 1.0
+telepatic_immunity = 1.0
+chemical_burn_immunity = 0.65
+explosion_immunity = 1.0
+fire_wound_immunity  = 0.93
+
+[box_af_armor_4]:af_base
+GroupControlSection	= spawn_group
+$spawn		= "artifacts\dummy pellicle"
+$npc		= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_plenka1.ogf
+description	= enc_zone_artifact_armor_4
+inv_name	= box_af_armor_4
+inv_name_short	= box-af-armor-4
+inv_weight	= 2
+
+jump_height	= 1
+
+cost		= 200000
+
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled = true	;true
+trail_light_color = 1.0, 2.07, 1.0  
+trail_light_range = 3
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0001
+radiation_restore_speed	= 0.0
+satiety_restore_speed	= 0.00011
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+inventory_radiation	= 0
+hit_absorbation_sect	= box_af_armor_4_absorbation
+
+artefact_activation_seq	= af_activation_bold
+
+[box_af_armor_4_absorbation]
+burn_immunity		= 0.95	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 0.6
+chemical_burn_immunity	= 0.85
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.9
+
+
+[box_af_babka_1]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy glassbeads"
+$npc			= on	; option for Level Editor
+;$prefetch		= 3
+cform			= skeleton
+class			= ARTEFACT
+
+visual		= physics\anomaly\artefact_spiral.ogf
+description	= enc_zone_artifact_babka_1
+inv_name	= af-babka-1
+inv_name_short	= af-babka-1-s
+inv_weight	= 3.4
+
+cost		= 80000
+jump_height	= .4
+
+particles	= anomaly2\artefact\artefact_mincer
+lights_enabled		= true
+trail_light_color	= 1, 1, 0.690
+trail_light_range	= 0.5
+
+artefact_activation_seq	= af_activation_mincer
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0
+radiation_restore_speed	= 0.001
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0008
+bleeding_restore_speed	= 0.0
+inventory_radiation	= 0.002
+
+hit_absorbation_sect	= box_af_babka_1_absorbation
+
+[box_af_babka_1_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.15
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 0.97
+fire_wound_immunity	= 0.94
+
+
+[box_af_babka_2]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy glassbeads"
+$npc			= on	; option for Level Editor
+;$prefetch		= 3
+cform			= skeleton
+class			= ARTEFACT
+
+visual		= physics\anomaly\artefact_spiral.ogf
+description	= enc_zone_artifact_babka_2
+inv_name	= af-babka-2
+inv_name_short	= af-babka-2-s
+inv_weight	= 4
+
+cost		= 100000
+
+jump_height	= .6
+
+particles	= anomaly2\artefact\artefact_gravi
+lights_enabled		= true
+trail_light_color	= 2, 1.866, 0.572
+trail_light_range	= 1
+
+artefact_activation_seq	= af_activation_mincer
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.00012
+radiation_restore_speed	= 0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.012667
+inventory_radiation	= 0.003
+
+hit_absorbation_sect	= box_af_babka_2_absorbation
+
+[box_af_babka_2_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 0.95
+fire_wound_immunity	= 0.92
+
+
+[box_af_babka_3]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\dummy glassbeads"
+$npc			= on	; option for Level Editor
+;$prefetch		= 3
+cform			= skeleton
+class			= ARTEFACT
+
+visual		= physics\anomaly\artefact_spiral.ogf
+description	= enc_zone_artifact_babka_3
+inv_name	= af-babka-3
+inv_name_short	= af-babka-3-s
+inv_weight	= 3
+
+cost		= 150000
+
+jump_height	= .2
+
+particles	= anomaly2\artefact\artefact_ameba
+lights_enabled		= true
+trail_light_color	= 1.603, 1.086, 0
+trail_light_range	= 2
+
+artefact_activation_seq	= af_activation_mincer
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.00015
+radiation_restore_speed	= 0.004
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.015
+inventory_radiation	= 0.005
+
+hit_absorbation_sect	= box_af_babka_3_absorbation
+
+[box_af_babka_3_absorbation]
+burn_immunity		= 1.0 ;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 0.92
+fire_wound_immunity	= 0.8
+
+
+[box_af_buliz]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\electra moonlight"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra1.ogf  
+description	= enc_zone_artifact_buliz
+inv_name	= af-buliz
+inv_name_short	= af-buliz-s
+inv_weight	= 2
+
+cost		= 7000
+
+jump_height	= 0.1
+
+particles	= anomaly2\artefact\artefact_mincer
+
+lights_enabled		= true
+trail_light_color	= 1, 0.894, 0.403
+trail_light_range	= 5.0
+
+;скорости увеличения (уменьшения) 
+health_restore_speed		= 0.0					
+radiation_restore_speed		= 0.0				
+satiety_restore_speed		= 0.0				
+power_restore_speed		= 0.0				
+bleeding_restore_speed		= 0.0		
+hit_absorbation_sect		= af_buliz_absorbation
+
+artefact_activation_seq		= box_af_activation_bold
+
+[box_af_buliz_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+[box_af_cry_1]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\electra flash"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+;visual		= physics\anomaly\artefact_electra3.ogf ;было у АМК
+visual		= physics\anomaly\artefact_electra33.ogf
+description	= enc_zone_artifact_cry_1
+inv_name	= af-cry-1
+inv_name_short	= af-cry-1-s
+inv_weight	= 3
+
+cost		= 70000
+
+jump_height	= .5
+
+particles	= anomaly2\burer_attack_prepare
+lights_enabled		= true
+trail_light_color	= 0, 1.07, 0  
+trail_light_range	= 3.4
+
+artefact_activation_seq	= af_activation_mincer
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0
+radiation_restore_speed	= -0.00065
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0009
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_cry_1_absorbation
+
+[box_af_cry_1_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+[box_af_cry_2]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\electra flash"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra3.ogf
+description	= enc_zone_artifact_cry_2
+inv_name	= af-cry-2
+inv_name_short	= af-cry-2-s
+inv_weight	= 3.6
+
+cost		= 90000
+
+jump_height	= .8
+
+particles	= anomaly2\artefact\artefact_zharka
+lights_enabled		= true
+trail_light_color	= 2, 1.780, 0.298
+trail_light_range	= 2
+
+artefact_activation_seq	= af_activation_mincer
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0
+radiation_restore_speed	= -0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_cry_2_absorbation
+
+[box_af_cry_2_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+[box_af_cry_3]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\electra sparkler"
+
+$prefetch	= 64
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra4.ogf
+description	= enc_zone_artifact_cry_3
+inv_name	= af-cry-3
+inv_name_short	= af-cry-3-s
+inv_weight	= 3.4
+
+cost		= 120000
+
+jump_height	= 2
+
+particles	= anomaly2\artefact\artefact_electra
+lights_enabled		= true
+trail_light_color	= 1.145, 0.607, 0.384
+trail_light_range	= 3
+
+artefact_activation_seq	= af_activation_mincer
+;скорости увеличения (уменьшения) 
+health_restore_speed	= -0.0002
+radiation_restore_speed	= -0.003
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= -0.0046
+hit_absorbation_sect	= box_af_cry_3_absorbation
+
+[box_af_cry_3_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 0.9
+telepatic_immunity	= 0.55
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+[box_af_dik_1]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\rusty sea-urchin"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_rusty_hairs.ogf
+description	= enc_zone_artifact_dik_1
+inv_name	= af-dik-1
+inv_name_short	= af-dik-1-s
+inv_weight	= 4
+
+cost		= 70000
+jump_height	= 0.4
+
+particles	= anomaly2\artefact\artefact_mincer
+
+lights_enabled		= true
+trail_light_color	= 1.552, 1.513, 1.356
+trail_light_range	= 2
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= -0.0075
+satiety_restore_speed	= 0.0
+power_restore_speed	= -0.001
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_dik_1_sea-urchin_absorbation
+
+[box_af_dik_1_sea-urchin_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+[box_af_dik_2]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\rusty sea-urchin"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_rusty_hairs.ogf
+description	= enc_zone_artifact_dik_2
+inv_name	= af-dik-2
+inv_name_short	= af-dik-2-s
+inv_weight	= 4
+
+cost		= 100000
+jump_height	= 0.6
+
+particles	= anomaly2\artefact\artefact_electra
+
+lights_enabled		= true
+trail_light_color	= 1.207, 1.411, 1.933
+trail_light_range	= 2
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= -0.0065
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.005
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_dik_2_sea-urchin_absorbation
+
+[box_af_dik_2_sea-urchin_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.1
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 0.9
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+[box_af_dik_3]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\rusty sea-urchin"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_rusty_hairs.ogf
+description	= enc_zone_artifact_dik_3
+inv_name	= af-dik-3
+inv_name_short	= af-dik-3-s
+inv_weight	= 4
+
+cost		= 150000
+jump_height	= 1
+
+particles	= anomaly2\artefact\artefact_zharka
+
+lights_enabled		= true
+trail_light_color	= 1.329, 1.980, 1.098
+trail_light_range	= 3
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= -0.006
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0055
+bleeding_restore_speed	= 0.01333
+hit_absorbation_sect	= box_af_dik_3_sea-urchin_absorbation
+
+[box_af_dik_3_sea-urchin_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.1
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 0.95
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+[box_af_dik_4]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\rusty sea-urchin"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_rusty_hairs.ogf
+description	= enc_zone_artifact_dik_4
+inv_name	= af-dik-4
+inv_name_short	= af-dik-4-s
+inv_weight	= 3
+
+cost		= 200000
+jump_height	= 2
+
+particles	= anomaly2\artefact\artefact_ameba
+
+lights_enabled		= true
+trail_light_color	= 1.980, 1.098, 1.098
+trail_light_range	= 4
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= -0.0060
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.00425
+bleeding_restore_speed	= 0.01167
+hit_absorbation_sect	= box_af_dik_4_sea-urchin_absorbation
+
+[box_af_dik_4_sea-urchin_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 0.85
+wound_immunity		= 1.0		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 1.0
+
+
+[box_af_kol_1]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\fuzz kolobok"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra1.ogf  
+description	= enc_zone_artifact_kol_1
+inv_name	= af-kol-1
+inv_name_short	= af-kol-1-s
+inv_weight	= 5
+
+cost		= 70000
+jump_height	= .4
+
+particles		= anomaly2\artefact\artefact_ameba
+lights_enabled		= true
+trail_light_color	= 2, 2, 2
+trail_light_range	= 2
+
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+inventory_radiation	= 0.003
+
+hit_absorbation_sect = box_af_kol_1_absorbation
+
+[box_af_kol_1_absorbation]
+burn_immunity		= 1.0	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 0.9		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.95
+
+
+[box_af_kol_2]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\fuzz kolobok"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra1.ogf  
+description	= enc_zone_artifact_kol_2
+inv_name	= af-kol-2
+inv_name_short	= af-kol-2-s
+inv_weight	= 4.6
+
+cost		= 90000
+jump_height	= .7
+
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true
+trail_light_color	= 1.556, 2, 1.941
+trail_light_range	= 2
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.002
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+inventory_radiation	= 0.004
+
+hit_absorbation_sect	= box_af_kol_2_absorbation
+
+[box_af_kol_2_absorbation]
+burn_immunity		= 0.85	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 0.91		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.9
+
+
+[box_af_kol_3]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\fuzz kolobok"
+$npc		= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra1.ogf  
+description	= enc_zone_artifact_kol_3
+inv_name	= af-kol-3
+inv_name_short	= af-kol-3-s
+inv_weight	= 3
+
+cost		= 130000
+jump_height	= 1
+
+particles	= anomaly2\artefact\artefact_gravi
+
+lights_enabled		= true
+trail_light_color	= 1.556, 1.662, 2
+trail_light_range	= 3
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= 0.003
+satiety_restore_speed	= 0.0
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+inventory_radiation	= 0.005
+
+hit_absorbation_sect	= box_af_kol_3_absorbation
+
+[box_af_kol_3_absorbation]
+burn_immunity		= 0.75	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 0.89		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 0.85
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.92
+
+
+[box_af_kol_4]:af_base
+GroupControlSection	= spawn_group
+$spawn			= "artifacts\fuzz kolobok"
+$npc			= on	; option for Level Editor
+;$prefetch	= 3
+cform		= skeleton
+class		= ARTEFACT
+
+visual		= physics\anomaly\artefact_electra1.ogf  
+description	= enc_zone_artifact_kol_4
+inv_name	= af-kol-4
+inv_name_short	= af-kol-4-s
+inv_weight	= 4
+
+cost		= 200000
+jump_height	= 2
+
+particles	= anomaly2\artefact\artefact_puxx
+
+lights_enabled		= true
+trail_light_color	= 1, 1.517, 1.109
+trail_light_range	= 4
+
+;скорости увеличения (уменьшения) 
+health_restore_speed	= 0.0			
+radiation_restore_speed	= -0.001
+satiety_restore_speed	= 0.00015
+power_restore_speed	= 0.0
+bleeding_restore_speed	= 0.0
+hit_absorbation_sect	= box_af_kol_4_absorbation
+
+[box_af_kol_4_absorbation]
+burn_immunity		= 0.75	;коэффициенты иммунитета 
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 0.86		
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.9

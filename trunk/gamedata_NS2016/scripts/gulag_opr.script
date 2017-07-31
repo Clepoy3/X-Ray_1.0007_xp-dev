@@ -1,0 +1,773 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+	-- Долговцы в Юбилейном
+	if type == "opr_homedolg" then
+		--' 22 работы + 3 экс
+		t = {section = "logic@opr_homedolg_lider_walker", idle = 0, prior = 12, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name == "bar_dolg_regular_5"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@opr_homedolg_prapor_walker", idle = 0, prior = 12, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name == "sim_stalker_prapor"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@opr_homedolg_barin_walker", idle = 0, prior = 12, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name == "bar_stalker_0001"
+						end
+		}
+		table.insert(sj, t)
+		for i = 1, 12 do
+			t = {section = "logic@opr_homedolg_walker"..i, idle = 0, prior = 10, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		t = {section = "logic@opr_homedolg_sleeper1", idle = 0, prior = 8, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		for t = 1, 3 do
+			t = {section = "logic@opr_homedolg_kamp1", idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@opr_homedolg_kamp2", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@opr_homedolg_kamp3", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Монолитовцы в Юбилейном
+	if type == "opr_homemono1" then
+		--' 25 работ
+		for t = 1, 5 do
+			t = {section = "logic@opr_homemono1_kamp1", idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@opr_homemono1_kamp2", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@opr_homemono1_kamp3", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@opr_homemono1_kamp4", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@opr_homemono1_kamp5", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Монолитовцы в Прометее
+	if type == "opr_sinemamono" then
+		--' 22 работы
+		for i = 1, 15 do
+			t = {section = "logic@opr_sinemamono_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@opr_sinemamono_kamp1", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@opr_sinemamono_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Монолитовцы снайперы в Юбилейном
+	if type == "opr_homesniper" then
+		--' 5 работ
+		for i = 1, 5 do
+			t = {section = "logic@opr_homesniper_camper"..i, idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Монолитовцы в магазине книги
+	if type == "opr_bookmono" then
+		--' 10 работ
+		for i = 1, 10 do
+			t = {section = "logic@opr_bookmono_walker"..i, idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Сталкеры в прачечной
+	if type == "opr_stalker" then
+		--' 14 работ
+		for i = 1, 8 do
+			t = {section = "logic@opr_stalker_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 1 do
+			t = {section = "logic@opr_stalker_sleeper", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@opr_stalker_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Барин и Прапор
+	if type == "opr_namedolg" then
+		--' 2 работы, сидим в оффлайне
+		for i = 1, 2 do
+			t = {section = "logic@opr_namedolg_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = "",
+				online = false
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Слепыши
+	if type == "opr_dogs" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@opr_dogs", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	if type == "opr_dogs2" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@opr_dogs2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Химеры
+	if type == "opr_chimera" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@opr_chimera", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Тушканы
+	if type == "opr_tushkano" then
+		--' 10 работ
+		for t = 1, 10 do
+			t = {section = "logic@opr_tushkano", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	if type == "opr_tushkano2" then
+		--' 8 работ
+		for t = 1, 8 do
+			t = {section = "logic@opr_tushkano2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Зомби и бабки
+	if type == "opr_zombie" then
+		--' 8 работ
+		for t = 1, 8 do
+			t = {section = "logic@opr_zombie", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	if type == "opr_zombie2" then
+		--' 8 работ
+		for t = 1, 8 do
+			t = {section = "logic@opr_zombie2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Изломы
+	if type == "opr_fracture" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@opr_fracture", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Тараканы
+	if type == "opr_tarakan" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@opr_tarakan", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	if type == "opr_tarakan2" then
+		--' 10 работ
+		for t = 1, 10 do
+			t = {section = "logic@opr_tarakan2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Крысы
+	if type == "opr_rat" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@opr_rat", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	if type == "opr_rat2" then
+		--' 10 работ
+		for t = 1, 10 do
+			t = {section = "logic@opr_rat2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	if type == "opr_rat3" then
+		--' 10 работ
+		for t = 1, 10 do
+			t = {section = "logic@opr_rat3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Бюреры
+	if type == "opr_burer" then
+		--' 2 работы
+		t = {section = "logic@opr_burer", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@opr_burer", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+	-- Кровососы
+	if type == "opr_bloodsucker" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@opr_bloodsucker", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Псевдопсы
+	if type == "opr_pseudodog" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@opr_pseudodog", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Полтергейсты
+	if type == "opr_poltergeist" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@opr_poltergeist", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Контрик
+	if type == "opr_controller" then
+		--' 1 работа
+		t = {section = "logic@opr_controller", idle = 0, prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+	-- Сталкер - зомби на речном вокзале
+	if type == "opr_zombied" then
+		--' 8 работ
+		for t = 1, 5 do
+			t = {section = "logic@opr_zombied_kamp1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@opr_zombied_kamp2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Коты
+	if type == "opr_cat" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@opr_cat", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	-- Кабаны и свинки
+	if type == "opr_boar_flesh" then
+		--' 4 работ
+		for t = 1, 4 do
+			t = {section = "logic@opr_boar_flesh", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+---'''' Гулаги с переменным состоянием ''''---
+	-- Долговцы в гастрономе
+	if type == "opr_foodstore" then
+		--' 8 работ + 1 экс, сидим в гастрономе
+		t = {section = "logic@opr_foodstore_walker5", idle = 0, prior = 6, state = {0},
+			in_rest = "", out_rest = "",
+			online = true,
+			predicate = function(obj_info)
+							return obj_info.name == "bar_dolg_regular_5"
+						end
+		}
+		table.insert(sj, t)
+		for i = 1, 4 do
+			t = {section = "logic@opr_foodstore_walker"..i, idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = "",
+				online = true
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 4 do
+			t = {section = "logic@opr_foodstore_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = "",
+				online = true
+			}
+			table.insert(sj, t)
+		end
+		--' 1 состояние - 8 работ + 1 экс, идём к Юбилейному
+		t = {section = "logic@opr_foodstore_reid_lider", idle = 0, prior = 6, state = {1},
+			in_rest = "", out_rest = "",
+			online = true,
+			predicate = function(obj_info)
+							return obj_info.name == "bar_dolg_regular_5"
+						end
+		}
+		table.insert(sj, t)
+		for i = 1, 8 do
+			t = {section = "logic@opr_foodstore_reid_walker"..i, idle = 0, prior = 4, state = {1},
+				in_rest = "", out_rest = "",
+				online = true
+			}
+			table.insert(sj, t)
+		end
+	end
+end
+
+function load_states(gname,type)
+
+	if type == "opr_foodstore" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("opr_foodstore_reid") then
+				return 1 -- идём к Юбилейному
+			end
+			return 0 -- сидим в гастрономе
+		end
+	end
+	if type == "opr_namedolg" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "opr_homemono1" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_sinemamono" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_homesniper" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_dogs" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_chimera" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_tushkano" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_tushkano2" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_zombie" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_fracture" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_tarakan" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_rat" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_burer" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_zombie2" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_bloodsucker" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_pseudodog" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_poltergeist" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_controller" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_zombied" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_bookmono" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_cat" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_dogs2" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_tarakan2" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_rat2" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_rat3" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_stalker" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_boar_flesh" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+	if type == "opr_homedolg" then
+		return function (gulag)
+			return 0
+		end
+	end
+
+end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+	if gulag_type == "opr_foodstore" then
+		return npc_community == "dolg"
+	end
+
+	if gulag_type == "opr_homemono1" then
+		return npc_community == "monolith"
+	end
+
+	if gulag_type == "opr_sinemamono" then
+		return npc_community == "monolith"
+	end
+
+	if gulag_type == "opr_homesniper" then
+		return npc_community == "monolith"
+	end
+
+	if gulag_type == "opr_zombied" then
+		return npc_community == "zombied"
+	end
+
+	if gulag_type == "opr_bookmono" then
+		return npc_community == "monolith"
+	end
+
+	if gulag_type == "opr_stalker" then
+		return npc_community == "stalker"
+	end
+
+	if gulag_type == "opr_homedolg" then
+		return npc_community == "dolg"
+	end
+	if gulag_type == "opr_namedolg" then
+		return npc_community == "dolg"
+	end
+
+
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+	if gulag_type == "opr_dogs" then
+		return npc_community == "dog"
+	end
+
+	if gulag_type == "opr_chimera" then
+		return npc_community == "chimera"
+	end
+
+	if gulag_type == "opr_tushkano" then
+		return npc_community == "tushkano"
+	end
+
+	if gulag_type == "opr_tushkano2" then
+		return npc_community == "tushkano"
+	end
+
+	if gulag_type == "opr_zombie" then
+		return npc_community == "zombie"
+	end
+
+	if gulag_type == "opr_fracture" then
+		return npc_community == "fracture"
+	end
+
+	if gulag_type == "opr_tarakan" then
+		return npc_community == "tarakan"
+	end
+
+	if gulag_type == "opr_rat" then
+		return npc_community == "rat"
+	end
+
+	if gulag_type == "opr_burer" then
+		return npc_community == "burer"
+	end
+
+	if gulag_type == "opr_zombie2" then
+		return npc_community == "zombie"
+	end
+
+	if gulag_type == "opr_bloodsucker" then
+		return npc_community == "bloodsucker"
+	end
+
+	if gulag_type == "opr_pseudodog" then
+		return npc_community == "pseudodog"
+	end
+
+	if gulag_type == "opr_poltergeist" then
+		return npc_community == "poltergeist"
+	end
+
+	if gulag_type == "opr_controller" then
+		return npc_community == "controller"
+	end
+
+	if gulag_type == "opr_cat" then
+		return npc_community == "cat"
+	end
+
+	if gulag_type == "opr_dogs2" then
+		return npc_community == "dog"
+	end
+
+	if gulag_type == "opr_tarakan2" then
+		return npc_community == "tarakan"
+	end
+
+	if gulag_type == "opr_rat2" then
+		return npc_community == "rat"
+	end
+
+	if gulag_type == "opr_rat3" then
+		return npc_community == "rat"
+	end
+
+	if gulag_type == "opr_boar_flesh" then
+		return npc_community == "boar" or npc_community == "flesh"
+	end
+
+	return false
+end

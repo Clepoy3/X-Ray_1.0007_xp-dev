@@ -1,0 +1,582 @@
+
+[antizombie]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 			= "food and drugs\antizombie"
+$prefetch 		= 32
+class			= II_ANTIR
+cform           = skeleton
+visual          = equipments\item_antirak.ogf
+description		= enc_equipment_medi_antizombie
+
+inv_name			= antizombie
+inv_name_short		= antizombie
+inv_weight			= 0.1
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 17 ; 
+inv_grid_y = 7 ; 
+cost				= 30000
+
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+eat_alcohol = 0.1
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+[old_doc]:ammo_base
+GroupControlSection = spawn_group
+discovery_dependency = 
+$spawn      = "devices\old_doc" ; option for Level Editor
+class     = AMMO
+cform                   = skeleton
+visual                  = amk\item_zapiska.ogf
+description       = 
+$prefetch     = 64
+
+radius         = 1
+cost           = 10
+
+inv_name          = "Старый документ"
+inv_name_short    = "Старый документ"
+description			= "Старый пожелтевший документ. Формулы, записи на непонятном языке... По виду - бред сумасшедшего..."
+ 
+inv_weight    = 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+
+box_size=1
+
+k_dist      = 1
+k_disp      = 3
+k_hit     = 1.4
+k_impulse   = 1.2
+k_pierce    = 1.35
+impair      = 1.15
+buck_shot   = 1
+tracer      = off
+wm_size         = 0.05
+
+[old_doc_2]:ammo_base
+GroupControlSection = spawn_group
+discovery_dependency = 
+$spawn      = "devices\old_doc_2" ; option for Level Editor
+class     = AMMO
+cform                   = skeleton
+visual                  = amk\item_zapiska.ogf
+description       = 
+$prefetch     = 64
+
+radius         = 1
+cost           = 10
+
+inv_name          = "Старый документ 2"
+inv_name_short    = "Старый документ 2"
+description			= "Старый документ. По виду - очень похож на предыдущий..."
+ 
+inv_weight    = 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+
+box_size=1
+
+k_dist      = 1
+k_disp      = 3
+k_hit     = 1.4
+k_impulse   = 1.2
+k_pierce    = 1.35
+impair      = 1.15
+buck_shot   = 1
+tracer      = off
+wm_size         = 0.05
+
+[old_doc_3_1]:ammo_base
+GroupControlSection = spawn_group
+discovery_dependency = 
+$spawn      = "devices\old_doc_3_1" ; option for Level Editor
+class     = AMMO
+cform                   = skeleton
+visual                  = amk\item_zapiska.ogf
+description       = 
+$prefetch     = 64
+
+radius         = 1
+cost           = 10
+
+inv_name          = "Старый документ 3, часть 1"
+inv_name_short    = "Старый документ 3, часть 1" 
+description			= "Первая часть какого-то документа со схемами"
+
+inv_weight    = 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+
+box_size=1
+
+k_dist      = 1
+k_disp      = 3
+k_hit     = 1.4
+k_impulse   = 1.2
+k_pierce    = 1.35
+impair      = 1.15
+buck_shot   = 1
+tracer      = off
+wm_size         = 0.05
+
+[old_doc_3_2]:ammo_base
+GroupControlSection = spawn_group
+discovery_dependency = 
+$spawn      = "devices\old_doc_3_2" ; option for Level Editor
+class     = AMMO
+cform                   = skeleton
+visual                  = amk\item_zapiska.ogf
+description       = 
+$prefetch     = 64
+
+radius         =1
+cost           = 10
+
+inv_name          = "Старый документ 3, часть 2"
+inv_name_short    = "Старый документ 3, часть 2" 
+description			= "Вторая часть какого-то документа со схемами"
+
+inv_weight    = 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+
+box_size=1
+
+k_dist      = 1
+k_disp      = 3
+k_hit     = 1.4
+k_impulse   = 1.2
+k_pierce    = 1.35
+impair      = 1.15
+buck_shot   = 1
+tracer      = off
+wm_size         = 0.05
+
+[old_doc_3_3]:ammo_base
+GroupControlSection = spawn_group
+discovery_dependency = 
+$spawn      = "devices\old_doc_3_3" ; option for Level Editor
+class     = AMMO
+cform                   = skeleton
+visual                  = amk\item_zapiska.ogf
+description       = 
+$prefetch     = 64
+
+radius         = 1
+cost           = 10
+
+inv_name          = "Старый документ 3, часть 3"
+inv_name_short    = "Старый документ 3, часть 3" 
+description			= "Третья часть документа со схемами"
+
+inv_weight    = 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+
+box_size=1
+
+k_dist      = 1
+k_disp      = 3
+k_hit     = 1.4
+k_impulse   = 1.2
+k_pierce    = 1.35
+impair      = 1.15
+buck_shot   = 1
+tracer      = off
+wm_size         = 0.05
+
+[old_doc_3_4]:ammo_base
+GroupControlSection = spawn_group
+discovery_dependency = 
+$spawn      = "devices\old_doc_3_4" ; option for Level Editor
+class     = AMMO
+cform                   = skeleton
+visual                  = amk\item_zapiska.ogf
+description       = 
+$prefetch     = 64
+
+radius         = 1
+cost           = 10
+
+inv_name          = "Старый документ 3, часть 4"
+inv_name_short    = "Старый документ 3, часть 4"
+description			= "Последняя, 4 часть документа со схемами"
+ 
+inv_weight    = 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+
+box_size=1
+
+k_dist      = 1
+k_disp      = 3
+k_hit     = 1.4
+k_impulse   = 1.2
+k_pierce    = 1.35
+impair      = 1.15
+buck_shot   = 1
+tracer      = off
+wm_size         = 0.05
+
+
+[old_doc_4]:ammo_base
+GroupControlSection = spawn_group
+discovery_dependency = 
+$spawn      = "devices\old_doc_4" ; option for Level Editor
+class     = AMMO
+cform                   = skeleton
+visual                  = amk\item_zapiska.ogf
+description       = 
+$prefetch     = 64
+
+radius         = 1
+cost           = 10
+
+inv_name          = "Старый документ 4"
+inv_name_short    = "Старый документ 4" 
+description			= "Ещё один затёртый документ. Они все похожи - пойди разберись, что к чему"
+
+inv_weight    = 0.01
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 0 ; 
+inv_grid_y = 6 ; 
+
+box_size=1
+
+k_dist      = 1
+k_disp      = 3
+k_hit     = 1.4
+k_impulse   = 1.2
+k_pierce    = 1.35
+impair      = 1.15
+buck_shot   = 1
+tracer      = off
+wm_size         = 0.05
+
+[pda_info]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency=
+$spawn 				= "devices\pda_info"
+$prefetch 			= 16
+class				= D_PDA
+cform				= skeleton
+visual				= equipments\item_pda_01.ogf
+description			= "Типичный ПДА, каких в Зоне много. К тому же - нерабочий и побитый. Видно, что бывший хозяин был с ним не очень бережлив"
+radius				= 50;0 ;75
+slot				= 7
+
+inv_name			= "Сломанный ПДА"
+inv_name_short		= "Сломанный ПДА"
+inv_weight			= 0.3	;0.2
+
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 24 ; 
+inv_grid_y = 12 ; 
+cost				= 20
+attach_angle_offset		= 3.080506,-1.493053,-1.202040   ;устанавливается в радианах Angle*PI/180
+attach_position_offset	= 0.080000,0.021273,0.100000
+attach_bone_name		= bip01_r_hand
+auto_attach				= false
+
+
+[doc_1]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 			= "food and drugs\doc_1"
+$prefetch 		= 32
+class			= II_ANTIR
+cform           = skeleton
+visual                  = equipments\upgrade_power.ogf
+description		= enc_doc
+
+inv_name			= "Система для активации модулей"
+inv_name_short		= "Система для активации модулей"
+inv_weight			= 0.1
+quest_item			= true
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 3 ; 
+inv_grid_y = 7 ; 
+cost				= 30
+
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+eat_alcohol = 0.1
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[doc_8]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 			= "food and drugs\doc_8"
+$prefetch 		= 32
+class			= II_ANTIR
+cform           = skeleton
+visual                  = equipments\upgrade_health.ogf
+description		= new_apgreider_1
+
+inv_name			= "Блок апгрейдера 1"
+inv_name_short		= "Блок апгрейдера 1"
+inv_weight			= 0.1
+quest_item			= true
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 3 ; 
+inv_grid_y = 8 ; 
+cost				= 30
+
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+eat_alcohol = 0.1
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[doc_10]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 			= "food and drugs\doc_10"
+$prefetch 		= 32
+class			= II_ANTIR
+cform           = skeleton
+visual                  = equipments\upgrade_kevlar1.ogf
+description		= new_apgreider_2
+
+inv_name			= "Блок апгрейдера 2"
+inv_name_short		= "Блок апгрейдера 2"
+inv_weight			= 0.1
+quest_item			= true
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 4 ; 
+inv_grid_y = 7 ; 
+cost				= 30
+
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+eat_alcohol = 0.1
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[hand_teleporter]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn = "items\hand_teleporter"
+$prefetch 		= 32
+class			= II_ANTIR	;II_ATTCH
+cform           = skeleton
+visual          = equipments\item_datchik3.ogf
+description		= item_umn_tel
+quest_item			= false
+
+inv_name			= "Ручной телепортатор"
+inv_name_short		= "Ручной телепортатор"
+inv_weight			= 0.1
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 2 ; 
+inv_grid_y = 7 ; 
+cost				= 50000
+
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+eat_alcohol = 0.3
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+[hand_teleporter1]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn = "items\hand_teleporter1"
+$prefetch 		= 32
+class			= II_ATTCH
+cform           = skeleton
+visual          = equipments\item_datchik3.ogf
+description		= item_umn_tel2
+quest_item			= false
+
+inv_name			= "Рабочий прототип УРТ"
+inv_name_short		= "Рабочий прототип УРТ"
+inv_weight			= 0.1
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 2 ; 
+inv_grid_y = 7 ; 
+cost				= 50000
+
+[hand_teleporter_fake]:hand_teleporter
+$spawn = "items\hand_teleporter_fake"
+
+
+[hand_teleporter_arhara]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn = "items\hand_teleporter_arhara"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_datchik3.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= false
+
+description			= item_umn_tel_1
+
+inv_name			= "Неисправный Ручной телепортатор"
+inv_name_short		= "Неисправный Ручной телепортатор"
+inv_weight			= 0.03
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 2 ; 
+inv_grid_y = 7 ; 
+cost				= 10
+
+
+[hand_teleporter2]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn = "items\hand_teleporter2"
+$prefetch 		= 32
+class			= II_ANTIR	;II_ATTCH
+cform           = skeleton
+visual          = equipments\item_datchik3.ogf
+description		= item_umn_tel
+quest_item			= false
+
+inv_name			= "Ручной телепортатор"
+inv_name_short		= "Ручной телепортатор"
+inv_weight			= 0.1
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 2 ; 
+inv_grid_y = 7 ; 
+cost				= 50000
+
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+eat_alcohol = 0.3
+
+; food item
+animation_slot		= 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+[acumm]:ammo_base
+GroupControlSection = spawn_group
+discovery_dependency = 
+$spawn      = "devices\acumm" ; option for Level Editor
+class     = AMMO
+cform                   = skeleton
+visual                  = equipments\item_rakdage.ogf
+description       = akku_anomal
+$prefetch     = 64
+
+radius         = 1
+cost           = 500
+
+inv_name          = Аккумулятор
+inv_name_short    = Аккумулятор 
+inv_weight    = 0.01
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 2 ; 
+inv_grid_y = 8 ; 
+
+box_size=1
+
+k_dist      = 1
+k_disp      = 3
+k_hit     = 1.4
+k_impulse   = 1.2
+k_pierce    = 1.35
+impair      = 1.15
+buck_shot   = 1
+tracer      = off
+wm_size         = 0.05

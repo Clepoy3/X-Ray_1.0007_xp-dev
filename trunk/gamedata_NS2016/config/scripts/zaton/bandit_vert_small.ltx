@@ -1,0 +1,107 @@
+[logic]
+active = heli_move@idle
+
+on_hit = hit
+
+[hit]
+on_info = {=hit_by_actor} %=set_gulag_enemy_actor(brodway_bandit)%
+
+[heli_move@idle]
+path_move = vert_small_idle_move
+default_velocity = 0
+engine_sound = false
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+mute = true
+on_info = {+spawn_brodway} heli_move@fly1
+
+[heli_move@fly1]
+path_move = vert_small_yzik_idle_move
+path_look = vert_small_idle_look
+engine_sound = true
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+mute = true
+default_velocity = 2
+combat_use_rocket = false
+combat_use_mgun = false
+combat_enemy = nil
+on_info = {+vert_small_poshel} heli_move@fly2
+
+
+[heli_move@fly2]
+path_move = vert_small_vzlet1_idle_move
+engine_sound = true
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+mute = true
+default_velocity = 2
+combat_use_rocket = false
+combat_use_mgun = false
+combat_enemy = nil
+on_timer = 13000 | heli_move@fly3
+
+[heli_move@fly3]
+path_move = vert_small_vzlet2_idle_move
+engine_sound = true
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+mute = true
+default_velocity = 4
+combat_use_rocket = false
+combat_use_mgun = false
+combat_enemy = nil
+on_timer = 9000 | heli_move@fly4
+
+
+[heli_move@fly4]
+path_move = vert_small_razvedka_idle_move
+engine_sound = true
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+mute = true
+default_velocity = 8
+combat_use_rocket = false
+combat_use_mgun = false
+combat_enemy = nil
+on_timer = 35000 | heli_move@fly5 %=arhara_dialog.brodway_vert_sms2%
+
+
+[heli_move@fly5]
+path_move = vert_small_vzlet2_idle_move
+engine_sound = true
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+mute = true
+default_velocity = 14
+combat_use_rocket = false
+combat_use_mgun = false
+combat_enemy = nil
+on_timer = 20000 | heli_move@fly6
+
+
+[heli_move@fly6]
+path_move = vert_small_yzik_idle_move
+engine_sound = true
+combat_safe_altitude = 85
+invulnerable = true
+immortal = true
+mute = true
+default_velocity = 2
+combat_use_rocket = false
+combat_use_mgun = false
+combat_enemy = nil
+on_timer = 20000 | %=arhara_dialog.brodway_vert_sms3 +vetr_vernulsy%
+;on_timer = 10000 | heli_move@fly1 %+vetr_vernulsy =arhara_dialog.brodway_vert_sms3%
+
+
+
+
+    
+

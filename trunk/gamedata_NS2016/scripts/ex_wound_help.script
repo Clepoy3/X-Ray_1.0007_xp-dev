@@ -1,0 +1,380 @@
+-- ** Реализация для NS_2013 - lsclon ** --
+		---- *** Изменение группировки и назначение в смарт при лечении раненного врага *** ----
+--[[	Таблицы:
+all_community - перечисление всех игровых группировок(порядок имеет значение)
+armor_community - группировки требующие переодивания вновь обращенных
+armor_rank - таблица рангов, верхний порог
+enemy_community - группировки враждебные 'actor'
+friend_community - перечисление коммьюнити в которые может вступить вылеченный
+no_help_thanx - таблица запрета(по точному имени) на проигрование звука
+smart_for_wounded - таблица смартов по коммьюнити, заполняется автоматически в smart_terrain.script
+team_community - соответствие группировка - команда
+	Общие функции:
+auto_change - проверка возможности вступить в другую группировку
+auto_revers - проверка таблицы вылеченных врагов (запуск из xr_motivator:net_spawn)
+choice_action - выбор действия при лечении
+choice_smart - собственно выбор и смена смарта и новой группировки
+fill_exclusives - задаем параметры эксклюзивности и повышаем счетчик
+recovery_params - возврат параметров при переходе на другую локу
+revers_change - проверка таблицы вылеченных врагов (запускать при возврате ГГ родной комьюнити)
+--]]
+
+--- Таблицы и переменные --------------------------------------------------
+local all_community = {'actor','actor_dolg','actor_freedom','stalker','monolith','military','killer','ecolog','dolg','freedom','bandit','zombied','stranger','trader','arena_enemy','sniper','green','nebo','lastday','fotoman','bandos','voin'}
+
+local armor_community = {
+	['nebo'] = {
+		'actors\\nebo\\stalker_nebo_rukzak',
+		'actors\\nebo\\stalker_nebo_balon_1',
+		'actors\\nebo\\stalker_nebo_nauchniy',
+		'actors\\nebo\\stalker_nebo_exoskeleton'
+	},
+	['dolg'] = {
+		'actors\\dolg\\stalker_do_mask',
+		'actors\\dolg\\stalker_do_antigas',
+		'actors\\dolg\\stalker_do_nauchniy',
+		'actors\\dolg\\stalker_do_exoskeleton'
+	},
+	['freedom'] = {
+		'actors\\svoboda\\stalker_sv_rukzak_1_1',
+		'actors\\svoboda\\stalker_sv_hood_91',
+		'actors\\svoboda\\stalker_sv_nauchniy',
+		'actors\\svoboda\\stalker_sv_exoskeleton'
+	}
+}
+
+local armor_rank = {299,599,899,9999}
+
+local enemy_community = {
+	['monolith'] = true,
+	['military'] = true,
+	['killer'] = true,
+	['bandit'] = true,
+	['zombied'] = true,
+	['arena_enemy'] = true,
+	['sniper'] = true,
+	['lastday'] = true,
+	['fotoman'] = true
+}
+
+local friend_community = {
+	['actor'] = {'stalker','green','nebo','dolg','freedom'},
+	['stranger'] = {'stalker','green','nebo','dolg','freedom'}
+}
+
+local no_help_thanx = {
+	["esc_tolik"] = true,
+	["val_escort_bandit_halfdead"] = true
+}
+
+local smart_for_wounded = smart_terrain.smart_for_wounded
+
+local team_community = {
+	['actor'] = 0,
+	['actor_dolg'] = 1,
+	['actor_freedom'] = 2,
+	['stalker'] = 5,
+	['monolith'] = 6,
+	['military'] = 7,
+	['killer'] = 8,
+	['ecolog'] = 9,
+	['dolg'] = 10,
+	['freedom'] = 11,
+	['bandit'] = 12,
+	['zombied'] = 13,
+	['stranger'] = 14,
+	['trader'] = 15,
+	['arena_enemy'] = 16,
+	['sniper'] = 18,
+	['green'] = 20,
+	['nebo'] = 22,
+	['lastday'] = 24,
+	['fotoman'] = 26,
+	['bandos'] = 28,
+	['voin'] = 30
+}
+--- Таблицы и переменные ------------------------------------------ end ---
+
+--- Основные функции ------------------------------------------------------
+function auto_change(npc,name,comm,revers)
+	-- если непись живой и это наш нпс
+	if npc and npc:alive() and npc:name() == name then
+		-- если нет реверса и уже полечился - шанс перегруппировки от 80 до 95
+		if (math.random(100) > level.get_game_difficulty()*5+5) and not npc:wounded() and not revers then
+			choice_smart(npc)
+		-- успели ранить или не выпал шанс или реверс - вернем исходное комьюнити
+		else
+			if revers and enemy_community[comm] then
+				local tbl = amk.load_table('wound_enemy')
+				tbl[npc:id()] = name
+				amk.save_table('wound_enemy',tbl)
+			end
+			npc:set_character_community(comm)
+			npc:set_relation(game_object.enemy,db.actor)
+			sol_utils.minimapSpotResetOne(npc:id())
+			xr_abuse.enable_abuse(npc)
+		end
+	end
+end
+
+function auto_revers(npc,id)
+	local tbl = amk.load_table('wound_enemy',nil)
+	--если в таблице есть наш ид
+	if tbl and tbl[id] then
+		local actor = db.actor
+		if actor and friend_community[actor:character_community()] then
+			-- если непись и это наш нпс
+			if npc and not npc:wounded() and npc:name() == tbl[id] then
+				local comm = npc:character_community()
+				if not enemy_community[comm] then
+					sol_utils.setRelation(npc,game_object.friend,actor)
+				else
+					-- шанс перегруппировки от 74 до 95
+					if math.random(100) > level.get_game_difficulty()*7+5 then
+						sol_utils.setRelation(npc,game_object.friend,actor)
+						choice_smart(npc)
+					end
+				end
+			end
+			tbl[id] = nil
+			amk.save_table('wound_enemy',tbl)
+		end
+	end
+end
+
+function choice_action(actor,npc)
+	local actor_comm = actor:character_community()
+	local comm = npc:character_community()
+	local id = npc:id()
+	local name = npc:name()
+	local revers,tbl
+	-- если раненный враг ГГ
+	if npc:relation(actor) == game_object.enemy then
+		-- если коммьюнити актера нет в таблице, то по срабатыванию таймера раненному вернем комьюнити
+		if not friend_community[actor_comm] then
+			revers = true
+		end
+		--запустим таймер, присвоим stranger-а, выключим обиду
+		amk.start_timer('healing_enemies',math.random(8,16),{id,name,comm,revers})
+		sol_utils.setCharacterCommunity(id, "stranger")
+	-- если друг или нейтрал для ГГ
+	else
+		-- если для комьюнити 'actor' раненный - враг, то занесем в таблицу и позже изменим группировку
+		if enemy_community[comm] then
+			tbl = amk.load_table('wound_enemy')
+			tbl[id] = name
+			amk.save_table('wound_enemy',tbl)
+		end
+	end
+
+	xr_abuse.disable_abuse(npc)
+	-- играем прямо неписем с шевелением губами
+	if not no_help_thanx[name] then
+		xr_sound.set_sound(npc,'help_thanx',true,0)
+	end
+	actor:change_character_reputation(10)
+	sol_utils.setRelation(npc, game_object.friend, actor)
+	npc:enable_memory_object(actor,false)
+--	npc:change_goodwill(500,actor)
+end
+
+function choice_smart(npc)
+	local sim = alife()
+	local actor = db.actor
+	local actor_comm = actor:character_community()
+	-- если ГГ успел сменить группировку, считаем его актёром
+	if not friend_community[actor_comm] then
+			actor_comm = 'actor'
+	end
+	local free_smart,smart,smart_community,stalker_smart
+	-- попытаемся найти гулаг со свободным местом или с неэкслюзивной вместимостью
+	-- гулаги перебираются по группировкам из friend_community
+	for k,v in pairs(friend_community[actor_comm]) do
+		-- если в smart_for_wounded есть заданная гуппировка, ищем смарт со свободным местом
+		smart_community = smart_for_wounded and smart_for_wounded[v]
+		if smart_community then
+			for id,sname in pairs(smart_community) do
+				smart = sim:object(id)
+				if smart and smart:name() == sname then
+					-- если гулаг рабочий и открыт
+					if smart.gulag_working and smart:is_gulag_available() then
+						-- если есть свободные неэкслюзивные работы
+						if smart.gulag:free_job() then
+							if not free_smart then
+								free_smart = {}
+							end
+							table.insert(free_smart,{id,v,sname})
+						-- или смарты с неэкслюзивной вместимостью
+						elseif smart.gulag.capacity_non_exclusive > 0 then
+							if not stalker_smart then
+								stalker_smart = {}
+							end
+							table.insert(stalker_smart,{id,v,sname})
+						end
+					end
+				end
+			end
+		end
+	end
+	local community = 'stalker'
+	local comm_id,custom,key,new_smart,smart_go
+	-- если есть гулаги
+	if free_smart then
+		key = math.random(1,#free_smart)
+		smart_go = free_smart[key][1]
+		community = free_smart[key][2]
+		custom = "[smart_terrains]\n"..free_smart[key][3].." = true"
+	elseif stalker_smart then
+		key = math.random(1,#stalker_smart)
+		smart_go = stalker_smart[key][1]
+		community = stalker_smart[key][2]
+		custom = "[smart_terrains]\n"..stalker_smart[key][3].." = true"
+	end
+	-- найден, не найден смарт, разрегистрируем из старого смарта и присвоим неписю коммьюнити
+	local id = npc:id()
+	local sobj = sim:object(id)
+	if sobj then
+		local unreg,vis
+		local unreg_id = sobj:smart_terrain_id()
+		if unreg_id ~= 65535 then
+			unreg = sim:object(unreg_id)
+			if unreg then
+				unreg:unregister_npc(sobj)
+			end
+		-- если непиь не в смарте уберем логику
+		else
+			local stor = db.storage[id]
+			if stor and stor.active_section then
+  				stor.active_section = nil
+  				stor.active_scheme = nil
+			end
+			npc:remove_all_restrictions()
+		end
+		--разрешим переход online - offline
+		sim:set_switch_online(id,true)
+		sim:set_switch_offline(id,true)
+		sol_utils.setCharacterCommunity(npc:id(), community)
+		-- зарегистрируем непися
+		new_smart = smart_go and sim:object(smart_go)
+		if new_smart then
+			fill_exclusives(sobj,new_smart)
+			new_smart:register_npc(sobj)
+
+amk.send_tip(string.format("группа: %s, смарт: %s, лока: %s",community,new_smart:name(),new_smart:get_level_name()),tostring(npc:character_name()),0,15,"gen_info")
+
+		end
+		-- повысим ранг
+		local rank = sobj:rank()
+		for k,v in pairs(armor_rank) do
+			if rank < v then
+				rank = v
+				break
+			end
+		end
+		sobj:set_rank(rank)
+		-- проверим переменные
+		if armor_community[community] then
+			for k,v in pairs(armor_rank) do
+				if rank <= v then
+					vis = armor_community[community][k]
+					break
+				end
+			end
+		end
+		local team = team_community[community]
+		-- зарегистрируем данные
+		local tbl = amk.read_stalker_params(sobj)
+		if tbl then
+			-- исправим смарт и логику
+			if new_smart then
+				tbl.custom = custom
+				tbl.smtrid = smart_go
+			end
+			-- сменим костюмчик: смена произойдет только в оффлайне!
+			if vis then
+				tbl.visual = vis
+			end
+			-- удалим рестрикторы
+			tbl.baseinr = ""
+			tbl.baseoutr = ""
+			-- поправим здоровье
+			tbl.health = 2
+			tbl.updhealth = 2
+			-- поправим team группировки
+			tbl.team = team
+			tbl.updteam = team
+			amk.write_stalker_params(tbl,sobj,true)
+		end
+
+amk.add_spot_on_map(sobj.id,"alife_presentation_stalker",tostring(npc:character_name()))
+
+	end
+end
+
+function fill_exclusives(sobj,smart)
+	local sname = smart:name()
+	if not sobj.smart_terrain_conditions then
+		sobj.smart_terrain_conditions = {}
+	end
+	-- повысим счетчик эксклюзивности смарта
+	if not sobj.smart_terrain_conditions[sname] then
+		sobj.smart_terrain_conditions[sname] = {{infop_check = {},infop_set = {},section = 'true'}}
+		smart_terrain.exclusives[sname] = (smart_terrain.exclusives[sname] or 0) + 1
+		smart.gulag.capacity_non_exclusive = smart.gulag.capacity_non_exclusive - 1
+	end
+end
+
+function recovery_params(id,name,comm)
+	local sobj = alife():object(id)
+	if sobj and sobj:alive() and sobj:name() == name then
+		local team = team_community[comm]
+		local comm_id
+		for k, v in pairs(all_community) do
+			if v == comm then
+				comm_id = k - 1
+				break
+			end
+		end
+		if team and comm_id then
+			local tbl = amk.read_stalker_params(sobj)
+			if tbl then
+				tbl.communityid = comm_id
+				tbl.team = team
+				tbl.updteam = team
+				amk.write_stalker_params(tbl,sobj,true)
+			end
+		end
+	end
+end
+
+function revers_change()
+	-- загрузим таблицу вылеченных
+	local tbl = amk.load_table('wound_enemy',nil)
+	if tbl then
+		local actor = db.actor
+		local sim = alife()
+		local comm,npc
+		for k, v in pairs(tbl) do
+			npc = k and level.object_by_id(k)
+			-- если есть объект на текущей локации
+			if npc then
+				-- если непись живой и это наш нпс
+				if npc:name() == v and npc:alive() then
+					comm = npc:character_community()
+					if not enemy_community[comm] then
+						sol_utils.setRelation(npc,game_object.friend,actor)
+					else
+						-- шанс перегруппировки от 77 до 95
+						if math.random(100) > level.get_game_difficulty()*6+5 then
+							sol_utils.setRelation(npc,game_object.friend,actor)
+							choice_smart(npc)
+						end
+					end
+				end
+				tbl[k] = nil
+			end
+		end
+		amk.save_table('wound_enemy',tbl)
+	end
+end
+--- Основные функции ---------------------------------------------- end ---

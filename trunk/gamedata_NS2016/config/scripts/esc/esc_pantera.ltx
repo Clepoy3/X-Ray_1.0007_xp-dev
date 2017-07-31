@@ -1,0 +1,22 @@
+[logic]
+
+active = kamp
+meet = no_meet
+on_death = death
+danger = danger_ignore
+
+[kamp]
+center_point = esc_pantera_kamp
+path_walk = esc_pantera_kamp_task
+combat_ignore_cond = always
+no_declarate = true
+no_play = true
+radius = 0.2
+
+[danger_ignore]
+ignore_distance = 0
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+
+[death]
+on_info = %+pantera_umerla%

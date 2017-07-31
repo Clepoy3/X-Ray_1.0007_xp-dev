@@ -1,0 +1,673 @@
+-- оптимизация
+local table_insert = table.insert
+local table_remove = table.remove
+local table_sort = table.sort
+local math_floor = math.floor
+
+--схема удаления трупов сталкеров
+local show_detailed_logs = false --отображать подробную статистику в ПДА-Журнал-История
+local summ_corpses = 0 --общее допустимое число трупов на всех локациях (не включая СИД)
+-- local dist_to_corpses = 50 --расстояние от ГГ, свыше которого считаются трупы.
+local tabl_corpses={}
+local tabl_corpses_protected={}
+local tabl_stalkers = {}
+local removed_corpses = 0
+
+
+local outfit_additional_max = 1 -- количество бронежилетов, которые сталкеры оставят себе про запас (останется самый ценный)
+local tabl_outfits_all = {}
+--local tabl_device_pda_all = {}
+
+--схема удаления трупов монстров
+-- local dist_to_corpses_motstr = 20 --расстояние от ГГ, свыше которого считаются трупы.
+local tabl_monsters_dead={} --все мёртвые монстры
+local tabl_monsters_live_to_remove = {} --список монстров живых на удаление
+local tabl_monsters_dead_with_parts_to_remove = {} --список монстров мёртвых на удаление
+local summ_dead_monsters = 0 --общее допустимое число трупов монстров без "запчастей" на всех локациях 
+local tabl_monsters_live_restrict = { --ограничения на количество живых монстров (-1 - без ограничений),
+					--отключил всё. Shadowman :D
+	[clsid.boar_s] 		= -1,
+	[clsid.bloodsucker_s] 	= -1,
+	[clsid.dog_s] 		= -1,
+	[clsid.flesh_s] 	= -1,
+	[clsid.psy_dog_s] 	= -1,
+	[clsid.pseudodog_s] 	= -1,
+	[clsid.burer_s] 	= -1,
+	[clsid.cat_s] 		= -1,
+	[clsid.chimera_s] 	= -1,
+	[clsid.controller_s] 	= -1, -- не трогать контроллёров!!! у них есть что почитать ;)
+	[clsid.fracture_s] 	= -1,
+	[clsid.poltergeist_s] 	= -1,
+	[clsid.gigant_s] 	= -1,
+	[clsid.zombie_s] 	= -1,
+	[clsid.tushkano_s] 	= -1,
+	[clsid.snork_s] 	= -1
+}
+local tabl_monsters_dead_with_parts_restrict = { --ограничения на количество мёртвых монстров с "запчастями" (-1 - без ограничений)
+	[clsid.boar_s] 		= 8,
+	[clsid.bloodsucker_s] 	= 8,
+	[clsid.dog_s] 		= 8,
+	[clsid.flesh_s] 	= 8,
+	[clsid.psy_dog_s] 	= 8,
+	[clsid.pseudodog_s] 	= 8,
+	[clsid.burer_s] 	= 8,
+	[clsid.cat_s] 		= 8,
+	[clsid.chimera_s] 	= 8,
+	[clsid.controller_s] 	= -1, -- не трогать контроллёров!!! у них есть что почитать ;)
+	[clsid.fracture_s] 	= 8,
+	[clsid.poltergeist_s] 	= 8,
+	[clsid.gigant_s] 	= 8,
+	[clsid.zombie_s] 	= 8,
+	[clsid.tushkano_s] 	= 8,
+	[clsid.snork_s] 	= 8
+}
+local tabl_monsters_stat_total = {} --статистика по монстрам всего
+local tabl_monsters_stat_live = {} --статистика по монстрам живым
+local tabl_monsters_stat_live_removed = {} --статистика по монстрам живым удалённым
+local tabl_monsters_stat_dead = {} --статистика по монстрам мёртвым
+local tabl_monsters_stat_dead_removed = {} --статистика по монстрам мёртвым убранным
+local tabl_monsters_stat_dead_with_parts = {} --статистика по монстрам мёртвым с "запчастями" найденным
+local tabl_monsters_stat_dead_with_parts_removed = {} --статистика по монстрам мёртвым с "запчастями" убранным
+
+for m,c in pairs(tabl_monsters_live_restrict) do
+	tabl_monsters_stat_total[m] = 0
+	tabl_monsters_stat_live[m] = 0
+	tabl_monsters_live_to_remove[m] = {}
+	tabl_monsters_dead_with_parts_to_remove[m] = {}
+	tabl_monsters_stat_live_removed[m] = 0
+	tabl_monsters_stat_dead[m] = 0
+	tabl_monsters_stat_dead_removed[m] = 0
+	tabl_monsters_stat_dead_with_parts[m] = 0
+	tabl_monsters_stat_dead_with_parts_removed[m] = 0
+end
+
+local monsters_total_count = 0
+local monsters_live_count = 0
+local monsters_live_removed_count = 0
+local monsters_dead_count = 0
+local monsters_dead_removed_count = 0
+local monsters_dead_with_parts_removed_count = 0
+
+local outfits_removed_count = 0 -- всего отобранных броников
+local outfits_cost_not_zero_count = 0 -- отобранных ценных броников
+local outfits_cost_zero_count = 0 -- отобранных копеечных броников
+local outfits_cost_returned = 0 -- всего денег вернули
+local stalkers_total = 0 -- всего сталкеров
+local stalkers_robbed_from_outits = 0 -- сколько сталкеров "ограблено"
+local stalkers_outfits_costs_returned_count = 0 -- скольким сталкерам вернули денги
+
+local tabl_monsters_names = {
+	[clsid.boar_s] 		= "кабанов",
+	[clsid.bloodsucker_s] 	= "кровососов",
+	[clsid.dog_s] 		= "собак",
+	[clsid.flesh_s] 	= "плотей",
+	[clsid.psy_dog_s] 	= "пси-собак",
+	[clsid.pseudodog_s] 	= "псевдособак",
+	[clsid.burer_s] 	= "бюреров",
+	[clsid.cat_s] 		= "котов",
+	[clsid.chimera_s] 	= "химер",
+	[clsid.controller_s] 	= "контролёров",
+	[clsid.fracture_s] 	= "изломов",
+	[clsid.poltergeist_s] 	= "полтергейстов",
+	[clsid.gigant_s] 	= "псевдогигантов",
+	[clsid.zombie_s] 	= "зомби",
+	[clsid.tushkano_s] 	= "тушканов и крыс",
+	[clsid.snork_s]		= "снорков"
+}
+
+--плюс схема удаления бесхозного оружия (если в названии предмета нет "grenade_" или "wpn_" - то это не считается оружием и убираться не будет !!!)
+local summ_weapons = 10 --общее допустимое число бесхозного оружия на всех локациях.
+local summ_outfits = 10 --общее допустимое число бесхозных бронежилетов на всех локациях.
+local summ_hlam = 10 --общее допустимое число бесхозного хлама на всех локациях.
+-- local dist_to_weapons = 50 --расстояние от ГГ, свыше которого считается оружие.
+local dist_from_weapons_to_trup = 4*4 --расстояние от ГГ до оставшихся трупов, свыше которого считается оружие.
+local tabl_weapons={}
+local tabl_outfits={}
+local tabl_hlam={}
+local weapons_removed = 0
+local outfits_removed = 0
+local hlam_removed = 0
+local removed_weapons_radar = 0 --на Радар исключения не распространяются, с земли уберется всё оружие
+
+--список предметов, которые точно игнорируются (поиск по точному совпадению)
+local tabl_items_remove = {
+	["device_torch"] = true,
+	["device_torch_clon"] = true,
+	["device_pda"] = true,
+	["device_pda_npc"] = true
+}
+
+-- таблица списков предметов у неживых неписей
+local tabl_parent_items = {}
+
+--список предметов, тела с которыми остаются (поиск как части названия!)
+--таблица tabl_items_keep перекочевала в protected_items
+
+--список секций трупов квестовых сталкеров, которые остаются (поиск по точному имени секции!)
+-- таблица tabl_corps_keep перекочевала в protected_items
+
+--список секций оружия, которое остается лежать на земле (поиск как части названия!)
+-- таблица local tabl_wpn_keep перекочевала в protected_items
+
+local actorpos
+
+
+function off_corpses_0()
+	actorpos = db.actor:position()
+end
+
+function off_corpses_single(obj, actor_level, obj_level)
+
+	if obj then
+		local gg = game_graph()
+		local sim = alife()
+		local obj_name = obj:name()
+		local obj_lv = obj.m_level_vertex_id
+		local obj_gv = obj.m_game_vertex_id
+		local obj_clsid = obj:clsid()
+		local posobj = obj.position
+		local strn_id, strn
+		-- Проверка существования назначенного смарта (для людей и зверей). Если указан несуществующий смарт - чистим
+		if npc_by_clsid[obj_clsid] then
+			if obj.smart_terrain_id then
+				strn_id = obj:smart_terrain_id()
+				if strn_id ~= 65535 then
+					strn = sim:object(strn_id)
+					if strn == nil or strn:clsid() ~= clsid.smart_terrain then
+						get_console():execute("load ~~~ Error! Found non-existent smart terrain member: "..obj:name().." strn_id="..tostring(strn_id))
+						get_console():execute("load ~~~ Try to clear smart_terrain_id")
+						obj:clear_smart_terrain()
+						sim_statistic.remove(obj)
+					end
+					if strn and strn:clsid() == clsid.smart_terrain then
+						if not obj:alive() then
+							get_console():execute("load ~~~ Внимание! Труп в смарте: "..obj:name().." смарт: "..tostring(strn:name()))
+							strn:unregister_npc(obj)
+							sim_statistic.remove(obj)
+						end
+					end
+				end
+			else
+				get_console():execute("load ~~~ Error! No smart_terrain_id for object: "..obj:name())
+			end
+		end
+		-- Удаляются собаки-фантомы
+		if IAmAMonster[obj_clsid] and obj_clsid == clsid.psy_dog_phantom_s then
+			sim:release(obj,true)
+		end
+		if obj_level ~= actor_level then
+			if IAmAStalker[obj_clsid] then
+				if not obj:alive() then
+					why = protected_items.cleanerDoNotTouchStalkersCorps(obj)
+					if why then
+					-- or posobj:distance_to(actorpos) < dist_to_corpses
+						-- трупы не удаляем, но учитываем при уборке оружия
+						table_insert(tabl_corpses_protected, obj)
+					else
+					-- get_console():execute("load ~#I#:"..string.format("Удаляем "..obj_name))
+						table_insert(tabl_corpses, obj)
+					end
+				else -- живой сталкер - в список на раскуркуливание!
+					table_insert(tabl_stalkers, obj.id)
+				end
+			else
+				if IAmAMonster[obj_clsid] then
+					tabl_monsters_stat_total[obj_clsid] = tabl_monsters_stat_total[obj_clsid] + 1
+					monsters_total_count = monsters_total_count + 1
+					if not obj:alive() then
+						if obj.m_story_id == 4294967296 or obj.treasure_processed then
+						-- and posobj:distance_to(actorpos) > dist_to_corpses_motstr
+							table_insert(tabl_monsters_dead, obj)
+						end
+						tabl_monsters_stat_dead[obj_clsid] = tabl_monsters_stat_dead[obj_clsid] + 1
+						monsters_dead_count = monsters_dead_count + 1
+					else
+						tabl_monsters_stat_live[obj_clsid] = tabl_monsters_stat_live[obj_clsid] + 1
+						monsters_live_count = monsters_live_count + 1
+--сбор живых монстров на удаление (не удаляются здесь, чтобы потом удалять равномерно, если количесво перерастёт разрешенное)
+						if obj.m_story_id == 4294967296 and tabl_monsters_live_restrict[obj_clsid] > -1 then
+							tabl_monsters_live_to_remove[obj_clsid][tabl_monsters_stat_live[obj_clsid]] = obj.id
+						end
+					end
+				end
+			end
+
+		if obj.parent_id then
+			if obj.parent_id == 65535 then
+				if IAmAWeapon[obj_clsid] then
+					why = protected_items.cleanerDoNotTouchWeapon(obj)
+					if not why then
+						table_insert(tabl_weapons, obj)
+					end
+				end
+				
+				if IAmAOutfit[obj_clsid] then
+					why = protected_items.cleanerDoNotTouchOutfit(obj)
+					if not why then
+						table_insert(tabl_outfits, obj)
+					end
+				end
+				
+				if IAmAHlam[obj_clsid] then
+					why = protected_items.cleanerDoNotTouchHlam(obj)
+					if not why then
+						table_insert(tabl_hlam, obj)
+					end
+				end
+				
+			else
+				if obj_clsid == clsid.equ_stalker_s and protected_items.cleanerDoNotTouchOutfit(obj) then
+					table_insert(tabl_outfits_all, obj)
+				end
+				
+				--if obj_clsid == clsid.device_pda then
+				--	table_insert(tabl_device_pda_all, obj)
+					--sim:release(obj, true)
+				--else
+				
+					-- собираем список предметов у парентов с проверкой на то, что парент непись и что он уже не живой
+					-- tabl_parent_items[obj.parent_id] == false если парент предмет или живой непись
+					if obj.parent_id ~= 0 and tabl_parent_items[obj.parent_id] == nil then
+						-- проверяем парента
+					--	local s_parent = sim:object(obj.parent_id)
+						--get_console():execute(string.format("load ~sak_off_corpses~: %s", s_parent:name()))
+					--	if s_parent and npc_by_clsid[s_parent:clsid()] then
+					--		if not s_parent:alive() then
+								tabl_parent_items[obj.parent_id] = {}
+					--		else
+					--			tabl_parent_items[obj.parent_id] = false
+					--		end
+					--	end
+					end
+					
+					if tabl_parent_items[obj.parent_id] then
+						table_insert(tabl_parent_items[obj.parent_id], obj.id)
+					end
+				--end
+				end
+			end
+		end
+	end
+end
+
+function off_corpses_2()
+	--amk.dump_table(tabl_parent_items, 0, "tabl_parent_items")
+	local sim = alife()
+		--отбираем у сталкеров броники
+		if outfit_additional_max > 0 then -- если сталкерам можно иметь "резервные" броники
+			table_sort(tabl_outfits_all, maxOutfit)
+		end
+		stalkers_total = #tabl_stalkers
+		for i = 1, stalkers_total do
+			clear_outfits(tabl_stalkers[i])
+		end
+		
+		--зачистка мёртвых монстров
+		local b = #tabl_monsters_dead
+		if b > summ_dead_monsters then
+			table_sort(tabl_monsters_dead, max_comp)
+			local n = b
+			local corps
+			local id
+			while b > summ_dead_monsters and n > 0 do
+				corps = tabl_monsters_dead[n]
+				id = corps:clsid()
+				if not item_found(corps) then --если нету "запчастей" - удаляем
+					sim:release(corps, true)
+					table_remove(tabl_monsters_dead, n)
+					b = b - 1
+					tabl_monsters_stat_dead_removed[id] = tabl_monsters_stat_dead_removed[id] + 1
+					monsters_dead_removed_count = monsters_dead_removed_count + 1
+				else --если есть "запчасти" - смотрим
+					tabl_monsters_stat_dead_with_parts[id] = tabl_monsters_stat_dead_with_parts[id] + 1
+					if tabl_monsters_dead_with_parts_restrict[id] > -1 then --если не в "красной книге" - то смотрим дальше
+						--сбор мёртвых монстров на удаление (не удаляются здесь, чтобы потом удалять равномерно, если количесво перерастёт разрешенное)
+						tabl_monsters_dead_with_parts_to_remove[id][tabl_monsters_stat_dead_with_parts[id]] = corps
+					end
+				end
+				n = n - 1
+			end
+		end
+
+		--зачистка мёртвых человеков
+		b = #tabl_corpses
+		if b > summ_corpses then
+			table_sort(tabl_corpses, max_comp)
+			local n = b
+			local corps, item
+			while b > summ_corpses and n > 0 do
+				corps = tabl_corpses[n]
+				item = item_found(corps)
+				if not item then
+					sim:release(corps, true)
+					table_remove(tabl_corpses, n)
+					b = b - 1
+					removed_corpses = removed_corpses + 1
+				end
+				n = n - 1
+			end
+		end
+		
+		--зачистка оружия
+		local twa = #tabl_weapons
+		if twa > summ_weapons then
+			table_sort(tabl_weapons, max_comp)
+			local wpn
+			while twa > summ_weapons do
+				wpn = tabl_weapons[twa]
+				if get_dist_to_trup_protected(wpn) == true and get_dist_to_trup(wpn) == true then
+					sim:release(wpn, true)
+					table_remove(tabl_weapons, twa)
+					weapons_removed = weapons_removed + 1
+				end
+				twa = twa - 1
+			end
+		end
+		
+		--зачистка броников
+		local two = #tabl_outfits
+		if two > summ_outfits then
+			table_sort(tabl_outfits, max_comp)
+			local outfit
+			while two > summ_outfits do
+				outfit = tabl_outfits[two]
+				sim:release(outfit, true)
+				table_remove(tabl_outfits, two)
+				outfits_removed = outfits_removed + 1
+				two = two - 1
+			end
+		end
+		
+		--зачистка хлама
+		local twh = #tabl_hlam
+		if twh > summ_hlam then
+			table_sort(tabl_hlam, max_comp)
+			local hlam
+			while twh > summ_hlam do
+				hlam = tabl_hlam[twh]
+				sim:release(hlam, true)
+				table_remove(tabl_hlam, twh)
+				hlam_removed = hlam_removed + 1
+				twh = twh - 1
+			end
+		end
+
+		-- вывод статистики
+		if show_detailed_logs then		
+			local monsters_total = "%c[255,0,255,0]Жили-были зверушки "..monsters_total_count.." шт.:"
+			for m,c in pairs(tabl_monsters_stat_total) do
+				if c > 0 then
+					monsters_total = monsters_total.." "..tabl_monsters_names[m].." - "..c..","
+				end
+			end
+			amk.send_tip(string.sub(monsters_total, 1, string.len(monsters_total) - 1), "Уборщик", 0, 15, "gen_info")
+
+			local monsters_live = "%c[255,0,255,0]Бегало-резвилось зверушек "..monsters_live_count.." шт.:"
+			for m,c in pairs(tabl_monsters_stat_live) do
+				if c > 0 then
+					monsters_live = monsters_live.." "..tabl_monsters_names[m].." - "..c..","
+				end
+			end
+			amk.send_tip(string.sub(monsters_live, 1, string.len(monsters_live) - 1), "Уборщик", 0, 15, "gen_info")
+
+			if monsters_live_removed_count > 0 then
+				monsters_live_removed = "%c[255,0,255,0]На колбасу-консервы пустили зверушек "..monsters_live_removed_count.." шт.:%c[default]"..monsters_live_removed
+				amk.send_tip(string.sub(monsters_live_removed, 1, string.len(monsters_live_removed) - 1), "Уборщик", 0, 15, "gen_info")
+			end
+
+			local monsters_dead = "%c[255,0,255,0]Неживых-мёртвых валялось зверушек "..monsters_dead_count.." шт.:"
+			for m,c in pairs(tabl_monsters_stat_dead) do
+				if c > 0 then
+					monsters_dead = monsters_dead.." "..tabl_monsters_names[m].." - "..c..","
+				end
+			end
+			amk.send_tip(string.sub(monsters_dead, 1, string.len(monsters_dead) - 1), "Уборщик", 0, 15, "gen_info")
+			
+			if monsters_dead_removed_count > 0 then
+				local monsters_dead_removed = "%c[255,0,255,0]Исчезло-пропало мёртвых бесполезных зверушек "..monsters_dead_removed_count.." шт.:"
+				for m,c in pairs(tabl_monsters_stat_dead_removed) do
+					if c > 0 then
+						monsters_dead_removed = monsters_dead_removed.." "..tabl_monsters_names[m].." - "..c..","
+					end
+				end
+				amk.send_tip(string.sub(monsters_dead_removed, 1, string.len(monsters_dead_removed) - 1), "Уборщик", 0, 15, "gen_info")
+			end
+
+			if monsters_dead_with_parts_removed_count > 0 then
+				monsters_dead_with_parts_removed = "%c[255,0,255,0]Исчезло-пропало мёртвых с 'запчастями' зверушек "..monsters_dead_with_parts_removed_count.." шт.:"..monsters_dead_with_parts_removed
+				amk.send_tip(string.sub(monsters_dead_with_parts_removed, 1, string.len(monsters_dead_with_parts_removed) - 1), "Уборщик", 0, 15, "gen_info")
+			end
+
+			if removed_corpses > 0 then
+				amk.send_tip("%c[255,0,255,0]Исчезло-пропало мёртвых сталкеров "..removed_corpses.." шт.", "Уборщик", 0, 15, "gen_info")
+			end
+			
+			if weapons_removed > 0 then
+				local weapons_removed_str = "%c[255,0,255,0]Исчезло-пропало бесхозного оружия "..weapons_removed.." шт."
+				if removed_weapons_radar > 0 then
+					weapons_removed_str = weapons_removed_str.." В том числе на Радаре "..removed_weapons_radar.." шт."
+				end
+				-- weapons_removed_str = weapons_removed_str.."%c[default]"
+				amk.send_tip(weapons_removed_str, "Уборщик", 0, 15, "gen_info")
+			end
+
+			if outfits_removed > 0 then
+				local outfits_removed_str = "%c[255,0,255,0]Исчезло-пропало бесхозных бронежилетов "..outfits_removed.." шт."
+				amk.send_tip(weapons_removed_str, "Уборщик", 0, 15, "gen_info")
+			end
+
+			
+			if outfits_removed_count > 0 then
+				amk.send_tip("%c[255,0,255,0]Отобрано-утилизировано 'лишних' бронежилетов: "..outfits_removed_count.." шт. у "..stalkers_robbed_from_outits.." из "..stalkers_total.." сталкеров. Ценных - "..outfits_cost_not_zero_count..", копеечных - "..outfits_cost_zero_count..". Компенсировано  "..stalkers_outfits_costs_returned_count.." сталкерам 1/10 стоимости на "..outfits_cost_returned.." рублей (деньги сталкерам будут переведены позже).", "Уборщик", 0, 15, "gen_info")
+			end
+		else
+		--	amk.send_tip("%c[255,0,255,0]Прошелся я тут по локам, убрал:%c[default] мёртвых сталкеров - "..removed_corpses..", мёртвых бесполезных зверушек - "..monsters_dead_removed_count..", мёртвых с 'запчастями' зверушек - "..monsters_dead_with_parts_removed_count..", живых зверушек - "..monsters_live_removed_count..", бесхозного оружия - "..weapons_removed..", бесхозных броников - "..outfits_removed..", 'лишних' бронежилетов - "..outfits_removed_count, "Уборщик", 0, 15, "gen_info")
+		end
+	--end
+end 
+	
+function get_dist_to_trup(wpn)
+	local poswpn
+	local npc
+	local posnpc
+	for i = 1, #tabl_corpses do
+		poswpn = wpn.position
+		npc = tabl_corpses[i]
+		posnpc = npc.position
+		if poswpn:distance_to_sqr(posnpc) < dist_from_weapons_to_trup then 
+			return false
+		end
+	end
+	return true
+end
+
+function get_dist_to_trup_protected(wpn)
+	local poswpn
+	local npc
+	local posnpc
+	for i = 1, #tabl_corpses_protected do
+		poswpn = wpn.position
+		npc = tabl_corpses_protected[i]
+		posnpc = npc.position
+		if poswpn:distance_to_sqr(posnpc) < dist_from_weapons_to_trup then
+			return false
+		end
+	end
+	return true
+end
+
+function item_found(corps)
+	local result = false
+	local items = tabl_parent_items[corps.id]
+	
+	if items then
+		
+		local sim = alife()
+		-- проверяем парента
+		local s_parent = sim:object(corps.id)
+						--get_console():execute(string.format("load ~sak_off_corpses~: %s", s_parent:name()))
+		if s_parent and npc_by_clsid[s_parent:clsid()] and not s_parent:alive() then
+
+			local item
+			for i = 1, #items do
+				item = sim:object(items[i])
+				if item then 
+					if item_keep(item) then
+						result = item
+						break
+					end
+				end 
+			end
+		end
+	end
+	
+	return result
+end
+
+function item_keep(item)
+	return (tabl_items_remove[item:section_name()] ~= true and protected_items.cleanerDoNotTouchItem(item))
+end
+
+function max_comp(i1,i2) -- возвращает true если i1 меньше i2
+	return i1.position:distance_to_sqr(actorpos) < i2.position:distance_to_sqr(actorpos)
+end
+
+function clear_outfits(stalker_id)
+	local stalkerRobbed = false
+	local outfitsOnStalker = 0
+	local outfitsCount = #tabl_outfits_all
+	local money = 0
+	for i=outfitsCount,1,-1 do
+		if tabl_outfits_all[i].parent_id == stalker_id then
+			outfitsOnStalker = outfitsOnStalker + 1
+			if outfitsOnStalker > outfit_additional_max then
+				if not stalkerRobbed then
+					stalkers_robbed_from_outits = stalkers_robbed_from_outits + 1
+					stalkerRobbed = true
+				end
+				
+				local outfitCost = amk_offline_alife.get_item_cost(tabl_outfits_all[i])
+				if outfitCost == 0 then
+					outfits_cost_zero_count = outfits_cost_zero_count + 1
+				else
+					outfits_cost_not_zero_count = outfits_cost_not_zero_count + 1
+					money = money + math_floor(outfitCost / 10)
+				end
+				
+				alife():release(tabl_outfits_all[i], true)
+				table_remove(tabl_outfits_all, i)
+				outfits_removed_count = outfits_removed_count + 1
+			end
+		end
+	end
+	
+	if (money > 0) then
+		outfits_cost_returned = outfits_cost_returned + money
+		local npc = alife():object(stalker_id)
+		local tbl = amk.read_stalker_params(npc)
+		local old_money = tbl.money
+		if (old_money == nil) then old_money = 0 end
+		tbl.money = old_money + money
+		amk.write_stalker_params(tbl, npc)
+		stalkers_outfits_costs_returned_count = stalkers_outfits_costs_returned_count + 1
+	end
+
+end
+
+function maxOutfit(i1,i2) -- возвращает true если i1 меньше i2 (самые ценные в конце таблицы)
+	return amk_offline_alife.get_item_cost(i1) < amk_offline_alife.get_item_cost(i2)
+end
+
+function purge()
+	maxOutfit = nil
+	clear_outfits = nil
+	max_comp = nil
+	item_keep = nil
+	item_found = nil
+	get_dist_to_trup_protected = nil
+	get_dist_to_trup = nil
+	off_corpses_2 = nil
+	off_corpses_single = nil
+	off_corpses_0 = nil
+
+ table_insert = nil
+ table_remove = nil
+ table_sort = nil
+ math_floor = nil
+
+--схема удаления трупов сталкеров
+ show_detailed_logs = nil --отображать подробную статистику в ПДА-Журнал-История
+ summ_corpses = nil --общее допустимое число трупов на всех локациях (не включая СИД)
+-- dist_to_corpses = nil --расстояние от ГГ, свыше которого считаются трупы.
+ tabl_corpses = nil
+ tabl_corpses_protected = nil
+ tabl_stalkers = nil
+ removed_corpses = nil
+
+
+ outfit_additional_max = nil -- количество бронежилетов, которые сталкеры оставят себе про запас (останется самый ценный)
+ tabl_outfits_all = nil
+ --tabl_device_pda_all = nil
+
+--схема удаления трупов монстров
+-- dist_to_corpses_motstr = nil --расстояние от ГГ, свыше которого считаются трупы.
+ tabl_monsters_dead = nil --все мёртвые монстры
+ tabl_monsters_live_to_remove = nil --список монстров живых на удаление
+ tabl_monsters_dead_with_parts_to_remove = nil --список монстров мёртвых на удаление
+ summ_dead_monsters = nil --общее допустимое число трупов монстров без "запчастей" на всех локациях 
+ tabl_monsters_live_restrict = nil
+ tabl_monsters_dead_with_parts_restrict = nil
+ tabl_monsters_stat_total = nil --статистика по монстрам всего
+ tabl_monsters_stat_live = nil --статистика по монстрам живым
+ tabl_monsters_stat_live_removed = nil --статистика по монстрам живым удалённым
+ tabl_monsters_stat_dead = nil --статистика по монстрам мёртвым
+ tabl_monsters_stat_dead_removed = nil --статистика по монстрам мёртвым убранным
+ tabl_monsters_stat_dead_with_parts = nil --статистика по монстрам мёртвым с "запчастями" найденным
+ tabl_monsters_stat_dead_with_parts_removed = nil --статистика по монстрам мёртвым с "запчастями" убранным
+
+ monsters_total_count = nil
+ monsters_live_count = nil
+ monsters_live_removed_count = nil
+ monsters_dead_count = nil
+ monsters_dead_removed_count = nil
+ monsters_dead_with_parts_removed_count = nil
+
+ outfits_removed_count = nil -- всего отобранных броников
+ outfits_cost_not_zero_count = nil -- отобранных ценных броников
+ outfits_cost_zero_count = nil -- отобранных копеечных броников
+ outfits_cost_returned = nil -- всего денег вернули
+ stalkers_total = nil -- всего сталкеров
+ stalkers_robbed_from_outits = nil -- сколько сталкеров "ограблено"
+ stalkers_outfits_costs_returned_count = nil -- скольким сталкерам вернули денги
+
+ tabl_monsters_names = nil
+
+--плюс схема удаления бесхозного оружия (если в названии предмета нет "grenade_" или "wpn_" - то это не считается оружием и убираться не будет !!!)
+ summ_weapons = nil --общее допустимое число бесхозного оружия на всех локациях.
+ summ_outfits = nil --общее допустимое число бесхозного оружия на всех локациях.
+-- dist_to_weapons = nil --расстояние от ГГ, свыше которого считается оружие.
+ dist_from_weapons_to_trup = nil --расстояние до трупов, свыше которого считается оружие.
+ tabl_weapons = nil
+ tabl_outfits = nil
+ tabl_hlam = nil
+ weapons_removed = nil
+ outfits_removed = nil
+ removed_weapons_radar = nil --на Радар исключения не распространяются, с земли уберется всё оружие
+
+--список предметов, которые точно игнорируются (поиск по точному совпадению)
+tabl_items_remove = nil
+
+-- таблица списков предметов у неживых неписей
+tabl_parent_items = nil
+
+--список предметов, тела с которыми остаются (поиск как части названия!)
+--таблица tabl_items_keep перекочевала в protected_items
+
+--список секций трупов квестовых сталкеров, которые остаются (поиск по точному имени секции!)
+-- таблица tabl_corps_keep перекочевала в protected_items
+
+--список секций оружия, которое остается лежать на земле (поиск как части названия!)
+-- таблица local tabl_wpn_keep перекочевала в protected_items
+
+actorpos = nil
+end

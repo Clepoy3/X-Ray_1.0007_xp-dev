@@ -1,0 +1,1601 @@
+local math_random = math.random
+
+-- функция для запуска таймера при ондропе
+function timeBombOut(id, sect)
+	amk.start_timer("babah_drop_timeBomb", 0.2, {id = id, sect = sect})
+end
+
+-- функция для запуска таймера при ондропе
+function mineOut(id, sect)
+	amk.start_timer("babah_drop_mine", 0.2, {id = id, sect = sect})
+end
+
+-- функция для запуска таймера при ондропе
+function detonatorOut(id, sect)
+	amk.start_timer("babah_drop_detonator", 0.2, {id = id, sect = sect})
+end
+
+bombs = {
+	["sect"] = {
+		["bomba"] = {
+			["onLevels"] = {},
+			["inInventory"] = {},
+			["ids"] = {}
+		},
+		["bomba_small"] = {
+			["onLevels"] = {},
+			["inInventory"] = {},
+			["ids"] = {}
+		},
+		["bomba_big"] = {
+			["onLevels"] = {},
+			["inInventory"] = {},
+			["ids"] = {}
+		}
+	},
+	["func"] = bombOut
+}
+
+timeBombs = {
+	["sect"] = {
+		["bomba_timer_n_10"] = {
+			["activated"] = "bomba_timer_n_10_activated",
+			["base"] = "bomba_timer_n_10_base"
+		},
+		["bomba_timer_b_10"] = {
+			["activated"] = "bomba_timer_b_10_activated",
+			["base"] = "bomba_timer_b_10_base"
+		},
+		["bomba_timer_n_30"] = {
+			["activated"] = "bomba_timer_n_30_activated",
+			["base"] = "bomba_timer_n_30_base"
+		},
+		["bomba_timer_b_30"] = {
+			["activated"] = "bomba_timer_b_30_activated",
+			["base"] = "bomba_timer_b_30_base"
+		}
+	},
+	["func"] = timeBombOut
+}
+
+local timeBombsBase = {
+	["bomba_timer_n_10_base"] = {
+		["inventory"] = "bomba_timer_n_10"
+	},
+	["bomba_timer_b_10_base"] = {
+		["inventory"] = "bomba_timer_b_10"
+	},
+	["bomba_timer_n_30_base"] = {
+		["inventory"] = "bomba_timer_n_30"
+	},
+	["bomba_timer_b_30_base"] = {
+		["inventory"] = "bomba_timer_b_30"
+	}
+}
+
+local timeBombsActivated = {
+	["bomba_timer_n_10_activated"] = {
+		["delay"] = 10
+	},
+	["bomba_timer_n_10_activated"] = {
+		["delay"] = 10
+	},
+	["bomba_timer_n_30_activated"] = {
+		["delay"] = 30
+	},
+	["bomba_timer_b_30_activated"] = {
+		["delay"] = 30
+	}
+}
+
+mines = {
+	["count"] = 0,
+	["sect"] = {
+		["bomba_mina_n"] = {
+			["delay"] = 3,
+			["onLevels"] = {},
+			["inInventory"] = {},
+			["ids"] = {},
+			["onlyHuman"] = false
+		},
+		["bomba_mina_b"] = {
+			["delay"] = 3,
+			["onLevels"] = {},
+			["inInventory"] = {},
+			["ids"] = {},
+			["onlyHuman"] = false
+		},
+		["rat_tnt"] = {
+			["delay"] = 3,
+			["onLevels"] = {},
+			["inInventory"] = {},
+			["ids"] = {},
+			["onlyHuman"] = true,
+			["onlyAlive"] = true,
+			["addExplosive"] = "bomba_rat_tnt"
+		}
+	},
+	["func"] = mineOut
+}
+
+detonators = {
+	["sect"] = {
+		["detonator"] = {
+			["probability"] = 0.75, -- вероятность удачного срабатывания, если нет секции - 1
+			["delay"] = 2, -- задержка в секундах, если нет секции - 0
+			["distance"] = 50,
+			["id"] = -1,
+			["name"] = "NK-32beta RUS",
+			["has"] = false,
+			["activated"] = false
+		},
+		["detonator_2"] = {
+			["distance"] = 150,
+			["id"] = -1,
+			["name"] = "NK-37 RUS",
+			["has"] = false,
+			["activated"] = false
+		}
+	},
+	["func"] = detonatorOut
+}
+
+local ignored_items = {
+	["device_torch"]		= true,
+	["device_torch_clon"]	= true,
+	["device_pda"]			= true,
+	["hand_radio"]			= true,
+	["guitar_a"]			= true,
+	["harmonica_a"]			= true,
+	["binocular_a"]			= true,
+	["fake_knife"]        = true,
+	["fake_knife_skin"]   = true,
+	["wpn_knife_trade"]   = true,
+	["wpn_binoc"]			= true,
+	["bolt"]				= true,
+	["player"]				= true,
+	["yad"]					= true,
+	["rx_attach_bandage"]	= true,
+}
+
+local transferredBombs = {}
+local explosivesAll
+
+local kamikazzeCharged = {}
+local kamikazzeExplosive = {}
+
+
+local funcBySect = {}
+function collectFuncBySect(t)
+	for k,v in pairs(t["sect"]) do
+		funcBySect[k] = t["func"]
+	end
+end
+
+collectFuncBySect(timeBombs)
+collectFuncBySect(mines)
+--collectFuncBySect(bombs) -- будем искать бомбы только при срабатывании детонатора
+collectFuncBySect(detonators)
+--amk.dump_table(funcBySect)
+
+function messg(news_text, header)
+	--get_console():execute("load ~babah~ function messg(news_text, header)"..tostring(news_text)..", "..tostring(header))
+	if not news_text or not header then return end
+	local player=xr_sound.get_safe_sound_object([[device\pda\pda_news]])
+	if player then
+	player:play(db.actor, 0, sound_object.s2d)
+	local news_text = "%c[255,160,160,160]"..header.."\\n".."%c[default]"..news_text
+		if db.actor then
+	db.actor:give_game_news(news_text, "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+		else
+			get_console():execute("load ~babah~ function messg(news_text, header) - db.actor == nil")
+		end
+	else
+		get_console():execute("load ~babah~ function messg(news_text, header) - sound not found: "..[[device\pda\pda_news]])
+	end
+end
+
+function li(ob)
+	if ob then
+		local id = ob:id()
+		local sect = ob:section()
+		local f = funcBySect[sect]
+		if f then
+			f(id, sect)
+		end
+	end
+end
+
+function useDetonator(sect)
+	--get_console():execute("load ~babah~ function useDetonator(sect)")
+	if detonators["sect"][sect]["delay"] then
+		-- запускаем таймер отсрочки активации детонатора
+		amk.start_timer("babah_activateDetonator", detonators["sect"][sect]["delay"], sect)
+	else
+		explodeBombsByDetonator(sect)
+	end
+end
+
+function explodeBombsByDetonator(sect)
+	--get_console():execute("load ~babah~ function explodeBombsByDetonator(sect)")
+	local detonator = detonators["sect"][sect]
+	if detonator then
+		local probability = detonator["probability"]
+		--get_console():execute("load ~babah~ explodeBombsByDetonator(sect) sect: "..sect.." probability: "..tostring(probability))
+		if probability then
+			if math_random() > probability then
+				messg("Ошибка детонатора!", detonator["name"])
+				return
+			end
+		end
+		local actor = db.actor
+		local sim = alife()
+		local ggraph = game_graph()
+		local level_object_by_id = level.object_by_id
+		local radius = detonator["distance"]
+		local anyBombsExploded = false
+		local actorPos = actor:position()
+		local invBoxExploded
+		if actor and sim and ggraph:valid_vertex_id(actor:game_vertex_id()) then
+			--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 1")
+			collectExplosivesAll()
+			--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 1.2")
+			local levelName = sim:level_name(ggraph:vertex(actor:game_vertex_id()):level_id())
+			--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 1.3")
+			explosivesOnLevel = explosivesAll["online"]["onLevelsInInventory"][levelName]
+			--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 1.4")
+			--get_console():execute("load ~babah~ onLevelsInInventory "..levelName.." =")
+			if explosivesOnLevel then
+			--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 1.5")
+				--amk.dump_table(explosivesOnLevel)
+				for invBoxId, invBoxExplosives in pairs(explosivesOnLevel) do
+					--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 1.6")
+					if invBoxId ~= 0 then -- не подрываем у себя в рюкзаке
+						invBox = level_object_by_id(invBoxId)
+						if invBox and invBox:position():distance_to_sqr(actorPos) <= radius*radius then
+							--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 1.7")
+							invBoxExploded = false
+							for explSect, explIds in pairs(invBoxExplosives) do -- можно отсекать по секциям
+								--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 1.8")
+								if bombs["sect"][explSect] and explIds then
+									for j = #explIds, 1, -1 do
+										if explIds[j] then
+											explosive = level_object_by_id(explIds[j])
+											table.remove(explIds, j)
+											if explosive then
+												--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 1.9")
+												explode_r_hit(explosive)
+												explode_r(explosive)
+												anyBombsExploded = true
+												invBoxExploded = true
+												break
+											end
+										end
+									end
+									if invBoxExploded then
+										explosivesOnLevel[invBoxId] = nil
+										break
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+			--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 2")
+			explosivesOnLevel = explosivesAll["online"]["onLevels"][levelName]
+			--get_console():execute("load ~babah~ onLevels "..levelName.." =")
+			if explosivesOnLevel then
+				--amk.dump_table(explosivesOnLevel)
+				--get_console():execute("load ~babah~ explosivesAll:")
+				--amk.dump_table(explosivesAll)
+				for explSect, explIds in pairs(explosivesOnLevel) do -- можно отсекать по секциям
+					if bombs["sect"][explSect] and explIds then
+						for j = #explIds, 1, -1 do
+							if explIds[j] then 
+								explosive = level_object_by_id(explIds[j])
+								if explosive and explosive:position():distance_to_sqr(actorPos) <= radius*radius then
+									table.remove(explIds, j)
+									explode_r_hit(explosive)
+									explode_r(explosive)
+									anyBombsExploded = true
+								end
+							end
+						end
+					end
+				end
+				--get_console():execute("load ~babah~ explosivesAll:")
+				--amk.dump_table(explosivesAll)
+			end
+			if anyBombsExploded then
+				messg("Взрывчатка взорвана!", detonator["name"])
+			else
+				messg("Ничего не взорвано!", detonator["name"])
+			end
+			--get_console():execute("load ~babah~ explodeBombsByDetonator(sect): 3")
+		end
+	end
+end
+
+function dropMine(tbl)
+	--get_console():execute("load ~babah~ function dropMine(tbl)")
+	-- запускаем таймер активации мины
+	amk.start_timer("babah_activateMine", mines["sect"][tbl.sect]["delay"], tbl)
+end
+
+function dropTimeBomb(tbl)
+	--get_console():execute("load ~babah~ function dropTimeBomb(tbl)")
+	--amk.start_timer("babah_timeBomb_activated", timeBombs["sect"][se_obj:section_name()]["delay"], se_obj.id)
+	-- превращаем инвентарную бомбу в обычную
+	if timeBombs["sect"][tbl.sect] then
+		local obj = level.object_by_id(tbl.id)
+		if obj then
+			local sim = alife()
+			local actor = db.actor
+			local sect = timeBombs["sect"][tbl.sect]["base"]
+			local pos = obj:position()
+			local lv = obj:level_vertex_id()
+			local gv = obj:game_vertex_id()
+			if not game_graph():valid_vertex_id(gv) then
+				gv = actor:game_vertex_id()
+				if not game_graph():valid_vertex_id(gv) then -- похоже, что рядом нету вертекса
+					messg("Здесь странное место...", "Локальная сеть")
+					return
+				end
+			end
+			sim:release(sim:object(tbl.id), true)
+			sim:create(sect, pos, lv, gv)
+		end
+	end
+end
+
+function relocateTimeBomb(tbl)
+	--get_console():execute("load ~babah~ function relocateTimeBomb(tbl)")
+	--amk.start_timer("babah_timeBomb_activated", timeBombs["sect"][se_obj:section_name()]["delay"], se_obj.id)
+	-- превращаем обычную бомбу в инвентарную
+	if transferredBombs[tbl.id] then
+		transferredBombs[tbl.id] = nil
+	elseif timeBombs["sect"][tbl.sect] then -- переложили из своего инвентаря
+		local sim = alife()
+		local obj = level.object_by_id(tbl.id)
+		local se_obj = sim:object(tbl.id)
+		if obj and se_obj then
+			local parent = obj:parent()
+			local se_parent = sim:object(se_obj.parent_id)
+			if parent then
+				--amk.send_tip("relocateTimeBomb "..tbl.id.." "..tbl.sect.." "..obj:id().." "..obj:section().." "..obj:name().." parent "..parent:id().." "..parent:section().." "..parent:name())
+				--amk.send_tip("relocateTimeBomb "..tbl.id.." "..tbl.sect.." "..se_obj.id.." "..se_obj:section_name().." "..se_obj:name().." parent "..se_parent.id.." "..se_parent:section_name().." "..se_parent:name())
+				local sect = timeBombs["sect"][tbl.sect]["base"]
+				local pos = se_parent.position
+				local lv = se_parent.m_level_vertex_id
+				local gv = se_parent.m_game_vertex_id
+				if not game_graph():valid_vertex_id(gv) then
+					gv = db.actor:game_vertex_id()
+					if not game_graph():valid_vertex_id(gv) then -- похоже, что рядом нету вертекса
+						messg("Здесь странное место...", "Локальная сеть")
+						return
+					end
+				end
+				local parent_id = se_parent.id
+				sim:release(se_obj, true)
+				local new_se_obj = sim:create(sect, pos, lv, gv, parent_id)
+				if parent:clsid() == clsid.inventory_box then
+					-- ящики совсем охренели
+					--amk.send_tip("ящики совсем охренели")
+					amk.start_timer("babah_timeBomb_transfer", 0.2, new_se_obj.id)
+				end
+				inventory.on_inventory_info("ui_inventory_hide")
+				inventory.on_inventory_info("ui_inventory")
+			end
+		end
+	end
+end
+
+function transferTimeBomb(id)
+	--get_console():execute("load ~babah~ function transferTimeBomb(id)")
+	local obj = level.object_by_id(id)
+	if obj and db.actor then
+		local invBox = obj:parent()
+		if invBox then
+			transferredBombs[id] = true
+			invBox:transfer_item(obj, db.actor)
+			db.actor:transfer_item(obj, invBox)
+
+			inventory.on_inventory_info("ui_inventory_hide")
+			inventory.on_inventory_info("ui_inventory")
+			--amk.send_tip("transferTimeBomb(id)")
+		end
+	end
+end
+
+function moveTimeBomb(tbl)
+	--get_console():execute("load ~babah~ function moveTimeBomb(tbl)")
+	amk.dump_table(tbl)
+	local bomb = level.object_by_id(tbl.bomb_id)
+	local to = level.object_by_id(tbl.to_id)
+	if bomb and to then
+		db.actor:transfer_item(bomb, to)
+		db.actor:marked_dropped(bomb)
+		inventory.on_inventory_info("ui_inventory_hide")
+		inventory.on_inventory_info("ui_inventory")
+		amk.start_timer("babah_explode_moved_timeBomb", 0.2, tbl.bomb_id)
+	else
+		get_console():execute("load ~babah~ function moveTimeBomb(tbl) filed. bomb: "..type(bomb)..", to: "..type(to))
+	end
+end
+
+function on_item_take(obj)
+	--get_console():execute("load ~babah~ function on_item_take(obj)")
+	-- превращаем обычную бомбу в инвентарную
+	local id = obj:id()
+	if transferredBombs[id] then
+		transferredBombs[id] = nil
+	elseif obj then
+		local sect = obj:section()
+		local timeBombBase = timeBombsBase[sect]
+		if timeBombBase then -- переложили в свой инвентарь бомбу с таймером
+			local sim = alife()
+			local parent = obj:parent()
+			if parent then
+				local newSect = timeBombBase["inventory"]
+				local pos = parent:position()
+				local lv = parent:level_vertex_id()
+				local gv = parent:game_vertex_id()
+				if not game_graph():valid_vertex_id(gv) then
+					gv = db.actor:game_vertex_id()
+					if not game_graph():valid_vertex_id(gv) then -- похоже, что рядом нету вертекса
+						messg("Здесь странное место...", "Локальная сеть")
+						return
+					end
+				end
+				local parent_id = parent:id()
+				sim:release(sim:object(id), true)
+				sim:create(newSect, pos, lv, gv, parent_id)
+			end
+		end
+	end
+end
+
+function useTimeBomb(tbl)
+	--get_console():execute("load ~babah~ function useTimeBomb(tbl)")
+	if transferredBombs[tbl.id] then
+		transferredBombs[tbl.id] = nil
+	elseif db.actor then
+		local actor = db.actor
+		local newSect = timeBombs["sect"][tbl.sect]["activated"]
+		local delay = timeBombsActivated[newSect]["delay"]
+		local pos = actor:position()
+		local lv = actor:level_vertex_id()
+		local gv = actor:game_vertex_id()
+		if not game_graph():valid_vertex_id(gv) then -- похоже, что рядом нету вертекса
+			messg("Здесь странное место...", "Локальная сеть")
+			return
+		end
+		se_obj = alife():create(newSect, pos, lv, gv, actor:id())
+		amk.start_timer("babah_timeBomb_activated", delay, se_obj.id)
+		messg("Таймер запущен! Срочно надо выложить её и отойти на безопасное расстояние.", "Взрывчатка")
+	end
+end
+
+function explosiveExplode(id)
+	--get_console():execute("load ~babah~ function explosiveExplode(id)")
+	--amk.send_tip("пробуем взорвать")
+	local sim = alife()
+	local level_object_by_id = level.object_by_id
+	local se_obj = sim:object(id)
+	if se_obj then
+		local obj = level_object_by_id(id)
+		if obj then
+			-- проверка на то, что взрывчатку кто-то подобрал
+			if se_obj.parent_id and se_obj.parent_id ~= 65535 then
+				-- перемещаем её к хозяину
+				local sect = obj:section()
+				local parent = level_object_by_id(se_obj.parent_id)
+				if parent then
+					if parent:clsid() == clsid.inventory_box then
+						explode_r_hit(obj)
+						collectExplosivesAll()
+						explode_r(obj)
+					else
+						local pos = parent:position()
+						local lv = parent:level_vertex_id()
+						local gv = parent:game_vertex_id()
+						if not game_graph():valid_vertex_id(gv) then -- похоже, что рядом нету вертекса
+							messg("Здесь странное место...", "Локальная сеть")
+							return
+						end
+						sim:release(se_obj, true)
+						se_obj = sim:create(sect, pos, lv, gv, parent:id())
+						amk.start_timer("babah_explode_moved_timeBomb", 0.2, se_obj.id)
+						amk.send_tip("Взрывчатка перемещена "..type(se_obj.id).." "..tostring(se_obj.id))
+					end
+				end
+			else
+				explode_r_hit(obj)
+				collectExplosivesAll()
+				explode_r(obj)
+				amk.send_tip("Взрывчатка взорвана", nil, 4)
+			end
+		else -- объект на другой локации или в оффлайне
+			collectExplosivesAll()
+			explodeOffline(se_obj, true)
+		end
+	end
+end
+
+function collectExplosivesAll()
+	--get_console():execute("load ~babah~ function collectExplosivesAll()")
+	-- собираем информацию о взрывчатках
+	explosivesAll = {
+		["online"] = {
+			["onLevels"] = {},
+			["onLevelsInInventory"] = {},
+		},
+		["offline"] = {
+			["onLevels"] = {},
+			["onLevelsInInventory"] = {},
+		},
+		--["ids"] = {},
+		--["count"] = 0
+	}
+	local explOnlineOnLevels = explosivesAll["online"]["onLevels"]
+	local explOnlineOnLevelsInInventory = explosivesAll["online"]["onLevelsInInventory"]
+	local explOfflineOnLevels = explosivesAll["offline"]["onLevels"]
+	local explOfflineOnLevelsInInventory = explosivesAll["offline"]["onLevelsInInventory"]
+	local sim = alife()
+	local ggraph = game_graph()
+	local level_object_by_id = level.object_by_id
+	local levelName
+	local correct
+	local parent_id
+	local obj
+	local explTmp
+	local t
+	local sect
+	for i = 1, 65534 do
+		se_obj = sim:object(i)
+		if se_obj and se_obj:clsid() == clsid.obj_explosive then
+			sect = se_obj:section_name()
+			correct = false
+			parent_id = se_obj.parent_id
+			
+			if parent_id and parent_id ~= 65535 then
+				-- в коллекцию по инвентарям
+				p_obj = sim:object(parent_id)
+				if p_obj and ggraph:valid_vertex_id(p_obj.m_game_vertex_id) then
+					levelName = sim:level_name(ggraph:vertex(p_obj.m_game_vertex_id):level_id())
+					obj = level_object_by_id(parent_id)
+					if obj then
+						local isNPC = IAmAStalker[obj:clsid()] or IAmAMonster[obj:clsid()]
+						local item = level.object_by_id(i)
+						if isNPC and item and obj:marked_dropped(item) then
+							explTmp = nil
+						else
+							explTmp = explOnlineOnLevelsInInventory
+						end
+					else
+						explTmp = explOfflineOnLevelsInInventory
+					end
+					if explTmp then
+						if not explTmp[levelName] then
+							explTmp[levelName] = {}
+						end
+						if not explTmp[levelName][parent_id] then
+							explTmp[levelName][parent_id] = {}
+						end
+						if not explTmp[levelName][parent_id][sect] then
+							explTmp[levelName][parent_id][sect] = {}
+						end
+						t = explTmp[levelName][parent_id][sect]
+						table.insert(t, i)
+						correct = true
+						--get_console():execute("load ~babah~ collectExplosivesAll(): "..se_obj.id.." name - "..se_obj:name().." sect - "..se_obj:section_name()..", parent_id - "..tostring(se_obj.parent_id))
+					end
+				end
+			elseif ggraph:valid_vertex_id(se_obj.m_game_vertex_id) then
+				-- в коллекцию по уровням
+				levelName = sim:level_name(ggraph:vertex(se_obj.m_game_vertex_id):level_id())
+				obj = level_object_by_id(i)
+				if obj then
+					explTmp = explOnlineOnLevels
+				else
+					explTmp = explOfflineOnLevels
+				end
+				if not explTmp[levelName] then
+					explTmp[levelName] = {}
+				end
+				if not explTmp[levelName][sect] then
+					explTmp[levelName][sect] = {}
+				end
+				t = explTmp[levelName][sect]
+				table.insert(t, i)
+				correct = true
+			end
+			
+			if correct then
+				-- в общую коллекцию
+				--t = explosivesAll["ids"]
+				--table.insert(t, i)
+				--explosivesAll["count"] = explosivesAll["count"] + 1
+			else
+				get_console():execute("load ~babah~ FAILED collectExplosivesAll(): "..se_obj.id.." sect - "..se_obj:section_name()..", parent_id - "..tostring(se_obj.parent_id))
+			end
+		end
+	end
+	--get_console():execute("load ~babah~ collectExplosivesAll():")
+	--amk.dump_table(explosivesAll)
+end
+
+function explodeMovedTimeBomb(id)
+	--get_console():execute("load ~babah~ function explodeMovedTimeBomb(id)")
+	--amk.send_tip("Взрывчатка взорвана id "..type(id).." "..tostring(id))
+	local se_obj = alife():object(id)
+	--amk.send_tip("Взрывчатка взорвана se_obj.id "..type(se_obj and se_obj.id).." "..tostring(se_obj and se_obj.id).." section: "..tostring(se_obj and se_obj:section_name()), nil, 3)
+	if se_obj then
+		local obj = level.object_by_id(se_obj.id)
+		--amk.send_tip("Взрывчатка взорвана obj "..type(obj), nil, 4)
+		--amk.send_tip("Взрывчатка взорвана obj.id "..type(obj and obj:id()).." "..tostring(obj and obj:id()), nil, 4)
+		if obj then
+			explode_r_hit(obj)
+			collectExplosivesAll()
+			explode_r(obj)
+		end
+	end
+end
+
+function explode_r_hit(ob)
+	--get_console():execute("load ~babah~ function explode_r_hit(ob)")
+	if ob then
+		hitExplosive(ob)
+	end
+end
+
+function explode_r(ob)
+	--get_console():execute("load ~babah~ function explode_r(ob)")
+	if ob then
+		---hitExplosive(ob)
+		--collectExplosivesAll()
+		
+		local level_object_by_id = level.object_by_id
+		local obj = ob
+		local parent_id
+		if ob:parent() then
+			parent_id = ob:parent():id()
+			if parent_id and parent_id ~= 65535 then
+				obj = level_object_by_id(parent_id) -- получаем объект хозяина
+			end
+		end
+
+		local id = ob:id()
+		local pos = obj:position()
+		local sect = ob:section()
+		local sim = alife()
+		local ggraph = game_graph()
+		if obj:id() ~= id then -- взрывчатка в инвентаре
+			-- чтобы не трясли торговцев
+			--if IAmAStalker[obj:clsid()] and obj.character_community and rx_utils.IsTrader(obj) then
+			if obj:story_id() then
+				return
+			end
+			pos.y = pos.y + 1
+			local lv = obj:level_vertex_id()
+			local gv = obj:game_vertex_id()
+			if not game_graph():valid_vertex_id(gv) then -- похоже, что рядом нету вертекса
+				messg("Здесь странное место...", "Локальная сеть")
+				return
+			end
+			--get_console():execute("load ~babah~ babah pos: x "..pos.x..", y "..pos.y..", z "..pos.z..", lv "..lv..", gv "..gv)
+			-- удаляем всё из инвентаря
+			--amk.send_tip("удаляем всё из инвентаря")
+			local isNPC = IAmAStalker[obj:clsid()] or IAmAMonster[obj:clsid()]
+			if isNPC then
+				particles_object("anomaly2\\gravity_damage_02_blood2"):play_at_pos(pos)
+			end
+			local infoExplosive = collectExplosiveInfo(ob:section())
+			particles_object(infoExplosive["explode_particles"]):play_at_pos(pos)
+			
+			--itemsTransferBack = {}
+			if isNPC and obj:alive() then
+				obj:iterate_inventory(
+					function(dummy,item)
+						if item:id() ~= id and not ignored_items[item:section()] and not obj:marked_dropped(item) and not kamikazzeExplosive[item:id()] then
+							obj:drop_item(item)
+							obj:mark_item_dropped(item)
+						end
+					end,
+					obj
+				)
+				actor_check(obj, ob, true)
+				obj:kill(obj) -- добиваем, а то вдруг выживет и пойдет себе дальше
+			else -- для тайников и трупов
+				if db.actor then
+					local packet
+					local sect
+					local items = {}
+					local inv_obj
+					for i = 1, 65534 do
+						if i ~= id then
+							se_obj = sim:object(i)
+							if se_obj and se_obj.parent_id == parent_id then
+								--amk.send_tip("babah (se_obj.parent_id == parent_id): id "..se_obj.id..", name "..se_obj:name())
+								--get_console():execute("load ~babah~ babah (se_obj.parent_id == parent_id): id "..se_obj.id..", name "..se_obj:name()..", online "..tostring(se_obj.online))
+								inv_obj = level_object_by_id(se_obj.id)
+								if inv_obj then
+									--amk.send_tip("babah (inv_obj:parent():id() == parent_id): id "..inv_obj:id()..", name "..inv_obj:name())
+									--get_console():execute("load ~babah~ babah (inv_obj:parent():id() == parent_id): id "..inv_obj:id()..", name "..inv_obj:name())
+									zamok.remove(obj, inv_obj, true, true)
+									obj:drop_item_and_teleport(inv_obj, vector():set(pos.x + math_random() - 0.5, pos.y, pos.z + math_random() - 0.5))
+								else
+									amk.send_tip("babah obj == nil: id "..se_obj.id..", name "..se_obj:name())
+									get_console():execute("load ~babah~ function explode_r(ob) - babah obj == nil: id "..se_obj.id..", name "..se_obj:name())
+								end
+							end
+						end
+					end
+				end
+			end
+			hitExplosive(ob)
+			local levelName = sim:level_name(ggraph:vertex(obj:game_vertex_id()):level_id())
+			amk.start_timer("babah_explode_biside_explosives", 0.5, {id = id, sect = sect, x = pos.x, y = pos.y - 0.5, z = pos.z, lvl = levelName})
+		else
+			hitExplosive(ob)
+			local gv = obj:game_vertex_id()
+			if not game_graph():valid_vertex_id(gv) then -- похоже, что рядом нету вертекса
+				messg("Здесь странное место...", "Локальная сеть")
+				return
+			end
+			local levelName = sim:level_name(ggraph:vertex(obj:game_vertex_id()):level_id())
+			amk.start_timer("babah_explode_biside_explosives", 0.5, {id = id, sect = sect, x = pos.x, y = pos.y - 0.5, z = pos.z, lvl = levelName})
+		end
+	else
+		amk.send_tip("Взрывчатка НЕ взорвана! Она не найдена...", nil, 2)
+	end
+end
+
+function explodeBisideExplosives(tbl)
+	--get_console():execute("load ~babah~ function explodeBisideExplosives(tbl)")
+	--amk.send_tip("Взрываем взрывчатку рядом")
+	local sim = alife()
+	local ggraph = game_graph()
+	local level_object_by_id = level.object_by_id
+	local explosivesOnLevel
+	local explosive
+	local explId = tbl.id
+	local levelNameExplosive = tbl.lvl
+	local explPos = vector():set(tbl.x, tbl.y, tbl.z)
+	local infoExplosive = collectExplosiveInfo(tbl.sect)
+	--amk.dump_table(infoExplosive)
+	local radius = infoExplosive["blast_r"]
+	--if infoExplosive["frags"] > 0 then
+	--	radius = math.max(radius, infoExplosive["frags_r"]) -- слишком далеко достают осколки
+	--end
+	--get_console():execute("load ~babah~ function explodeBisideExplosives(tbl) 1")
+		-- подрываем взрывчатку рядом
+	--get_console():execute("load ~babah~ explosivesAll:")
+	--amk.dump_table(explosivesAll)
+	local invBox
+	local invBoxExploded
+	explosivesOnLevel = explosivesAll["online"]["onLevelsInInventory"][levelNameExplosive]
+	--get_console():execute("load ~babah~ onLevelsInInventory "..levelNameExplosive.." =")
+	--get_console():execute("load ~babah~ function explodeBisideExplosives(tbl) 2")
+	if explosivesOnLevel then
+		--amk.dump_table(explosivesOnLevel)
+		for invBoxId, invBoxExplosives in pairs(explosivesOnLevel) do
+		--get_console():execute("load ~babah~ function explodeBisideExplosives(tbl) 3")
+			invBox = level_object_by_id(invBoxId)
+			invBoxExploded = false
+			if invBox and invBox:position():distance_to_sqr(explPos) <= radius*radius then
+				for sect, explIds in pairs(invBoxExplosives) do -- можно отсекать по секциям
+					if explIds then
+						for j = #explIds, 1, -1  do -- а здесь можно и с предметами в инвентаре что-то сделать, если их запомнить вместе со взрывчаткой перед этим
+							if explIds[j] then
+								if explIds[j] ~= explId then
+									explosive = level_object_by_id(explIds[j])
+									table.remove(explIds, j)
+									if explosive then
+										invBoxExploded = true
+										explode_r_hit(explosive)
+										explode_r(explosive)
+										break
+									end
+								else
+									table.remove(explIds, j)
+								end
+							end
+						end
+					end
+					if invBoxExploded then
+						explosivesOnLevel[invBoxId] = nil
+						break
+					end
+				end
+			end
+		end
+	end
+	--get_console():execute("load ~babah~ function explodeBisideExplosives(tbl) 4")
+	explosivesOnLevel = explosivesAll["online"]["onLevels"][levelNameExplosive]
+	--get_console():execute("load ~babah~ onLevels "..levelNameExplosive.." =")
+	if explosivesOnLevel then
+		--amk.dump_table(explosivesOnLevel)
+		--get_console():execute("load ~babah~ explosivesAll:")
+		--amk.dump_table(explosivesAll)
+		for sect, explIds in pairs(explosivesOnLevel) do -- можно отсекать по секциям
+			--get_console():execute("load ~babah~ function explodeBisideExplosives(tbl) 5")
+			if explIds then
+				for j = #explIds, 1, -1 do
+					if explIds[j] then 
+						if explIds[j] ~= explId then
+							explosive = level_object_by_id(explIds[j])
+							if explosive and explosive:position():distance_to_sqr(explPos) <= radius*radius then
+								table.remove(explIds, j)
+								explode_r_hit(explosive)
+								explode_r(explosive)
+							end
+						else
+							table.remove(explIds, j)
+						end
+					end
+				end
+			end
+		end
+		--get_console():execute("load ~babah~ explosivesAll:")
+		--amk.dump_table(explosivesAll)
+	end
+	--get_console():execute("load ~babah~ function explodeBisideExplosives(tbl) finish")
+end
+
+function hitExplosive(ob)
+	--get_console():execute("load ~babah~ function hitExplosive(ob)")
+	if ob then
+		--amk.send_tip("Наносим повреждение взрывчатке: id "..ob:id()..", name "..ob:name())
+		local h = hit()
+		h.power = 1000
+		h.impulse = 0
+		h.draftsman = ob
+		h.direction = vector():set(0,0,0)
+		h.type = hit.fire_wound
+		ob:hit(h)
+		if ob and ob.explode then
+			ob:explode()
+		end
+	end
+end
+
+function collectBombs()
+	local sim = alife()
+	for i = 1, 65534 do
+		collectBombs_single(sim:object(i))
+	end
+	--amk.dump_table(mines["sect"]) 
+end
+
+function collectBombs_single(se_obj, sect)
+	if se_obj and se_obj.parent_id == 65535 then -- лежит на земле
+		if mines["sect"][sect] --[[and not mines["sect"][sect]["addExplosive"] ]] then
+			addMine(se_obj)
+		end
+	end
+end
+
+function addMine(se_obj)
+	if se_obj then
+		local sect = se_obj:section_name()
+		local mine = mines["sect"][sect]
+		if mine and (not mine["addExplosive"] or mine["onlyAlive"] and se_obj:alive()) then
+			--get_console():execute("load ~babah~ addMine+ "..se_obj:section_name())
+			local sim = alife()
+			local ggraph = game_graph()
+			local levelName
+			local correct = false
+			local exists = false
+			local parent_id = se_obj.parent_id
+			
+			if parent_id == 65535 and ggraph:valid_vertex_id(se_obj.m_game_vertex_id) then
+				-- в коллекцию по уровням
+				levelName = sim:level_name(ggraph:vertex(se_obj.m_game_vertex_id):level_id())
+				--get_console():execute("load ~babah~ addMine+ levelName:"..tostring(levelName))
+				if not mine["onLevels"][levelName] then
+					mine["onLevels"][levelName] = {}
+				end
+				local t = mine["onLevels"][levelName]
+				for i = 1, #t do
+					if t[i] == se_obj.id then
+						exists = true
+						break
+					end
+				end
+				
+				if not exists then
+					table.insert(t, se_obj.id)
+				end
+				correct = true
+			end
+			
+			if correct then
+				-- в общую коллекцию
+				local t = mine["ids"]
+				table.insert(t, se_obj.id)
+				mines["count"] = mines["count"] + 1
+			else
+				get_console():execute("load ~babah~ FAILED addMine(): "..se_obj.id.." sect - "..sect..", parent_id - "..tostring(se_obj.parent_id))
+			end
+			--amk.dump_table(mines)
+			--get_console():execute("load ~babah~ addMine-")
+		end
+	end
+end
+
+function update(delta)
+	if mines["count"] > 0 then
+		local npcOnline = db.storage
+		local npcOffline = amk_offline_alife.off_npcs
+		if npcOnline and npcOffline then
+			local npcObj, mineObj
+			local level_object_by_id = level.object_by_id
+			local onLevels, inInventory, ids
+			local mineId, parentId
+			local minePos
+			local sim = alife()
+			local found = false
+			local levelOfflineData, offlineNPCs
+			local ggraph = game_graph()
+			local actorLevelName
+			if ggraph:valid_vertex_id(db.actor:game_vertex_id()) then
+				actorLevelName = sim:level_name(ggraph:vertex(db.actor:game_vertex_id()):level_id())
+			end
+			-- проверяем на расстояние между минами и онлайновыми неписями
+			--get_console():execute("load ~babah~ MINES+")
+			--amk.dump_table(mines)
+			--get_console():execute("load ~babah~ MINES-")
+			for k,v in pairs(mines["sect"]) do
+				onLevels = v["onLevels"]
+				for levelName, levelData in pairs(onLevels) do
+					if levelData then
+						for i = #levelData, 1, -1 do
+							mineId = levelData[i]
+							if mineId then
+								mineObj = sim:object(mineId)
+								if mineObj then
+									parentId = mineObj.parent_id
+									-- если кто-то поднял мину (ловкий парень :))
+									if parentId and parentId ~= 65535 then
+										-- перемещаем мину в список по инвентарям и не взрываем
+										inInventory = v["inInventory"]
+										table.insert(inInventory, mineId)
+										table.remove(levelData, i)
+									else
+										minePos = mineObj.position
+										-- поиск в онлайне
+										if actorLevelName == levelName and mineObj.online then
+											for npcId, npc in pairs(npcOnline) do
+												npcObj = level_object_by_id(npcId)
+												if npcObj and (IAmAStalker[npcObj:clsid()] or not v["onlyHuman"] and IAmAMonster[npcObj:clsid()]) and npcObj:alive() and npcObj:position():distance_to_sqr(minePos) <= 1 then
+													found = true
+													break
+												end
+											end
+										end
+										-- поиск в оффлайне
+										levelOfflineData = npcOffline[levelName]
+										if levelOfflineData then
+											--get_console():execute("load ~babah~ levelOfflineData-")
+											--amk.dump_table(levelOfflineData["monsters"])
+											--amk.dump_table(levelOfflineData["stalkers"])
+											--get_console():execute("load ~babah~ levelOfflineData-")
+											if not found and not v["onlyHuman"] then
+												offlineNPCs = levelOfflineData["monsters"]
+												if offlineNPCs then
+													for j = 1, #offlineNPCs do
+														if offlineNPCs[j]["id"] then
+															npcObj = sim:object(offlineNPCs[j]["id"])
+															if npcObj and npcObj:alive() and npcObj.position:distance_to_sqr(minePos) <= 1 then
+																found = true
+																break
+															end
+														end
+													end
+												end
+											end
+											if not found then
+												offlineNPCs = levelOfflineData["stalkers"]
+												if offlineNPCs then
+													for j = 1, #offlineNPCs do
+														if offlineNPCs[j]["id"] then
+															npcObj = sim:object(offlineNPCs[j]["id"])
+															if npcObj and npcObj:alive() and npcObj.position:distance_to_sqr(minePos) <= 1 then
+																found = true
+																break
+															end
+														end
+													end
+												end
+											end
+										end
+										if found then
+											-- удаляем мину из таблицы
+											--get_console():execute("load ~babah~ MINES found babah: "..mineId)
+											--amk.dump_table(mines)
+											--get_console():execute("load ~babah~ MINES babah+")
+											table.remove(levelData, i)
+											ids = v["ids"]
+											for j = #ids, 1, -1 do
+												if ids[j] == mineId then
+													table.remove(ids, j)
+													break
+												end
+											end
+											mines["count"] = mines["count"] - 1
+											found = false
+											--amk.dump_table(mines)
+											--get_console():execute("load ~babah~ MINES babah-")
+											-- взрываем мину
+											if v["addExplosive"] then
+												explodeKamikazzeExplosive(v["addExplosive"], mineObj)
+											else
+												explosiveExplode(mineId)
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+-- подрыв в оффлайне
+function explodeOffline(se_obj, first)
+	--amk.send_tip("пробуем взорвать на другой локации")
+	if se_obj then
+		local infoExplosive = collectExplosiveInfo(se_obj:section_name())
+		--amk.dump_table(infoExplosive)
+		local radius = infoExplosive["blast_r"]
+		if infoExplosive["frags"] > 0 then
+			radius = math.max(radius, infoExplosive["frags_r"])
+		end
+		
+		local sim = alife()
+		local obj = se_obj
+		local parent_id = se_obj.parent_id
+		if parent_id and parent_id ~= 0 and parent_id ~= 65535 then
+			obj = sim:object(parent_id) -- получаем объект хозяина
+		end
+		
+		local ggraph = game_graph()
+		if ggraph:valid_vertex_id(obj.m_game_vertex_id) then
+			local infoVictimsOffline = collectExplosiveVictimsOffline(obj, radius)
+			--amk.dump_table(infoVictimsOffline)
+			
+			damageVictimsOffline(infoVictimsOffline, infoExplosive)
+			if first then
+				--local packet
+				local explosivesOnLevel
+				local explosive
+				local explId = se_obj.id
+				local explPos = obj.position
+				local levelNameExplosive = sim:level_name(ggraph:vertex(obj.m_game_vertex_id):level_id())
+				-- взрывчатка отработала
+				sim:release(se_obj, true)
+				-- подрываем взрывчатку рядом
+				--amk.dump_table(explosivesAll)
+				local invBox
+				explosivesOnLevel = explosivesAll["offline"]["onLevelsInInventory"][levelNameExplosive]
+				if explosivesOnLevel then
+					for invBoxId, invBoxExplosives in pairs(explosivesOnLevel) do
+						invBox = sim:object(invBoxId)
+						if invBox and invBox.position:distance_to_sqr(explPos) <= radius*radius then
+							for sect, explIds in pairs(invBoxExplosives) do -- можно отсекать по секциям
+								if explIds then
+									for j = #explIds, 1, -1 do -- а здесь можно и с предметами в инвентаре что-то сделать, если их запомнить вместе со взрывчаткой перед этим
+										if explIds[j] then
+											if explIds[j] ~= explId then
+												explosive = sim:object(explIds[j])
+												table.remove(explIds, j)
+												if explosive then
+													explodeOffline(explosive, true)
+												end
+											else
+												table.remove(explIds, j)
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+				explosivesOnLevel = explosivesAll["offline"]["onLevels"][levelNameExplosive]
+				if explosivesOnLevel then
+					--amk.dump_table(explosivesAll)
+					for sect, explIds in pairs(explosivesOnLevel) do -- можно отсекать по секциям
+						if explIds then
+							for j = #explIds, 1, -1 do
+								if explIds[j] then 
+									if explIds[j] ~= explId then
+										explosive = sim:object(explIds[j])
+										if explosive and explosive.position:distance_to_sqr(explPos) <= radius*radius then
+											table.remove(explIds, j)
+											explodeOffline(explosive, true)
+										end
+									else
+										table.remove(explIds, j)
+									end
+								end
+							end
+						end
+					end
+					--amk.dump_table(explosivesAll)
+				end
+			else
+				sim:release(se_obj, true)
+			end
+			if first then
+				messg("Взорвано на другой территории", "Взрывчатка")
+			end
+		else
+			if first then
+				amk.send_tip("Взрывчатка НЕ взорвана! Она в кривом месте...", nil, 2)
+			end
+		end
+	end
+end
+
+-- для кеширования данных
+local explosivesInfo = {}
+
+function collectExplosiveInfo(section)
+	if not explosivesInfo[section] then
+		local explosive = {
+			["blast"] = 1.5,
+			["blast_r"] = 2,
+			["blast_impulse"] = 200,
+			["blast_impulse_factor"] = 1,
+			["frags"] = 0,
+			["frags_r"] = 15,
+			["frag_hit"] = 0.25,
+			["frag_hit_impulse"] = 150,
+			["hit_type_blast"] = "explosion",
+			["hit_type_frag"] = "burn",
+			["explode_particles"] = "explosions\\explosion_barrel"
+		}
+		
+		for k, v in pairs(explosive) do
+			local varType = type(explosive[k])
+			if varType == "number" then
+				explosive[k] = getIniValueFloatSimple(section, k, v)
+			elseif varType == "string" then
+				explosive[k] = getIniValueStringSimple(section, k, v)
+			end
+		end
+		
+		explosivesInfo[section] = explosive
+	end
+	
+	return explosivesInfo[section]
+end
+
+-- собираем информацию о жертвах
+-- код повзаимствован из amk_offline_alife.offline_alife()
+function collectExplosiveVictimsOffline(se_obj, radius)
+	local sim = alife()
+	local vdata = {}
+	local ggraph = game_graph()
+	if ggraph:valid_vertex_id(se_obj.m_game_vertex_id) then
+		local map = sim:level_name(ggraph:vertex(se_obj.m_game_vertex_id):level_id())
+		local off_npcs = amk_offline_alife.off_npcs
+		local explPos = se_obj.position
+		
+		-- по сталкерам
+		
+		local function collectNPCs(offNPCs)
+			if offNPCs then
+				local offNPC
+				local victim
+				local sect
+				local dist
+				for a = 1, #offNPCs do
+					offNPC = offNPCs[a]
+					if offNPC then
+						victim = sim:object(offNPC.id)
+						if victim and victim.health and victim:health() > 0
+								and victim.can_switch_online and victim:can_switch_online()
+								and victim:name() == offNPC.name then
+							sect = victim:section_name()
+							dist = explPos:distance_to_sqr(victim.position)
+							if dist <= radius*radius then
+								table.insert(vdata, {["id"] = victim.id, ["dist"] = math.sqrt(dist), ["squere"] = getVictimSquare(sect)})
+							end
+						end
+					end
+				end
+			end
+		end
+		
+		collectNPCs(off_npcs[map].stalkers)
+		collectNPCs(off_npcs[map].monsters)
+	end
+	
+	return vdata
+end
+
+-- для кеширования данных
+local victimsSquare = {}
+
+function getVictimSquare(sect)
+	if not victimsSquare[sect] then
+		local victimSize = {0.5, 0.9, 0.5}
+		local tmp = parse_nums(getIniValueStringSimple(sect, "ph_box0_size", table.concat(victimSize,", ")))
+		if #tmp == 3 then
+			victimSize = tmp
+		end
+		victimsSquare[sect] = (victimSize[1] + victimSize[3]) / 2 * victimSize[2]
+	end
+	
+	return victimsSquare[sect]
+end
+
+function damageVictimsOffline(infoVictimsOffline, infoExplosive)
+	local sim = alife()
+	local se_obj
+	local damage
+	local health
+	for i = 1, #infoVictimsOffline do
+		se_obj = sim:object(infoVictimsOffline[i].id)
+		if se_obj then
+			damage = calcDamageForVictim(infoVictimsOffline[i], infoExplosive)
+			if damage > 0 then
+				health = se_obj:health() - damage
+				if health < 0 then
+					health = 0
+				end
+				amk_offline_alife.set_npc_health(se_obj, health)
+			end
+		end
+	end
+end
+
+function calcDamageForVictim(victimInfo, infoExplosive)
+	local rNorm = victimInfo["dist"] / infoExplosive["blast_r"]
+	local damage = 0
+	if victimInfo["dist"] < infoExplosive["blast_r"] then
+		damage = infoExplosive["blast"] * (1 - rNorm * rNorm) * victimInfo["squere"]
+		-- (1 - x ^ 2) http://yotx.ru/default.aspx?clr0=000000&exp0=1+-+x*x&mix=0&max=1&asx=on&u=mm&nx=X&aiy=on&asy=on&ny=Y&iw=600&ih=400&ict=png&aa=on
+	end
+	if infoExplosive["frags"] > 0 and victimInfo["dist"] < infoExplosive["frags_r"] then
+		-- вероятность попадания
+		local sphereSquere = 4 * math.pi * victimInfo["dist"] * victimInfo["dist"]
+		local prob = victimInfo["squere"] / sphereSquere
+		for i = 1, infoExplosive["frags"] do
+			if math_random() < prob then
+				damage = damage + infoExplosive["frag_hit"]
+			end
+		end
+	end
+	-- его величество Случай
+	damage = damage * (1 - math_random()*math_random()*math_random()*math_random())
+
+	return damage
+end
+
+function kamikazzeFree(id)
+	if id then
+		if kamikazzeCharged[id] then
+			kamikazzeExplosive[kamikazzeCharged[id]] = nil
+		end
+		kamikazzeCharged[id] = nil
+	end
+end
+
+function explodeKamikazzeExplosive(addExplosive, kamikazze)
+	if addExplosive and kamikazze then
+		kamikazzeCharged[kamikazze.id] = true
+		local pos = db.actor:position()
+		local lv = db.actor:level_vertex_id()
+		local gv = db.actor:game_vertex_id()
+		if game_graph():valid_vertex_id(gv) then
+	--		local sobj = alife():create(addExplosive, kamikazze.position, kamikazze.m_level_vertex_id, kamikazze.m_game_vertex_id, db.actor:id())
+			local sobj = alife():create(addExplosive, pos, lv, gv, db.actor:id())
+			if sobj then
+	--get_console():execute("load ~babah~ MINES babah- explodeKamikazzeExplosive addExplosive:"..tostring(addExplosive)..", id: "..tostring(sobj.id)..", name: "..kamikazze:name())
+				amk.start_timer("babah_move_timeBomb", 0.1, {bomb_id= sobj.id, to_id= kamikazze.id})
+				amk.start_timer("release_by_time", 1, kamikazze:name())
+				amk.start_timer("babah_kamikazze_free", 2, kamikazze.id)
+				kamikazzeCharged[kamikazze.id] = sobj.id
+				kamikazzeExplosive[sobj.id] = kamikazze.id
+			end
+		end
+	end
+end
+
+function explodeKamikazze(se_obj_kamikazze)
+	if se_obj_kamikazze and not kamikazzeCharged[se_obj_kamikazze.id] then
+		local section = se_obj_kamikazze:section_name()
+		local addExplosive = mines["sect"][section] and mines["sect"][section]["addExplosive"]
+		if addExplosive then
+			explodeKamikazzeExplosive(addExplosive, se_obj_kamikazze)
+		end
+	end
+end
+
+local actor_drop = {}
+local debug_actor_check = 0
+-- дистанция, на которой неписи реагируют на гг
+local range_check = 100*100
+-- время 
+local time_check = 30*1000
+-- уровень обиды
+local abuse_level = 3
+
+function onDeath(victim, who)
+	if true then return end
+	if victim then
+		local se_obj_kamikazze = alife():object(victim:id())
+		explodeKamikazze(se_obj_kamikazze)
+		
+		-- если от взрывчатки -- подозреваем ГГ
+		actor_check(victim, who, true)
+		
+		if xr_danger.corpses_danger then
+			xr_danger.corpses_danger[victim:id()] = time_global()
+		end
+	end
+end
+
+function onHit(obj, amount, local_direction, who, bone_index)
+	if true then return end
+--	if obj and amount > 0.0001 then
+--		local se_obj_kamikazze = alife():object(obj:id())
+--		explodeKamikazze(se_obj_kamikazze)
+		
+		-- если от взрывчатки -- подозреваем ГГ
+		if not actor_drop[obj:id()] or time_global() - actor_drop[obj:id()] > 1000 then
+			actor_check(obj, who, false, amount)
+		end
+--	end
+end
+
+function onItemDrop(obj)
+	if true then return end
+	if debug_actor_check > 0 then
+		amk.send_tip("onItemDrop",tostring(obj and obj:section()).."["..tostring(obj and obj:name()).."]",0,15,"gen_info")
+		get_console():execute("load ~babah~ onItemDrop obj: "..tostring(obj and obj:name()).." ["..tostring(obj:clsid() == clsid.obj_explosive and "explosive" or string.match (obj:section(), "_cocoon$") ~= nil and "cocoon" or string.match (obj:section(), "^caps_") ~= nil and "caps").."]")
+	end
+	if db.actor and obj then
+		local expl = obj:clsid() == clsid.obj_explosive
+		local cocoon = string.match (obj:section(), "_cocoon$") ~= nil
+		local caps = string.match (obj:section(), "^caps_") ~= nil
+		
+		if expl or cocoon or caps then
+			amk.start_timer("babah.onItemDropCheck", 0.1, obj:id())
+		end
+	end
+end
+
+function onItemDropCheck(id)
+	local obj = id and level.object_by_id(id)
+	if not obj then
+		return
+	end
+	local header = "debug"
+	if debug_actor_check > 0 then
+		db.actor:give_game_news("%c[255,160,160,160]"..header.."\\n".."%c[default]".."onItemDrop0 obj: "..tostring(obj and obj:name()).." ["..tostring(obj:clsid() == clsid.obj_explosive and "explosive" or string.match (obj:section(), "_cocoon$") ~= nil and "cocoon" or string.match (obj:section(), "^caps_") ~= nil and "caps").."]", "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+		get_console():execute("load ~babah~ onItemDrop0 obj: "..tostring(obj and obj:name()).." ["..tostring(obj:clsid() == clsid.obj_explosive and "explosive" or string.match (obj:section(), "_cocoon$") ~= nil and "cocoon" or string.match (obj:section(), "^caps_") ~= nil and "caps").."]")
+	end
+	if db.actor and obj then
+		local expl = obj:clsid() == clsid.obj_explosive
+		local cocoon = string.match (obj:section(), "_cocoon$") ~= nil
+		local caps = string.match (obj:section(), "^caps_") ~= nil
+		
+		if expl or cocoon or caps then
+			local objPos = obj:position()
+			local expl_r = getIniValueFloatSimple(obj:section(),"blast_r", 1)
+			local dk = (4 - level.get_game_difficulty())
+			for npcId, npc in pairs(db.creatures) do
+				local npcObj = level.object_by_id(npcId)
+				if npcId ~= 0 and npcObj and IAmAStalker[npcObj:clsid()] and npcObj:alive() and npcObj:relation(db.actor) ~= game_object.enemy 
+					and (npcObj:see(obj) or npcObj:see(db.actor))
+				then
+					local npcPos = npcObj:position()
+					if debug_actor_check > 0 then
+						db.actor:give_game_news("%c[255,160,160,160]"..header.."\\n".."%c[default]".."onItemDrop1 npcObj: "..tostring(npcObj and (IAmAStalker[npcObj:clsid()] and npcObj:name().."["..npcObj:character_name().."]" or npcObj:name())).." ["..tostring(npcObj and IAmAStalker[npcObj:clsid()] and npcObj:character_community()).."] actor enemy: "..tostring(npcObj:relation(db.actor) == game_object.enemy), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+						get_console():execute("load ~babah~ onItemDrop1 npcObj: "..tostring(npcObj and (IAmAStalker[npcObj:clsid()] and npcObj:name().."["..npcObj:character_name().."]" or npcObj:name())).." ["..tostring(npcObj and IAmAStalker[npcObj:clsid()] and npcObj:character_community()).."] actor enemy: "..tostring(npcObj:relation(db.actor) == game_object.enemy))
+					end
+					
+					local objNpcDist = objPos:distance_to(npcPos) / dk
+					if 	expl and objNpcDist < expl_r
+						or
+						cocoon and objNpcDist < 25
+						or
+						caps and objNpcDist < 5
+					then
+						local h = hit()
+						h.power = 0.01
+						h.impulse = 0.01
+						h.draftsman = db.actor
+						h.direction = vector():set(0,0,0)
+						--h.type = hit.strike
+						h.type = hit.fire_wound
+						npcObj:hit(h)
+						
+						actor_drop[npcObj:id()] = time_global()
+						
+						---if cocoon or caps then
+							xr_abuse.add_abuse(npcObj, abuse_level, true)						
+						---end
+						--xr_sound.set_sound_play(npcObj, "threat_stop")
+						--play_sound_on_npc_by_id("threat_stop", 0, true, npcObj:id())
+						--xr_sound.set_sound(npcObj, "threat_stop", true, 0)
+
+
+
+						--npcObj:add_sound("fight_attack",64, snd_type.attack, 2, 1, 12345)
+						--npcObj:play_sound(stalker_ids.sound_humming, 1, 0, 1, 0)
+					end
+				end
+			end
+		end
+	end
+end
+
+local ignored_section = {
+	["bomba_rat_tnt"] = true
+}
+local ignored_victims_by_name = {
+	["ecolog_wound_bunker"] = true
+}
+
+function actor_check(victim, who, is_death, amount)
+	local header = "debug"
+	if not victim
+		or not IAmAStalker[victim:clsid()] and victim:clsid() ~= clsid.script_trader
+		or victim:relation(db.actor) == game_object.enemy
+		or victim:who_hit_section_name() and ignored_section[victim:who_hit_section_name()]
+		or ignored_victims_by_name[victim:name()]
+		or actor_drop[victim:id()] and time_global() - actor_drop[victim:id()] < time_check
+	then
+		if debug_actor_check > 0 then
+			db.actor:give_game_news("%c[255,160,160,160]"..header.."\\n".."%c[default]".."actor_check0 victim: "..tostring(victim and (IAmAStalker[victim:clsid()] and victim:name().."["..victim:character_name().."]" or victim:name())).." ["..tostring(victim and IAmAStalker[victim:clsid()] and victim:character_community()).."], is_death: "..tostring(is_death).." hit by ["..tostring(victim:who_hit_section_name()).."] ["..tostring(victim:who_hit_name()).."] ["..tostring(who and who:name()).."], "..(is_death and "" or "amount: "..tostring(amount)..", ").." actor enemy: "..tostring(victim:relation(db.actor) == game_object.enemy), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+			get_console():execute("load ~babah~ actor_check0 victim: "..tostring(victim and (IAmAStalker[victim:clsid()] and victim:name().."["..victim:character_name().."]" or victim:name())).." ["..tostring(victim and IAmAStalker[victim:clsid()] and victim:character_community()).."], is_death: "..tostring(is_death))
+			get_console():execute("load ~babah~ actor_check0 hit by ["..tostring(victim:who_hit_section_name()).."] ["..tostring(victim:who_hit_name()).."] ["..tostring(who and who:name()).."], "..(is_death and "" or "amount: "..tostring(amount)..", ").." actor enemy: "..tostring(victim:relation(db.actor) == game_object.enemy))
+		end
+		return
+	end
+	if debug_actor_check > 0 then
+		db.actor:give_game_news("%c[255,160,160,160]"..header.."\\n".."%c[default]".."actor_check1 victim: "..tostring(victim and (IAmAStalker[victim:clsid()] and victim:name().."["..victim:character_name().."]" or victim:name())).." ["..tostring(victim and IAmAStalker[victim:clsid()] and victim:character_community()).."], is_death: "..tostring(is_death).." hit by ["..tostring(victim:who_hit_section_name()).."] ["..tostring(victim:who_hit_name()).."] ["..tostring(who and who:name()).."], "..(is_death and "" or "amount: "..tostring(amount)), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+		get_console():execute("load ~babah~ actor_check1 victim: "..tostring(victim and (IAmAStalker[victim:clsid()] and victim:name().."["..victim:character_name().."]" or victim:name())).." ["..tostring(victim and IAmAStalker[victim:clsid()] and victim:character_community()).."], is_death: "..tostring(is_death).." hit by ["..tostring(victim:who_hit_section_name()).."] ["..tostring(victim:who_hit_name()).."] ["..tostring(who and who:name()).."], "..(is_death and "" or "amount: "..tostring(amount)))
+	end
+	if not who or not IAmAStalker[who:clsid()] and not IAmAMonster[who:clsid()] or victim:who_hit_name() == "single_player" then
+		if debug_actor_check > 0 then get_console():execute("load ~babah~ actor_check1_1") end
+		local who_hit_section_name = victim:who_hit_section_name()
+		local class = who_hit_section_name and getIniValueStringSimple(who_hit_section_name, "class", "")
+		if class and string.upper(class) == "II_EXPLO" or who and who:clsid() == clsid.obj_explosive or victim:who_hit_name() == "single_player" then
+			if debug_actor_check > 0 then get_console():execute("load ~babah~ actor_check1_2") end
+			-- если рядом нет врагов
+			local enemy_found = false
+			local community_remember = false
+			local who_pos = who:position()
+			local victim_pos = victim:position()
+			local tg = time_global()
+			local victim_community = victim:character_community()
+			local victim_id = victim:id()
+			local actor_id = db.actor:id()
+			local who_id = who:id()
+			local community_members_abused = {}
+			for npcId, npc in pairs(db.creatures) do
+				if (npcId ~= victim_id  or not is_death) and npcId ~= 0 then
+					local npcObj = level.object_by_id(npcId)
+					
+					if debug_actor_check > 0 then get_console():execute("load ~babah~ actor_check1_2 npcObj: "..tostring(npcObj and (IAmAStalker[npcObj:clsid()] and npcObj:name().."["..npcObj:character_name().."]" or npcObj:name())).." ["..tostring(npcObj and IAmAStalker[npcObj:clsid()] and npcObj:character_community()).."]") end
+					if npcObj 
+						and (IAmAMonster[npcObj:clsid()] or IAmAStalker[npcObj:clsid()] and (not npcObj:alive() or not xr_sleeper.is_npc_asleep(npcObj)))
+						and npcObj:relation(victim) == game_object.enemy
+						and (
+							npcObj:alive() and npcObj:best_enemy() and IAmAStalker[npcObj:best_enemy():clsid()] and npcObj:best_enemy():character_community() == victim_community
+							or
+							tg > 30*1000 and npcObj.death_time and tg - npcObj:death_time() < time_check
+							)
+						and npcObj:position():distance_to_sqr(victim_pos) <= range_check
+					then
+						enemy_found = true
+						if debug_actor_check > 0 then
+							db.actor:give_game_news("%c[255,160,160,160]"..header.."\\n".."%c[default]".."actor_check2 "..(npcObj:alive() and "alive" or "dead "..tostring(npcObj:death_time()/1000).."s("..tostring(tg)..")").." enemy_found: "..tostring(npcObj:name()).." ["..(IAmAStalker[npcObj:clsid()] and npcObj:character_name().." - "..npcObj:character_community() or "monster").."], dist: "..tostring(npcObj:position():distance_to(victim_pos)), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+							get_console():execute("load ~babah~ actor_check2 "..(npcObj:alive() and "alive" or "dead "..tostring(npcObj:death_time()/1000).."s("..tostring(tg)..")").." enemy_found: "..tostring(npcObj:name()).." ["..(IAmAStalker[npcObj:clsid()] and npcObj:character_name().." - "..npcObj:character_community() or "monster").."], dist: "..tostring(npcObj:position():distance_to(victim_pos)))
+						end
+						break
+					end
+					if debug_actor_check > 0 then get_console():execute("load ~babah~ actor_check2_1 npcObj: "..tostring(npcObj and (IAmAStalker[npcObj:clsid()] and npcObj:name().."["..npcObj:character_name().."]" or npcObj:name())).." ["..tostring(npcObj and IAmAStalker[npcObj:clsid()] and npcObj:character_community()).."] enemy_found: "..tostring(enemy_found)) end
+					
+					if npcObj:alive() and IAmAStalker[npcObj:clsid()] and not xr_sleeper.is_npc_asleep(npcObj) then
+						local npcObj_community = npcObj:character_community()
+						if --[[not community_remember and]] npcObj_community == victim_community then
+							local see_actor = false
+							local see_victim = false
+							for o2 in npcObj:memory_visible_objects() do
+								local npc2 = o2 and o2:object()
+								if npc2 and IAmAStalker[npc2:clsid()] then
+									if npc2:id() == victim_id then
+										see_victim = true
+									end
+									if npc2:id() == actor_id then
+										see_actor = true
+									end
+									if debug_actor_check > 0 then get_console():execute("load ~babah~ actor_check2_2 memory_visible_objects npc2: "..npc2:name().."["..npc2:character_name().."]".." ["..npcObj:character_community().."] enemy_found: "..tostring(enemy_found)..", see_actor: "..tostring(see_actor)..", see_victim: "..tostring(see_victim)) end
+									if see_actor and see_victim then
+										community_remember = true
+										break
+									end
+								end
+							end
+							if see_actor then
+								community_members_abused[npcId] = true
+							end
+							if not community_remember then
+								for o2 in npcObj:memory_sound_objects() do
+									local npc2 = o2 and o2:object()
+									if npc2 and IAmAStalker[npc2:clsid()] then
+										if npc2:id() == victim_id then
+											see_victim = true
+										end
+										if npc2:id() == actor_id then
+											see_actor = true
+										end
+										if debug_actor_check > 0 then get_console():execute("load ~babah~ actor_check2_3 memory_sound_objects npc2: "..npc2:name().."["..npc2:character_name().."]".." ["..npcObj:character_community().."] enemy_found: "..tostring(enemy_found)..", see_actor: "..tostring(see_actor)..", see_victim: "..tostring(see_victim)) end
+										if see_actor and see_victim then
+											community_remember = true
+											break
+										end
+									end
+								end
+							end
+						end
+					end
+					if debug_actor_check > 0 then get_console():execute("load ~babah~ actor_check2_1 npcObj: "..tostring(npcObj and (IAmAStalker[npcObj:clsid()] and npcObj:name().."["..npcObj:character_name().."]" or npcObj:name())).." ["..tostring(npcObj and IAmAStalker[npcObj:clsid()] and npcObj:character_community()).."] enemy_found: "..tostring(enemy_found)..", community_remember: "..tostring(community_remember)) end
+				end
+			end
+			if debug_actor_check > 0 then get_console():execute("load ~babah~ actor_check1_3") end
+			-- обижаем группировку непися на ГГ
+			if debug_actor_check > 0 then
+				db.actor:give_game_news("%c[255,160,160,160]"..header.."\\n".."%c[default]".."actor_check3 enemy_found: "..tostring(enemy_found)..", community_remember: "..tostring(community_remember), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+				get_console():execute("load ~babah~ actor_check3 enemy_found: "..tostring(enemy_found)..", community_remember: "..tostring(community_remember))
+			end
+			if not enemy_found then
+				if not is_death then
+					xr_abuse.add_abuse(victim, abuse_level, true)
+					if debug_actor_check > 0 then
+						db.actor:give_game_news("%c[255,160,160,160]"..header.."\\n".."%c[default]".."actor_check4 add_abuse victim: "..tostring(victim and victim:name()).." ["..tostring(victim and victim:character_name()).."]", "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+						get_console():execute("load ~babah~ actor_check4 add_abuse victim: "..tostring(victim and victim:name()).." ["..tostring(victim and victim:character_name()).."]")
+					end
+					xr_danger.actor_danger[victim:id()] = time_global()
+					xr_sound.set_sound_play(victim, "friendly_fire", math.random(500, 1000))
+				end
+				if community_remember then
+					local dk = (4 - level.get_game_difficulty())
+					local relation_type = victim:relation(db.actor) == game_object.friend and "friend" or "neutral"
+					if debug_actor_check > 0 then
+						db.actor:give_game_news("%c[255,160,160,160]"..header.."\\n".."%c[default]".." actor_check5 change_community_goodwill victim_community: "..tostring(victim_community)..", friend_kill_goodwill: "..tostring(getIniValueS32Simple("action_points", "friend_kill_goodwill", -2)/dk), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+						get_console():execute("load ~babah~ actor_check5 change_community_goodwill victim_community: "..tostring(victim_community)..", "..(is_death and relation_type.."_kill_goodwill" or "free_"..relation_type.."_attack_goodwill")..": "..tostring(getIniValueS32Simple("action_points", is_death and relation_type.."_kill_goodwill" or "free_"..relation_type.."_attack_goodwill", -2)/dk))
+					end
+					relation_registry.change_community_goodwill(victim_community,db.actor:id(),tonumber(getIniValueS32Simple("action_points", is_death and relation_type.."_kill_goodwill" or "free_"..relation_type.."_attack_goodwill", -2)/dk))
+					
+					local actor_pos = db.actor:position()
+					for npcId,_ in pairs(community_members_abused) do
+						if not is_death then
+							local npcObj = level.object_by_id(npcId)
+							if npcObj:position():distance_to_sqr(actor_pos) <= range_check then
+								xr_abuse.add_abuse(npcObj, abuse_level, true)
+								xr_danger.actor_danger[npcId] = time_global()
+								if debug_actor_check > 0 then
+									db.actor:give_game_news("%c[255,160,160,160]"..header.."\\n".."%c[default]".."actor_check6 add_abuse : "..tostring(npcObj:character_name())..", "..tostring(victim_community), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 5000)
+									get_console():execute("load ~babah~ actor_check6 add_abuse : "..tostring(npcObj:character_name())..", "..tostring(victim_community))
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end

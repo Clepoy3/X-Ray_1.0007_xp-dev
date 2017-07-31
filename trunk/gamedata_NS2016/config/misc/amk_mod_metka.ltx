@@ -1,0 +1,72 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	 ,,,,,      ,,,,,,,    ,,,,,,_  ,,,,,,,,  ,,,,,,   
+;       MMMMM1     M0MMMM&    MMMMM@'  MMMMMM0"  MMMM0!   
+;       4MMMM#      ^MMMMMr   MMMMMf    #MMMM&    B0'     
+;      &]MMMMMc      #MMMM# ] MMMMMf    #MMMM&   j#       
+;      M 0MMMM&       MMMMML# MMMMMf    #MMMM&  pM&       
+;     pY 4MMMMM     ] #MMMMM# MMMMMf    #MMMM& pMMMt      
+;     M   MMMMMc    ]& MMMMMf MMMMMf    #MMMM&]MMMM0      
+;    ]#   0MMMM&    ]M #MMMM  MMMMMf    #MMMM& MMMMM&     
+;    QfjMMMMMMMM    ]M  MMMf  MMMMMf    #MMMM& 4MMMMM     
+;   _M    "MMMMMf   ]M  BMM   MMMMMf    #MMMM&  MMMMM&    
+;  _Q#     MMMMM&   jMg  M8  _MMMMMf    BMMMM&  jMMMMM,   
+; 4MMMM   #MMMMMM# 0MMM& B  ]MMMMMMM&  0MMMMMM&]MMMMMMMt  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+[amk_metka]:ammo_base
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn			= "weapons\ammo\amk_metka" ; option for Level Editor
+class			= AMMO
+cform                   = skeleton
+visual                  = equipments\item_amk_gps.ogf
+description				= enc_amk_metka
+$prefetch 		= 64
+
+cost					 = 500
+
+box_size		= 1	;50
+
+inv_name		= amk_metka
+inv_name_short		= amk_metka_s
+inv_weight		= 0.05
+
+inv_grid_width = 1 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 10 ; 
+inv_grid_y = 17 ; 
+
+k_dist			= 1
+k_disp			= 3
+k_hit			= 1.4
+k_impulse		= 1.2
+k_pierce		= 1.35
+impair			= 1.15
+buck_shot		= 1
+tracer			= off
+wm_size         = 0.05
+
+
+
+[repair_item_outfit]:amk_metka
+$spawn = "weapons\ammo\repair_item_outfit"
+description		= repair_item_outfit_desc
+box_size		= 1	;50
+inv_name		= repair_item_outfit_name
+inv_name_short	= repair_item_outfit_name
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 2 ; 
+inv_grid_y = 12 ; 
+
+[repair_item_weapon]:amk_metka
+$spawn = "weapons\ammo\repair_item_weapon"
+description		= repair_item_weapon_desc
+box_size		= 1	;50
+inv_name		= repair_item_weapon_name
+inv_name_short	= repair_item_weapon_name
+inv_grid_width = 2 ; 
+inv_grid_height = 1 ; 
+inv_grid_x = 10 ; 
+inv_grid_y = 12 ; 

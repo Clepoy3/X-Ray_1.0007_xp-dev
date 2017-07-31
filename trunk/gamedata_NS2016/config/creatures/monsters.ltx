@@ -1,0 +1,35 @@
+#include "m_bibliotekar.ltx"
+#include "m_bloodsucker.ltx"
+#include "m_boar.ltx"
+#include "m_burer.ltx"
+#include "m_cat.ltx"
+#include "m_chimera.ltx"
+#include "m_controller.ltx"
+#include "m_crow.ltx"
+#include "m_dog.ltx"
+#include "m_eltush.ltx"
+#include "m_flesh.ltx"
+#include "m_fracture.ltx"
+#include "m_giant.ltx"
+#include "m_medwed.ltx"
+#include "m_mouses.ltx"
+#include "m_phantom.ltx"
+#include "m_poltergeist.ltx"
+#include "m_pseudodog.ltx"
+#include "m_rat.ltx"
+#include "m_ratlike.ltx"
+#include "m_snork.ltx"
+#include "m_spider.ltx"
+#include "m_spider_small.ltx"
+#include "m_swamp.ltx"
+#include "m_tushkano.ltx"
+#include "m_zombie.ltx"
+
+;Чем больше значение, тем меньше вероятность безконтрольного удаления трупов с запрещенными к удалению предметами и превращения трупов в рюкзаки.
+;Секция действует как для монстров, так и для нпс(за исключением именных и с сидами)
+;Считывание секции производится движком игры
+[monsters_common]
+	;Превращение трупов в рюкзаки и трупа монстра в чучело
+	corpse_remove_game_time_interval	= 720 ; in hours
+	;Удаление трупиков
+	stay_after_death_time_interval	= 720 ; in hours

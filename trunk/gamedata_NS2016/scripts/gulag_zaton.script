@@ -1,0 +1,811 @@
+local t = {}
+local table_insert = table.insert
+
+-- Проверка, что гулаг на активной локации:
+function gulag_level(gulag)
+	local actor = db.actor
+	local gg = game_graph()
+	local gv = actor and actor:game_vertex_id()
+	local lid = gv and gg:vertex(gv):level_id()
+	--get_console():execute( string.format("load ~[инфо_лог]:[gulag_esc]: gulag:%s gulag.lvlid: %s <> lid: %s",gulag.name,gulag.lvlid,tostring(lid)))
+	return gulag.lvlid == lid
+end
+
+-- Загрузка работ:
+function load_job(sj,gname,type,squad,groups)
+
+-------'''' Гулаги с постоянным состоянием ''''-------
+
+-- Робинзон и КО
+    if type == "zat_robinzon" then
+		--' 3 работы
+		for i = 1, 3 do
+			t = {section = "logic@zat_robinzon_walker"..i, idle = 0, prior = 10, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+-- Собаки
+	if type == "zat_dog1" then
+		--' 5 работ
+		for t = 1, 5 do
+			t = {section = "logic@zat_dog1_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "zat_dog2" then
+		--' 8 работ
+		for t = 1, 8 do
+			t = {section = "logic@zat_dog2_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+-- Кровососы - ассасины у баржи
+	if type == "zat_bloodsucker1" then
+		--' 2 работы
+		t = { section = "logic@zat_bloodsucker1_home1", idle = 0, prior = 10, state = {0}, 
+		  in_rest = "", out_rest = ""
+		} 
+		table.insert(sj, t)
+		t = { section = "logic@zat_bloodsucker1_home2", idle = 0, prior = 10, state = {0}, 
+		  in_rest = "", out_rest = ""
+		} 
+		table.insert(sj, t)
+	end
+-- Минигулаг Скарабея
+    if type == "zat_ohotnik" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@zat_ohotnik_kamp", idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+-- Вазелин и КО
+    if type == "zat_vazelin" then
+		--' 5 работ + 1экс
+		t = {section = "logic@zat_vazelin_lider_walker", idle = 0, prior = 12, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name == "barzha_vazelin"
+						end
+		}
+		table.insert(sj, t)
+		for i = 1, 3 do
+			t = {section = "logic@zat_vazelin_walker"..i, idle = 0, prior = 10, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_vazelin_kamp", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Борода и КО
+	if type == "zat_boroda" then
+		--' 9 работ
+		for i = 1, 7 do
+			t = {section = "logic@zat_boroda_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_boroda_kamp", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Скадовск
+	if type == "zat_skadovsk" then
+		--' 16 работ
+		for i = 1, 10 do
+			t = {section = "logic@zat_skadovsk_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 1, 2 do
+			t = {section = "logic@zat_skadovsk_sleeper"..i, idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_skadovsk_kamp1", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_skadovsk_kamp2", idle = 0, prior = 2, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+-- Последний день на заправке
+    if type == "zat_zapravka" then
+		--' 5 работ
+		for i = 1, 5 do
+			t = {section = "logic@zat_zapravka_walker"..i, idle = 0, prior = 10, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Бродвей и КО
+	if type == "zat_brodway" then
+		--' 8 работ
+		for i = 1, 6 do
+			t = {section = "logic@zat_brodway_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_brodway_kamp", idle = 0, prior = 4, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+-- Бандиты на подстанции Затона
+	if type == "zat_podstanzia" then
+		--' 7 работ
+		for i = 1, 7 do
+			t = {section = "logic@zat_podstanzia_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Кабаны
+	if type == "zat_boar" then
+		--' 6 работ
+		for t = 1, 3 do
+			t = {section = "logic@zat_boar_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@zat_boar_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "zat_boar_small" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@zat_boar_small_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Снорки
+	if type == "zat_snork1" then
+		--' 4 работы
+		for t = 1, 2 do
+			t = {section = "logic@zat_snork1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_snork1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "zat_snork2" then
+		--' 6 работ
+		for t = 1, 2 do
+			t = {section = "logic@zat_snork2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_snork2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_snork2_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Свинки
+	if type == "zat_flesh1" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@zat_flesh1_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "zat_flesh2" then
+		--' 5 работ
+		for t = 1, 5 do
+			t = {section = "logic@zat_flesh2_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "zat_flesh3" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@zat_flesh3_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Химеры
+	if type == "zat_chimera" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@zat_chimera_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Библиотекарь
+	if type == "zat_bibliotekar" then
+		--' 1 работа
+		t = { section = "logic@zat_bibliotekar_home", idle = 0, prior = 10, state = {0}, 
+		  in_rest = "", out_rest = ""
+		} 
+		table.insert(sj, t)
+	end
+	-- Тушканы
+	if type == "zat_tushkano" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@zat_tushkano_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "zat_tushkano2" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@zat_tushkano2_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "zat_tushkano3" then
+		--' 7 работ
+		for t = 1, 7 do
+			t = {section = "logic@zat_tushkano3_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Псевдособаки
+	if type == "zat_pseudodog" then
+		--' 5 работ
+		for t = 1, 5 do
+			t = {section = "logic@zat_pseudodog_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Псевдогиганты
+	if type == "zat_pseudo_gigant" then
+		--' 4 работы
+		for t = 1, 2 do
+			t = {section = "logic@zat_pseudo_gigant_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_pseudo_gigant_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Ластоноги
+	if type == "zat_rotan1" then
+		--' 15 работ
+		for t = 1, 5 do
+			t = {section = "logic@zat_rotan1_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@zat_rotan1_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@zat_rotan1_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "zat_rotan2" then
+		--' 15 работ
+		for t = 1, 5 do
+			t = {section = "logic@zat_rotan2_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@zat_rotan2_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@zat_rotan2_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	if type == "zat_rotan3" then
+		--' 15 работ
+		for t = 1, 5 do
+			t = {section = "logic@zat_rotan3_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@zat_rotan3_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 5 do
+			t = {section = "logic@zat_rotan3_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Элтуши
+	if type == "zat_eltush" then
+		--' 3 работы
+		for t = 1, 3 do
+			t = {section = "logic@zat_eltush_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Медведи
+	if type == "zat_medwed" then
+		--' 8 работ
+		for t = 1, 3 do
+			t = {section = "logic@zat_medwed_home1", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@zat_medwed_home2", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 2 do
+			t = {section = "logic@zat_medwed_home3", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+	-- Крысоволки
+	if type == "zat_ratlike" then
+		--' 5 работ
+		for t = 1, 5 do
+			t = {section = "logic@zat_ratlike_home", idle = 0, prior = 5, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+ 	-- Последний день возле моста
+    	if type == "zat_lastday" then
+		--' 10 работ
+		for i = 1, 10 do
+			t = {section = "logic@zat_lastday_walker"..i, idle = 0, prior = 10, state = {0},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+---'''' Гулаги с переменным состоянием ''''---
+	-- Последний день в железном лесу
+	if type == "zat_lastday2" then
+		--' 24 работы
+		--' 0 состояние, частичная работа
+		for i = 1, 6 do
+			t = {section = "logic@zat_lastday2_walker"..i, idle = 0, prior = 6, state = {0,1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		for i = 7, 21 do
+			t = {section = "logic@zat_lastday2_walker"..i, idle = 0, prior = 6, state = {0},
+				in_rest = "", out_rest = "",
+				online = false
+			}
+			table.insert(sj, t)
+		end
+		for t = 1, 3 do
+			t = {section = "logic@zat_lastday2_kamp", idle = 0, prior = 4, state = {0,1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		--' 1 состояние, полная работа
+		for i = 7, 21 do
+			t = {section = "logic@zat_lastday2_walker"..i, idle = 0, prior = 6, state = {1},
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+-- Последний день в лаборатории
+    if type == "zat_lab_lastday" then
+		--' 8 работ
+		--' 0 состояние, работаем оффлайн
+		for i = 1, 8 do
+			t = {section = "logic@zat_lab_lastday_walker"..i, idle = 0, prior = 10, state = {0},
+				in_rest = "", out_rest = "",
+				online = false
+			}
+			table.insert(sj, t)
+		end
+		--' 1 состояние, работаем онлайн
+		for i = 1, 8 do
+			t = {section = "logic@zat_lab_lastday_walker"..i, idle = 0, prior = 10, state = {0},
+				in_rest = "", out_rest = "",
+			}
+			table.insert(sj, t)
+		end
+	end
+
+end
+
+function load_states(gname,type)
+
+    if type == "zat_robinzon" then
+	    return function(gulag)
+			return 0
+		end
+	end
+    if type == "zat_dog1" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_dog2" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_bloodsucker1" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_ohotnik" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_vazelin" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_boroda" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_skadovsk" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_zapravka" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_brodway" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_podstanzia" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_boar" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_snork1" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_snork2" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_flesh1" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_flesh2" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_flesh3" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_chimera" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_bibliotekar" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_tushkano" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_tushkano2" then        
+         return function(gulag)
+              return 0
+          end
+     end
+    if type == "zat_tushkano3" then        
+         return function(gulag)
+              return 0
+          end
+     end
+	if type == "zat_pseudodog" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_pseudo_gigant" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_rotan1" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_rotan2" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_rotan3" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_boar_small" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_eltush" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_medwed" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_ratlike" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_lastday" then
+		return function (gulag)
+			return 0
+		end
+	end
+	if type == "zat_lastday2" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("zaton_zlobnyi_one_start") then
+				return 1 -- полная работа
+			end
+			return 0 -- частичная работа
+		end
+	end
+	if type == "zat_lab_lastday" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("a23_code_door_unlocked") then
+				return 1 -- работаем онлайн
+			end
+			return 0 -- сидим в оффлайне
+		end
+	end
+	
+end
+
+function load_ltx(gname,type)
+	return nil
+end
+
+function checkStalker(npc_community,gulag_type,npc_rank,sobj)
+
+    if gulag_type == "zat_robinzon" then
+        return npc_community == "stalker"
+    end
+    if gulag_type == "zat_ohotnik" then
+        return npc_community == "green"
+    end
+    if gulag_type == "zat_vazelin" then
+        return npc_community == "bandos"
+    end
+    if gulag_type == "zat_boroda" then
+        return npc_community == "stalker"
+    end
+    if gulag_type == "zat_skadovsk" then
+        return npc_community == "bandos"
+    end
+    if gulag_type == "zat_zapravka" then
+        return npc_community == "lastday"
+    end
+    if gulag_type == "zat_brodway" then
+        return npc_community == "bandit"
+    end
+    if gulag_type == "zat_podstanzia" then
+        return npc_community == "bandit"
+    end
+    if gulag_type == "zat_lastday" then
+        return npc_community == "lastday"
+    end
+    if gulag_type == "zat_lastday2" then
+        return npc_community == "lastday"
+    end
+    if gulag_type == "zat_lab_lastday" then
+        return npc_community == "lastday"
+    end
+
+	return false
+end
+
+function checkMonster(npc_community,gulag_type)
+
+     if gulag_type == "zat_dog1" then
+          return npc_community == "dog"
+     end
+     if gulag_type == "zat_dog2" then
+          return npc_community == "dog"
+     end
+	if gulag_type == "zat_bloodsucker1" then
+		return npc_community == "bloodsucker"
+	end
+	if gulag_type == "zat_boar" then
+		return npc_community == "boar"
+	end
+	if gulag_type == "zat_snork1" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "zat_snork2" then
+		return npc_community == "snork"
+	end
+	if gulag_type == "zat_flesh1" then
+		return npc_community == "flesh"
+	end
+	if gulag_type == "zat_flesh2" then
+		return npc_community == "flesh"
+	end
+	if gulag_type == "zat_flesh3" then
+		return npc_community == "flesh"
+	end
+	if gulag_type == "zat_chimera" then
+		return npc_community == "chimera"
+	end
+	if gulag_type == "zat_bibliotekar" then
+		return npc_community == "bibliotekar"
+	end
+	if gulag_type == "zat_tushkano" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "zat_tushkano2" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "zat_tushkano3" then
+		return npc_community == "tushkano"
+	end
+	if gulag_type == "zat_pseudodog" then
+		return npc_community == "pseudodog"
+	end
+	if gulag_type == "zat_pseudo_gigant" then
+		return npc_community == "pseudo_gigant"
+	end
+	if gulag_type == "zat_rotan1" then
+		return npc_community == "swamp"
+	end
+	if gulag_type == "zat_rotan2" then
+		return npc_community == "swamp"
+	end
+	if gulag_type == "zat_rotan3" then
+		return npc_community == "swamp"
+	end
+	if gulag_type == "zat_boar_small" then
+		return npc_community == "boar"
+	end
+	if gulag_type == "zat_eltush" then
+		return npc_community == "eltush"
+	end
+	if gulag_type == "zat_medwed" then
+		return npc_community == "medwed"
+	end
+	if gulag_type == "zat_ratlike" then
+		return npc_community == "ratlike"
+	end     
+
+	return false
+end

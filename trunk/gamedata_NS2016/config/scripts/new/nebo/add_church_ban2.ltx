@@ -1,0 +1,18 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = walker@add_church_ban2
+danger = danger_ignore@add_church_ban2
+on_death = death
+
+[walker@add_church_ban2]
+path_walk = add_church_ban2_walk
+path_look = add_church_ban2_look
+def_state_standing = assault
+
+[danger_ignore@add_church_ban2]
+ignore_distance = 0
+
+[death]
+on_info = %+add_church_ban2_dead%

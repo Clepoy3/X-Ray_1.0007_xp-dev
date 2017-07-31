@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+
+<window>
+
+	<form x="10" y="60" width="484" height="350" stretch="1">
+
+		<picture x="0" y="0" width="512" height="384" stretch="1">
+			<texture></texture>
+		</picture>
+		
+		<text_static x="-350" y="-320" width="300" height="330" complex_mode="1" stretch="1">
+			<text x="3" y="290" align="c" font="graffiti22" r="140" g="11" b="10">amk_attention</text>
+			<texture x="39" y="3" width="434" height="499">amk_options\ui_amk_attention</texture>
+		</text_static>
+		
+		<cap_HUDChange x="10" y="5" width="73" height="20">
+			<text font="letterica16" r="154" g="218" b="110" complex_mode="0">sol_hud_menu</text>
+		</cap_HUDChange>
+        <radio_HUDChange x="10" y="23" width="400" height="125" radio="1">
+		    <button x="0" y="0" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_hud_org</text>
+			</button>
+		    <button x="0" y="25" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_hud_num</text>
+			</button>
+		    <button x="0" y="50" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_hud_gsc</text>
+			</button>
+			<button x="0" y="75" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_hud_min</text>
+			</button>
+			<button x="0" y="100" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_hud_s12</text>
+			</button>
+		</radio_HUDChange>
+
+		<cap_InvChange x="10" y="144" width="73" height="20">
+			<text font="letterica16" r="154" g="218" b="110" complex_mode="0">sol_inv</text>
+		</cap_InvChange>
+        <radio_InvChange x="10" y="162" width="400" height="50" radio="1">
+		    <button x="0" y="0" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_inv_org</text>
+			</button>
+		    <button x="0" y="25" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_inv_pda</text>
+			</button>
+		</radio_InvChange>
+		
+		<cap_ScopeChange x="10" y="208" width="73" height="20">
+			<text font="letterica16" r="154" g="218" b="110" complex_mode="0">sol_scope_menu</text>
+		</cap_ScopeChange>
+        <radio_ScopeChange x="10" y="226" width="400" height="75" radio="1">
+		    <button x="0" y="0" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_scope_norm</text>
+			</button>
+		    <button x="0" y="25" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_scope_wide</text>
+			</button>
+			<button x="0" y="50" width="200">
+			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">sol_scope_wide2</text>
+			</button>
+		</radio_ScopeChange>
+		
+	</form>
+	
+</window>

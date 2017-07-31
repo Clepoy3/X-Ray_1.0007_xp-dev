@@ -1,0 +1,97 @@
+---' revision and adaptation for NS_2012 lsclon 20.01.12 '---
+
+-- возвращает количество активных персонажей в гулаге(живых и не раненных) в онлайне
+function gulag_active_population_on(s)
+	local gulag, lo = xr_gulag.get_gulag_by_name(s)
+	if gulag then
+		local val = 0
+		for k, v in pairs(gulag.Object) do
+			lo = level.object_by_id(k)
+			if (lo and lo:alive() and not (xr_wounded.is_heavy_wounded_by_id(k) or xr_wounded.is_psy_wounded_by_id(k)))
+				and gulag.Object_begin_job[k] == true then
+				val = val + 1
+			end
+		end
+		return val
+	end
+	return 0
+end
+-- возвращает количество активных персонажей в гулаге(живых и не раненных)
+function gulag_active_population(s)
+	local gulag = xr_gulag.get_gulag_by_name(s)
+	if gulag then
+		local val = 0
+		for k, v in pairs(gulag.Object) do
+			if (v == true or (v:alive() and not (xr_wounded.is_heavy_wounded_by_id(k) or xr_wounded.is_psy_wounded_by_id(k))))
+				and gulag.Object_begin_job[k] == true then
+				val = val + 1
+			end
+		end
+		return val
+	end
+	return 0
+end
+-- возвращает количество активных персонажей в гулаге с заданным приоритетом(живых и не раненных) в онлайне
+function gulag_active_population_prior(s,n)
+	local gulag, jo, jp, lo = num and xr_gulag.get_gulag_by_name(s)
+	if gulag then
+		local val = 0
+		for k, v in pairs(gulag.Object) do
+			jo = gulag.ObjectJob[k]
+			jp = gulag.Job[jo].prior
+			lo = level.object_by_id(k)
+			if (lo and lo:alive() and jp == n and not (xr_wounded.is_heavy_wounded_by_id(k) or xr_wounded.is_psy_wounded_by_id(k)))
+				and gulag.Object_begin_job[k] == true then
+				val = val + 1
+			end
+		end
+		return val
+	end
+	return 0
+end
+-- определяет меньшую дистанцию
+function dist_less(a,b)
+	return a.dist < b.dist
+end
+-- проверка, что живых больше заданного колличества, и выбирает из отсортированной таблицы which-бандита
+function gar_dm_nearest_bandit(actor,npc,which)
+	local dists = {}
+	local n = 1
+	local gar_dm_bandit1 = level_object_by_sid(101)
+	if gar_dm_bandit1 and gar_dm_bandit1:alive() then
+		dists[n] = {who = gar_dm_bandit1, dist = distance_between(actor,gar_dm_bandit1)}
+		n = n + 1
+	end
+	local gar_dm_bandit2 = level_object_by_sid(102)
+	if gar_dm_bandit2 and gar_dm_bandit2:alive() then
+		dists[n] = {who = gar_dm_bandit2, dist = distance_between(actor,gar_dm_bandit2)}
+		n = n + 1
+	end
+	local gar_dm_bandit3 = level_object_by_sid(103)
+	if gar_dm_bandit3 and gar_dm_bandit3:alive() then
+		dists[n] = {who = gar_dm_bandit3, dist = distance_between(actor,gar_dm_bandit3)}
+		n = n + 1
+	end
+	if n <= which then
+		return false
+	end
+	table.sort(dists, dist_less)
+	local i_am_the_one = dists[which].who:id() == npc:id()
+	return i_am_the_one
+end
+-- проверка, что оба сида мертвы
+function esc_vagon_all_dead(actor,npc)
+	local o1 = level_object_by_sid(12)
+	local o2 = level_object_by_sid(13)
+	return (o1 ~= nil and not o1:alive()) and (o2 ~= nil and not o2:alive())
+end
+
+-- проверка, что нпс был убит актером из заданного ствола, параметры:(wpn)
+function killed_by_actor_wpn(actor,npc,wpn)
+	local tab = actor and npc and db.storage[npc:id()].death
+	local item = tab and tab.killer == actor:id() and actor:active_item()
+	if item then
+		return item:section() == wpn
+	end
+	return false
+end

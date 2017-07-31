@@ -1,0 +1,31 @@
+[smart_terrains]
+none = true
+
+[logic]
+active=walker@francuz
+;danger = danger_ignore@brat_luis
+combat_ignore = combat_ignore
+on_death = death@francuz
+
+[walker@francuz]
+path_walk = francuz_walk
+path_look = francuz_look
+combat_ignore_cond = always
+meet = no_meet
+danger = danger_condition@francuz
+on_actor_dist_le_nvis = 5 | remark@francuz %+francuz_killself%
+
+[remark@francuz]
+anim = guard
+target = actor
+combat_ignore_cond = always
+meet = no_meet
+
+[danger_condition@francuz]
+ignore_distance = 0
+
+[death@francuz]
+on_info = %+francuz_dead%
+
+[combat_ignore]
+combat_ignore_cond = always

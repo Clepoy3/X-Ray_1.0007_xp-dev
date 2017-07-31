@@ -1,0 +1,227 @@
+---' revision and adaptation for NS_2015 lsclon 20.12.15 '---
+--[[
+-- онлайн/оффлайн для switch_distance = 150, switch_factor = 0.1
+   online_distance = switch_distance * (1 - switch_factor) = 135
+   offline_distance = switch_distance * (1 + switch_factor) = 165
+-- онлайн/оффлайн в работах смарта перебивает все проверки на выход в онлайн и запрет на оффлайн
+-- секция [spawner] - работает до выхода в онлайн по кондишену, потом не просчитывается
+]]--
+
+--- ---
+class "se_monster" (cse_alife_monster_base)
+--- ---
+-- конструктор:
+function se_monster:__init (section) super (section)
+	self.ini = nil
+	self.spawner = nil
+	self.base_online = nil
+	self.first_online = false
+	self.spawn_offline = nil
+	self.smart_terrain_conditions = nil
+
+	-- сохраняется в нетпакет
+	self.cut_part = false
+	self.state = false
+	self.check_spawner = false
+	-- этот флаг берётся из работы смарта
+	-- true     = всегда в онлайне
+	-- false    = всегда в офлайне
+	-- nil      = смарту всё равно
+	self.job_online = nil
+end
+
+-- чтение
+function se_monster:STATE_Read(packet, size)
+	cse_alife_monster_base.STATE_Read(self, packet, size)
+	local flags = packet:r_u8()
+	-- обыск
+	self.cut_part = bit_and(flags, 8) ~= 0
+	-- состояние онлайн
+	if bit_and(flags, 4) ~= 0 then
+		self.state = true
+	end
+	-- онлайн/оффлайн работа
+	if bit_and(flags, 3) == 0 then
+		self.job_online = true
+	elseif bit_and(flags, 1) ~= 0 then
+		self.job_online = false
+	elseif bit_and(flags, 2) ~= 0 then
+		self.job_online = nil
+	end
+	-- спавн по кондишену
+	self.check_spawner= packet:r_bool()
+end
+
+-- сохранение
+function se_monster:STATE_Write(packet)
+	cse_alife_monster_base.STATE_Write(self, packet)
+	local flags = 0
+	-- состояние онлайн
+	if self.state then
+		if db.actor and not sobj_is_far(self, 1225) then
+			self.state = false
+		else
+			flags = bit_or(flags, 4)
+		end
+	end
+	-- обыск
+	if self.cut_part then
+		flags = bit_or(flags, 8)
+	end
+	-- онлайн/оффлайн работа
+	if self.job_online == true then
+		packet:w_u8(flags)
+	elseif self.job_online == false then
+		flags = bit_or(flags, 1)
+		packet:w_u8(flags)
+	elseif self.job_online == nil then
+		flags = bit_or(flags, 2)
+		packet:w_u8(flags)
+	end
+	-- спавн по кондишену
+	packet:w_bool(self.check_spawner)
+end
+
+-- первичная инициализация
+function se_monster:on_before_register()
+	self:fill_exclusives()
+end
+
+-- считаем параметры спавна, повысим счетчик эксклюзивности смарта
+function se_monster:fill_exclusives()
+	self.ini = self:spawn_ini()
+	if not self.check_spawner then
+		self.spawner = self.ini and self.ini:section_exist("spawner")
+		if not self.spawner or (self.spawner and not self.ini:line_exist ("spawner", "cond")) then
+			self.check_spawner = true
+		end
+	end
+	self.smart_terrain_conditions = smart_terrain.read_smart_terrain_conditions(self)
+	if self.smart_terrain_conditions then
+		for name, condlist in pairs(self.smart_terrain_conditions) do
+			smart_terrain.exclusives[name] = (smart_terrain.exclusives[name] or 0) + 1
+		end
+	end
+end
+
+-- регистрация
+function se_monster:on_register()
+	cse_alife_monster_base.on_register(self)
+	-- Чистим рестрикторы
+	local tbl = amk.read_monster_params(self)
+	tbl.crvu32u16u2 = {}
+	amk.write_monster_params(tbl, self)
+	-- если регистрируемся при загрузке уровня
+	if not self.first_online and not db.actor then
+		self.first_online = true
+	end
+
+	-- для крысы-подрываки
+	if babah then
+		babah.addMine(self)
+	end
+end
+
+-- разрешено ли быть в онлайне
+function se_monster:can_switch_online()
+	-- если игрока нет, то ничего не делаем
+	if not db.actor or not db.actor:alive() then
+		return self.online or false
+	end
+	-- запомним значение флага can_switch_online
+	if self.base_online == nil then
+		self.base_online = cse_alife_monster_base.can_switch_online(self)
+	end
+	-- запрет/разрешение по работе гулага
+	if self.job_online ~= nil then
+		return save_state(self, self.job_online)
+	end
+	-- запрет по кондишену
+	if not self.check_spawner and not self.spawn_offline then
+		if not xr_spawner.check_spawn(self) then
+			self.spawn_offline = true
+			return false
+		end
+	end
+	-- если по кондишену не запрещено быть в онлайне
+	if not self.spawn_offline then
+		-- если сидим в оффлайне
+		if not self.online then
+			-- ограничение по дистанции, чтоб моб не выходил в онлайн ближе 35 метров
+			if not self.state and self.first_online and sobj_is_far(self, 1225) then
+				return false
+			end
+		-- если сидим в онлайне
+		else
+			if not self.state then
+				self.state = true
+			end
+		end
+		if not self.first_online then
+			self.first_online = true
+		end
+	else
+		if not self.check_spawner and xr_spawner.check_spawn(self) then
+			self.spawn_offline = nil
+			self.check_spawner = true
+			return save_state(self, true)
+		end
+		return false
+	end
+	return self.base_online
+end
+
+-- разрешено ли быть в оффлайне
+function se_monster:can_switch_offline()
+	-- запрет по работе гулага
+	if self.job_online then
+		return false
+	end
+	return cse_alife_monster_base.can_switch_offline(self)
+end
+
+-- разрегистрация по смерти
+function se_monster:on_death(killer)
+	cse_alife_monster_base.on_death(self, killer)
+	-- разрегистрация в смарте
+	local strn_id = self:smart_terrain_id()
+	local strn = strn_id and strn_id ~= 65535 and alife():object(strn_id)
+	if strn then
+		strn.gulag:clear_dead(self.id)
+	end
+end
+
+-- разрегистрация
+function se_monster:on_unregister()
+	cse_alife_monster_base.on_unregister(self)
+	-- разрегистрация в смарте
+	if self:alive() then
+		local strn_id = self:smart_terrain_id()
+		local strn = strn_id and strn_id ~= 65535 and alife():object(strn_id)
+		if strn then
+			strn:unregister_npc(self)
+		end
+	end
+end
+
+-- сохранение состояния для таблицы need_be_online
+function save_state(sobj, state)
+	if state ~= sobj.state then
+		sobj.state = state
+	end
+	return state
+end
+
+-- проверка на дистанцию до актера
+function sobj_is_far(sobj, dist)
+	local actor = db.actor
+	local gg = game_graph()
+	if actor and sobj and dist then
+		local actor_gv = actor:game_vertex_id()
+		local sobj_gv = sobj.m_game_vertex_id
+		if gg:vertex(actor_gv):level_id() == gg:vertex(sobj_gv):level_id() then
+			return sobj.position:distance_to_sqr(actor:position()) <= dist
+		end
+	end
+	return false
+end

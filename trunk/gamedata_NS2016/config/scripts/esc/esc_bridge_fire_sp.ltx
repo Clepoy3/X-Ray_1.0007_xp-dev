@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_actor_inside = {-esc_bridge_pass -esc_kuznetsov_pass} sr_idle@3 %+esc_bridge_fire%
+on_info = {+esc_bridge_pass} sr_idle@2
+on_info2 = {+esc_bridge_fire} sr_idle@3
+
+[sr_idle@2]
+on_game_timer = 3600| sr_idle@1 %-esc_bridge_pass%
+on_info = {+esc_bridge_fire} sr_idle@3
+[sr_idle@3]

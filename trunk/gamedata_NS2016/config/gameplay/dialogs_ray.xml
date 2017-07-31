@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+
+<!-- Разговор с Бородой после Кита  -->
+
+<dialog id="boroda_say_three">
+<dont_has_info>boroda_say_three_finish</dont_has_info>
+<has_info>kit_delaet_anten</has_info>
+<phrase_list>
+<phrase id="0">
+<text>boroda_say_three_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>boroda_say_three_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>boroda_say_three_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<text>boroda_say_three_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>boroda_say_three_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>boroda_say_three_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>boroda_say_three_6</text>
+<next>7</next>
+</phrase>
+<phrase id="7">
+<text>boroda_say_three_7</text>
+<next>8</next>
+</phrase>
+<phrase id="8">
+<text>boroda_say_three_8</text>
+<give_info>boroda_say_three_finish</give_info>
+<action>dialogs.break_dialog</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!-- Разговор с Седым заказ на Агро  -->
+
+<dialog id="mobil_torgash_zakaz_agro">
+<has_info>mobil_torgash_vstrecha_start</has_info>
+<dont_has_info>zakaz_sedoy_agro_end</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>mobil_torgash_zakaz_agro_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>mobil_torgash_zakaz_agro_1</text>
+<next>3</next>
+<next>4</next>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>mobil_torgash_zakaz_agro_2</text>
+<give_info>zakaz_sedoy_agro_end</give_info>	
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="3">
+<dont_has_info>zakaz_sedoy_aek</dont_has_info>
+<text>mobil_torgash_zakaz_agro_3</text>
+<next>5</next>
+</phrase>
+<phrase id="4">
+<dont_has_info>zakaz_sedoy_pernac</dont_has_info>
+<text>mobil_torgash_zakaz_agro_4</text>
+<next>6</next>
+</phrase>
+<phrase id="5">
+<text>mobil_torgash_zakaz_agro_5</text>
+<next>7</next>
+<next>8</next>
+<next>9</next>
+</phrase>
+<phrase id="6">
+<text>mobil_torgash_zakaz_agro_6</text>
+<next>10</next> 
+<next>11</next> 
+<next>12</next> 
+</phrase>
+<phrase id="7">
+<precondition>wawka_dialog.have_money_10000</precondition>
+<text>mobil_torgash_zakaz_agro_7</text>
+<action>wawka_dialog.otdat_money_10000</action>
+<give_info>zakaz_sedoy_agro_end</give_info>
+<give_info>zakaz_sedoy_aek</give_info>			
+<next>13</next> 
+</phrase>
+<phrase id="8">
+<precondition>wawka_dialog.have_money_10000</precondition>
+<text>mobil_torgash_zakaz_agro_8</text>
+<next>14</next> 
+</phrase>
+<phrase id="9">
+<precondition>wawka_dialog.dont_have_money_10000</precondition>
+<text>mobil_torgash_zakaz_agro_9</text>
+<next>15</next> 
+</phrase>
+<phrase id="10">
+<precondition>wawka_dialog.have_money_5000</precondition>
+<text>mobil_torgash_zakaz_agro_10</text>
+<action>wawka_dialog.otdat_money_5000</action>
+<give_info>zakaz_sedoy_agro_end</give_info>
+<give_info>zakaz_sedoy_pernac</give_info>			
+<next>16</next> 
+</phrase>
+<phrase id="11">
+<text>mobil_torgash_zakaz_agro_11</text>
+<next>17</next> 
+</phrase>
+<phrase id="12">
+<precondition>wawka_dialog.dont_have_money_5000</precondition>
+<text>mobil_torgash_zakaz_agro_12</text>
+<next>18</next> 
+</phrase>
+<phrase id="13">
+<text>mobil_torgash_zakaz_agro_13</text>
+<next>4</next> 
+<next>19</next> 
+</phrase>
+<phrase id="14">
+<text>mobil_torgash_zakaz_agro_14</text>
+<next>4</next> 
+<next>19</next> 
+</phrase>
+<phrase id="15">
+<text>mobil_torgash_zakaz_agro_15</text>
+<next>19</next> 
+<next>20</next> 
+<next>4</next> 
+</phrase>
+<phrase id="16">
+<text>mobil_torgash_zakaz_agro_16</text>
+<next>3</next> 
+<next>19</next> 
+</phrase>
+<phrase id="17">
+<text>mobil_torgash_zakaz_agro_17</text>
+<next>3</next> 
+<next>19</next> 
+</phrase>
+<phrase id="18">
+<text>mobil_torgash_zakaz_agro_18</text>
+<next>19</next> 
+<next>20</next> 
+<next>3</next> 
+</phrase>
+<phrase id="19">
+<text>mobil_torgash_zakaz_agro_19</text>
+<give_info>zakaz_sedoy_agro_end</give_info>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="20">
+<text>mobil_torgash_zakaz_agro_20</text>
+<give_info>zakaz_sedoy_agro_end</give_info>
+<give_info>zakaz_sedoy_agro_sobiraem</give_info>
+<action>dialogs.break_dialog</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!-- Разговор с Седым на Агро после того как насобирал денег -->
+<dialog id="mobil_torgash_sobrali_dengi_agro">
+<has_info>zakaz_sedoy_agro_end</has_info>
+<has_info>zakaz_sedoy_agro_sobiraem</has_info>
+<precondition>ray_dialog.is_eshe_zakaz</precondition>
+<phrase_list>
+<phrase id="0">
+<text>mobil_torgash_sobrali_dengi_agro_0</text>
+<next>1</next>
+<next>2</next>
+<next>3</next>
+</phrase>
+<phrase id="1">
+<dont_has_info>zakaz_sedoy_aek</dont_has_info>
+<dont_has_info>zakaz_sedoy_pernac</dont_has_info>
+<text>mobil_torgash_sobrali_dengi_agro_1</text>
+<next>4</next>
+<next>5</next>
+<next>6</next>
+</phrase>
+<phrase id="2">
+<dont_has_info>zakaz_sedoy_aek</dont_has_info>
+<has_info>zakaz_sedoy_pernac</has_info>
+<text>mobil_torgash_sobrali_dengi_agro_2</text>
+<next>4</next>
+<next>7</next>
+</phrase>
+<phrase id="3">
+<has_info>zakaz_sedoy_aek</has_info>
+<dont_has_info>zakaz_sedoy_pernac</dont_has_info>
+<text>mobil_torgash_sobrali_dengi_agro_3</text>
+<next>5</next>
+<next>6</next>
+</phrase>
+<phrase id="4">
+<precondition>wawka_dialog.have_money_10000</precondition>
+<text>mobil_torgash_sobrali_dengi_agro_4</text>
+<action>wawka_dialog.otdat_money_10000</action>
+<give_info>zakaz_sedoy_aek</give_info>			
+<next>11</next>
+</phrase>
+<phrase id="5">
+<precondition>wawka_dialog.have_money_5000</precondition>
+<text>mobil_torgash_sobrali_dengi_agro_5</text>
+<action>wawka_dialog.otdat_money_5000</action>
+<give_info>zakaz_sedoy_pernac</give_info>			
+<next>12</next>
+</phrase>
+<phrase id="6">
+<precondition>wawka_dialog.dont_have_money_5000</precondition>
+<text>mobil_torgash_sobrali_dengi_agro_6</text>
+<next>8</next> 
+</phrase>
+<phrase id="7">
+<precondition>wawka_dialog.dont_have_money_10000</precondition>
+<text>mobil_torgash_sobrali_dengi_agro_7</text>
+<next>8</next> 
+</phrase>
+<phrase id="8">
+<text>mobil_torgash_sobrali_dengi_agro_8</text>
+<next>9</next> 
+<next>10</next> 
+</phrase>
+<phrase id="9">
+<text>mobil_torgash_sobrali_dengi_agro_9</text>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="10">
+<text>mobil_torgash_sobrali_dengi_agro_10</text>
+<disable_info>zakaz_sedoy_agro_sobiraem</disable_info>			
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="11">
+<text>mobil_torgash_sobrali_dengi_agro_11</text>
+<next>14</next> 
+<next>13</next> 
+</phrase>
+<phrase id="12">
+<text>mobil_torgash_sobrali_dengi_agro_12</text>
+<next>15</next> 
+<next>13</next> 
+</phrase>
+<phrase id="13">
+<text>mobil_torgash_sobrali_dengi_agro_13</text>
+<disable_info>zakaz_sedoy_agro_sobiraem</disable_info>			
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="14">
+<dont_has_info>zakaz_sedoy_pernac</dont_has_info>
+<text>mobil_torgash_sobrali_dengi_agro_14</text>
+<next>3</next> 
+</phrase>
+<phrase id="15">
+<dont_has_info>zakaz_sedoy_aek</dont_has_info>
+<text>mobil_torgash_sobrali_dengi_agro_15</text>
+<next>2</next> 
+</phrase>
+</phrase_list>
+</dialog>
+
+
+<!-- Разговор с Седым на АТП по выдаче заказа  -->
+<dialog id="atp_mobil_otdal_tovar">
+<has_info>atp_mobil_say_start</has_info>
+<dont_has_info>zakaz_sedoy_atp_sobiraem</dont_has_info>
+<precondition>ray_dialog.is_bil_zakaz</precondition>
+<phrase_list>
+<phrase id="0">
+<give_info>zakaz_sedoy_kidalovo</give_info>
+<text>atp_mobil_otdal_tovar_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>atp_mobil_otdal_tovar_1</text>
+<next>2</next>
+<next>3</next>
+</phrase> 
+<phrase id="2">
+<text>atp_mobil_otdal_tovar_2</text>
+<next>4</next>
+</phrase> 
+<phrase id="3">
+<text>atp_mobil_otdal_tovar_3</text>
+<next>5</next>
+</phrase> 
+<phrase id="4">
+<text>atp_mobil_otdal_tovar_4</text>
+<next>7</next>
+<next>8</next>
+</phrase>
+<phrase id="5">
+<text>atp_mobil_otdal_tovar_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>atp_mobil_otdal_tovar_6</text>
+<disable_info>zakaz_sedoy_aek</disable_info>
+<disable_info>zakaz_sedoy_pernac</disable_info>
+<give_info>zakaz_sedoy_kidalovo</give_info>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="7">
+<has_info>zakaz_sedoy_aek</has_info>
+<text>atp_mobil_otdal_tovar_7</text>
+<next>9</next>
+</phrase>
+<phrase id="8">
+<has_info>zakaz_sedoy_pernac</has_info>
+<text>atp_mobil_otdal_tovar_8</text>
+<next>10</next>
+</phrase>
+<phrase id="9">
+<text>atp_mobil_otdal_tovar_9</text>
+<next>14</next>
+<next>11</next>
+</phrase>
+<phrase id="10">
+<text>atp_mobil_otdal_tovar_10</text>
+<next>15</next>
+<next>111</next>
+</phrase>
+<phrase id="11">
+<precondition>wawka_dialog.dont_have_money_60000</precondition>
+<text>atp_mobil_otdal_tovar_11</text>
+<next>12</next>
+</phrase>
+<phrase id="111">
+<precondition>wawka_dialog.dont_have_money_35000</precondition>
+<text>atp_mobil_otdal_tovar_11</text>
+<next>12</next>
+</phrase>
+<phrase id="12">
+<text>atp_mobil_otdal_tovar_12</text>
+<next>13</next>
+<next>16</next>
+</phrase>
+<phrase id="13">
+<text>atp_mobil_otdal_tovar_13</text>
+<give_info>zakaz_sedoy_atp_sobiraem</give_info>
+<disable_info>zakaz_sedoy_kidalovo</disable_info>
+<give_info>zakaz_sedoy_atp_poluchil</give_info>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="14">
+<precondition>wawka_dialog.have_money_60000</precondition>
+<text>atp_mobil_otdal_tovar_14</text>
+<next>19</next>
+</phrase>
+<phrase id="15">
+<precondition>wawka_dialog.have_money_35000</precondition>
+<text>atp_mobil_otdal_tovar_15</text>
+<next>20</next>
+</phrase>
+<phrase id="16">
+<text>atp_mobil_otdal_tovar_16</text>
+<next>17</next>
+</phrase>
+<phrase id="17">
+<text>atp_mobil_otdal_tovar_17</text>
+<next>18</next>
+</phrase>
+<phrase id="18">
+<text>atp_mobil_otdal_tovar_18</text>
+<disable_info>zakaz_sedoy_aek</disable_info>
+<disable_info>zakaz_sedoy_pernac</disable_info>
+<give_info>zakaz_sedoy_kidalovo</give_info>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="19">
+<text>atp_mobil_otdal_tovar_19</text>
+<action>wawka_dialog.give_money_60000</action>
+<action>ray_dialog.give_AEK971_to_player</action>
+<disable_info>zakaz_sedoy_aek</disable_info>
+<disable_info>zakaz_sedoy_kidalovo</disable_info>
+<give_info>zakaz_sedoy_atp_poluchil</give_info>
+<next>8</next>
+<next>21</next>
+</phrase>
+<phrase id="20">
+<text>atp_mobil_otdal_tovar_20</text>
+<action>wawka_dialog.give_money_35000</action>
+<action>ray_dialog.give_pernac_to_player</action>
+<disable_info>zakaz_sedoy_pernac</disable_info>
+<disable_info>zakaz_sedoy_kidalovo</disable_info>
+<give_info>zakaz_sedoy_atp_poluchil</give_info>
+<next>7</next>
+<next>21</next>
+</phrase>
+<phrase id="21">
+<text>atp_mobil_otdal_tovar_21</text>
+<next>22</next>
+<next>26</next>
+</phrase>
+<phrase id="22">
+<precondition>ray_dialog.is_bil_zakaz</precondition>
+<text>atp_mobil_otdal_tovar_22</text>
+<give_info>zakaz_sedoy_kidalovo</give_info>
+<next>23</next>
+</phrase>
+<phrase id="23">
+<text>atp_mobil_otdal_tovar_23</text>
+<next>24</next>
+</phrase>
+<phrase id="24">
+<text>atp_mobil_otdal_tovar_24</text>
+<next>7</next>
+<next>8</next>
+<next>3</next>
+</phrase>
+<phrase id="25">
+<dont_has_info>zakaz_sedoy_aek</dont_has_info>
+<dont_has_info>zakaz_sedoy_pernac</dont_has_info>
+<text>atp_mobil_otdal_tovar_25</text>
+<next>26</next>
+</phrase>
+<phrase id="26">
+<text>atp_mobil_otdal_tovar_26</text>
+<action>dialogs.break_dialog</action>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+
+
+
+
+
+<!-- Разговор с Седым на АТП  после того как насобирал денег на АЕК-->
+<dialog id="mobil_torgash_sobrali_dengi_atp_aek">
+<has_info>zakaz_sedoy_agro_end</has_info>
+<has_info>zakaz_sedoy_atp_sobiraem</has_info>
+<has_info>zakaz_sedoy_aek</has_info>
+<dont_has_info>zakaz_sedoy_kidalovo</dont_has_info>
+<precondition>wawka_dialog.have_money_60000</precondition>
+<phrase_list>
+<phrase id="0">
+<text>mobil_torgash_sobrali_dengi_atp_aek_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>mobil_torgash_sobrali_dengi_atp_aek_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>mobil_torgash_sobrali_dengi_atp_aek_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<action>wawka_dialog.give_money_60000</action>
+<action>ray_dialog.give_AEK971_to_player</action>
+<disable_info>zakaz_sedoy_aek</disable_info>
+<text>mobil_torgash_sobrali_dengi_atp_aek_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>mobil_torgash_sobrali_dengi_atp_aek_4</text>
+</phrase>
+</phrase_list>
+</dialog>
+
+
+
+<!-- Разговор с Седым на АТП  после того как насобирал денег на Пернач-->
+<dialog id="mobil_torgash_sobrali_dengi_atp_pernac">
+<has_info>zakaz_sedoy_agro_end</has_info>
+<has_info>zakaz_sedoy_atp_sobiraem</has_info>
+<has_info>zakaz_sedoy_pernac</has_info>
+<dont_has_info>zakaz_sedoy_kidalovo</dont_has_info>
+<precondition>wawka_dialog.have_money_35000</precondition>
+<phrase_list>
+<phrase id="0">
+<text>mobil_torgash_sobrali_dengi_atp_pernac_0</text>
+<next>1</next>
+</phrase>
+<phrase id="1">
+<text>mobil_torgash_sobrali_dengi_atp_pernac_1</text>
+<next>2</next>
+</phrase>
+<phrase id="2">
+<text>mobil_torgash_sobrali_dengi_atp_pernac_2</text>
+<next>3</next>
+</phrase>
+<phrase id="3">
+<action>wawka_dialog.give_money_35000</action>
+<action>ray_dialog.give_pernac_to_player</action>
+<disable_info>zakaz_sedoy_pernac</disable_info>
+<text>mobil_torgash_sobrali_dengi_atp_pernac_3</text>
+<next>4</next>
+</phrase>
+<phrase id="4">
+<text>mobil_torgash_sobrali_dengi_atp_pernac_4</text>
+</phrase>
+</phrase_list>
+</dialog>
+
+<!-- Разговор с Седым на АТП по заказу на Винт  -->
+
+
+<dialog id="mobil_torgash_zakaz_atp">
+<dont_has_info>zakaz_sedoy_aek</dont_has_info>
+<dont_has_info>zakaz_sedoy_pernac</dont_has_info>
+<dont_has_info>zakaz_sedoy_atp_end</dont_has_info>
+<has_info>atp_mobil_say_start</has_info>
+<phrase_list>
+<phrase id="0">
+<text>mobil_torgash_zakaz_atp_0</text>
+<next>1</next>
+<next>2</next>
+<next>99</next>
+<next>33</next>
+</phrase>
+<phrase id="99">
+<dont_has_info>zakaz_sedoy_agro_end</dont_has_info>
+<next>3</next>
+</phrase>  
+<phrase id="1">
+<has_info>zakaz_sedoy_agro_end</has_info>
+<dont_has_info>zakaz_sedoy_atp_poluchil</dont_has_info>
+<text>mobil_torgash_zakaz_atp_1</text>
+<next>3</next>
+</phrase> 
+<phrase id="2">
+<has_info>zakaz_sedoy_agro_end</has_info>
+<dont_has_info>zakaz_sedoy_kidalovo</dont_has_info>
+<has_info>zakaz_sedoy_atp_poluchil</has_info>
+<text>mobil_torgash_zakaz_atp_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>mobil_torgash_zakaz_atp_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>mobil_torgash_zakaz_atp_4</text>
+<next>5</next>
+</phrase>
+<phrase id="5">
+<text>mobil_torgash_zakaz_atp_5</text>
+<next>6</next>
+</phrase>
+<phrase id="6">
+<text>mobil_torgash_zakaz_atp_6</text>
+<next>9</next>
+<next>10</next>
+<next>11</next>
+</phrase>
+<phrase id="9">
+<precondition>wawka_dialog.have_money_15000</precondition>
+<text>mobil_torgash_zakaz_atp_9</text>
+<next>12</next>
+</phrase>
+<phrase id="10">
+<text>mobil_torgash_zakaz_atp_10</text>
+<next>13</next>
+</phrase>
+<phrase id="11">
+<precondition>wawka_dialog.dont_have_money_15000</precondition>
+<text>mobil_torgash_zakaz_atp_11</text>
+<next>14</next>
+</phrase>
+<phrase id="12">
+<text>mobil_torgash_zakaz_atp_12</text>
+<action>wawka_dialog.give_money_15000</action>
+<give_info>zakaz_sedoy_vint</give_info>			
+<next>15</next>
+</phrase>
+<phrase id="13">
+<text>mobil_torgash_zakaz_atp_13</text>
+<next>16</next>
+</phrase>
+<phrase id="14">
+<text>mobil_torgash_zakaz_atp_14</text>
+<next>17</next>
+</phrase>
+<phrase id="15">
+<text>mobil_torgash_zakaz_atp_15</text>
+<action>dialogs.break_dialog</action>
+<give_info>zakaz_sedoy_atp_end</give_info>
+</phrase>
+<phrase id="16">
+<text>mobil_torgash_zakaz_atp_16</text>
+<give_info>zakaz_sedoy_atp_end</give_info>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="17">
+<text>mobil_torgash_zakaz_atp_17</text>
+<action>dialogs.break_dialog</action>
+</phrase>
+<phrase id="33">
+<has_info>zakaz_sedoy_kidalovo</has_info>
+<text>mobil_torgash_zakaz_atp_33</text>
+<next>34</next>
+</phrase> 
+<phrase id="34">
+<text>mobil_torgash_zakaz_atp_34</text>
+<give_info>zakaz_sedoy_atp_end</give_info>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+
+<!-- Разговор с Шурупом по выдаче Винта / взятию квеста / отказу / отсрочке  -->
+
+<dialog id="shurup_pro_vint_as">
+<has_info>vint_u_shurupa</has_info>
+<has_info>zakaz_sedoy_vint</has_info>
+<dont_has_info>zakaz_shurup_as_end</dont_has_info>
+<phrase_list>
+<phrase id="0">
+<text>shurup_pro_vint_as_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>shurup_pro_vint_as_1</text>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>shurup_pro_vint_as_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>shurup_pro_vint_as_3</text>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>shurup_pro_vint_as_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>shurup_pro_vint_as_5</text>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>shurup_pro_vint_as_6</text>
+<next>7</next>
+</phrase> 
+<phrase id="7">
+<text>shurup_pro_vint_as_7</text>
+<next>8</next>
+<next>11</next>
+<next>18</next>
+<next>21</next>
+</phrase> 
+<phrase id="8">
+<precondition>wawka_dialog.have_money_150000</precondition>
+<text>shurup_pro_vint_as_8</text>
+<next>9</next>
+</phrase> 
+<phrase id="9">
+<text>shurup_pro_vint_as_9</text>
+<action>wawka_dialog.give_money_150000</action>
+<action>ray_dialog.give_vint_to_player</action>
+<give_info>zakaz_shurup_as_end</give_info>
+<disable_info>zakaz_sedoy_vint</disable_info>
+<next>10</next>
+</phrase> 
+<phrase id="10">
+<text>shurup_pro_vint_as_10</text>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="11">
+<text>shurup_pro_vint_as_11</text>
+<next>12</next>
+</phrase> 
+<phrase id="12">
+<text>shurup_pro_vint_as_12</text>
+<next>13</next>
+</phrase> 
+<phrase id="13">
+<text>shurup_pro_vint_as_13</text>
+<next>14</next>
+</phrase> 
+<phrase id="14">
+<text>shurup_pro_vint_as_14</text>
+<next>15</next>
+<next>151</next>
+<next>152</next>
+</phrase> 
+<phrase id="15">
+<text>shurup_pro_vint_as_15</text>
+<next>16</next>
+</phrase> 
+<phrase id="16">
+<text>shurup_pro_vint_as_16</text>
+<next>17</next>
+</phrase> 
+<phrase id="17">
+<text>shurup_pro_vint_as_17</text>
+<action>ray_dialog.spawn_posilka</action>
+<give_info>zakaz_shurup_as_end</give_info>
+<give_info>zakaz_shurup_kvest</give_info>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="151">
+<precondition>wawka_dialog.have_money_150000</precondition>
+<text>shurup_pro_vint_as_151</text>
+<next>9</next>
+</phrase> 
+<phrase id="152">
+<precondition>wawka_dialog.dont_have_money_150000</precondition>
+<text>shurup_pro_vint_as_152</text>
+<next>19</next>
+</phrase> 
+<phrase id="18">
+<precondition>wawka_dialog.dont_have_money_150000</precondition>
+<text>shurup_pro_vint_as_18</text>
+<next>19</next>
+</phrase> 
+<phrase id="19">
+<text>shurup_pro_vint_as_19</text>
+<next>20</next>
+</phrase> 
+<phrase id="20">
+<text>shurup_pro_vint_as_20</text>
+<give_info>zakaz_shurup_as_end</give_info>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="21">
+<text>shurup_pro_vint_as_21</text>
+<next>22</next>
+</phrase> 
+<phrase id="22">
+<text>shurup_pro_vint_as_22</text>
+<next>23</next>
+</phrase> 
+<phrase id="23">
+<text>shurup_pro_vint_as_23</text>
+<give_info>zakaz_shurup_as_end</give_info>
+<disable_info>zakaz_sedoy_vint</disable_info>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!-- Разговор с Шурупом по сдаче квеста и выдаче Винта со скидкой  -->
+
+
+<dialog id="shurup_vipol_kvest">
+<precondition>ray_dialog.posilka_have</precondition>
+<has_info>zakaz_sedoy_vint</has_info>
+<has_info>zakaz_shurup_kvest</has_info>
+<phrase_list>
+<phrase id="0">
+<text>shurup_vipol_kvest_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>shurup_vipol_kvest_1</text>
+<next>2</next>
+<next>5</next>
+</phrase> 
+<phrase id="2">
+<precondition>wawka_dialog.have_money_100000</precondition>
+<text>shurup_vipol_kvest_2</text>
+<action>ray_dialog.give_shurup_posilka</action>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>shurup_vipol_kvest_3</text>
+<action>ray_dialog.give_vint_to_player</action>
+<action>wawka_dialog.give_money_100000</action>
+<next>4</next>
+</phrase> 
+<phrase id="4">
+<text>shurup_vipol_kvest_4</text>
+<disable_info>zakaz_sedoy_vint</disable_info>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="5">
+<precondition>wawka_dialog.dont_have_money_100000</precondition>
+<text>shurup_vipol_kvest_5</text>
+<action>ray_dialog.give_shurup_posilka</action>
+<give_info>zakaz_shurup_skidka</give_info>
+<next>6</next>
+</phrase> 
+<phrase id="6">
+<text>shurup_vipol_kvest_6</text>
+<next>7</next>
+</phrase> 
+<phrase id="7">
+<text>shurup_vipol_kvest_7</text>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+<!-- Разговор с Шурупом после нахождения денег  -->
+
+
+<dialog id="shurup_zabiraem_vint">
+<has_info>vint_u_shurupa</has_info>
+<has_info>zakaz_sedoy_vint</has_info>
+<has_info>zakaz_shurup_as_end</has_info>
+<phrase_list>
+<phrase id="0">
+<text>shurup_zabiraem_vint_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>shurup_zabiraem_vint_1</text>
+<next>2</next>
+<next>4</next>
+<next>6</next>
+<next>7</next>
+</phrase> 
+<phrase id="2">
+<dont_has_info>zakaz_shurup_skidka</dont_has_info>
+<precondition>wawka_dialog.have_money_150000</precondition>
+<text>shurup_zabiraem_vint_2</text>
+<next>3</next>
+</phrase> 
+<phrase id="3">
+<text>shurup_zabiraem_vint_3</text>
+<action>wawka_dialog.give_money_150000</action>
+<action>ray_dialog.give_vint_to_player</action>
+<disable_info>zakaz_sedoy_vint</disable_info>
+<next>8</next>
+</phrase> 
+<phrase id="4">
+<has_info>zakaz_shurup_skidka</has_info>
+<precondition>wawka_dialog.have_money_100000</precondition>
+<text>shurup_zabiraem_vint_4</text>
+<next>5</next>
+</phrase> 
+<phrase id="5">
+<text>shurup_zabiraem_vint_5</text>
+<action>wawka_dialog.give_money_100000</action>
+<action>ray_dialog.give_vint_to_player</action>
+<disable_info>zakaz_sedoy_vint</disable_info>
+<next>8</next>
+</phrase> 
+<phrase id="6">
+<dont_has_info>zakaz_shurup_skidka</dont_has_info>
+<precondition>wawka_dialog.dont_have_money_150000</precondition>
+<text>shurup_zabiraem_vint_6</text>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="7">
+<has_info>zakaz_shurup_skidka</has_info>
+<precondition>wawka_dialog.dont_have_money_100000</precondition>
+<text>shurup_zabiraem_vint_7</text>
+<action>dialogs.break_dialog</action>
+</phrase> 
+<phrase id="8">
+<text>shurup_zabiraem_vint_8</text>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+
+<!-- Вызов верта  -->
+
+
+<dialog id="test_vert">
+<phrase_list>
+<phrase id="0">
+<text>test_vert_0</text>
+<next>1</next>
+</phrase> 
+<phrase id="1">
+<text>test_vert_1</text>
+<disable_info>agr_sedoy_vert_letit</disable_info>
+<give_info>agr_sedoy_vert_letit</give_info>
+<next>2</next>
+</phrase> 
+<phrase id="2">
+<text>test_vert_2</text>
+<action>arhara_dialog.agro_torgash_sms</action>
+<action>dialogs.break_dialog</action>
+</phrase> 
+</phrase_list>
+</dialog>
+
+
+</game_dialogs>

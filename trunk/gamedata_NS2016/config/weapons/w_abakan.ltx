@@ -1,0 +1,353 @@
+; Автомат системы Никонова АН-94 "Абакан"
+;Модель: GSC Game World
+;Правка модели: Real Wolf
+;Обвес: ПСЕВДО-S.T.A.L.K.E.R.
+;Анимации: Real Wolf
+;Привязка: Real Wolf
+;Компиляция: Real Wolf /ПСЕВДО-S.T.A.L.K.E.R.
+;Текстуры: текстура оружия, прицельной сетки, иконок - ПСЕВДО-S.T.A.L.K.E.R.
+;Звуки: выстрел +выстрел ГП +глушитель, рэлоад +релоад ГП - ПСЕВДО-S.T.A.L.K.E.R. 
+;Благодарности: тов. Аазу за глушитель ТГП-А, и BigBabay за его текстуру к нему.
+
+[wpn_abakan]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	= 
+$spawn				= "weapons\abakan"
+$npc				= on
+$prefetch 			= 8
+scheduled			= off
+cform				= skeleton
+class				= WP_AK74
+min_radius			= 30
+max_radius			= 100
+description			= enc_weapons1_wpn-abakan
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier		= 1.0
+holder_fov_modifier		= 0.7
+
+cost				= 2500
+weapon_class			= assault_rifle
+
+ammo_limit			= 210
+ammo_elapsed			= 30
+
+ammo_mag_size			= 30
+fire_modes			= 1, 2, -1
+
+ammo_class			= ammo_5.45x39_fmj, ammo_5.45x39_ap, ammo_5.45x39_izomorf 
+grenade_class			= ammo_vog25, ammo_vog25p 
+launch_speed			= 0
+
+hand_dependence			= 1
+single_handed			= 0
+
+slot 				= 2
+animation_slot			= 2
+
+inv_name			= wpn-abakan
+inv_name_short			= wpn-abakan
+inv_weight			= 3.9
+
+inv_grid_width			= 4
+inv_grid_height			= 2
+inv_grid_x			= 17
+inv_grid_y			= 24
+
+kill_msg_x			= 119
+kill_msg_y			= 199
+kill_msg_width			= 93
+kill_msg_height			= 32
+
+;params of weapon recoil
+dispersion_start		= 2
+fire_dispersion_base		= 0.17
+control_inertion_factor		= 1.3f
+
+;отдача
+cam_relax_speed			= 5.9
+cam_dispersion			= 0.525
+cam_dispersion_inc		= 0.19
+cam_dispertion_frac		= 0.8
+cam_max_angle			= 11
+cam_max_angle_horz		= 15.0
+cam_step_angle_horz		= 0.9
+
+fire_dispersion_condition_factor = 3
+misfire_probability		= 0.0013
+condition_shot_dec 		= 0.00012
+misfire_condition_k		= 0.1
+
+
+fire_point			=  0,0.225,0.730
+fire_point2			=  0,0.148,0.558
+
+flame_particles			= weapons\generic_weapon_svu
+smoke_particles			= weapons\generic_shoot_00
+grenade_flame_particles		= weapons\generic_shoot_00
+
+shell_point		 	= 0,0.252,0.196
+shell_particles	 		= weapons\shells_r_ns_556
+
+PDM_disp_base 			= 3.0
+PDM_disp_vel_factor 		= 1.3
+PDM_disp_accel_factor 		= 1.3
+PDM_crouch		 	= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power			= 0.82
+hit_impulse		 	= 4
+hit_type 			= fire_wound 
+
+fire_distance			= 225
+bullet_speed			= 900
+rpm				= 600
+
+use_aim_bullet			= true
+time_to_aim			= 1.0
+
+silencer_hit_power		= 0.74
+silencer_hit_impulse		= 3
+silencer_fire_distance		= 200
+silencer_bullet_speed		= 810
+
+hud				= wpn_abakan_hud
+
+position			= -0.035,-0.170,0
+orientation			= 0,0,0
+
+strap_position			= -0.16, -0.40, 0.15
+strap_orientation		= -10,-5,10
+strap_bone0			= bip01_spine2
+strap_bone1			= bip01_spine1
+
+visual				= weapons\abakan_new\wpn_abakan.ogf
+
+
+ph_mass				= 5
+
+;addons
+scope_status			= 2
+silencer_status			= 2
+grenade_launcher_status		= 2
+
+zoom_enabled			= true
+scope_zoom_factor		= 42
+
+scope_name 			= wpn_addon_scope
+scope_x				= 26
+scope_y				= -4
+silencer_name  			= wpn_addon_silencer
+silencer_x			= 182  ; offset in inventory icon
+silencer_y			= 12
+grenade_launcher_name 		= wpn_addon_grenade_launcher
+grenade_launcher_x		= 98
+grenade_launcher_y		= 25
+
+snd_draw			= weapons\abakan_new\draw, 0.7
+snd_holster			= weapons\abakan_new\holster, 0.6
+snd_shoot			= weapons\abakan_new\shot
+snd_shoot1			= weapons\abakan_new\shot1
+snd_empty			= weapons\abakan_new\empty, 0.6
+snd_reload			= weapons\abakan_new\reload
+snd_shoot_grenade		= weapons\abakan_new\grenshoot
+snd_reload_grenade		= weapons\abakan_new\grenload
+snd_switch			= weapons\abakan_new\switch, 0.6
+snd_silncer_shot		= weapons\abakan_new\shot_sil, 0.8
+
+silencer_smoke_particles	= weapons\generic_shoot_00
+
+
+light_color			= 0.6,0.5,0.3
+light_range			= 5
+light_var_color			= 0.05
+light_var_range			= 0.5
+light_time 			= 0.2
+
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+ 
+[wpn_abakan_hud]
+shell_point			= 0.040000,0.040000,-0.040000
+shell_dir			= 0.0, 1.0, 0.0
+
+fire_point			= 0.040000,0.022000,0.070000
+fire_point2			= -0.010000,0.000000,0.030000
+fire_bone			= wpn_body
+
+orientation			= 0, 0, 0
+position			= -0.05, -0.155, 0.2
+visual				= weapons\abakan_new\wpn_abakan_hud.ogf
+
+grenade_bone			= grenade
+
+; animation names
+anim_idle			= idle
+anim_idle_aim			= idle_aim
+anim_reload			= reload
+anim_draw			= draw
+anim_holster			= holster
+anim_shoot			= shoot
+
+; animation names
+; attached grenade launcher [GRENADE fire mode]
+anim_idle_g			= idle_w_gl
+anim_idle_g_aim			= idle_w_gl_aim
+anim_reload_g			= reload_grenade
+anim_shoot_g			= shoot_grenade
+anim_switch_grenade_on		= switch_on
+anim_switch_grenade_off		= switch_off
+anim_draw_g			= draw_w_gl
+anim_holster_g			= holster_w_gl
+
+; attached grenade launcher [NORMAL fire mode]
+anim_idle_gl			= idle_w_gl
+anim_idle_gl_aim		= idle_w_gl_aim
+anim_reload_gl			= reload_w_gl
+anim_draw_gl			= draw_w_gl
+anim_holster_gl			= holster_w_gl
+anim_shoot_gl			= shoot_w_gl
+anim_idle_sprint		= idle_sprint
+
+zoom_offset			= -0.103400,0.052000,-0.080000
+zoom_rotate_x			= 0.009200
+zoom_rotate_y			= -0.007600
+
+zoom_hide_crosshair		= true
+
+; same as above, but for attached grenade launcher for
+; in NORMAL shoot mode
+grenade_normal_zoom_offset	= -0.103400,0.052000,-0.080000
+grenade_normal_zoom_rotate_x	= 0.009200
+grenade_normal_zoom_rotate_y	= -0.007600
+
+; same as above, but for attached grenade launcher for
+; in GRENADE mode
+grenade_zoom_offset		= -0.128000,-0.060000,0.080000 
+grenade_zoom_rotate_x		= -0.169
+grenade_zoom_rotate_y		= -0.0065
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.3
+rotate_time			= 0.3
+
+;-----уники-
+; АH-94 снайперский
+[wpn_abakan_m1]:wpn_abakan
+$spawn				= "weapons\abakan\wpn_abakan_m1"
+description			= enc_weapons1_wpn-abakan_m1
+inv_name			= wpn-abakan_m1
+inv_name_short			= wpn-abakan_m1
+fire_modes			= 1, 2
+ammo_class			= ammo_5.45x39_ap, ammo_5.45x39_fmj, ammo_5.45x39_izomorf 
+grenade_class		= ammo_vog25p, ammo_vog25
+min_radius			= 0
+max_radius			= 200
+rpm				= 1800
+inv_weight			= 4.45
+scope_status			= 1
+scope_zoom_factor		= 20
+scope_texture			= wpn\crosshairs\pso1
+condition_shot_dec 		= 0.00011
+inv_grid_width			= 4
+inv_grid_height			= 2
+inv_grid_x			= 28
+inv_grid_y			= 32
+weapon_min_queue_size_far	= 10
+weapon_max_queue_size_far	= 15
+weapon_min_queue_interval_far	= 500
+weapon_max_queue_interval_far	= 700
+
+weapon_min_queue_size_medium	= 15
+weapon_max_queue_size_medium	= 20
+weapon_min_queue_interval_medium = 400
+weapon_max_queue_interval_medium = 600
+
+weapon_min_queue_size_close	= 20
+weapon_max_queue_size_close	= 30
+weapon_min_queue_interval_close	= 300
+weapon_max_queue_interval_close	= 500
+
+;АH-94 штурмовой
+[wpn_abakan_m2]:wpn_abakan
+$spawn				= "weapons\abakan\wpn_abakan_m2"
+description			= enc_weapons1_wpn-abakan_m2
+inv_name			= wpn-abakan_m2
+inv_name_short			= wpn-abakan_m2
+ammo_class			= ammo_5.45x39_ap, ammo_5.45x39_fmj, ammo_5.45x39_izomorf 
+grenade_class		= ammo_vog25p, ammo_vog25
+grenade_launcher_status		= 1
+grenade_vel			= 76
+inv_grid_width			= 4
+inv_grid_height			= 2
+inv_grid_x			= 22
+inv_grid_y			= 24
+inv_weight			= 5.5
+
+;-----апгрейды
+
+; Смена калибра с 5.45 на 5.56
+[wpn_abakan_kalibr]:wpn_abakan
+$spawn				= "weapons\abakan\wpn_abakan_kalibr"
+ammo_class		 	= ammo_5.56x45_ss190, ammo_5.56x45_ap
+inv_name			= wpn-abakan_kalibr
+inv_name_short			= wpn-abakan_kalibr
+description			= enc_kalibr_wpn_abakan
+inv_grid_width			= 5
+inv_grid_height			= 2
+inv_grid_x			= 17
+inv_grid_y			= 24
+cost				= 3900
+condition_shot_dec		= 0.00016
+hit_power			= 0.84
+silencer_name			= wpn_addon_sil_556_ar
+silencer_hit_power		= 0.76
+
+; Снижение отдачи
+[wpn_abakan_otdaca]:wpn_abakan
+$spawn				= "weapons\abakan\wpn_abakan_otdaca"
+fire_dispersion_base		= 0.085
+cam_relax_speed			= 2.95
+cam_dispersion			= 0.26
+cam_dispersion_inc		= 0.095
+cam_max_angle			= 5.5
+inv_name			= wpn-abakan_otdaca
+inv_name_short			= wpn-abakan_otdaca
+description			= enc_otdaca_wpn_abakan
+inv_grid_width			= 5
+inv_grid_height			= 2
+inv_grid_x			= 17
+inv_grid_y			= 24
+cost				= 4400
+
+
+; Снижение веса
+[wpn_abakan_ves]:wpn_abakan
+$spawn				= "weapons\abakan\wpn_abakan_ves"
+inv_weight			= 2.9
+inv_name			= wpn-abakan_ves
+inv_name_short			= wpn-abakan_ves
+description			= enc_ves_wpn_abakan
+inv_grid_width			= 5
+inv_grid_height			= 2
+inv_grid_x			= 17
+inv_grid_y			= 24
+cost				= 4000
+
+; Отдача и вес
+[wpn_abakan_otdaca_ves]:wpn_abakan_otdaca
+$spawn				= "weapons\abakan\wpn_abakan_otdaca_ves"
+inv_weight			= 2.9
+inv_name			= wpn-abakan_otdaca_ves
+inv_name_short			= wpn-abakan_otdaca_ves
+description			= enc_otdaca_ves_wpn_abakan
+cost				= 8400

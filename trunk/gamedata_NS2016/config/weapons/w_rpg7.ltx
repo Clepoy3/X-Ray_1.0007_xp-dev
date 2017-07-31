@@ -1,0 +1,256 @@
+;;;;;;;;;;;;;;;
+;; Ручной противотанковый гранатомет РПГ-7
+;;;;;;;;;;;;;;;
+
+[wpn_rpg7]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                   	= "weapons\rpg-7"					
+$npc			 			= on		
+$prefetch 		 			= 8
+scheduled            		= off              
+cform                    	= skeleton
+class                    	= WP_RPG7
+min_radius               	= 50
+max_radius               	= 150
+max_zoom_factor			 	= 5
+description					= enc_weapons1_wpn-rpg7
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type			= 4
+ef_weapon_type				= 9
+
+holder_range_modifier	= 2.0                
+holder_fov_modifier		= 0.3              
+
+cost					 	= 20000
+weapon_class			 	= heavy_weapon
+
+ammo_limit		 			= 120
+ammo_current		 		= 96
+ammo_elapsed		 		= 12
+
+f_mode				= 1
+
+ammo_mag_size		 		= 1
+ammo_class		 			= ammo_og-7b
+
+hand_dependence		 		= 1
+single_handed				= 0
+
+slot 				 		= 2
+animation_slot		 		= 4		
+
+launch_speed				= 5
+
+inv_name					= wpn-rpg7
+inv_name_short				= wpn-rpg7
+inv_weight					= 6.3
+
+inv_grid_width     = 4
+inv_grid_height    = 1
+inv_grid_x         = 29
+inv_grid_y         = 27
+
+kill_msg_x			= 0
+kill_msg_y			= 85
+kill_msg_width		= 73
+kill_msg_height		= 19
+
+;базовая дисперсия
+fire_dispersion_base		= 1.5   
+disp_rate = 1.5
+
+;отдача
+cam_relax_speed         	= 2.0	
+cam_dispersion          	= 6.0	
+cam_max_angle				= 8		
+cam_max_angle_horz			= 5.0	
+cam_step_angle_horz			= 0.5	
+
+fire_dispersion_condition_factor = 3	 
+misfire_probability 		= 0.01	 
+misfire_condition_k			= 0.05 
+condition_shot_dec 			= 0.001 
+
+direction                	= 0, 0, 1
+shell_point				 	= 0.0, 0.0, 0.0
+fire_point               	= 0.0, 0.162, 0.35
+
+smoke_particles		   		= weapons\generic_weapon02
+
+rpm_empty_click 	 		= 200
+
+; ttc
+hit_power       			= 4.80
+hit_impulse					= 50
+hit_type 					= explosion
+hit_rate	= 2.3
+
+fire_distance            	= 400
+bullet_speed			 	= 200 ;300			
+rpm                      	= 20
+
+hud                      	= wpn_rpg7_hud
+normal                   	= 0, 1, 0
+position                 	= -0.027, -0.113, 0.0
+orientation              	= 0, 0, 0
+
+;под мишкой стволом в верх
+strap_position         		= -0.28,-0.20,0.25			
+strap_orientation      		= -15,-189,110				
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+visual                   	= weapons\rpg_7\wpn_rpg_7.ogf
+
+fragment_speed	 			= 50
+
+explode_duration		 	= 5		
+
+light_color		 			= 0.95,0.95,0.3
+light_range		 			= 20.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.75
+
+ph_mass			 			= 1
+
+;addons
+scope_status				= 1
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+scope_texture				= wpn\crosshairs\rpg
+
+zoom_enabled				= true
+scope_zoom_factor			= 30		;ПСО-1 2X
+
+;звуки
+snd_draw					= weapons\rpg7\rpg7_draw
+snd_holster					= weapons\shotgun_holster
+snd_shoot					= weapons\rpg7\rpg7_shoot      
+snd_empty					= weapons\rpg7\rpg7_empty
+snd_reload					= weapons\rpg7\rpg7_reload, 1.0, 0.8
+snd_explode					= weapons\rpg7\rpg7_explode
+
+grenade_bone				= grenade
+
+;rocket launcher
+rocket_class				= wpn_rpg7_missile
+;wallmarks
+wallmark_section			= explosion_marks
+
+auto_spawn_ammo	= false
+
+;запрещение режима Sprint для Актера
+sprint_allowed			= false
+ 
+[wpn_rpg7_hud]
+shell_point		 			= 0.0, 0.0, 0.0
+fire_point               	= 0.00, 0.00, 0
+fire_bone                	= grenade_0
+grenade_bone			 	= grenade_0
+orientation              	= 0,0,0
+position                 	= 0,0,0
+visual                   	= weapons\rpg_7\wpn_rpg_7_hud.ogf
+
+anim_idle					= idle
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_aim				= idle
+
+;смещения HUD для режима приближения
+zoom_offset					= -0.046700,-0.022000,0.000000
+zoom_rotate_x				= 0.020000
+zoom_rotate_y				= 0.031400
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2
+
+[wpn_rpg7_missile]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+visual                  	= weapons\rpg_7\wpn_rpg_7_grenade.ogf
+cform                    	= skeleton
+class                    	= G_RPG7
+$prefetch 		 			= 32
+
+inv_weight					= 0
+
+kill_msg_x			= 0
+kill_msg_y			= 85
+kill_msg_width		= 74
+kill_msg_height		= 19
+
+cost					 	= 200
+
+blast						= 5.00
+blast_r						= 10
+blast_impulse				= 190
+;delete
+blast_impulse_factor 		= 1
+
+frags						= 8
+frags_r						= 25
+frag_hit					= 1.50
+frag_hit_impulse			= 275
+
+hit_type_blast				= explosion
+hit_type_frag				= fire_wound
+
+up_throw_factor				= 0.25
+
+wm_size                  	= 0.1
+wallmark_section			= explosion_marks
+
+light_color		         = 1.9,1.4,0.5
+light_range		         = 24.0
+light_time 		         = 1.28
+
+ph_mass			 			= 5
+
+jump_height 				= 0
+
+explode_particles			= explosions\explosion_04
+
+;трассы от осколков
+fragment_speed	     		= 100
+
+explode_duration		 	= 5		
+
+;звуки
+snd_explode 				= weapons\rpg7_explode
+snd_fly_sound				= weapons\rocket_fly
+
+;свойства которые читаются, но не используются (надо убрать)
+inv_name					= "Og-7b"
+inv_name_short				= "Og-7b"
+inv_weight					= .2
+
+inv_grid_width     = 3
+inv_grid_height    = 1
+inv_grid_x         = 8
+inv_grid_y         = 6
+
+kill_msg_x			= 0
+kill_msg_y			= 85
+kill_msg_width		= 73
+kill_msg_height		= 19
+
+;; Свойства CustomRocket
+engine_present				= true
+engine_work_time			= 3000
+engine_impulse				= 300
+engine_impulse_up			= 133,906
+lights_enabled 				= true
+trail_light_color 			= 0.6,0.5,0.3
+trail_light_range 			= 15.0
+
+engine_particles 			= weapons\rpg_trail_00
+
+force_explode_time			= 30000

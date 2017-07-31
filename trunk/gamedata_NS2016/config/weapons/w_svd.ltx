@@ -1,0 +1,230 @@
+;Снайперская винтовка СВД
+; автор Sin
+; текстуры приклада и цевья SanekEd
+
+[wpn_svd]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn                  = "weapons\svd"	
+$npc			 		= on				
+$prefetch 		 	= 8
+scheduled               = off             
+cform                   = skeleton
+class                   = WP_SVD
+min_radius              = 0
+max_radius              = 50
+description			= enc_weapons1_wpn-svd
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		 = 3
+ef_weapon_type			 = 8
+
+holder_range_modifier	= 2.15                
+holder_fov_modifier		= 0.3              
+
+cost					= 18000
+weapon_class			= sniper_rifle
+
+ammo_limit			= 60
+ammo_current			= 10
+ammo_elapsed			= 0
+
+ammo_mag_size			= 10
+ammo_class				= ammo_7.62x54_7h1, ammo_7.62x54_7h14, ammo_7.62x54_ap 
+
+sprint_allowed			= true ;false
+
+;базовая дисперсия
+fire_dispersion_base		= 0.025	
+control_inertion_factor		= 2.2f
+	
+;отдача
+cam_relax_speed         	= 4.5	
+cam_dispersion          	= 2.0	
+cam_dispersion_inc		= 0.3	
+cam_dispertion_frac		= 0.7	
+cam_max_angle			= 15.0	
+cam_max_angle_horz		= 3.0	
+cam_step_angle_horz		= 0.25	
+
+fire_dispersion_condition_factor = 3	 
+misfire_probability 		= 0.003  
+misfire_condition_k			= 0.1
+condition_shot_dec 			= 0.00015
+
+hand_dependence 		= 1
+single_handed			= 0
+
+slot 				= 2		
+animation_slot			= 2		
+
+inv_name				= wpn-svd
+inv_name_short			= wpn-svd
+inv_weight			= 4.9
+
+inv_grid_width     = 5
+inv_grid_height    = 2
+inv_grid_x         = 6
+inv_grid_y         = 36
+
+kill_msg_x			= 0
+kill_msg_y			= 0
+kill_msg_width		     = 98
+kill_msg_height		= 23
+
+direction               = 0, 0, 1
+
+fire_point              = 0.0, 0.129, 0.892
+
+flame_particles		= weapons\generic_weapon06
+smoke_particles		= weapons\generic_shoot_00
+rpm_empty_click 		= 200
+
+shell_point		 	= 0.0, 0.129, 0.192	
+shell_dir		 		= 0.0, 0.0, 0.4
+shell_particles	 		= weapons\shells_r_ns_338
+
+PDM_disp_base 			= 6.0
+PDM_disp_vel_factor 	= 0.9
+PDM_disp_accel_factor 	= 1.0
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power           = 2.8
+hit_impulse		 = 7
+hit_type 			= fire_wound
+
+fire_distance       = 400
+bullet_speed		 = 450	
+rpm                 = 100
+
+use_aim_bullet			= true		
+time_to_aim			= 1.0	
+
+hud                     = wpn_svd_new_hud
+normal                  = 0, 1, 0
+position                = -0.026, -0.077, 0.00
+orientation             = 0, 0, 0
+
+;под мишкой
+strap_position         		= -0.15,-0.15,0.45			
+strap_orientation      		= -12,-180,65				
+strap_bone0				= bip01_spine2
+strap_bone1				= bip01_spine1
+
+startup_ammo            = 10
+visual                  = weapons\svd_new\wpn_svd.ogf
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 4.0
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.2
+
+ph_mass			 		= 3
+
+;addons
+scope_status				= 1
+silencer_status			= 0
+grenade_launcher_status		= 0
+zoom_enabled				= true
+
+zoom_enabled			= true
+scope_zoom_factor	    = 12		;ПСО-1 4X
+
+scope_texture			= wpn\crosshairs\pso1m1t
+
+;звуки
+snd_draw		= weapons\svd_draw
+snd_holster	= weapons\generic_holster
+snd_shoot		= weapons\rc_svd_shot
+snd_empty		= weapons\gen_empty, 0.5
+snd_reload	= weapons\svd_reload_right
+
+[wpn_svd_new_hud]
+shell_point			= -0.04, -0.03, -0.02
+shell_dir		 		= 0.0, 1.0, 0.0
+
+fire_point		     = 0.00, 0.078, 0.27
+fire_bone               = wpn_body
+position				= -0.063500,-0.110999,0.049000
+orientation 			= 0, 0, 0
+visual                  = weapons\svd_new\wpn_svd_hud.ogf
+
+anim_holster	= svd_holster
+anim_idle		= svd_idle
+anim_idle_aim	= svd_idle_aim
+anim_reload	= svd_reload_right
+anim_draw		= svd_draw
+anim_holster	= svd_holster
+anim_shoot	= svd_shoot
+anim_idle_sprint = svd_idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.052500,0.016499,-0.123000
+zoom_rotate_x			= 0.000000
+zoom_rotate_y			= -0.020000
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.3
+rotate_time			= 0.3
+
+;--уники-
+
+;СВД "Дальнобойщик"
+[wpn_svd_m1]:wpn_svd	
+$spawn             				= "weapons\svd\wpn_svd_m1"	
+description					= enc_weapons1_wpn-svd_m1
+inv_name						= wpn-svd_m1
+inv_name_short					= wpn-svd_m1
+ammo_class				= ammo_7.62x54_7h14, ammo_7.62x54_ap, ammo_7.62x54_7h1
+fire_distance       = 450
+cam_dispersion					= 0.9
+cam_step_angle_horz				= 0.1
+scope_zoom_factor				= 10
+scope_status					= 1
+inv_grid_width     = 6
+inv_grid_height    = 2
+inv_grid_x         = 5
+inv_grid_y         = 36
+
+inv_weight				     = 5.2
+cost					          = 22000
+condition_shot_dec 			= 0.00025	
+
+;----апгрейды
+
+; Повышение кратности прицела
+[wpn_svd_pricel]:wpn_svd
+$spawn             		     = "weapons\svd\wpn_svd_pricel"
+inv_weight				= 5
+inv_name	        			= wpn-svd_pricel
+inv_name_short			     = wpn-svd_pricel
+description				= enc_pricel_wpn_svd
+inv_grid_width     = 6
+inv_grid_height    = 2
+cost				= 23000
+scope_zoom_factor	= 9
+
+
+; Снижение веса
+[wpn_svd_ves]:wpn_svd
+$spawn             		     = "weapons\svd\wpn_svd_ves"
+inv_weight				= 3.7
+inv_name	        			= wpn-svd_ves
+inv_name_short			     = wpn-svd_ves
+description				= enc_ves_wpn_svd
+inv_grid_width     = 6
+inv_grid_height    = 2
+cost				= 22000
+
+; Прицел и вес
+[wpn_svd_pricel_ves]:wpn_svd_pricel
+$spawn             		     = "weapons\svd\wpn_svd_pricel_ves"
+inv_weight				= 3.8
+inv_name	        			= wpn-svd_pricel_ves
+inv_name_short			     = wpn-svd_pricel_ves
+description				= enc_pricel_ves_wpn_svd
+cost					     = 28000

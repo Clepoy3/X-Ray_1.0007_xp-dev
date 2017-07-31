@@ -1,0 +1,104 @@
+;--' Записки Монолита '--------------------------------------------
+[ex_hoard_tip1]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn				= 'devices\quest_items\ex_hoard_tip1'
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_1.ogf
+radius				= 1
+quest_item			= true
+
+description			= ex_hoard_tip1_desc
+
+inv_name			= ex_hoard_tip1_name
+inv_name_short		= ex_hoard_tip1_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 0
+inv_grid_y			= 6
+cost				= 0
+
+[ex_hoard_tip2]:ex_hoard_tip1
+$spawn				= 'devices\quest_items\ex_hoard_tip2'
+description			= ex_hoard_tip2_desc
+inv_name			= ex_hoard_tip_name
+inv_name_short		= ex_hoard_tip_name
+
+[ex_hoard_tip3]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\ex_hoard_tip3'
+description			= ex_hoard_tip3_desc
+
+[ex_hoard_tip4]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\ex_hoard_tip4'
+description			= ex_hoard_tip4_desc
+
+[ex_hoard_tip5]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\ex_hoard_tip5'
+description			= ex_hoard_tip5_desc
+
+[ex_hoard_tip6]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\ex_hoard_tip6'
+description			= ex_hoard_tip6_desc
+
+[ex_hoard_tip7]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\ex_hoard_tip7'
+description			= ex_hoard_tip7_desc
+
+[ex_hoard_tip8]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\ex_hoard_tip8'
+description			= ex_hoard_tip8_desc
+
+[ex_hoard_tip9]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\ex_hoard_tip9'
+description			= ex_hoard_tip9_desc
+
+[ex_hoard_tip10]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\ex_hoard_tip10'
+description			= ex_hoard_tip10_desc
+
+[ex_hoard_tip11]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\ex_hoard_tip11'
+description			= ex_hoard_tip11_desc
+
+[ex_hoard_tip12]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn				= 'food and drugs\ex_hoard_tip12'
+cform				= skeleton
+class				= II_ANTIR
+visual				= equipments\skelet_head3.ogf 
+description			= ex_hoard_tip12_desc
+cost				= 1
+inv_name			= ex_hoard_tip12_name
+inv_name_short		= ex_hoard_tip12_name
+inv_weight			= 0.55
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 14
+inv_grid_y			= 17
+attach_angle_offset	= 0.000000,-1.204452,-1.262921
+attach_position_offset = 0.081856,-0.035081,0.011694
+attach_bone_name	= bip01_l_hand
+auto_attach			= false
+
+eat_health			= 0
+eat_satiety			= 0
+eat_power			= 0
+eat_radiation		= 0
+wounds_heal_perc	= 0
+eat_portions_num	= 1
+eat_alcohol			= 0
+animation_slot		= 4
+hud					= wpn_vodka_hud
+--' Записки Монолита '------------------------------------ end ---
+
+[arhara_tele]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\arhara_tele'
+
+[fake_wpn_knifa_to_skin]:ex_hoard_tip2
+$spawn				= 'devices\quest_items\fake_wpn_knifa_to_skin'
+
+

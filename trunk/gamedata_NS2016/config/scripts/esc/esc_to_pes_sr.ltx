@@ -1,0 +1,67 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {-esc_start} sr_idle@1 %=run_postprocess(radar_wake:1) =run_cam_effector(prison_0:2:true) =disable_ui_elements(all)%
+on_info2 = {-esc_pes_sleep +esc_doktor_start !talking} sr_idle@7
+on_info3 = {-esc_pes_stop +spawn_peshera_gulagi} sr_idle@14
+on_info4 = {+esc_pes_stop} sr_idle@20
+
+[sr_idle@1]
+on_timer = 8950 | sr_idle@2 %=run_postprocess(radar_wake:3) =stop_postprocess(1)%
+
+[sr_idle@2]
+on_timer = 4000 | sr_idle@3 %=run_cam_effector(prison_1:4) =stop_cam_effector(2) =enable_ui_elements(input)%
+
+[sr_idle@3]
+on_timer = 6500 | sr_idle@4 %=enable_ui_elements(hud)%
+
+[sr_idle@4]
+on_timer = 2450 | sr_idle@5 %=run_postprocess(yantar_underground_psi:5) =enable_ui_elements(weapon)%
+
+[sr_idle@5]
+on_timer = 2000 | sr_idle@6 %+esc_start =stop_cam_effector(4) =stop_postprocess(3) =stop_postprocess(5)%
+
+[sr_idle@6]
+on_info = {+esc_start} sr_idle
+
+[sr_idle@7]
+on_timer = 9000 | sr_idle@8 %=run_postprocess(yantar_underground_psi:6:true)%
+
+[sr_idle@8]
+on_info = {!talking} sr_idle@9
+
+[sr_idle@9]
+on_timer = 6000 | sr_idle@10 %=run_postprocess(radar_stop)%
+
+[sr_idle@10]
+on_timer = 6700 | sr_idle@11 %=run_cam_effector(fusker:7) =disable_ui_elements(all)%
+
+[sr_idle@11]
+on_timer = 3000 | sr_idle@12 %=ex_unload.esc_drug_unload =stop_cam_effector(7) =run_postprocess(teleport) =stop_postprocess(6)%
+
+[sr_idle@12]
+on_timer = 1500 | sr_idle@13 %+esc_pes_sleep =ex_unload.esc_pes%
+
+[sr_idle@13]
+on_info = {+esc_pes_sleep} sr_idle
+
+[sr_idle@14]
+on_actor_inside = {-esc_pes_stop} sr_idle@15 %=run_postprocess(radar_wake:8) =run_cam_effector(prison_0:9:true) =disable_ui_elements(all)%
+
+[sr_idle@15]
+on_timer = 4000 | sr_idle@16 %=run_cam_effector(prison_1:10) =stop_cam_effector(9) =ex_unload.esc_drug_load =enable_ui_elements(input) =arhara_dialog.del_pes_teleport_zone%
+
+[sr_idle@16]
+on_timer = 6500 | sr_idle@17 %=enable_ui_elements(hud)%
+
+[sr_idle@17]
+on_timer = 2450 | sr_idle@18 %=enable_ui_elements(weapon)%
+
+[sr_idle@18]
+on_timer = 2000 | sr_idle@19 %+esc_pes_stop =stop_cam_effector(10) =stop_postprocess(8) =ex_unload.esc_drug_wpn%
+
+[sr_idle@19]
+on_info = {+esc_pes_stop} sr_idle
+
+[sr_idle@20]

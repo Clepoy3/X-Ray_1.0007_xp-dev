@@ -1,0 +1,33 @@
+;--------------------------------------
+; Модуль grenade launch
+; Rulix aka Bak
+;--------------------------------------
+
+[main]
+enabled = true
+check_period = 2400 ;мс ; время между проверками
+forbidden_weapons = none ; запрещенное к использованию оружие
+forbidden_factions = zombied
+forbidden_npcs = none
+min_dist = 6
+max_dist = 96
+spawn_period = 25 ;c ; время между спавном гранат для неписей, 0 - отключить спавн
+
+
+[novice]
+aim_time = 1000
+reload_time = 4500
+
+[experienced]
+aim_time = 300
+reload_time = 3000
+
+[veteran]
+aim_time = 0
+reload_time = 2500
+
+[master]
+aim_time = 0
+reload_time = 1700
+
+

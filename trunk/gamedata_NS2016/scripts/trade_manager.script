@@ -1,0 +1,264 @@
+-- файл торговли
+-- динамическая торговля от Singapur22
+-- адаптация sapsan
+---' Всё переписано lsclon - for NS_2014 13.10.14 '---
+--[[ оригинальный trade_manager работал не корректно:
+	1. условие:
+	if tt.update_time ~= nil and tt.update_time < time_global() then
+		return
+	end
+	и то же с tt.resuply_time никогда не выполнялось, а значит апдейд происходил постоянно
+	2. сохранение и чтение нетпакета было бессмысленно:
+	Функция trade_init(npc, cfg) запускалась после чтения нетпакета и первыми строками кода
+	--' if trade_manager[npc:id()] == nil then
+			trade_manager[npc:id()] = {}
+	--' end
+	стирала все данные из таблицы
+--]]
+--[[ На заметку:
+	Функция load(npc, packet) не срабатывает при автосейве для класса clsid.script_stalker,
+	то есть при переходе с другой локации данные нетпакета считываются только для Сидоровича
+
+	Неписи выходят в онлайн с пустым инвентарем, и лишь при первом апдейде им спавнится хабар,
+	при этом в оружейный слот попадает первый подходящий заспавненный объект.
+	Это может быть не только оружие но и любой предмет ложащийся в оружейный слот, что приведет к
+	зависанию нпс
+
+	Проверка на tt.current_ХХХ_condition ~= str действитеьна, только, если таблица tt. пуста,
+	а так же для торговцев у которых имеется переход по условию в этом самом ХХХ:
+	sell_condition = {+esc_kill_bandits_quest_done} trader_after_fabric_sell, trader_start_sell
+--]]
+
+function abort( ... ) _util.abort( "trade_manager", ... ) end
+
+local trade_manager = {}
+
+local no_trade_name = {
+	["esc_doktor"] = true,
+	["esc_sidor2"] = true,
+	["marsh_remont"] = true
+}
+
+-- инициализация торговли
+function trade_init( npc )
+	local npc_id = npc:id()
+	local tt = trade_manager[npc_id]
+	local cfg, ini_cfg, str
+	local st = db.storage[npc_id]
+
+	if tt.dltx then
+		cfg = trade_generic.create_dinamic_ltx( npc )
+		ini_cfg = create_ini_file( cfg )
+	else
+		cfg = utils.cfg_get_string(st.ini, st.section_logic, "trade", npc, false, "", "misc\\trade_generic.ltx")
+		ini_cfg = ini_file(cfg)
+
+		-- список, что должно быть в продаже
+		str = utils.cfg_get_string( ini_cfg, "trader", "buy_supplies", npc, false, "" )
+		if str then
+			tt.buy_supplies = xr_logic.parse_condlist( str, npc, "trade_manager", "buy_supplies" )
+		else
+			abort( npc:name().." invalid line: [buy_supplies] "..cfg )
+		end
+	end
+
+	tt.cfg_ltx = cfg
+	tt.config = ini_cfg
+
+	-- коэффициенты покупки
+	str = utils.cfg_get_string( ini_cfg, "trader", "buy_condition", npc, true, "" )
+	if str then
+		tt.buy_condition = xr_logic.parse_condlist( str, npc, "trade_manager", "buy_condition" )
+	else
+		abort( npc:name().." invalid line: [buy_condition] "..cfg )
+	end
+
+	-- коэффициенты продажи
+	str = utils.cfg_get_string( ini_cfg, "trader", "sell_condition", npc, true, "" )
+	if str then
+		tt.sell_condition = xr_logic.parse_condlist( str, npc, "trade_manager", "sell_condition" )
+	else
+		abort( npc:name().." invalid line: [sell_condition] "..cfg )
+	end
+end
+
+-- апдейд динамической торговли
+function trade_reset( npc )
+	local str
+
+	-- если запрещено торговать
+	if no_trade_name[npc:name()] then
+		npc:disable_trade()
+		return
+	end
+
+	-- обновим таблицу
+	trade_manager[npc:id()] = {}
+	local tt = trade_manager[npc:id()]
+
+	-- запишем динамическую торговлю
+	tt.dltx = true
+	-- инициализация
+	trade_init( npc )
+
+	local actor = db.actor
+
+	str = xr_logic.pick_section_from_condlist( actor, npc, tt.buy_condition )
+	npc:buy_condition( tt.config, str )
+
+	str = xr_logic.pick_section_from_condlist( actor, npc, tt.sell_condition )
+	npc:sell_condition( tt.config, str )
+
+	npc:disable_trade()
+	npc:enable_trade()
+end
+
+-- апдейд только для торговцев
+function update( npc )
+	local npc_id = npc:id()
+	local str
+
+	-- если первый раз или загрузка автосейва
+	if not trade_manager[npc_id] then
+		trade_manager[npc_id] = {}
+		trade_init(npc)
+	end
+
+	local tt = trade_manager[npc_id]
+
+	-- если загрузили квиксейв или именную сохранку
+	if not tt.buy_condition then
+		trade_init(npc)
+	end
+
+	local actor = db.actor
+
+	str = xr_logic.pick_section_from_condlist( actor, npc, tt.buy_condition )
+	npc:buy_condition( tt.config, str )
+
+	str = xr_logic.pick_section_from_condlist( actor, npc, tt.sell_condition )
+	npc:sell_condition( tt.config, str )
+
+	-- у торговцев обновление ассортимента будет либо по автосейву, либо по этому таймеру
+	-- у Сидора обновление ассортимента будет только по этому таймеру
+	local cur_time = time_global()
+	if tt.resuply_time and ( tt.resuply_time > cur_time ) then
+		return
+	end
+	-- таймер на игровой час
+	tt.resuply_time = cur_time + 720000	
+
+	str = xr_logic.pick_section_from_condlist( actor, npc, tt.buy_supplies )
+	npc:buy_supplies( tt.config, str )
+
+	-- для Сидора дополнительно взведем амк.таймер (иммитация автосейва)
+	if npc:clsid() == clsid.script_trader then
+		amk.start_timer( "resuply_time"..npc:story_id(), 690 )
+	end
+end
+
+
+function save( npc, packet )
+	local tt = trade_manager[npc:id()]
+
+	-- сохранять данные только для торговцев
+	if tt and tt.cfg_ltx and not tt.dltx then
+		packet:w_bool( true )
+	else
+		packet:w_bool( false )
+		return
+	end
+
+	packet:w_stringZ( tt.cfg_ltx )
+
+	local cur_time = time_global()
+	if tt.resuply_time > cur_time then
+		packet:w_u32( tt.resuply_time - cur_time )
+	else
+		packet:w_u32( 0 )
+	end
+end
+
+
+function load( npc, packet )
+	local flags = packet:r_bool()
+	if flags == false then
+		return
+	end
+
+	if npc:clsid() == clsid.script_trader then
+		local varname = "resuply_time"..npc:story_id()
+		if not amk.has_timer(varname) then
+			return
+		end
+	end
+
+	trade_manager[npc:id()] = {}
+
+	local tt = trade_manager[npc:id()]
+
+	tt.cfg_ltx = packet:r_stringZ()
+	tt.config = ini_file(tt.cfg_ltx)
+
+	local rest_time = packet:r_u32()
+	tt.resuply_time = rest_time + time_global()
+end
+
+
+-- Вспомогательные функции
+
+function IsTrader( npc )
+	if npc then
+		local cls_id = npc:clsid()
+		if cls_id == clsid.script_stalker or cls_id == clsid.script_trader then
+			local st = db.storage[npc:id()]
+			if st then
+				local ini = st.ini
+				local logic = st.section_logic
+				if ini and logic and ini:section_exist( logic ) and ini:line_exist( logic, "trade" ) then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+function hasTradeDinamic( npc )
+	return npc and not IsTrader( npc )
+end
+
+function onInfoPortion(info_id)
+	if info_id == "ui_trade_hide" and bind_stalker.trader then
+		xr_kamp.removeNpcDemoItems(bind_stalker.trader)
+	end
+end
+
+function trade_prepare(npc)
+	if hasTradeDinamic(npc) then
+		bind_stalker.trader = npc
+		xr_kamp.giveNpcDemoItems(npc)
+		amk.start_timer("trade_reset", 0.01)
+	else
+		bind_stalker.trader = nil
+		update(npc)
+	end
+end
+
+function onTradeItem(item, trader, was_sale_to_npc)
+	if item and trader and hasTradeDinamic(trader) then
+		if amk.has_timer("trade_reset") then
+			amk.remove_timer("trade_reset")
+		end
+		amk.start_timer("trade_reset", 0.01)
+
+		if not xr_kamp.npcItems[trader:id()] then
+			xr_kamp.npcItems[trader:id()] = {}
+		end
+		if was_sale_to_npc then
+			xr_kamp.npcItems[trader:id()][item:section()] = 1 -- уже реально есть у непися
+		else
+			xr_kamp.npcItems[trader:id()][item:section()] = 1 -- было у непися (чтобы не выдавалось даже после покупки у непися)
+		end
+	end
+end

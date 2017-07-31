@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding="windows-1251" ?>
+
+<xml>
+
+<article id="text_boroda_naiti" name="Найти и поговорить с Бородой" article_type="task">
+	<text>text_boroda_naiti_name</text>
+</article>
+<article id="article_obsled_barza_zaton" name="Проверить баржу" article_type="task">
+	<text>text_article_obsled_barza_zaton</text>
+</article>
+
+<article id="article_oboity_saharovih" name="Обойти Сахаровых" article_type="task">
+	<text>text_article_oboity_saharovih</text>
+</article>
+
+<article id="text_skarabey_naiti" name="Найти охотника Скарабея" article_type="task">
+	<text>text_skarabey_naiti</text>
+</article>
+
+<article id="text_broadway_naiti" name="Летающий остров. Поиски разгадки." article_type="task">
+	<text>text_broadway_naiti</text>	
+</article>
+
+<article id="staraya_posudina" name="Встретиться с бандитами на старой барже" article_type="task">
+	<text>staraya_posudina</text>	
+</article>
+
+</xml>

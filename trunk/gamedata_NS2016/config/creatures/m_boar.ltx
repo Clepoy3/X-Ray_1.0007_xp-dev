@@ -1,0 +1,507 @@
+;---''' BOAR '''---
+[m_boar_e]:monster_base
+GroupControlSection     = spawn_group
+SpaceRestrictionSection = space_restrictor,zone_mosquito_bald
+$npc      = on
+$prefetch = 16
+cform          = skeleton
+class          = SM_BOARW
+script_binding = bind_monster.bind
+visual         = monsters\mutant_boar\mutant_boar
+corpse_visual  = monsters\mutant_boar\mutant_boar_dead
+icon           = ui_npc_monster_boar
+
+ef_creature_type = 11
+ef_weapon_type   = 2
+ef_detector_type = 1
+panic_threshold  = 0.1
+
+bone_torso   = bip01_spine1
+bone_head    = bip01_head
+bone_fire    = bip01_head
+weapon_usage = 0
+
+distance_to_corpse = 2.1
+DynamicObjectsCount = 32
+Spawn_Inventory_Item_Section = mutant_boar_leg
+Spawn_Inventory_Item_Probability_onDeath = 0.4
+
+;--' Offline Alife '--
+Scheduled = on
+Human     = off
+Health    = 500
+
+MinSpeed     = 1.0
+MaxSpeed     = 5.5
+going_speed  = 3
+search_speed = 1.5
+MaxHealthValue = 200
+current_level_going_speed = 2
+
+DayTime_Begin = 0
+DayTime_End   = 21
+terrain       = boar_terrain
+smart_terrain_choose_interval = 00:15:00
+
+;--' Physics '--
+ph_box0_center = 0.00, 0.6, 0
+ph_box0_size   = 0.55, 0.6, 0.55
+ph_box1_center = 0.00, 0.6, 0
+ph_box1_size   = 0.55, 0.6, 0.55
+
+ph_crash_speed_min        = 10
+ph_crash_speed_max        = 30
+ph_collision_damage_facto = 0.1
+ph_mass                   = 250
+
+destroyed_vis_name = physics\dead_body\skelet_crash_monster
+
+ph_skeleton_airr_lin_factor = -0.4
+ph_skeleton_airr_ang_factor = -0.2
+ph_skeleton_hinger_factor1  = 1.0
+ph_skeleton_ddelay          = 15
+
+ph_skel_fatal_impulse_factor   = 0
+ph_after_death_velocity_factor = 0.75
+ph_skel_shot_up_factor         = 0.25
+
+;--' Movement '--
+Velocity_Stand          =  0.00, 1.4, 1.4, 1.00, 1
+Velocity_RunFwdNormal   =  6.50, 3.5, 3.5, 0.40, 1
+Velocity_RunFwdDamaged  =  4.50, 3.0, 3.0, 0.20, 1
+Velocity_WalkFwdDamaged =  1.30, 2.5, 2.5, 0.20, 2
+Velocity_WalkFwdNormal  =  2.75, 2.5, 2.5, 0.02, 3
+Velocity_Drag           = -1.00, 1.0, 1.0, 1.00, 1
+Velocity_Steal          =  1.50, 3.0, 3.0, 1.00, 1
+
+; acceleration
+Accel_Generic    = 1.5
+Accel_Calm       = 2.5
+Accel_Aggressive = 6.5
+
+;--' Attack '--
+MinAttackDist = 2.6
+MaxAttackDist = 3.2
+as_min_dist   = 1.4
+as_step       = 0.5
+
+hit_type = wound
+
+Run_Attack_Dist  = 3.5, 4.0
+Run_Attack_Delay = 1000, 3000
+Melee_Rotation_Factor = 2.2
+
+attack_effector = boar_attack_effector
+attack_params   = boar_attack_params
+
+;--' Conditions '--
+satiety_v          = 0.0005
+radiation_v        = 0.00001
+satiety_power_v    = 0.00001;0.005
+satiety_health_v   = 0.001
+satiety_critical   = -1
+radiation_health_v = 0
+morale_v           = 0.01
+health_hit_part    = 1
+power_hit_part     = 1
+psy_health_v       = 0.1
+health_restore_v   = 0.0005
+
+immunities_sect = boar_immunities
+
+bleeding_v          = 0.05
+wound_incarnation_v = 0.04
+min_wound_size      = 0.01
+
+sleep_health     = 1
+sleep_power      = 1
+sleep_satiety    = 1
+sleep_radiation  = 1
+sleep_psy_health = 1
+
+eat_freq         = 5
+eat_slice        = 0.01
+eat_slice_weight = 10
+
+satiety_threshold = 0.5
+
+;--' Sounds '--
+sound_idle           = monsters\boar\boar_idle_
+sound_eat            = monsters\boar\boar_eat_
+sound_aggressive     = monsters\boar\boar_aggressive_
+sound_attack_hit     = monsters\boar\boar_attack_
+sound_take_damage    = monsters\boar\boar_pain_
+sound_die            = monsters\boar\boar_death_
+sound_bkgnd          = monsters\biting\def_
+sound_threaten       = monsters\boar\boar_threaten_
+sound_landing        = monsters\boar\landing_
+sound_steal          = monsters\biting\def_
+sound_panic          = monsters\boar\boar_panic_
+sound_growling       = monsters\biting\def_
+sound_die_in_anomaly = monsters\boar\boar_anomaly_
+
+killer_clsids = Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
+
+idle_sound_delay   = 18000
+eat_sound_delay    = 5000
+attack_sound_delay = 4000
+
+sound_distant_idle       = monsters\boar\boar_idle_
+distant_idle_sound_delay = 80000
+distant_idle_sound_range = 100
+
+SoundThreshold = 0.06
+max_hear_dist  = 60
+material       = creatures\hoof
+
+;--' Vision '--
+eye_fov   = 110
+eye_range = 40
+
+min_view_distance       = 0.5
+max_view_distance       = 1
+visibility_threshold    = 100
+always_visible_distance = 0.3
+time_quant              = 0.001
+decrease_value          = 0.01
+velocity_factor         = 0.5
+luminocity_factor       = 0.5
+transparency_threshold  = 0.25
+
+;--' Morale '--
+Morale_Hit_Quant             = 0.02
+Morale_Attack_Success_Quant  = 0.1
+Morale_Take_Heart_Speed      = 0.1
+Morale_Despondent_Speed      = 0.1
+Morale_Stable_Speed          = 0.05
+Morale_Despondent_Threashold = 0.5
+
+;--' Damages '--
+damage = boar_damage
+DamagedThreshold = 0.2
+
+critical_wound_threshold      = 0.4
+critical_wound_decrease_quant = 0
+
+critical_wound_anim_head  = critical_hit_head_0
+critical_wound_bones_head = boar_critical_wound_bones_head
+
+critical_wound_anim_torso  = critical_hit_torso_0
+critical_wound_bones_torso = boar_critical_wound_bones_torso
+
+critical_wound_anim_legs  = critical_hit_torso_0
+critical_wound_bones_legs = boar_critical_wound_bones_legs
+
+;--' Species '--
+species   = boar
+rank      = 101
+spec_rank = weak
+community = boar
+
+;--' Other '--
+LegsCount   = 4
+step_params = boar_step_params
+
+actor_restrictor = medium_monster
+
+;--' Sections '--
+[boar_attack_effector]
+duality_h       = 0.05
+duality_v       = 0.02
+blur            = 0.01
+gray            = 0.5
+noise_intensity = 0
+noise_grain     = 1
+noise_fps       = 30
+color_base      = 0.65, 0.15, 0.1
+color_gray      = 0.333, 0.333, 0.333
+color_add       = 0, 0, 0
+time            = 0.3
+time_attack     = 0.05
+time_release    = 0.15
+
+ce_time          = 0.35
+ce_amplitude     = 10
+ce_period_number = 2
+ce_power         = 2.5
+
+[boar_attack_params]
+stand_attack_0     = 0.3, 0.25, 150, 0, 0.5, 0.5, -0.6, 0.6, -0.6, 0.6, 3.2
+stand_attack_1     = 0.3, 0.25, 150, 0, 0.5, 0.5, -0.6, 0.6, -0.6, 0.6, 3.2
+stand_attack_2     = 0.3, 0.35, 200, 0, 1.0, 2.0, -0.6, 0.6, -0.6, 0.6, 3.2
+stand_attack_run_0 = 0.5, 0.35, 200, 0, 1.0, 2.0, -0.6, 0.6, -0.6, 0.6, 2.2
+
+[boar_damage]
+default      = 1.0, -1, 0.3
+bip01_pelvis = 0.8, -1, 0.3
+bip01_spine  = 0.6, -1, 0.3
+bip01_spine1 = 0.6, -1, 0.3
+bip01_neck   = 0.5, -1, 1.5
+bip01_head   = 0.4, -1, 0.1, 1
+
+[boar_critical_wound_bones_head]
+bip01_pelvis
+bip01_l_thigh
+bip01_l_calf
+bip01_l_horselink
+bip01_l_foot
+bip01_l_toe0
+bip01_r_thigh
+bip01_r_calf
+bip01_r_horselink
+bip01_r_foot
+bip01_r_toe0
+bip01_spine
+bip01_spine1
+bip01_spine2
+bip01_neck
+bip01_head
+bip01_ponytail1
+bip01_ponytail2
+bone01
+bone02
+bone04
+bone05
+bone06
+bone07
+bone08
+bone09
+bone10
+bone11
+bone12
+bone13
+bone14
+bone15
+bip01_l_clavicle
+bip01_l_upperarm
+bip01_l_forearm
+bip01_l_hand
+bip01_l_finger0
+bip01_r_clavicle
+bip01_r_upperarm
+bip01_r_forearm
+bip01_r_hand
+bip01_r_finger0
+bone16
+bone17
+bone19
+bone18
+bip01_tail
+bip01_tail1
+
+[boar_critical_wound_bones_torso]
+[boar_critical_wound_bones_legs]
+
+[boar_immunities]
+burn_immunity          = 1
+strike_immunity        = 0.8
+shock_immunity         = 0.8
+wound_immunity         = 0.3
+radiation_immunity     = 0
+telepatic_immunity     = 1
+chemical_burn_immunity = 0.8
+explosion_immunity     = 0.15
+fire_wound_immunity    = 0.15
+
+[boar_step_params]
+stand_walk_fwd_0 = 5, 0.01, 1, 0.50, 0.7, 0.15, 1, 0.5, 1.0
+stand_walk_dmg_0 = 4, 0.20, 1, 0.25, 0.7, 0.50, 1, 0.7, 1.0
+stand_run_fwd_0  = 1, 0.01, 1, 0.05, 0.7, 0.20, 1, 0.2, 0.2
+stand_run_dmg_0  = 4, 0.20, 1, 0.25, 0.7, 0.70, 1, 0.7, 1.0
+stand_steal_0    = 1, 0.20, 1, 0.25, 0.7, 0.70, 1, 0.7, 1.0
+stand_drag_0     = 1, 0.20, 1, 0.25, 0.7, 0.70, 1, 0.7, 1.0
+
+[boar_terrain]
+255,000,255,255
+001,002,000,000 ;Кордон
+008,001,000,000 ;Бар
+010,001,000,000 ;Янтарь
+012,001,000,000 ;Миллитари
+
+;---'' BASE PROFILES ''---
+;--' weak '--
+[boar_weak]:m_boar_e
+$spawn = "monsters\boars\boar_weak"
+panic_threshold = 0.5
+
+attack_params = boar_attack_params_weak
+immunities_sect = boar_immunities_weak
+
+[boar_immunities_weak]:boar_immunities
+burn_immunity          = 1
+strike_immunity        = 1
+shock_immunity         = 1
+wound_immunity         = 0.4
+chemical_burn_immunity = 1
+explosion_immunity     = 0.55
+fire_wound_immunity    = 0.25
+
+[boar_attack_params_weak]
+stand_attack_0     = 0.3, 0.25, 150, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_1     = 0.3, 0.25, 150, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_2     = 0.3, 0.30, 150, 0, 1.0, 2.0, -0.8, 0.8, -1, 1, 2.5
+stand_attack_run_0 = 0.5, 0.35, 400, 0, 1.0, 2.0, -1.0, 1.0, -1, 1, 2.2
+
+;--' normal '--
+[boar_normal]:m_boar_e
+$spawn = "monsters\boars\boar_normal"
+panic_threshold = 0.2
+rank = 301
+spec_rank = normal
+
+attack_params = boar_attack_params_normal
+immunities_sect = boar_immunities_normal
+
+[boar_attack_params_normal]
+stand_attack_0     = 0.3, 0.25, 150, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_1     = 0.3, 0.25, 150, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_2     = 0.3, 0.35, 150, 0, 1.0, 2.0, -0.8, 0.8, -1, 1, 2.5
+stand_attack_run_0 = 0.5, 0.50, 300, 0, 1.0, 2.0, -1.0, 1.0, -1, 1, 2.2
+
+[boar_immunities_normal]:boar_immunities_weak
+wound_immunity      = 0.5
+fire_wound_immunity = 0.2
+
+;--' strong '--
+[boar_strong]:m_boar_e
+$spawn = "monsters\boars\boar_strong"
+visual = monsters\mutant_boar\mutant_boar_strong
+icon = ui_npc_monster_boar_strong
+panic_threshold = 0.02
+rank = 601
+spec_rank = strong
+
+attack_params = boar_attack_params_strong
+immunities_sect = boar_immunities_strong
+
+[boar_attack_params_strong]
+stand_attack_0     = 0.2, 0.35, 150, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_1     = 0.2, 0.35, 150, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_2     = 0.2, 0.50, 150, 0, 1.0, 2.0, -0.8, 0.8, -1, 1, 2.5
+stand_attack_run_0 = 0.5, 0.70, 300, 0, 1.0, 2.0, -1.0, 1.0, -1, 1, 2.2
+
+[boar_immunities_strong]:boar_immunities_weak
+wound_immunity      = 0.3
+fire_wound_immunity = 0.15
+
+;---'' CUSTOM PROFILES ''---
+;--' kachok - Переросток --- моделька CAHCAHbl4 '--
+[boar_kachok]:m_boar_e
+$spawn = "monsters\persones\boar_kachok"
+visual = monsters\mutant_boar\boar_kachok
+icon = ui_npc_monster_boar_strong
+panic_threshold = 0.01
+rank = 901
+spec_rank = personal
+
+attack_params = boar_kachok_attack_params
+immunities_sect = boar_kachok_immunities
+
+[boar_kachok_attack_params]
+stand_attack_0     = 0.4, 0.5, 250, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_1     = 0.4, 0.5, 250, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_2     = 0.4, 0.7, 250, 0, 1.0, 2.0, -0.8, 0.8, -1, 1, 2.5
+stand_attack_run_0 = 0.7, 0.8, 600, 0, 1.0, 2.0, -1.0, 1.0, -1, 1, 2.2
+
+[boar_kachok_immunities]
+burn_immunity          = 0.35
+strike_immunity        = 0.35
+shock_immunity         = 0.35
+wound_immunity         = 0.01
+radiation_immunity     = 0.01
+telepatic_immunity     = 1
+chemical_burn_immunity = 0.2
+explosion_immunity     = 0.3
+fire_wound_immunity    = 0.01
+
+;--' boar_small - Кабанчик --- работа Хабарыча '--
+[boar_small]:m_boar_e
+$spawn = "monsters\persones\boar_small"
+visual = monsters\mutant_boar\mutant_boar_small
+icon = ui_npc_monster_boar_small
+panic_threshold = 1.2
+rank = 901
+spec_rank = personal
+Spawn_Inventory_Item_Probability_onDeath = 0
+
+attack_params = boar_small_attack_params
+immunities_sect = boar_small_immunities
+
+Velocity_Stand          = 0.00, 1.4, 1.4, 1.00, 1
+Velocity_RunFwdNormal   = 5.50, 2.5, 2.5, 0.40, 1
+Velocity_RunFwdDamaged  = 2.50, 2.0, 2.0, 0.20, 1
+Velocity_WalkFwdDamaged = 1.00, 2.0, 2.0, 0.20, 2
+Velocity_WalkFwdNormal  = 1.75, 2.0, 2.0, 0.02, 3
+Velocity_Drag           = -1.0, 1.0, 1.0, 1.00, 1
+Velocity_Steal          = 1.50, 2.0, 1.0, 1.00, 1
+
+Accel_Generic    = 1.5
+Accel_Calm       = 2.5
+Accel_Aggressive = 4.5
+
+[boar_small_attack_params]
+stand_attack_0     = 0.25, 0.20, 80, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_1     = 0.25, 0.20, 80, 0, 0.5, 0.5, -1.0, 1.0, -1, 1, 2.3
+stand_attack_2     = 0.25, 0.25, 80, 0, 1.0, 2.0, -0.8, 0.8, -1, 1, 2.5
+stand_attack_run_0 = 0.40, 0.40, 15, 0, 1.0, 2.0, -1.0, 1.0, -1, 1, 2.2
+
+[boar_small_immunities]
+burn_immunity          = 1.5
+strike_immunity        = 1.5
+shock_immunity         = 1.5
+wound_immunity         = 1
+radiation_immunity     = 0
+telepatic_immunity     = 1.5
+chemical_burn_immunity = 1.5
+explosion_immunity     = 1.15
+fire_wound_immunity    = 0.3
+
+[boar_small_2]:boar_small
+$spawn = "monsters\persones\boar_small_2"
+visual = monsters\mutant_boar\mutant_boar_small_2
+
+;--' ARENA '--
+[boar_arena]:m_boar_e
+script_binding = aem_manager.bind_mob
+visual = monsters\mutant_boar\mutant_boar_strong
+icon = ui_npc_monster_boar_strong
+panic_threshold = 0
+Spawn_Inventory_Item_Probability_onDeath = 0
+DayTime_Begin = 0
+DayTime_End = 24
+species = arena_monstr
+rank = 901
+spec_rank = personal
+
+attack_params = boar_kachok_attack_params
+immunities_sect = boar_arena_immunities
+
+[boar_arena_immunities]
+burn_immunity          = 0.06
+strike_immunity        = 0.06
+shock_immunity         = 0.06
+wound_immunity         = 0.06
+radiation_immunity     = 0
+telepatic_immunity     = 0
+chemical_burn_immunity = 0.06
+explosion_immunity     = 0.06
+fire_wound_immunity    = 0.06
+
+;---'' HORROR ''---
+[horror_boar_weak]:boar_weak
+$spawn ="monsters\boars\horror_boar_weak"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24
+
+[horror_boar_normal]:boar_normal
+$spawn ="monsters\boars\horror_boar_normal"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24
+
+[horror_boar_strong]:boar_strong
+$spawn ="monsters\boars\horror_boar_strong"
+panic_threshold = 0.01
+DayTime_Begin = 0
+DayTime_End = 24

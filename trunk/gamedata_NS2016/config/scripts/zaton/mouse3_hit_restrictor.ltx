@@ -1,0 +1,36 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = sr_idle@hit  %=arhara_dialog.hit_dcity_imitator%
+
+[sr_idle@hit]
+on_timer = 8000 | sr_idle@time %=arhara_dialog.hit_dcity_imitator%
+on_actor_outside = sr_idle
+[sr_idle@time]
+on_timer = 15000 | sr_idle@time1 %=amk_alcohol.amk_alcohol_good_morning%
+on_actor_outside = sr_idle
+[sr_idle@time1]
+on_timer = 31000 | sr_idle@time2 %=arhara_dialog.hit_dcity_imitator%
+on_actor_outside = sr_idle
+[sr_idle@time2]
+on_timer = 44000 | sr_idle@time3 %=arhara_dialog.hit_dcity_imitator%
+on_actor_outside = sr_idle
+[sr_idle@time3]
+on_timer = 58000 | sr_idle@time4 %=arhara_dialog.hit_dcity_imitator%
+on_actor_outside = sr_idle
+[sr_idle@time4]
+on_timer = 67000 | sr_idle@time5 %=arhara_dialog.hit_dcity_imitator%
+on_actor_outside = sr_idle
+[sr_idle@time5]
+on_timer = 79000 | sr_idle@time6 %=arhara_dialog.hit_dcity_imitator%
+on_actor_outside = sr_idle
+[sr_idle@time6]
+on_timer = 83000 | sr_idle@time7 %=arhara_dialog.hit_dcity_imitator%
+on_actor_outside = sr_idle
+[sr_idle@time7]
+on_timer = 88000 | sr_idle@time8 %=arhara_dialog.hit_dcity_imitator%
+on_actor_outside = sr_idle
+[sr_idle@time8]
+on_timer = 95000 | %=arhara_dialog.hit_dcity_imitator%
+on_actor_outside = sr_idle

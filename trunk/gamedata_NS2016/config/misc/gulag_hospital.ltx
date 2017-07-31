@@ -1,0 +1,845 @@
+;-- Кровососы оффлайн
+[logic@hospblood1_of]
+active = mob_home@hospblood1_of
+
+[mob_home@hospblood1_of]
+path_home = hospblood1_walk
+home_min_radius = 50
+home_max_radius = 80
+on_signal = sig_attacked | mob_combat@hospblood1_of
+
+[mob_combat@hospblood1_of]
+on_timer = 60000 | mob_home@hospblood1_of
+
+[logic@hospblood2_of]
+active = mob_home@hospblood2_of
+
+[mob_home@hospblood2_of]
+path_home = hospblood2_walk
+home_min_radius = 50
+home_max_radius = 80
+on_signal = sig_attacked | mob_combat@hospblood2_of
+
+[mob_combat@hospblood2_of]
+on_timer = 60000 | mob_home@hospblood2_of
+
+;-- Кровососы онлайн
+[logic@hospblood1]
+active = mob_home@hospblood1
+
+[mob_home@hospblood1]
+path_home = hospblood1_walk
+home_min_radius = 50
+home_max_radius = 80
+on_signal = sig_attacked | mob_combat@hospblood1
+
+[mob_combat@hospblood1]
+on_timer = 60000 | mob_home@hospblood1
+
+[logic@hospblood2]
+active = mob_home@hospblood2
+
+[mob_home@hospblood2]
+path_home = hospblood2_walk
+home_min_radius = 50
+home_max_radius = 80
+on_signal = sig_attacked | mob_combat@hospblood2
+
+[mob_combat@hospblood2]
+on_timer = 60000 | mob_home@hospblood2
+
+;-- Монолитовцы в первом зале, оффлайн
+[logic@hsmon1_of]
+active = walker@hsmon1_of
+combat_ignore = combat_ignore
+
+[walker@hsmon1_of]
+path_walk = hsmon1_walk
+path_look = hsmon1_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[danger_ignore@hsmon]
+ignore_distance_grenade	= 5
+ignore_distance_corpse	= 0
+ignore_distance_hit		= 150
+ignore_distance_sound	= 0
+danger_inertion_time_grenade	= 2000
+danger_inertion_time_corpse	= 1000
+danger_inertion_time_hit		= 2000
+danger_inertion_time_sound	= 1500
+danger_inertion_time_ricochet	= 0
+
+[logic@hsmon2_of]
+active = walker@hsmon2_of
+combat_ignore = combat_ignore
+
+[walker@hsmon2_of]
+path_walk = hsmon2_walk
+path_look = hsmon2_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon3_of]
+active = walker@hsmon3_of
+combat_ignore = combat_ignore
+
+[walker@hsmon3_of]
+path_walk = hsmon3_walk
+path_look = hsmon3_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon4_of]
+active = walker@hsmon4_of
+combat_ignore = combat_ignore
+
+[walker@hsmon4_of]
+path_walk = hsmon4_walk
+path_look = hsmon4_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon5_of]
+active = walker@hsmon5_of
+combat_ignore = combat_ignore
+
+[walker@hsmon5_of]
+path_walk = hsmon5_walk
+path_look = hsmon5_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon6_of]
+active = walker@hsmon6_of
+combat_ignore = combat_ignore
+
+[walker@hsmon6_of]
+path_walk = hsmon6_walk
+path_look = hsmon6_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon7_of]
+active = walker@hsmon7_of
+combat_ignore = combat_ignore
+
+[walker@hsmon7_of]
+path_walk = hsmon7_walk
+path_look = hsmon7_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon8_of]
+active = walker@hsmon8_of
+combat_ignore = combat_ignore
+
+[walker@hsmon8_of]
+path_walk = hsmon8_walk
+path_look = hsmon8_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon9_of]
+active = walker@hsmon9_of
+combat_ignore = combat_ignore
+
+[walker@hsmon9_of]
+path_walk = hsmon9_walk
+path_look = hsmon9_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon10_of]
+active = walker@hsmon10_of
+combat_ignore = combat_ignore
+
+[walker@hsmon10_of]
+path_walk = hsmon10_walk
+path_look = hsmon10_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+;-- Монолитовцы в первом зале, ожидание
+[logic@hsmon1_wa]
+active = walker@hsmon1_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon1_wa
+on_hit = hit@hsmon1_wa
+
+[hit@hsmon1_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon1_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon1_wa]
+path_walk = hsmon1_walk
+path_look = hsmon1_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon2_wa]
+active = walker@hsmon2_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon2_wa
+on_hit = hit@hsmon2_wa
+
+[hit@hsmon2_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon2_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon2_wa]
+path_walk = hsmon2_walk
+path_look = hsmon2_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon3_wa]
+active = walker@hsmon3_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon3_wa
+on_hit = hit@hsmon3_wa
+
+[hit@hsmon3_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon3_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon3_wa]
+path_walk = hsmon3_walk
+path_look = hsmon3_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon4_wa]
+active = walker@hsmon4_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon4_wa
+on_hit = hit@hsmon4_wa
+
+[hit@hsmon4_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon4_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon4_wa]
+path_walk = hsmon4_walk
+path_look = hsmon4_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon5_wa]
+active = walker@hsmon5_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon5_wa
+on_hit = hit@hsmon5_wa
+
+[hit@hsmon5_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon5_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon5_wa]
+path_walk = hsmon5_walk
+path_look = hsmon5_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon6_wa]
+active = walker@hsmon6_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon6_wa
+on_hit = hit@hsmon6_wa
+
+[hit@hsmon6_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon6_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon6_wa]
+path_walk = hsmon6_walk
+path_look = hsmon6_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon7_wa]
+active = walker@hsmon7_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon7_wa
+on_hit = hit@hsmon7_wa
+
+[hit@hsmon7_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon7_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon7_wa]
+path_walk = hsmon7_walk
+path_look = hsmon7_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon8_wa]
+active = walker@hsmon8_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon8_wa
+on_hit = hit@hsmon8_wa
+
+[hit@hsmon8_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon8_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon8_wa]
+path_walk = hsmon8_walk
+path_look = hsmon8_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon9_wa]
+active = walker@hsmon9_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon9_wa
+on_hit = hit@hsmon9_wa
+
+[hit@hsmon9_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon9_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon9_wa]
+path_walk = hsmon9_walk
+path_look = hsmon9_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon10_wa]
+active = walker@hsmon10_wa
+combat_ignore = combat_ignore
+on_death = death@hsmon10_wa
+on_hit = hit@hsmon10_wa
+
+[hit@hsmon10_wa]
+on_info = %+pred_mono_atak%
+
+[death@hsmon10_wa]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon10_wa]
+path_walk = hsmon10_walk
+path_look = hsmon10_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+;-- Монолитовцы в первом зале, работаем онлайн
+[logic@hsmon1]
+active = walker@hsmon1
+on_death = death@hsmon1
+on_hit = hit@hsmon1
+
+[hit@hsmon1]
+on_info = %+pred_mono_atak%
+
+[death@hsmon1]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon1]
+path_walk = hsmon1_walk
+path_look = hsmon1_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon2]
+active = walker@hsmon2
+on_death = death@hsmon2
+on_hit = hit@hsmon2
+
+[hit@hsmon2]
+on_info = %+pred_mono_atak%
+
+[death@hsmon2]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon2]
+path_walk = hsmon2_walk
+path_look = hsmon2_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon3]
+active = walker@hsmon3
+on_death = death@hsmon3
+on_hit = hit@hsmon3
+
+[hit@hsmon3]
+on_info = %+pred_mono_atak%
+
+[death@hsmon3]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon3]
+path_walk = hsmon3_walk
+path_look = hsmon3_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon4]
+active = walker@hsmon4
+on_death = death@hsmon4
+on_hit = hit@hsmon4
+
+[hit@hsmon4]
+on_info = %+pred_mono_atak%
+
+[death@hsmon4]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon4]
+path_walk = hsmon4_walk
+path_look = hsmon4_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon5]
+active = walker@hsmon5
+on_death = death@hsmon5
+on_hit = hit@hsmon5
+
+[hit@hsmon5]
+on_info = %+pred_mono_atak%
+
+[death@hsmon5]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon5]
+path_walk = hsmon5_walk
+path_look = hsmon5_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon6]
+active = walker@hsmon6
+on_death = death@hsmon6
+on_hit = hit@hsmon6
+
+[hit@hsmon6]
+on_info = %+pred_mono_atak%
+
+[death@hsmon6]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon6]
+path_walk = hsmon6_walk
+path_look = hsmon6_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon7]
+active = walker@hsmon7
+on_death = death@hsmon7
+on_hit = hit@hsmon7
+
+[hit@hsmon7]
+on_info = %+pred_mono_atak%
+
+[death@hsmon7]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon7]
+path_walk = hsmon7_walk
+path_look = hsmon7_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon8]
+active = walker@hsmon8
+on_death = death@hsmon8
+on_hit = hit@hsmon8
+
+[hit@hsmon8]
+on_info = %+pred_mono_atak%
+
+[death@hsmon8]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon8]
+path_walk = hsmon8_walk
+path_look = hsmon8_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon9]
+active = walker@hsmon9
+on_death = death@hsmon9
+on_hit = hit@hsmon9
+
+[hit@hsmon9]
+on_info = %+pred_mono_atak%
+
+[death@hsmon9]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon9]
+path_walk = hsmon9_walk
+path_look = hsmon9_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+[logic@hsmon10]
+active = walker@hsmon10
+on_death = death@hsmon10
+on_hit = hit@hsmon10
+
+[hit@hsmon10]
+on_info = %+pred_mono_atak%
+
+[death@hsmon10]
+on_info = %+pred_mono_atak%
+
+[walker@hsmon10]
+path_walk = hsmon10_walk
+path_look = hsmon10_look
+combat_ignore_cond = always
+danger = danger_ignore@hsmon
+
+;-- Монолитовцы в центральном зале оффлайн
+[logic@blacmon1_of]
+active = walker@blacmon1_of
+combat_ignore = combat_ignore
+
+[walker@blacmon1_of]
+path_walk = blacmon1_walk
+path_look = blacmon1_look
+combat_ignore_cond = always
+danger = danger_ignore@blacmon
+
+[danger_ignore@blacmon]
+ignore_distance_grenade	= 5
+ignore_distance_corpse	= 0
+ignore_distance_hit		= 150
+ignore_distance_sound	= 0
+danger_inertion_time_grenade	= 2000
+danger_inertion_time_corpse	= 1000
+danger_inertion_time_hit		= 2000
+danger_inertion_time_sound	= 1500
+danger_inertion_time_ricochet	= 0
+
+[logic@blacmon2_of]
+active = walker@blacmon2_of
+combat_ignore = combat_ignore
+
+[walker@blacmon2_of]
+path_walk = blacmon2_walk
+path_look = blacmon2_look
+combat_ignore_cond = always
+danger = danger_ignore@blacmon
+
+[logic@blacmon3_of]
+active = walker@blacmon3_of
+combat_ignore = combat_ignore
+
+[walker@blacmon3_of]
+path_walk = blacmon3_walk
+path_look = blacmon3_look
+combat_ignore_cond = always
+danger = danger_ignore@blacmon
+
+;-- Монолитовцы в центральном зале онлайн
+[logic@blacmon1]
+active = walker@blacmon1
+
+[walker@blacmon1]
+path_walk = blacmon1_walk
+path_look = blacmon1_look
+danger = danger_ignore@blacmon
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+show_spot = false
+no_retreat = true
+
+[logic@blacmon2]
+active = walker@blacmon2
+
+[walker@blacmon2]
+path_walk = blacmon2_walk
+path_look = blacmon2_look
+danger = danger_ignore@blacmon
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+show_spot = false
+no_retreat = true
+
+[logic@blacmon3]
+active = walker@blacmon3
+
+[walker@blacmon3]
+path_walk = blacmon3_walk
+path_look = blacmon3_look
+danger = danger_ignore@blacmon
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+show_spot = false
+no_retreat = true
+
+;-- Группа Кота оффлайн
+[logic@kot_hos_wa]
+active = walker@kot_hos_wa
+combat_ignore = combat_ignore
+
+[walker@kot_hos_wa]
+path_walk = kot_hos_wa_walk
+path_look = kot_hos_wa_look
+combat_ignore_cond = always
+danger = danger_ignore@kot_hos
+
+[danger_ignore@kot_hos]
+ignore_distance_grenade	= 5
+ignore_distance_corpse	= 0
+ignore_distance_hit		= 150
+ignore_distance_sound	= 0
+danger_inertion_time_grenade	= 2000
+danger_inertion_time_corpse	= 1000
+danger_inertion_time_hit		= 2000
+danger_inertion_time_sound	= 1500
+danger_inertion_time_ricochet	= 0
+
+[logic@stalk_hos1_wa]
+active = walker@stalk_hos1_wa
+combat_ignore = combat_ignore
+
+[walker@stalk_hos1_wa]
+path_walk = stalk_hos1_wa_walk
+path_look = stalk_hos1_wa_look
+combat_ignore_cond = always
+danger = danger_ignore@kot_hos
+
+[logic@stalk_hos2_wa]
+active = walker@stalk_hos2_wa
+combat_ignore = combat_ignore
+
+[walker@stalk_hos2_wa]
+path_walk = stalk_hos2_wa_walk
+path_look = stalk_hos2_wa_look
+combat_ignore_cond = always
+danger = danger_ignore@kot_hos
+
+[logic@stalk_hos3_wa]
+active = walker@stalk_hos3_wa
+combat_ignore = combat_ignore
+
+[walker@stalk_hos3_wa]
+path_walk = stalk_hos3_wa_walk
+path_look = stalk_hos3_wa_look
+combat_ignore_cond = always
+danger = danger_ignore@kot_hos
+
+;-- Группа Кота работаем онлайн
+[logic@kot_hos_kar]
+active = walker@kot_hos_kar
+combat_ignore = combat_ignore
+
+[walker@kot_hos_kar]
+path_walk = kot_hos_wa_walk
+path_look = kot_hos_wa_look
+combat_ignore_cond = always
+danger = danger_ignore@kot_hos
+meet = meet@kot_hos_kar
+on_info = {+pred_mono_atak} karavan@kot_hos_kar
+
+[karavan@kot_hos_kar]
+close_dist = 2
+near_dist = 10
+faraway_dist = 31
+close_state = guard
+near_state = rush
+faraway_state = sprint
+wait_state = rush
+look_on_actor = false 
+radius = 1 
+combat_ignore_cond = {=fighting_dist_ge(40)} always 
+no_loot = true
+
+[meet@kot_hos_kar]
+meet_state		= 15|guard@wait
+meet_state_wpn	= 15|backoff@threat_weap
+victim		= 15|actor
+victim_wpn		= 15|actor
+use			= true
+use_wpn		= false
+syndata		= backoff@threat_weap
+
+[logic@stalk_hos1_kar]
+active = walker@stalk_hos1_kar
+combat_ignore = combat_ignore
+
+[walker@stalk_hos1_kar]
+path_walk = stalk_hos1_wa_walk
+path_look = stalk_hos1_wa_look
+combat_ignore_cond = always
+danger = danger_ignore@kot_hos
+meet = no_meet
+on_info = {+pred_mono_atak} karavan@stalk_hos1_kar
+
+[karavan@stalk_hos1_kar]
+close_dist = 2
+near_dist = 10
+faraway_dist = 31
+close_state = guard
+near_state = rush
+faraway_state = sprint
+wait_state = rush
+look_on_actor = false 
+radius = 1 
+combat_ignore_cond = {=fighting_dist_ge(40)} always 
+no_loot = true
+
+[logic@stalk_hos2_kar]
+active = walker@stalk_hos2_kar
+combat_ignore = combat_ignore
+
+[walker@stalk_hos2_kar]
+path_walk = stalk_hos2_wa_walk
+path_look = stalk_hos2_wa_look
+combat_ignore_cond = always
+danger = danger_ignore@kot_hos
+meet = no_meet
+on_info = {+pred_mono_atak} karavan@stalk_hos2_kar
+
+[karavan@stalk_hos2_kar]
+close_dist = 2
+near_dist = 10
+faraway_dist = 31
+close_state = guard
+near_state = rush
+faraway_state = sprint
+wait_state = rush
+look_on_actor = false 
+radius = 1 
+combat_ignore_cond = {=fighting_dist_ge(40)} always 
+no_loot = true
+
+[logic@stalk_hos3_kar]
+active = walker@stalk_hos3_kar
+combat_ignore = combat_ignore
+
+[walker@stalk_hos3_kar]
+path_walk = stalk_hos3_wa_walk
+path_look = stalk_hos3_wa_look
+combat_ignore_cond = always
+danger = danger_ignore@kot_hos
+meet = no_meet
+on_info = {+pred_mono_atak} karavan@stalk_hos3_kar
+
+[karavan@stalk_hos3_kar]
+close_dist = 2
+near_dist = 10
+faraway_dist = 31
+close_state = guard
+near_state = rush
+faraway_state = sprint
+wait_state = rush
+look_on_actor = false 
+radius = 1 
+combat_ignore_cond = {=fighting_dist_ge(40)} always 
+no_loot = true
+
+;-- Группа Кота отдыхаем онлайн
+[logic@kot_hos]
+active = walker@kot_hos
+
+[walker@kot_hos]
+path_walk = kot_hos_walk
+path_look = kot_hos_look
+danger = danger_ignore@kot_hos
+meet = meet@kot_hos_kar
+
+[logic@stalk_hos1]
+active = walker@stalk_hos1
+
+[walker@stalk_hos1]
+path_walk = stalk_hos_patr_walk
+path_look = stalk_hos_patr_look
+danger = danger_ignore@kot_hos
+
+[logic@stalk_hos2]
+active = kamp@stalk_hos2
+
+[kamp@stalk_hos2]
+center_point = hos_camp_centr 
+danger = danger_ignore@kot_hos
+
+[logic@stalk_hos3]
+active = kamp@stalk_hos3
+
+[kamp@stalk_hos3]
+center_point = hos_camp_centr 
+danger = danger_ignore@kot_hos
+
+;-- Бюрер или кровосос
+[logic@hosafter1]
+active = mob_home@hosafter1
+
+[mob_home@hosafter1]
+path_home = hosafter1_walk
+home_min_radius = 50
+home_max_radius = 80
+on_signal = sig_attacked | mob_combat@hosafter1
+
+[mob_combat@hosafter1]
+on_timer = 60000 | mob_home@hosafter1
+
+[logic@hosafter2]
+active = mob_home@hosafter2
+
+[mob_home@hosafter2]
+path_home = hosafter2_walk
+home_min_radius = 50
+home_max_radius = 80
+on_signal = sig_attacked | mob_combat@hosafter2
+
+[mob_combat@hosafter2]
+on_timer = 60000 | mob_home@hosafter2
+
+;-- Чёрные сталкеры
+[logic@hospital_black_walker1]
+active = walker1@hospital_black
+
+[walker1@hospital_black]
+path_walk = psix1_walk
+path_look = psix1_look
+on_timer = 30000 | walker4@hospital_black
+
+[walker4@hospital_black]
+path_walk = psix2_walk
+path_look = psix2_look
+on_timer = 30000 | walker1@hospital_black
+
+[logic@hospital_black_walker2]
+active = walker2@hospital_black
+
+[walker2@hospital_black]
+path_walk = zdorov1_walk
+path_look = zdorov1_look
+
+[logic@hospital_black_walker3]
+active = walker3@hospital_black
+
+[walker3@hospital_black]
+path_walk = karaul1_walk
+path_look = karaul1_look

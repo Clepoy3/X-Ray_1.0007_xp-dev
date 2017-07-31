@@ -1,0 +1,113 @@
+;-- Сидор и Василий --
+[m_trader]
+GroupControlSection = spawn_group
+$spawn = "stalkers\trader"
+$prefetch = 5
+cform = skeleton
+class = AI_TRD_S
+visual = actors\trader\trader
+script_binding = bind_monster.bind
+
+scheduled   = on
+Human       = off
+Health      = 100
+MinSpeed    = 1.0
+MaxSpeed    = 1.5
+going_speed = 1.0
+
+rank = 1
+money = 1000000
+max_item_mass = 10000.0       ; умножается на 1000
+species = zombied
+
+ef_creature_type = 1
+ef_weapon_type   = 1
+
+attachable_items =
+
+ph_box0_center     = 0.00, 0.9, 0.0
+ph_box0_size       = 0.35, 0.9, 0.35
+ph_box1_center     = 0.00, 0.6, 0.0
+ph_box1_size       = 0.40, 0.6, 0.40
+ph_crash_speed_min = 8
+ph_crash_speed_max = 16
+ph_mass            = 170
+cost               = 1
+
+immunities_sect = trader_immunities
+condition_sect  = trader_condition
+
+
+;-- Черный доктор в бункере --
+[m_osoznanie]:stalker
+SpaceRestrictionSection = space_restrictor
+$spawn = "stalkers\osoznanie"
+
+; нестандартное окно диалога
+need_osoznanie_mode = true
+
+condition_sect  = trader_condition
+immunities_sect = trader_immunities
+
+
+;-- Бармен --
+[m_barman]:stalker_trader
+SpaceRestrictionSection = space_restrictor
+$spawn = "stalkers\barman"
+money = 1000000
+max_item_mass = 10000.0
+inv_max_weight = 10000.0
+visual = actors\barman\barman.ogf
+crouch_type = 1
+panic_threshold = 0.0
+species = zombied
+
+condition_sect  = trader_condition
+immunities_sect = trader_immunities
+movement_speeds = barman_movement_speeds
+
+[barman_movement_speeds]
+danger_crouch_walk_forward  = 0.8
+danger_crouch_walk_backward = 0.575
+danger_crouch_walk_left     = 0.8
+danger_crouch_walk_right    = 0.8
+danger_crouch_run_forward   = 2.0
+danger_crouch_run_backward  = 1.1
+danger_crouch_run_left      = 2.0
+danger_crouch_run_right     = 2.0
+danger_stand_walk_forward   = 1.2
+danger_stand_walk_backward  = 1.2
+danger_stand_walk_left      = 1.2
+danger_stand_walk_right     = 1.2
+danger_stand_run_forward    = 5.0
+danger_stand_run_backward   = 1.5
+danger_stand_run_left       = 5.0
+danger_stand_run_right      = 5.0
+free_stand_walk_forward     = 0.85
+free_stand_run_forward      = 2.5
+panic_stand_run_forward     = 6.5
+
+[trader_condition]
+morale_v            = 1.0
+psy_health_v        = 1.0
+radiation_v         = 1.0
+radiation_health_v  = 0.0
+health_hit_part     = 0.0
+power_hit_part      = 0.0
+bleeding_v          = 0.0
+wound_incarnation_v = 1.0
+min_wound_size      = 1.0
+health_restore_v    = 1.0
+limping_threshold   = 0.0
+
+[trader_immunities]
+burn_immunity          = 0.0
+strike_immunity        = 0.0
+shock_immunity         = 0.0
+wound_immunity         = 0.0
+radiation_immunity     = 0.0
+telepatic_immunity     = 0.0
+chemical_burn_immunity = 0.0
+explosion_immunity     = 0.0
+fire_wound_immunity    = 0.0
+wound_2_immunity       = 0.0

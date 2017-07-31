@@ -1,0 +1,172 @@
+local table_insert, string_format = table.insert, string.format
+
+function log( src, ct, fmt, ... )	-- src - откуда вызван, если false - не выводится, категория игнорируется
+	if src then
+		-- get_console():execute( string_format( "load ~%s~ [%s] %s", ct or "nil", src or "nil", fmt or "nil" ) )
+		get_console():execute( string_format( "load ~%s~ [%s] %s", ct, src, (... and string_format( fmt, ... )) or fmt ) )
+		if ct == "error" or ct == "log" then get_console():execute( "flush" ) end
+	else get_console():execute( string_format( "load ~%s~ %s", ct, (... and string_format( fmt, ... )) or fmt ) )
+	end
+end
+
+function abort( src, fmt, ... )
+	get_console():execute( string_format( "load ~error~: [%s] %s", src, fmt ) )
+	get_console():execute( string_format( "load ~error~: [%s] %s", src, ( ... and string_format( fmt, ... )) or fmt ) )
+	get_console():execute( "load ~~~ Обнаружена ошибка. Описание ошибки смотрите выше. Игра остановлена." )
+	get_console():execute( "load ~~~ Пожалуйста, не надо сообщать об ошибке в строке 20." )
+	get_console():execute( "load ~~~ Какую-либо ценность имеют 10 строк ВЫШЕ." )
+	get_console():execute( "load ~~~ game aborted because error described 10 lines above" )
+	get_console():execute( "flush" )
+	local a ; a = 1/a; get_console():execute( "quit" )
+	exit()
+end
+
+
+local sim
+
+function flush() get_console():execute( "flush" ) end
+
+
+function to_str( what )
+	if type( what ) == "userdata" then
+		local n = what["name"]
+		return ( type( n ) == "function" and string_format( "userdata[%s]", what:name() ) )
+			or ( type( n ) == "string" and string_format( "userdata[%s]", n ) )
+			or "*userdata*"
+	elseif what == nil then return "<nil>"	-- для извращенцев
+	end
+	return tostring( what )
+end
+
+
+function list_tbl( v, name, t_level )
+	local name = name or "item"
+	if type( v ) == "table" then
+		if t_level then
+			for i = 1, t_level do name = string_format( "__%s", name ) end
+		else t_level = 0
+		end
+		local cnt = 0
+		local vt
+		for kk, vv in pairs( v ) do
+			cnt = cnt + 1
+			vt = type( vv )
+			if type( kk ) == "userdata" then kk = to_str( kk ) end
+			if vt == "table" then
+				log( false, "info", "%s: %s, type: table", name, kk )
+				list_tbl( vv, kk, t_level + 1 )
+			else
+				if vt == "userdata" then vv = "*" end
+				log( false, "info", "%s: %s, type: %s, value: %s", name, kk, vt, tostring( vv ) )
+		end	end
+		log( false, "-----", "%s records in table [%s]", cnt, name )
+		return true
+	end
+	log( false, "error", "list_tbl: %s, invalid argument type: %s", name, type( v ) )
+end
+
+
+function create_items( npc, sect, n, size )	-- если есть size - это патроны
+	local npc_id, pos = npc:id(), npc:position()
+	local lv, gv = npc:level_vertex_id(), npc:game_vertex_id()
+	local r
+	if size then
+		local create = se_respawn.create_ammo
+		if size == 0 then size = 1 end
+		for i = 1, ( n or 1 ) do r = create( sect, pos, lv, gv, npc_id, size ) end
+	else
+		local sim = alife()
+		for i = 1, ( n or 1 ) do r = sim:create( sect, pos, lv, gv, npc_id ) end
+	end
+	return r
+end
+
+
+function rlse_tm( obj_id )
+	local obj = sim:object( obj_id )
+	if obj then sim:release( obj ) end
+end
+
+
+function release_timer( item, t )
+	local id = item and item:id()
+	local obj = id and alife():object( id )
+	if obj then
+		amk["timer_add"]( "rlse_tm", rlse_tm )
+		amk["timer_start"]( "rlse_tm", t or 1, id )
+		return true
+	end
+	return false
+end
+
+
+function release_item( item )
+	local obj_id = item and item:id()
+	local sim = obj_id and alife()
+	local obj = sim and sim:object( obj_id )
+	if obj then
+		sim:release( obj, true )
+		return true
+	end
+	return false
+end
+
+
+function release_list( ... )
+	local obj, n
+	local t = {...}
+	if t then
+		for i = 1, #t do
+			n = t[i]
+			log( "_util", "info", "release_list, %s (%s)", n, type( n ) )
+			obj = ( ( ( type( n ) == "number" ) and sim:story_object( n ) )
+				or ( ( type( n ) == "string" ) and sim:object( n ) ) )
+			if obj then
+				log( "_util", "info", "release_list, release %s", obj:name() )
+				sim:release( obj, true )
+			else log( "_util", "info", "release_list, no obj: %s", n )
+	end	end	end
+end
+
+
+function release_npc( n )	-- доделать для онлайна
+	local obj
+	local sim = n and alife()
+	if sim then
+		obj = ( ( type( n ) == "number" ) and sim:story_object( n ) )
+			or ( ( type( n ) == "string" ) and sim:object( n ) )
+		if obj then sim:release( obj, true ) end
+	end
+end
+
+
+function get_best_weapon( npc )
+	return npc:best_weapon()
+end
+
+
+function parse_kv( s, def )
+	local k, v
+	local t, n = {}, 0
+	for d in string_gfind( s, "([%w_%-.\\]+)[%p%s]*" ) do	-- выделяем то, что между запятыми/пробелами
+		if k then	-- если уже прочитан ключ, возможно, сейчас считали число
+			n = n + 1		-- но в таблицу что-то добавим по-любому
+			v = tonumber( d )
+			if v then		-- таки число
+				t[n] = { k, v }	-- кладем в таблицу
+				k = false	-- следующее, что получим - точно key
+			else			-- если это не число, значит - key
+				t[n] = { k, def } -- а key уже есть, берем дефолт
+				k = v		-- полученное сохраняем как новый key
+			end
+		else k = v	-- ключа нет, значит именно его сейчас и получили
+	end	end
+	if k then n = n + 1; t[n] = { k, def } end
+	return t
+end
+
+
+function init()
+	sim = alife()
+	return true
+end

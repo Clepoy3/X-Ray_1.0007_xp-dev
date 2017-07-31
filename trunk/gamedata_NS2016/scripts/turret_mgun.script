@@ -1,0 +1,38 @@
+
+class "se_turret_mgun" (cse_alife_helicopter)
+
+function se_turret_mgun:__init(section) super(section)
+	self.spawner_present = false
+	self.health = 1.0
+	self.direction = vector():set(0, 0, 0)
+end
+
+function se_turret_mgun:can_switch_offline()
+	return cse_alife_helicopter.can_switch_offline(self)
+end
+
+function se_turret_mgun:can_switch_online()
+	if self.health <= 0.005 then
+		return false
+	end
+	if self.spawner_present == nil then
+		local ini = self:spawn_ini()
+		self.spawner_present = ini:section_exist("spawner")
+	end
+	if self.spawner_present == true then
+		return cse_alife_helicopter.can_switch_online(self)
+	end
+	return xr_spawner.check_spawn(self)
+end    
+
+function se_turret_mgun:STATE_Read(packet, size)
+	cse_alife_helicopter.STATE_Read(self, packet, size)
+	self.health = packet:r_float()
+	self.direction = packet:r_vec3()
+end
+
+function se_turret_mgun:STATE_Write(packet)
+	cse_alife_helicopter.STATE_Write(self, packet)
+	packet:w_float(self.health)
+	packet:w_vec3(self.direction)
+end

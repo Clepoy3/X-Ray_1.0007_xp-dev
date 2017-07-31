@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+	<dialog id="mosinka">
+		<phrase_list>
+			<phrase id="0">
+                <text>mosinka_0</text>
+				<give_info>price_voron_mosin</give_info>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>mosinka_1</text>
+				<next>2</next>
+				<next>3</next>
+				<next>4</next>
+				<next>5</next>
+				<next>6</next>
+				<next>7</next>
+				<next>8</next>
+				<next>9</next>
+				<next>10</next>
+				<next>11</next>
+				<next>12</next>
+				<next>13</next>
+				<next>14</next>
+				<next>15</next>
+				<next>16</next>
+				<next>17</next>
+				<next>18</next>
+				<next>19</next>
+				<next>20</next>
+				<next>21</next>
+				<next>22</next>
+				<next>23</next>
+				<next>24</next>
+				<next>25</next>
+				<next>26</next>
+				<next>27</next>
+				<next>28</next>
+				<next>29</next>
+				<next>30</next>
+				<next>31</next>
+				<next>32</next>
+				<next>33</next>
+				<next>34</next>
+				<next>333</next>
+				<next>335</next>
+				<next>337</next>
+				<next>339</next>
+				<next>341</next>
+				<next>68</next>
+            </phrase>
+			<phrase id="2">
+			<precondition>wawka_dialog.na_hk417_sk1</precondition>
+                <text>mosinka_2</text>
+				<next>35</next>
+            </phrase>
+			<phrase id="3">
+			<precondition>wawka_dialog.na_mosinka_optika</precondition>
+                <text>mosinka_3</text>
+				<next>36</next>
+            </phrase>
+			<phrase id="4">
+			<precondition>wawka_dialog.na_ak74_m1</precondition>
+                <text>mosinka_4</text>
+				<next>37</next>
+            </phrase>
+			<phrase id="5">
+			<precondition>wawka_dialog.na_abakan_m1</precondition>
+                <text>mosinka_5</text>
+				<next>38</next>
+            </phrase>
+			<phrase id="6">
+			<precondition>wawka_dialog.na_fort_m1</precondition>
+                <text>mosinka_6</text>
+				<next>39</next>
+            </phrase>
+			<phrase id="7">
+			<precondition>wawka_dialog.na_mp5_m1</precondition>
+                <text>mosinka_7</text>
+				<next>40</next>
+            </phrase>
+			<phrase id="8">
+			<precondition>wawka_dialog.na_groza_m1</precondition>
+                <text>mosinka_8</text>
+				<next>41</next>
+            </phrase>
+			<phrase id="9">
+			<precondition>wawka_dialog.na_spas12_m1</precondition>
+                <text>mosinka_9</text>
+				<next>42</next>
+            </phrase>
+			<phrase id="10">
+			<precondition>wawka_dialog.na_winchester_m1</precondition>
+                <text>mosinka_10</text>
+				<next>43</next>
+            </phrase>
+			<phrase id="11">
+			<precondition>wawka_dialog.na_l85_m1</precondition>
+                <text>mosinka_11</text>
+				<next>44</next>
+            </phrase>
+			<phrase id="12">
+			<precondition>wawka_dialog.na_lr300_m1</precondition>
+                <text>mosinka_12</text>
+				<next>45</next>
+            </phrase>
+			<phrase id="13">
+			<precondition>wawka_dialog.na_svd_m1</precondition>
+                <text>mosinka_13</text>
+				<next>46</next>
+            </phrase>
+			<phrase id="14">
+			<precondition>wawka_dialog.na_sig_m1</precondition>
+                <text>mosinka_14</text>
+				<next>47</next>
+            </phrase>
+			<phrase id="15">
+			<precondition>wawka_dialog.na_eagle_m1</precondition>
+                <text>mosinka_15</text>
+				<next>48</next>
+            </phrase>
+			<phrase id="16">
+			<precondition>wawka_dialog.na_colt_m1</precondition>
+                <text>mosinka_16</text>
+				<next>49</next>
+            </phrase>
+			<phrase id="17">
+			<precondition>wawka_dialog.na_val_m1</precondition>
+                <text>mosinka_17</text>
+				<next>50</next>
+            </phrase>
+			<phrase id="18">
+			<precondition>wawka_dialog.na_mp5_m2</precondition>
+                <text>mosinka_18</text>
+				<next>51</next>
+            </phrase>
+			<phrase id="19">
+			<precondition>wawka_dialog.na_abakan_m2</precondition>
+                <text>mosinka_19</text>
+				<next>52</next>
+            </phrase>
+			<phrase id="20">
+			<precondition>wawka_dialog.na_l85_m2</precondition>
+                <text>mosinka_20</text>
+				<next>53</next>
+            </phrase>
+			<phrase id="21">
+			<precondition>wawka_dialog.na_ak74u_m1</precondition>
+                <text>mosinka_21</text>
+				<next>54</next>
+            </phrase>
+			<phrase id="22">
+			<precondition>wawka_dialog.na_sig_m2</precondition>
+                <text>mosinka_22</text>
+				<next>55</next>
+            </phrase>
+			<phrase id="23">
+			<precondition>wawka_dialog.na_g36_m1</precondition>
+                <text>mosinka_23</text>
+				<next>56</next>
+            </phrase>
+			<phrase id="24">
+			<precondition>wawka_dialog.na_svu_m1</precondition>
+                <text>mosinka_24</text>
+				<next>57</next>
+            </phrase>
+			<phrase id="25">
+			<precondition>wawka_dialog.na_beretta_m1</precondition>
+                <text>mosinka_25</text>
+				<next>58</next>
+            </phrase>
+			<phrase id="26">
+			<precondition>wawka_dialog.na_vintorez_m1</precondition>
+                <text>mosinka_26</text>
+				<next>59</next>
+            </phrase>
+			<phrase id="27">
+			<precondition>wawka_dialog.na_groza_m2</precondition>
+                <text>mosinka_27</text>
+				<next>60</next>
+            </phrase>
+			<phrase id="28">
+			<precondition>wawka_dialog.na_rg6_m1</precondition>
+                <text>mosinka_28</text>
+				<next>61</next>
+            </phrase>
+			<phrase id="29">
+			<precondition>wawka_dialog.na_walter_m1</precondition>
+                <text>mosinka_29</text>
+				<next>62</next>
+            </phrase>
+			<phrase id="30">
+			<precondition>wawka_dialog.na_pm_m1</precondition>
+                <text>mosinka_30</text>
+				<next>63</next>
+            </phrase>
+			<phrase id="31">
+			<precondition>wawka_dialog.na_rpg7</precondition>
+                <text>mosinka_31</text>
+				<next>64</next>
+            </phrase>
+			<phrase id="32">
+			<precondition>wawka_dialog.na_sr25_mk11_mod0_sk1</precondition>
+                <text>mosinka_32</text>
+				<next>65</next>
+            </phrase>
+			<phrase id="33">
+			<precondition>wawka_dialog.na_famas_p3_sk1</precondition>
+                <text>mosinka_33</text>
+				<next>66</next>
+            </phrase>
+			<phrase id="34">
+			<precondition>wawka_dialog.na_darkgauss</precondition>
+                <text>mosinka_34</text>
+				<next>67</next>
+            </phrase>
+			<phrase id="333">
+			<precondition>wawka_dialog.na_hunters_toz</precondition>
+                <text>mosinka_333</text>
+				<next>334</next>
+            </phrase>
+			<phrase id="335">
+			<precondition>wawka_dialog.na_ppsh</precondition>
+                <text>mosinka_335</text>
+				<next>336</next>
+            </phrase>
+			<phrase id="337">
+			<precondition>wawka_dialog.na_aps_sk1</precondition>
+                <text>mosinka_337</text>
+				<next>338</next>
+            </phrase>
+			<phrase id="339">
+			<precondition>wawka_dialog.na_xm8_para_sk2</precondition>
+                <text>mosinka_339</text>
+				<next>340</next>
+            </phrase>
+			<phrase id="341">
+			<precondition>wawka_dialog.na_fn2000_sniper</precondition>
+                <text>mosinka_341</text>
+				<next>342</next>
+            </phrase>
+
+			<phrase id="35">
+			<action>wawka_dialog.vzyal_hk417_sk1</action>
+                <text>mosinka_35</text>
+            </phrase>
+			<phrase id="36">
+			<action>wawka_dialog.vzyal_mosinka_optika</action>
+                <text>mosinka_36</text>
+            </phrase>
+			<phrase id="37">
+			<action>wawka_dialog.vzyal_ak74_m1</action>
+                <text>mosinka_37</text>
+            </phrase>
+			<phrase id="38">
+			<action>wawka_dialog.vzyal_abakan_m1</action>
+                <text>mosinka_38</text>
+            </phrase>
+			<phrase id="39">
+			<action>wawka_dialog.vzyal_fort_m1</action>
+                <text>mosinka_39</text>
+            </phrase>
+			<phrase id="40">
+			<action>wawka_dialog.vzyal_mp5_m1</action>
+                <text>mosinka_40</text>
+            </phrase>
+			<phrase id="41">
+			<action>wawka_dialog.vzyal_groza_m1</action>
+                <text>mosinka_41</text>
+            </phrase>
+			<phrase id="42">
+			<action>wawka_dialog.vzyal_spas12_m1</action>
+                <text>mosinka_42</text>
+            </phrase>
+			<phrase id="43">
+			<action>wawka_dialog.vzyal_winchester_m1</action>
+                <text>mosinka_43</text>
+            </phrase>
+			<phrase id="44">
+			<action>wawka_dialog.vzyal_l85_m1</action>
+                <text>mosinka_44</text>
+            </phrase>
+			<phrase id="45">
+			<action>wawka_dialog.vzyal_lr300_m1</action>
+                <text>mosinka_45</text>
+            </phrase>
+			<phrase id="46">
+			<action>wawka_dialog.vzyal_svd_m1</action>
+                <text>mosinka_46</text>
+            </phrase>
+			<phrase id="47">
+			<action>wawka_dialog.vzyal_sig_m1</action>
+                <text>mosinka_47</text>
+            </phrase>
+			<phrase id="48">
+			<action>wawka_dialog.vzyal_eagle_m1</action>
+                <text>mosinka_48</text>
+            </phrase>
+			<phrase id="49">
+			<action>wawka_dialog.vzyal_colt_m1</action>
+                <text>mosinka_49</text>
+            </phrase>
+			<phrase id="50">
+			<action>wawka_dialog.vzyal_val_m1</action>
+                <text>mosinka_50</text>
+            </phrase>
+			<phrase id="51">
+			<action>wawka_dialog.vzyal_mp5_m2</action>
+                <text>mosinka_51</text>
+            </phrase>
+			<phrase id="52">
+			<action>wawka_dialog.vzyal_abakan_m2</action>
+                <text>mosinka_52</text>
+            </phrase>
+			<phrase id="53">
+			<action>wawka_dialog.vzyal_l85_m2</action>
+                <text>mosinka_53</text>
+            </phrase>
+			<phrase id="54">
+			<action>wawka_dialog.vzyal_ak74u_m1</action>
+                <text>mosinka_54</text>
+            </phrase>
+			<phrase id="55">
+			<action>wawka_dialog.vzyal_sig_m2</action>
+                <text>mosinka_55</text>
+            </phrase>
+			<phrase id="56">
+			<action>wawka_dialog.vzyal_g36_m1</action>
+                <text>mosinka_56</text>
+            </phrase>
+			<phrase id="57">
+			<action>wawka_dialog.vzyal_svu_m1</action>
+                <text>mosinka_57</text>
+            </phrase>
+			<phrase id="58">
+			<action>wawka_dialog.vzyal_beretta_m1</action>
+                <text>mosinka_58</text>
+            </phrase>
+			<phrase id="59">
+			<action>wawka_dialog.vzyal_vintorez_m1</action>
+                <text>mosinka_59</text>
+            </phrase>
+			<phrase id="60">
+			<action>wawka_dialog.vzyal_groza_m2</action>
+                <text>mosinka_60</text>
+            </phrase>
+			<phrase id="61">
+			<action>wawka_dialog.vzyal_rg6_m1</action>
+                <text>mosinka_61</text>
+            </phrase>
+			<phrase id="62">
+			<action>wawka_dialog.vzyal_walter_m1</action>
+                <text>mosinka_62</text>
+            </phrase>
+			<phrase id="63">
+			<action>wawka_dialog.vzyal_pm_m1</action>
+                <text>mosinka_63</text>
+            </phrase>
+			<phrase id="64">
+			<action>wawka_dialog.vzyal_rpg7</action>
+                <text>mosinka_64</text>
+            </phrase>
+			<phrase id="65">
+			<action>wawka_dialog.vzyal_sr25_mk11_mod0_sk1</action>
+                <text>mosinka_65</text>
+            </phrase>
+			<phrase id="66">
+			<action>wawka_dialog.vzyal_famas_p3_sk1</action>
+                <text>mosinka_66</text>
+            </phrase>
+			<phrase id="67">
+			<action>wawka_dialog.vzyal_darkgauss</action>
+                <text>mosinka_67</text>
+            </phrase>
+			<phrase id="334">
+			<action>wawka_dialog.vzyal_hunters_toz</action>
+                <text>mosinka_334</text>
+            </phrase>
+			<phrase id="336">
+			<action>wawka_dialog.vzyal_ppsh</action>
+                <text>mosinka_336</text>
+            </phrase>
+			<phrase id="338">
+			<action>wawka_dialog.vzyal_aps_sk1</action>
+                <text>mosinka_338</text>
+            </phrase>
+			<phrase id="340">
+			<action>wawka_dialog.vzyal_xm8_para_sk2</action>
+                <text>mosinka_340</text>
+            </phrase>
+			<phrase id="342">
+			<action>wawka_dialog.vzyal_fn2000_sniper</action>
+                <text>mosinka_340</text>
+            </phrase>
+			<phrase id="68">
+                <text>mosinka_68</text>
+            </phrase>
+        </phrase_list>
+      </dialog>
+	<dialog id="trade_dialog_voron"> 
+		<phrase_list>
+			<phrase id="0">
+                <text>trade_dialog_voron_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>trade_dialog_voron_1</text>
+				<give_info>price_voron</give_info>
+				<action>ui_barter_menu.EnableBarterMenu</action>
+				<action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+	<dialog id="trade_dialog_maks"> 
+		<phrase_list>
+			<phrase id="0">
+                <text>trade_dialog_maks_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>trade_dialog_maks_1</text>
+				<give_info>price_maks</give_info>
+				<action>ui_barter_menu.EnableBarterMenu</action>
+				<action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+	<dialog id="tolik1_pomer_dialog">
+		<has_info>bar_deactivate_radar_start</has_info>
+		<dont_has_info>tolik_pomer_resiver_start</dont_has_info>
+		<dont_has_info>mil_volk_resiver_done</dont_has_info>
+		<dont_has_info>mil_volk_resiver_have</dont_has_info>
+		<has_info>tutorial_wounded_death</has_info>
+		<phrase_list>
+			<phrase id="0">
+				<text>tolik1_pomer_dialog_0</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>tolik1_pomer_dialog_1</text>
+				<next>2</next>
+				<next>3</next>
+			</phrase>
+			<phrase id="2">
+				<text>tolik1_pomer_dialog_2</text>
+				<give_info>tolik_pomer_resiver_start</give_info>
+			</phrase>
+			<phrase id="3">
+				<text>tolik1_pomer_dialog_3</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="tolik2_pomer_dialog">
+		<precondition>sak_dialog.mil_volk_resiver_have</precondition>
+		<dont_has_info>mil_volk_resiver_done</dont_has_info>
+		<has_info>mil_volk_resiver_have</has_info>
+		<has_info>tutorial_wounded_death</has_info>
+		<phrase_list>
+			<phrase id="0">
+				<text>tolik2_pomer_dialog_0</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>tolik2_pomer_dialog_1</text>
+				<next>2</next>
+			</phrase>
+			<phrase id="2">
+				<text>tolik2_pomer_dialog_2</text>
+				<give_info>mil_volk_resiver_done</give_info>
+				<action>sak_dialog.give_mil_volk_resiver</action>
+				<next>3</next>
+			</phrase>
+			<phrase id="3">
+				<text>tolik2_pomer_dialog_3</text>
+				<give_info>info_red_battery</give_info>
+				<action>sak.info_artmod</action>
+			</phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="radiotolik_pomer_dialog">
+		<has_info>tolik_pomer_resiver_start</has_info>
+		<has_info>tutorial_wounded_death</has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>radiotolik_pomer_dialog_0</text>
+                <next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>radiotolik_pomer_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>radiotolik_pomer_dialog_2</text>
+				<next>3</next>
+            </phrase>
+			<phrase id="3">
+                <text>radiotolik_pomer_dialog_3</text>
+				<give_info>mil_volk_resiver_1have</give_info>
+				<action>arhara_dialog.spawn_add_resiver</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+
+	<dialog id="bad_gravi_dialog">
+		<has_info>mil_Svoboda_trader_outfit_have</has_info>
+		<precondition>wawka_dialog.bad_gravi_have</precondition>
+                <dont_has_info>mil_Svoboda_trader_outfit_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>bad_gravi_dialog_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>bad_gravi_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>bad_gravi_dialog_2</text>
+			<action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+	<dialog id="bad_skat_dialog">
+		<has_info>sak_reward_outfit_have</has_info>
+		<precondition>wawka_dialog.bad_skat_have</precondition>
+                <dont_has_info>sak_reward_outfit_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>bad_skat_dialog_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>bad_skat_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>bad_skat_dialog_2</text>
+			<action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+	<dialog id="bad_mp5_m1_dialog">
+		<has_info>gar_dram_novice_mp5_m1_have</has_info>
+		<precondition>wawka_dialog.bad_mp5_m1_have</precondition>
+                <dont_has_info>gar_dram_novice_mp5_m1_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>bad_mp5_m1_dialog_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>bad_mp5_m1_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>bad_mp5_m1_dialog_2</text>
+			<next>3</next>
+		       </phrase>			
+
+			<phrase id="3">
+                <text>artmod_212_dialog_3</text>
+		<dont_has_info>gar_dram_novice_mp5_m1_done</dont_has_info>
+		<has_info>gar_dram_novice_mp5_m1_have</has_info>
+		<give_info>gar_dram_novice_mp5_m1_done</give_info>
+		<action>sak_dialog.give_gar_dram_novice_mp5_m1</action>
+		<give_info>info_artmod_electra_sparkler_mosquito_bald</give_info>
+		<action>sak.info_artmod</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+	
+<dialog id="bad_groza_dialog">
+		<has_info>esc_find_groza_have</has_info>
+		<precondition>wawka_dialog.bad_groza_have</precondition>
+                <dont_has_info>esc_find_groza_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>bad_groza_dialog_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>bad_groza_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>bad_groza_dialog_2</text>
+			<action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+	<dialog id="bad_eagle_m1_dialog">
+		<has_info>freeman_eagle_have</has_info>
+		<precondition>wawka_dialog.bad_eagle_m1_have</precondition>
+                <dont_has_info>freeman_eagle_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>bad_eagle_m1_dialog_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>bad_eagle_m1_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>bad_eagle_m1_dialog_2</text>
+				<next>3</next>
+            </phrase>
+			<phrase id="3">
+                <text>bad_eagle_m1_dialog_3</text>
+				<next>4</next>
+            </phrase>
+			<phrase id="4">
+                <text>bad_eagle_m1_dialog_4</text>
+				<action>new_dialog.freeman_eagle_done</action>
+				<give_info>freeman_eagle_done</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+	<dialog id="bad_rg66_dialog">
+		<has_info>bar_svoboda_rg6_start</has_info>
+		<precondition>wawka_dialog.bad_rg66_have</precondition>
+                <dont_has_info>bar_svoboda_rg6_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>bad_rg66_dialog_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>bad_rg66_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>bad_rg66_dialog_2</text>
+			<action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+	<dialog id="bad_gungauss_dialog">
+		<has_info>bar_dolg_petrenko_gaussgan_have</has_info>
+		<precondition>wawka_dialog.bad_gungauss_have</precondition>
+                <dont_has_info>bar_dolg_petrenko_gaussgan_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>bad_gungauss_dialog_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>bad_gungauss_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>bad_gungauss_dialog_2</text>
+			<give_info>bar_dolg_petrenko_gaussgan_done</give_info>
+			<action>sak_dialog.give_bar_dolg_petrenko_gaussgan</action>
+			<give_info>info_artmod_gravi_zharka</give_info>
+			<action>sak.info_artmod</action>
+			</phrase>
+        </phrase_list>
+    </dialog>
+	<dialog id="bad_rg6_dialog">
+		<has_info>bar_ivancov_rg6_start</has_info>
+		<precondition>wawka_dialog.bad_rg6_have</precondition>
+                <dont_has_info>bar_ivancov_rg6_have</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>bad_rg6_dialog_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>bad_rg6_dialog_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>bad_rg6_dialog_2</text>
+			<action>dialogs.break_dialog</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+
+<dialog id="start_update_outfit_shurup">
+                <has_info>mil_fblockpost_quest_complete</has_info>
+                <dont_has_info>price_upgrade_shurup</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>start_update_outfit_shurup_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>start_update_outfit_shurup_1</text>
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>start_update_outfit_shurup_2</text>
+				<give_info>price_upgrade_shurup</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+	<dialog id="start_update_outfit_dolgovyazyj">
+                <has_info>agroprom_military_case_done</has_info>
+                <dont_has_info>price_upgrade_dolgovyazyj</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+                <text>start_update_outfit_dolgovyazyj_0</text>
+				<next>1</next>
+            </phrase>
+			<phrase id="1">
+                <text>start_update_outfit_dolgovyazyj_1</text>
+
+				<next>2</next>
+            </phrase>
+			<phrase id="2">
+                <text>start_update_outfit_dolgovyazyj_2</text>
+				<give_info>price_upgrade_dolgovyazyj</give_info>
+			</phrase>
+        </phrase_list>
+    </dialog>
+
+</game_dialogs>

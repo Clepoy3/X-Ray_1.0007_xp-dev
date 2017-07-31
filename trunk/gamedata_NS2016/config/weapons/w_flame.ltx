@@ -1,0 +1,165 @@
+; Огнемет АМК системы Шурупа
+[wpn_flame]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	= 
+$spawn              	= "weapons\flame"
+$npc					= on				
+$prefetch 				= 8
+scheduled				= off               
+cform               	= skeleton
+class               	= WP_LR300			
+min_radius          	= 30				
+max_radius          	= 100				
+description				= wpn-flame_readme
+	
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier	= 1.0		        
+holder_fov_modifier		= 0.7              
+
+cost					= 30000				
+weapon_class			= assault_rifle		
+	
+ammo_limit				= 210				
+ammo_elapsed			= 30				
+	
+ammo_mag_size			= 150				
+fire_modes				= -1
+f_mode				= 2
+
+ammo_class				= ammo_flame    
+
+hand_dependence			= 2									
+single_handed			= 0
+	
+slot 					= 2									
+animation_slot			= 2									
+
+inv_name	        	= wpn-flame_name									
+inv_name_short			= wpn-flame_name_s	
+inv_weight			= 5								
+
+inv_grid_width     = 4
+inv_grid_height    = 1
+inv_grid_x         = 24
+inv_grid_y         = 20
+
+kill_msg_x			= 0
+kill_msg_y			= 123
+kill_msg_width		= 69
+kill_msg_height		= 30
+
+;params of weapon recoil
+fire_dispersion_base			= 2.0		
+control_inertion_factor			= 1.25f
+disp_rate = 1.6
+
+;отдача
+cam_relax_speed				= 5
+cam_dispersion				= 0.001
+cam_dispersion_inc			= 0.00001
+cam_dispertion_frac			= 0.00001
+cam_max_angle				= 0.00001
+cam_max_angle_horz			= 0.01
+cam_step_angle_horz			= 1.1
+
+fire_dispersion_condition_factor	= 3
+misfire_probability			= 0.003
+misfire_condition_k			= 0.05
+condition_shot_dec			= 0.0005
+
+fire_point					= 0,0.0,0.610
+
+flame_particles				= amk\firebat
+smoke_particles				= 
+grenade_flame_particles		= weapons\generic_weapon01
+	
+shell_point		 			= 0.00, 0.262, 0.189
+
+PDM_disp_base 				= 1.0
+PDM_disp_vel_factor 		= 1.3
+PDM_disp_accel_factor 		= 1.3
+PDM_crouch	 				= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+; ttc
+hit_power					= 1.2
+hit_impulse		 			= 0
+hit_type 					= burn
+hit_rate					= 2.5
+
+fire_distance				= 15
+bullet_speed				= 60
+rpm							= 300
+
+use_aim_bullet				= false
+time_to_aim					= 1.0
+
+hud							= wpn_flame_hud
+
+position					= -0.015,0.15,0.3
+orientation					= 0,0,0
+
+strap_position				= -0.16,-0.10,0.15
+strap_orientation			= -10,-5,10
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+visual						= weapons\ognemet\wpn_flame.ogf
+
+light_color					= 0.6,0.5,0.3				
+light_range					= 5							
+light_var_color				= 0.05						
+light_var_range				= 0.5
+light_time 					= 0.2						
+
+ph_mass						= 5							
+
+;addons
+scope_status				= 0							
+silencer_status				= 0							
+grenade_launcher_status		= 0							
+
+zoom_enabled				= false						
+scope_zoom_factor	    	= 50
+
+snd_draw					= $no_sound ;weapons\ak74_draw
+snd_holster					= $no_sound ;weapons\generic_holster
+snd_shoot					= weapons\F-0
+snd_shoot1					= weapons\F-1
+snd_shoot2					= weapons\F-2
+snd_shoot3					= weapons\F-3
+snd_empty					= $no_sound
+snd_reload					= $no_sound
+snd_shoot_grenade			= $no_sound
+snd_reload_grenade			= $no_sound
+snd_switch					= $no_sound
+
+[wpn_flame_hud]
+shell_point     	   	 	= 10.15, 0.0, -0.05
+shell_dir			     	= -0.01, 1.0, 0.0
+
+fire_point			= 0.0,0.0,0.0
+fire_point2              	= 0.0, 0.00, 0.0
+fire_bone               	= wpn_flame
+
+orientation             	= 0.0, 0.0, 0.0		
+position                 	= -0.12, -0.17, 0.07
+visual                  	= weapons\ognemet\wpn_flame_hud.ogf
+
+; animation names
+anim_idle				= idle
+anim_idle_aim				= idle
+anim_reload				= empty
+anim_draw				= draw
+anim_holster				= holster
+anim_shoot				= shoot
+anim_idle_sprint			= sprint
+
+zoom_offset			= -0.137700,0.033800,-0.115100
+zoom_rotate_x		= -0.005000
+zoom_rotate_y		= 0.017900
+
+zoom_hide_crosshair	= true						
+

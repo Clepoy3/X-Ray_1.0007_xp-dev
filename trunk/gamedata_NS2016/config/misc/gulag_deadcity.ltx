@@ -1,0 +1,638 @@
+;-- Сталкеры
+[logic@cit_st_lager_walker1]
+active = walker1@cit_st_lager
+
+[walker1@cit_st_lager]
+path_walk = walk1
+path_look = look1
+danger = danger_ignore@cit_st_lager
+meet = meet@cit_st_lager
+
+
+[logic@cit_st_lager_walker2]
+active = walker2@cit_st_lager
+
+[walker2@cit_st_lager]
+path_walk = walk2
+path_look = look2
+danger = danger_ignore@cit_st_lager
+meet = meet@cit_st_lager
+
+
+[logic@cit_st_lager_walker3]
+active = walker3@cit_st_lager
+
+[walker3@cit_st_lager]
+path_walk = walk3
+path_look = look3
+danger = danger_ignore@cit_st_lager
+meet = meet@cit_st_lager
+
+
+[logic@cit_st_lager_walker4]
+active = walker4@cit_st_lager
+
+[walker4@cit_st_lager]
+path_walk = walk4
+path_look = look4
+danger = danger_ignore@cit_st_lager
+meet = meet@cit_st_lager
+
+
+[logic@cit_st_lager_kamp1]
+active = kamp1@cit_st_lager
+
+[kamp1@cit_st_lager]
+center_point  = kamp1
+path_walk = kamp1_task
+danger = danger_ignore@cit_st_lager
+meet = meet@cit_st_lager
+
+
+[meet@cit_st_lager]
+use = true
+use_wpn = true
+
+[danger_ignore@cit_st_lager]
+ignore_distance = 30
+
+
+;-- Бандиты
+[logic@dead_city_banda_walker1]
+active = walker1@dead_city_banda
+
+[walker1@dead_city_banda]
+path_walk = indus1_walk
+path_look = indus1_look
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+
+[logic@dead_city_banda_kamp1]
+active = kamp1@dead_city_banda
+
+[kamp1@dead_city_banda]
+center_point  = bandit_camp_center
+path_walk = bandit_camp_center_task
+radius = 2.4
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+on_timer = 200000 | kamp2@dead_city_banda
+
+[kamp2@dead_city_banda]
+center_point  = bandit1_camp_center
+path_walk = bandit1_camp_center_task
+radius = 2.4
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+on_timer = 150000 | kamp1@dead_city_banda
+
+[logic@dead_city_banda_walker2]
+active = walker2@dead_city_banda
+
+[walker2@dead_city_banda]
+path_walk = indus2_walk
+path_look = indus2_look
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+
+[logic@dead_city_banda_walker3]
+active = walker3@dead_city_banda
+
+[walker3@dead_city_banda]
+path_walk = indus3_walk
+path_look = indus3_look
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+
+[logic@dead_city_banda_walker4]
+active = walker4@dead_city_banda
+
+[walker4@dead_city_banda]
+path_walk = indus4_walk
+path_look = indus4_look
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+
+[logic@dead_city_banda_walker5]
+active = walker5@dead_city_banda
+
+[walker5@dead_city_banda]
+path_walk = indus5_walk
+path_look = indus5_look
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+
+[logic@dead_city_banda_kamp3]
+active = kamp3@dead_city_banda
+
+[kamp3@dead_city_banda]
+center_point  = bandit1_camp_center
+path_walk = bandit1_camp_center_task
+radius = 2.4
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+on_timer = 150000 | kamp4@dead_city_banda
+
+[kamp4@dead_city_banda]
+center_point  = bandit_camp_center
+path_walk = bandit_camp_center_task
+radius = 2.4
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+on_timer = 150000 | kamp3@dead_city_banda
+
+[logic@dead_city_banda_kamp5]
+active = kamp5@dead_city_banda
+
+[kamp5@dead_city_banda]
+center_point  = bandit1_camp_center
+path_walk = bandit1_camp_center_task
+radius = 2.4
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+on_timer = 130000 | kamp6@dead_city_banda
+
+[kamp6@dead_city_banda]
+center_point  = bandit_camp_center
+path_walk = bandit_camp_center_task
+radius = 2.4
+danger = danger_ignore@dead_city_banda
+meet = meet@dead_city_banda
+on_timer = 160000 | kamp5@dead_city_banda
+
+[meet@dead_city_banda]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+
+[danger_ignore@dead_city_banda]
+ignore_distance = 10
+
+;-- Бандиты в гаражах
+[logic@dcity_bandit_garazh_kamp1]
+active = kamp1@dcity_bandit_garazh
+
+[kamp1@dcity_bandit_garazh]
+center_point  = garazh_camp_center
+path_walk = garazh_camp_center_task
+radius = 2.4
+
+[logic@dcity_bandit_garazh_kamp2]
+active = kamp2@dcity_bandit_garazh
+
+[kamp2@dcity_bandit_garazh]
+center_point  = garazh_camp_center
+path_walk = garazh_camp_center_task
+radius = 2.4
+on_timer = 80000 | walker1@dcity_bandit_garazh
+
+[walker1@dcity_bandit_garazh]
+path_walk = fofan1_walk
+path_look = fofan1_look
+on_timer = 10000 | walker2@dcity_bandit_garazh
+
+[walker2@dcity_bandit_garazh]
+path_walk = fofan2_walk
+path_look = fofan2_look
+on_timer = 10000 | kamp2@dcity_bandit_garazh
+
+;-- Третий гулаг бандитов
+[logic@dcity_bandit_gulag3_walker1]
+active = walker1@dcity_bandit_gulag3
+
+[walker1@dcity_bandit_gulag3]
+path_walk = xren1_walk
+path_look = xren1_look
+
+[logic@dcity_bandit_gulag3_walker2]
+active = walker2@dcity_bandit_gulag3
+
+[walker2@dcity_bandit_gulag3]
+path_walk = xren2_walk
+path_look = xren2_look
+
+[logic@dcity_bandit_gulag3_walker3]
+active = walker3@dcity_bandit_gulag3
+
+[walker3@dcity_bandit_gulag3]
+path_walk = xren3_walk
+path_look = xren3_look
+
+[logic@dcity_bandit_gulag3_kamp1]
+active = kamp1@dcity_bandit_gulag3
+
+[kamp1@dcity_bandit_gulag3]
+center_point  = gulag3_camp_center
+path_walk = gulag3_camp_center_task
+radius = 2.4
+
+;-- Наёмники
+[logic@dead_city_naymitu_walker1]
+active = walker1@dead_city_naymitu
+
+[walker1@dead_city_naymitu]
+path_walk = krek1_walk
+path_look = krek1_look
+
+[logic@dead_city_naymitu_kamp1]
+active = kamp1@dead_city_naymitu
+
+[kamp1@dead_city_naymitu]
+center_point  = dvor_camp_center
+path_walk = dvor_camp_center_task
+radius = 2.4
+on_timer = 200000 | kamp2@dead_city_naymitu
+
+[kamp2@dead_city_naymitu]
+center_point  = shtab_camp_center
+path_walk = shtab_camp_center_task
+radius = 2.4
+on_timer = 200000 | kamp1@dead_city_naymitu
+
+[logic@dead_city_naymitu_walker2]
+active = walker2@dead_city_naymitu
+
+[walker2@dead_city_naymitu]
+path_walk = krek2_walk
+path_look = krek2_look
+
+[logic@dead_city_naymitu_walker3]
+active = walker3@dead_city_naymitu
+
+[walker3@dead_city_naymitu]
+path_walk = krek3_walk
+path_look = krek3_look
+
+[logic@dead_city_naymitu_walker4]
+active = walker4@dead_city_naymitu
+
+[walker4@dead_city_naymitu]
+path_walk = krek4_walk
+path_look = krek4_look
+
+[logic@dead_city_naymitu_walker5]
+active = walker5@dead_city_naymitu
+
+[walker5@dead_city_naymitu]
+path_walk = krek5_walk
+path_look = krek5_look
+
+[logic@dead_city_naymitu_kamp3]
+active = kamp3@dead_city_naymitu
+
+[kamp3@dead_city_naymitu]
+center_point  = dvor_camp_center
+path_walk = dvor_camp_center_task
+radius = 2.4
+on_timer = 100000 | walker6@dead_city_naymitu
+
+[walker6@dead_city_naymitu]
+path_walk = krek6_walk
+path_look = krek6_look
+on_timer = 50000 | kamp4@dead_city_naymitu
+
+[kamp4@dead_city_naymitu]
+center_point  = dvor_camp_center
+path_walk = dvor_camp_center_task
+radius = 2.4
+on_timer = 90000 | walker7@dead_city_naymitu
+
+[walker7@dead_city_naymitu]
+path_walk = krek7_walk
+path_look = krek7_look
+on_timer = 50000 | kamp3@dead_city_naymitu
+
+[logic@dead_city_naymitu_kamp5]
+active = kamp5@dead_city_naymitu
+
+[kamp5@dead_city_naymitu]
+center_point  = shtab_camp_center
+path_walk = shtab_camp_center_task
+radius = 2.4
+on_timer = 130000 | walker8@dead_city_naymitu
+
+[walker8@dead_city_naymitu]
+path_walk = krek8_walk
+path_look = krek8_look
+on_timer = 120000 | kamp5@dead_city_naymitu
+
+;-- Последний день
+[logic@dcity_lastday_walker1]
+active = walker1@dcity_lastday
+
+[walker1@dcity_lastday]
+path_walk = chmo1_walk
+path_look = chmo1_look
+
+[logic@dcity_lastday_walker2]
+active = walker2@dcity_lastday
+
+[walker2@dcity_lastday]
+path_walk = chmo2_walk
+path_look = chmo2_look
+
+[logic@dcity_lastday_walker3]
+active = walker3@dcity_lastday
+
+[walker3@dcity_lastday]
+path_walk = chmo3_walk
+path_look = chmo3_look
+
+[logic@dcity_lastday_walker4]
+active = walker4@dcity_lastday
+
+[walker4@dcity_lastday]
+path_walk = chmo4_walk
+path_look = chmo4_look
+
+[logic@dcity_lastday_walker5]
+active = walker5@dcity_lastday
+
+[walker5@dcity_lastday]
+path_walk = chmo5_walk
+path_look = chmo5_look
+
+[logic@dcity_lastday_kamp1]
+active = kamp1@dcity_lastday
+
+[kamp1@dcity_lastday]
+center_point  = kultorg_camp_center
+path_walk = kultorg_camp_center_task
+radius = 2.4
+danger = danger_ignore@dcity_lastday
+on_timer = 150000 | kamp3@dcity_lastday
+
+[kamp3@dcity_lastday]
+center_point  = saray_camp_center
+path_walk = saray_camp_center_task
+radius = 2.4
+danger = danger_ignore@dcity_lastday
+on_timer = 150000 | kamp1@dcity_lastday
+
+[logic@dcity_lastday_walker6]
+active = walker6@dcity_lastday
+
+[walker6@dcity_lastday]
+path_walk = chmo6_walk
+path_look = chmo6_look
+
+[logic@dcity_lastday_kamp2]
+active = kamp2@dcity_lastday
+
+[kamp2@dcity_lastday]
+center_point  = kultorg_camp_center
+path_walk = kultorg_camp_center_task
+radius = 2.4
+danger = danger_ignore@dcity_lastday
+
+[logic@dcity_lastday_walker7]
+active = walker7@dcity_lastday
+
+[walker7@dcity_lastday]
+path_walk = chmo7_walk
+path_look = chmo7_look
+
+[logic@dcity_lastday_walker8]
+active = walker8@dcity_lastday
+
+[walker8@dcity_lastday]
+path_walk = chmo8_walk
+path_look = chmo8_look
+
+[logic@dcity_lastday_walker9]
+active = walker9@dcity_lastday
+
+[walker9@dcity_lastday]
+path_walk = chmo9_walk
+path_look = chmo9_look
+
+[logic@dcity_lastday_walker10]
+active = walker10@dcity_lastday
+
+[walker10@dcity_lastday]
+path_walk = chmo10_walk
+path_look = chmo10_look
+
+[logic@dcity_lastday_walker11]
+active = walker11@dcity_lastday
+
+[walker11@dcity_lastday]
+path_walk = chmo11_walk
+path_look = chmo11_look
+
+[logic@dcity_lastday_walker12]
+active = walker12@dcity_lastday
+
+[walker12@dcity_lastday]
+path_walk = chmo12_walk
+path_look = chmo12_look
+
+[logic@dcity_lastday_walker13]
+active = walker13@dcity_lastday
+
+[walker13@dcity_lastday]
+path_walk = chmo13_walk
+path_look = chmo13_look
+
+[logic@dcity_lastday_walker14]
+active = walker14@dcity_lastday
+
+[walker14@dcity_lastday]
+path_walk = chmo14_walk
+path_look = chmo14_look
+
+[logic@dcity_lastday_walker15]
+active = walker15@dcity_lastday
+
+[walker15@dcity_lastday]
+path_walk = chmo15_walk
+path_look = chmo15_look
+
+[logic@dcity_lastday_walker16]
+active = walker16@dcity_lastday
+
+[walker16@dcity_lastday]
+path_walk = chmo16_walk
+path_look = chmo16_look
+
+[logic@dcity_lastday_walker17]
+active = walker17@dcity_lastday
+
+[walker17@dcity_lastday]
+path_walk = chmo17_walk
+path_look = chmo17_look
+
+[danger_ignore@dcity_lastday]
+ignore_distance = 5
+
+;-- Кровососы
+[logic@dcitysos1]
+active = mob_home@dcitysos1
+
+[mob_home@dcitysos1]
+path_home = dcitysos1_walk
+home_min_radius = 40
+home_max_radius = 60
+on_signal = sig_attacked | mob_combat@dcitysos1
+
+[mob_combat@dcitysos1]
+on_timer = 60000 | mob_home@dcitysos1
+
+[logic@dcitysos2]
+active = mob_home@dcitysos2
+
+[mob_home@dcitysos2]
+path_home = dcitysos2_walk
+home_min_radius = 40
+home_max_radius = 60
+on_signal = sig_attacked | mob_combat@dcitysos2
+
+[mob_combat@dcitysos2]
+on_timer = 60000 | mob_home@dcitysos2
+
+;-- Библиотекарь
+[logic@dcity_bibliotekar_home]
+active = mob_home@dcity_bibliotekar
+
+[mob_home@dcity_bibliotekar]
+path_home = home
+home_min_radius = 15
+home_max_radius = 40
+
+;-- Псевдогигант
+[logic@dcity_gigant_home]
+active = mob_home@dcity_gigant
+
+[mob_home@dcity_gigant]
+path_home = home
+home_min_radius = 15
+home_max_radius = 50
+
+;-- Тушканы
+[logic@dcity_tushkano_home1]
+active = mob_home1@dcity_tushkano
+
+[mob_home1@dcity_tushkano]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@dcity_tushkano_home2]
+active = mob_home2@dcity_tushkano
+
+[mob_home2@dcity_tushkano]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@dcity_tushkano_home3]
+active = mob_home3@dcity_tushkano
+
+[mob_home3@dcity_tushkano]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 50
+
+;-- Изломы
+[logic@dcity_fracture_home1]
+active = mob_home1@dcity_fracture
+
+[mob_home1@dcity_fracture]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@dcity_fracture_home2]
+active = mob_home2@dcity_fracture
+
+[mob_home2@dcity_fracture]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+;-- Слепыши
+[logic@dcity_dog1_home1]
+active = mob_home1@dcity_dog1
+
+[mob_home1@dcity_dog1]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@dcity_dog1_home2]
+active = mob_home2@dcity_dog1
+
+[mob_home2@dcity_dog1]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@dcity_dog2_home]
+active = mob_home@dcity_dog2
+
+[mob_home@dcity_dog2]
+path_home = home
+home_min_radius = 15
+home_max_radius = 50
+
+;-- Кабаны с поросятами
+[logic@dcity_boar_home1]
+active = mob_home1@dcity_boar
+
+[mob_home1@dcity_boar]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@dcity_boar_home2]
+active = mob_home2@dcity_boar
+
+[mob_home2@dcity_boar]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 40
+
+[logic@dcity_boar_home3]
+active = mob_home3@dcity_boar
+
+[mob_home3@dcity_boar]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 40
+
+;-- Свиньи
+[logic@dcity_flesh_home]
+active = mob_home@dcity_flesh
+
+[mob_home@dcity_flesh]
+path_home = home
+home_min_radius = 15
+home_max_radius = 60
+
+;-- Псевдособаки
+[logic@dcity_pseudodog_home1]
+active = mob_home1@dcity_pseudodog
+
+[mob_home1@dcity_pseudodog]
+path_home = home1
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@dcity_pseudodog_home2]
+active = mob_home2@dcity_pseudodog
+
+[mob_home2@dcity_pseudodog]
+path_home = home2
+home_min_radius = 15
+home_max_radius = 50
+
+[logic@dcity_pseudodog_home3]
+active = mob_home3@dcity_pseudodog
+
+[mob_home3@dcity_pseudodog]
+path_home = home3
+home_min_radius = 15
+home_max_radius = 50
+
+
+

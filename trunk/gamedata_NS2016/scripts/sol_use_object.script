@@ -1,0 +1,180 @@
+		---- *** Проверка на использование предмета в рюкзаке ГГ *** ----
+-- ** Реализация для NS_2013 - lsclon ** --
+
+--' Таблица функций
+local object_use = {}
+
+--' Запуск функций(из bind_stalker.on_use_object)
+function on_use_object(obj)
+	local section = obj:section()
+	local sect = section
+	if string.sub(section,1,9) == 'fake_wpn_' then
+		sect = 'fake_wpn_'
+	end
+	if object_use[sect] then
+		return object_use[sect](section)
+	end
+end	
+
+---' Исполняющие функции '---
+
+--' антидот:
+-- востанавливает пси - здоровье
+object_use['antizombie'] = function()
+	db.actor.psy_health = 1.0 
+end
+
+--' энергетик:
+-- до обнуления счетчика "выпитых энергетиков", учитывывает только четыре
+-- взависимости от количества выпитого:
+	-- уменьшает счетчик времени "без_сна" - от 48 до 120 минут
+	-- увеличивает таймер "блокировки сна" - от 48 до 120 минут
+object_use['energy_drink'] = function()
+	local nrg = amk.load_variable("gg_need_sleep_nrg",0)
+	local snd_obj = xr_sound.get_safe_sound_object([[interface\drink]])
+	if snd_obj then
+		snd_obj:play_no_feedback(db.actor,sound_object.s2d,0,vector(),1)
+	end
+	if nrg <= 3 then
+		local tmp = amk.load_variable("gg_need_sleep",0)
+		amk.save_variable("gg_need_sleep_nrg",nrg + 1)
+		if tmp > 300 then
+			amk.save_variable("gg_need_sleep",300 - (8 - nrg*2))
+		else
+			amk.save_variable("gg_need_sleep",tmp - (8 - nrg*2))
+		end
+		test_sleep_pp()
+		local _,time_ms,_ = amk.has_timer("block_sleep_menu")
+		local time_end = tonumber(time_ms)
+		local result = 48
+		if time_end and nrg > 0 then
+			time_end = (time_end - amk.game_milliseconds())/(60000)
+			result = time_end + (result - nrg*12)
+		end
+		amk.g_start_timer("block_sleep_menu",0,0,result)
+		amk.save_variable("block_sleep_menu",1)
+	end
+end
+
+--' нож: 
+-- вставит в слот и заменит если в слоте уже есть другой
+object_use['fake_wpn_'] = function(sect)
+	local sim = alife()
+	local actor = db.actor
+	local length = string.len(sect)
+	local real_weapon = string.sub(sect, -(length - 5))
+	local slot0 = actor:item_in_slot(0)
+	if slot0 then
+		local sect0 = slot0:section()
+		local cond0 = slot0:condition()
+		sim:release(sim:object(slot0:id()),true)
+		sim:create("fake_"..sect0,actor:position(),actor:level_vertex_id(),actor:game_vertex_id(),actor:id())
+	end
+	sim:create(real_weapon,actor:position(),actor:level_vertex_id(),actor:game_vertex_id(),actor:id())
+end
+
+--' вода:
+object_use['flaska'] = function()
+	local snd_obj = xr_sound.get_safe_sound_object([[interface\voda]])
+	if snd_obj then
+		snd_obj:play_no_feedback(db.actor,sound_object.s2d,0,vector(),1)
+	end
+end
+
+--' матрас:
+-- уложит спать, если:
+	-- нет флага "блокировки сна" энергетиком
+	-- значение счетчика времени "без_сна" не менее 8 часов
+	-- растояние до врага выше 60 метров
+	-- нет выброса и ЧУ
+object_use['matras'] = function()
+	amk.spawn_item_in_inv("matras")
+	local actor = db.actor
+	local no_sleep = amk.load_variable("block_sleep_menu",0)
+	local str = game.translate_string
+--	if no_sleep > 0 then
+--		return amk.send_tip(str("not_need_sleep_nrg"),nil,nil,5)
+--	end
+--	no_sleep = amk.load_variable("gg_need_sleep",0)
+--	if no_sleep < 80 and actor.health > 0.7 then
+--		return amk.send_tip(str("not_need_sleep"),nil,nil,5)
+--	end
+	local actor_pos = actor:position()
+	local obj
+	local level_object_by_id = level.object_by_id
+	for id, npc in pairs(db.storage) do
+		obj = level_object_by_id(id)
+		if obj and obj:see(actor) and obj:position():distance_to(actor_pos) < 60 then
+			if IAmAMonster[obj:clsid()] or (IAmAStalker[obj:clsid()] and obj:relation(actor) == game_object.enemy) then
+				return amk.send_tip(str("not_need_sleep_enemy"),nil,nil,5)
+			end
+		end
+	end
+	no_sleep = amk.load_variable("blowout",-1)
+	if no_sleep >= 0 then
+		return amk.send_tip(str("blowout_not_sleep"),nil,nil,5)
+	end
+	no_sleep = amk.load_variable("horror",-1)
+	if no_sleep >= 0 then
+		return amk.send_tip(str("not_need_sleep_in_hell"),nil,nil,5)
+	end
+	local spwn = ui_sleep_menu.sleep_menu()
+	level.start_stop_menu(spwn,true)
+end
+
+--' сыворотка:
+-- влияет на сон, как и энергетик
+-- востанавливает пси - здоровье
+object_use['suvorotka'] = function()
+	local nrg = amk.load_variable("gg_need_sleep_nrg",0)
+	if nrg <= 3 then
+		local tmp = amk.load_variable("gg_need_sleep",0)
+		amk.save_variable("gg_need_sleep_nrg",nrg + 1)
+		if tmp > 300 then
+			amk.save_variable("gg_need_sleep",300 - (8 - nrg*2))
+		else
+			amk.save_variable("gg_need_sleep",tmp - (8 - nrg*2))
+		end
+		test_sleep_pp()
+		local _,time_ms,_ = amk.has_timer("block_sleep_menu")
+		local time_end = tonumber(time_ms)
+		local result = 48
+		if time_end and nrg > 0 then
+			time_end = (time_end - amk.game_milliseconds())/(60000)
+			result = time_end + (result - nrg*12)
+		end
+		amk.g_start_timer("block_sleep_menu",0,0,result)
+		amk.save_variable("block_sleep_menu",1)
+	end
+	db.actor.psy_health = 1.0 
+end
+
+--' рюкзак:
+-- заспавнит возле ГГ рюкзак
+object_use['treasure_item'] = function()
+	local actor = db.actor
+	local sobj = alife():create("m_inventory_box",actor:position(),actor:level_vertex_id(),actor:game_vertex_id())
+	if sobj then
+		local tbl = amk.get_invbox_data(sobj)
+		tbl.custom = "[logic]\ncfg = scripts\\treasure_inventory_box.ltx"
+		amk.set_invbox_data(tbl,sobj)
+		--amk.add_spot_on_map(sobj.id, "treasure_spot", "My treasure")
+	end
+end
+
+---' Вспомогательные функции '---
+
+-- проверяет счетчик времени "без_сна"
+function test_sleep_pp()
+	local tmp = amk.load_variable("gg_need_sleep",0)
+	if tmp > 360  and not db.actor:is_talking() then
+		sleep_manager.main(8 + amk.load_variable("gg_need_sleep_nrg",0))
+	end
+	if tmp > 300 and tmp <= 360 then
+		level.add_pp_effector("yantar_underground_psi.ppe",999,true)
+		level.set_pp_effector_factor(999,5.0)
+	end
+	if tmp <= 300 then
+		level.remove_pp_effector(999)
+	end
+end

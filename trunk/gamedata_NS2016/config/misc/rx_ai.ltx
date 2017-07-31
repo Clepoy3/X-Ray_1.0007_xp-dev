@@ -1,0 +1,28 @@
+;--------------------------------------
+; Rulix aka Bak
+; Настройки модулей rx_ai.script
+;--------------------------------------
+
+[npc_eating]
+enabled = true
+excluded_communities = zombied
+excluded_npcs = none
+medkit_health = 60 ; кушаем аптечку если здоровье меньше, %
+bandage_bleeding = 0.2 ; кушаем бинт, если кровотечение больше
+medkits = medkit,medkit_army,medkit_scientic ; аптечки или то чем можно лечиться
+bandages = bandage ; бинты
+in_combat = false ; лечиться в бою
+out_combat = true ; лечиться вне боя
+delay = 14000,26000 ; мин. и максимальная задержка перед лечением
+
+[look_into_os]
+enabled			= true
+excluded_communities	= zombied
+excluded_sections	= none
+excluded_npcs		= none
+; для 2x оптики
+range_add			= 30 ; %
+fov_add			= -20 ; %
+
+
+

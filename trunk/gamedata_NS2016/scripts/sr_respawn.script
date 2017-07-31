@@ -1,0 +1,333 @@
+---' for NS_2016 lsclon 13.12.16 '---
+--' Sr_Respawn. Логическая схема рестриктора. Спавн объектов в радиусе от рестриктора или ГГ или сида.
+
+--[[
+Описание:
+	Схема писалась под определенные квесты, поэтому возможности ограничены.
+	Поддерживает спавн нпс или мобов.
+	Точка спавна выбирается рандомно в заданном радиусе от парента(сам рестриктор или ГГ или объект с сидом).
+	Радиус ограничен дистанцией до ГГ(параметр "actor_dist"). По умолчанию - 10 метров.
+	В точке спавна можно задать отыгрывание партиклов
+	Рестриктор спавнит заданное количество объектов, рандомно выбирая секцию из параметра "spawn_sect".
+	Отслеживает оставшихся в живых, и при уменьшении их колличества до параметра "max_count",
+		производит респавн до максимального значения.
+	Параметр "max_count", также является флагом доспавна. Если его не указывать, спавн будет одноразовым.
+	Пауза между проверками оставшихся в живых(параметр "spawn_time") задаётся в секундах,
+		однако она уменьшается в зависимости о колличества убитых.
+	Есть поддержка запретных зон.
+Доработать:
+	Спавнн без партиклей в не зоны видимости.
+	Удаление трупов.
+--]]
+
+local table_insert = table.insert
+local table_remove = table.remove
+
+--' Таблица заспавненных объектов
+spawned_obj = {}
+
+---' Логическая схема ---
+class "action_respawn"
+---'                 '---
+
+--' Инициализация
+function action_respawn:__init(obj,storage)
+	self.object = obj
+	self.st = storage
+	self.id = self.object:id()  -- Ид рестриктора
+	self.respawn_time = nil     -- Время до следующего апдейта
+	self.spawn_obj = nil        -- Таблица заспвненных объектов по идам.
+	self.target_id = nil        -- Центр спавна
+	self.zones     = {}         -- Таблица запретных зон
+end
+
+--' Активация схемы
+function action_respawn:reset_scheme()
+	if not spawned_obj[self.id] then
+		spawned_obj[self.id] = {}
+	end
+	self.spawn_obj = spawned_obj[self.id]
+	local st = self.st
+	st.signals = {}
+	if st.target_id and st.target_id ~= 0 then
+		local sobj = alife():story_object(st.target_id)
+		if sobj then
+			self.target_id = sobj.id
+		else
+			st.signals["spawn_end"] = true
+		end
+	end
+	if st.zones then
+		local sobj
+		for k,v in pairs(st.zones) do
+			sobj = alife():object(v)
+			if sobj then
+				table_insert(self.zones,sobj)
+			end
+		end
+	end
+end
+
+--' Апдейт схемы.
+function action_respawn:update(delta)
+	-- если ещё нет ГГ, то ничего не делаем
+	if not db.actor then
+		return
+	end
+	local actor = db.actor
+	local game_time = game.get_game_time()
+	local respawn_time = self.respawn_time
+	local st = self.st
+	-- пришло время спавна
+	if not respawn_time or (respawn_time < game_time) then
+		local count
+		local sim = alife()
+		-- если нужен доспавн
+		if st.max_count then
+			local tabl = self.spawn_obj
+			local cls,id,sobj
+			-- проверим ранее заспавненных
+			for i = #tabl, 1, -1 do
+				id = tabl[i]
+				sobj = sim:object(id)
+				if sobj then
+					-- если объект - труп нпс или монстра
+					cls = sobj:clsid()
+					if not npc_clsid(cls) or (npc_clsid(cls) and not sobj:alive()) then
+						-- удалим из таблицы
+						table_remove(tabl,i)
+					end
+				-- если объекта уже несуществует
+				else
+					-- удалим из таблицы
+					table_remove(tabl,i)
+				end
+			end
+			-- определим количество для спавна
+			local cnt = #tabl
+			local shift_time = st.spawn_time
+			if st.max_count >= cnt then
+				count = st.max_spawn - cnt
+			else
+				-- уменьшим время до следующего апдейта
+				if st.max_spawn > cnt then
+					local count_k = st.max_count / cnt
+					local spawn_k = st.max_count / st.max_spawn
+					shift_time = st.spawn_time * (1 - (count_k - spawn_k))
+				end
+			end
+			if shift_time < 3 then
+				shift_time = 3
+			end
+			local idle_time = game.CTime()
+			idle_time:setHMSms(0,0,0,shift_time*1000)
+			self.respawn_time = game_time + idle_time
+		-- одноразовый спавнер
+		else
+			count = st.max_spawn
+			st.signals["spawn_end"] = true
+		end
+		-- проверка центра спавна
+		local target
+		if st.target_id then
+			target = self:centr()
+		else
+			target = self.object
+		end
+		if target and count and count > 0 then
+			for i = 1, count do
+				self:create(target)
+			end
+		end
+	end
+	xr_logic.try_switch_to_another_section (self.object, st, actor)
+end
+
+--' Проверка центра спавна.
+function action_respawn:centr()
+	if not self.target_id then
+		return db.actor
+	else
+		local sobj = alife():object(self.target_id)
+		if sobj then
+			local obj = level.object_by_id(sobj.id)
+			if obj then
+				return obj
+			end
+		-- был, но удалили
+		else
+			self.st.signals["spawn_end"] = true
+		end
+	end
+	return nil
+end
+
+--' Спавн объекта.
+function action_respawn:create(target)
+	local st = self.st
+	local tabl = st.spawn_sect
+	local sect = tabl[math_random(1,#tabl)]
+	local pos,lv,gv = self:generate_pos(target)
+	local sobj = alife():create(sect,pos,lv,gv)
+	if sobj then
+		if st.particles then
+			amk_particle.amk_particle({particle = st.particles, pos = sobj.position, sound = st.sound})
+		end
+		if st.max_count then
+			table_insert(self.spawn_obj,sobj.id)
+		end
+	end
+end
+
+--' Позиция для рандомного спавна
+function action_respawn:generate_pos(target)
+	local actor = db.actor
+	local gg = game_graph()
+	local gdist = 100000000
+	local st = self.st
+	local adist = st.actor_dist
+	local radius = st.radius
+	local agv,apos,gpos,gvn,gvx,lid,lpos,lv,lvx,ngv,nlv,npos,spos
+	-- запуск цикла выбора позиции по левел_вертексу
+	repeat
+		-- переменная остановки цикла
+		local stop = 0
+		-- определим локацию
+		agv = actor:game_vertex_id()
+		lid = gg:vertex(agv):level_id()
+		lvx = ex_level.vertex_setting[lid][3]
+		-- выбор левел вертекса
+		lv = math_random(1,lvx)
+		lpos = level.vertex_position(lv)
+		-- проверка на запретные зоны
+		if st.zones and self:pos_in_zone(lpos) then
+			stop = 0
+		else
+			apos = actor:position()
+			spos = target:position()
+			-- ограничим спавн дистанцией до ГГ и заданным радиусом
+			if lpos:distance_to_sqr(apos) < (adist*adist) or lpos:distance_to_sqr(spos) > (radius*radius) then
+				stop = 0
+			else
+				nlv = lv
+				npos = level.vertex_position(nlv)
+				stop = 1
+			end
+		end
+	until stop == 1
+	-- находим гейм вертекс
+	gvn = ex_level.vertex_setting[lid][1]
+	gvx = ex_level.vertex_setting[lid][2]
+	for gv = gvn, gvx do
+		gpos = gg:vertex(gv):level_point()
+		if gpos:distance_to_sqr(npos) < gdist then
+			gdist = gpos:distance_to_sqr(npos)
+			ngv = gv
+		end
+	end
+	return npos,nlv,ngv
+end
+
+--' Проверка на запретные зоны
+function action_respawn:pos_in_zone(pos)
+	local zone
+	for k,v in pairs(self.zones) do
+		zone = v and level.object_by_id(v.id)
+		if zone and zone:inside(pos) then
+			return true
+		end
+	end
+	return nil
+end
+
+--' Деактивация схемы.
+function action_respawn:deactivate ()
+	if spawned_obj[self.id] then
+		spawned_obj[self.id] = nil
+	end
+	self.respawn_time = nil
+	self.spawn_obj = nil
+	self.target_id = nil
+	self.zones = {}
+end
+
+
+function add_to_binder(obj, ini, scheme, section, storage)
+	local new_action = action_respawn(obj, storage)
+	xr_logic.subscribe_action_for_events(obj, storage, new_action)
+end
+
+--' Подключение схемы
+function set_scheme(obj, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+	-- чтение параметров логики
+	st.actor_dist = r_num(ini, section, "actor_dist", 10)
+	st.max_count  = r_num(ini, section, "max_count", nil)
+	st.max_spawn  = r_num(ini, section, "max_spawn", 1)
+	st.radius     = r_num(ini, section, "radius", 60)
+	st.spawn_time = r_num(ini, section, "spawn_time", 60)
+	st.target_id  = r_num(ini, section, "target_id", nil)
+	st.particles  = r_str(ini, section, "particle", nil)
+	st.sound      = r_str(ini, section, "snd", nil)
+	st.spawn_sect = r_tab(ini, section, "spawn_sect", nil)
+	st.zones      = r_tab(ini, section, "zones", nil)
+end
+
+--' Вспомогательные функции
+
+function npc_clsid(cls)
+	return (cls and (IAmAStalker[cls] or IAmAMonster[cls])) or false
+end
+
+function r_bool(ini,sect,line,default)
+	if ini:line_exist(sect,line) then
+		return ini:r_bool(sect,line)
+	end
+	return default
+end
+
+function r_num(ini,sect,line,default)
+	if ini:line_exist(sect,line) then
+		return ini:r_float(sect,line)
+	end
+	return default
+end
+
+function r_str(ini,sect,line,default)
+	if ini:line_exist(sect,line) then
+		return ini:r_string(sect,line)
+	end
+	return default
+end
+
+function r_tab(ini,sect,line,default)
+	local tabl = {}
+	if ini:line_exist(sect,line) then
+		for v in string.gfind(ini:r_string(sect,line), "%s*([^,]+)%s*") do
+			table_insert(tabl,v)
+		end
+	end
+	return tabl
+end
+
+
+--[[
+active = sr_idle
+
+[sr_idle]
+on_info = {+start} sr_respawn
+
+[sr_respawn]
+actor_dist = 15                      -- Ограничение спавна в радиусе от ГГ. Дефолт 10 метров.
+max_count = 15                       -- Максимальное количество оставшихся, ниже которого будет срабатывать доспавн.
+max_spawn = 25                       -- Максимальное количество, которое будет поддерживать респавнер.
+radius = 80                          -- Радиус в котором будет спавнится.
+spawn_time = 60                      -- Через какое время производить переспавн(в секундах).
+target_id                            -- Центр спавна. Нет параметра - от центра рестриктора. 0 - от ГГ. story_id - от объекта с этим стори_ид.
+particle = anomaly2\teleport_out_00  -- Ссылка на партиклы, если надо.
+snd = anomaly\electra_idle1          -- Ссылка на звук, если надо.
+spawn_sect =                         -- Секция спавна. Обязательный параметр. Перечесления через запятую.
+zones =                              -- Запретные зоны, если надо. Перечесления через запятую.
+on_signal = spawn_end                -- Обязательный параметр. Пишется как есть.
+--]]

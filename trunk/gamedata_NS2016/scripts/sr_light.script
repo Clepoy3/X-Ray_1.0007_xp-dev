@@ -1,0 +1,221 @@
+local light_zones = {}
+
+indoor_levels = {
+	l03u_agr_underground = true,
+	l03u_agr_underground_e3 = true,
+	l03u_agr_underground_hw = true,
+	l04u_labx18 = true,
+	l08u_brainlab = true,
+	l10u_bunker = true,
+	l12u_sarcofag = true,
+	l12u_control_monolith = true,
+	av_peshera = true,
+	jupiter_underground = true,
+	labx8 = true,
+	mine = true,
+	peshera = true,
+	warlab = true
+}
+---------------------------------------------------------------------------------------------------------------------
+class "action_light"
+function action_light:__init (obj, storage)
+	self.object = obj
+	self.st = storage
+	self.active = false
+	self.id = obj:id()
+end
+function action_light:reset_scheme()
+    light_zones[self.id] = self
+end
+function action_light:update(delta)
+	local actor = db.actor
+
+	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+	   self.active = false     
+	   self.stalkers = {}
+	   light_zones[self.id] = nil
+	   return
+	end	
+	self.active = true
+end
+function action_light:check_stalker(stalker)
+    if self.active == false then 
+       return false, false
+    end
+    
+	if self.object:inside(stalker:position()) then
+		return self.st.light, true
+	end
+
+	return false, false
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	local new_action = action_light (npc, storage)
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.light = utils.cfg_get_bool (ini, section, "light_on", npc, false, false)
+end
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+--local addTorch = {}
+noTorchByVisual = {
+	["actors\\bandit\\stalker_arhara1"] = true,
+	["new\\holo_plash"] = true
+}
+function check_light(stalker)
+    if stalker == nil then 
+       return 
+    end
+	local id = stalker:id()
+	local sstalker = alife() and alife():object(id)
+	if sstalker == nil then
+		return
+	end
+	
+	--local visual = sol_utils.getVisual(id)
+	-- если невидимка - фонарь не включает
+	--if noTorchByVisual[visual] then
+	if sstalker.torchDisabled then
+		return
+	end
+
+    local torch = stalker:object("device_torch")
+    local torch_clon = stalker:object("device_torch_clon")
+	torch = torch and torch_clon --or torch --or sstalker.torch_on and torch_clon
+--get_console():execute("load ~~~ check_light "..stalker:name()..' torch: '..tostring(stalker:object("device_torch") ~= nil)..' torch_clon: '..tostring(torch_clon ~= nil).." test torch:"..tostring(torch and torch:section()).." night_minutes: "..tostring(sstalker.night_minutes))
+    if torch == nil then
+--get_console():execute("load ~~~ check_light "..stalker:name().." NO TORCH !!!")
+		if torch_clon --[[and not sstalker.torch_on]] then
+--get_console():execute("load ~~~ check_light "..stalker:name().." TORCH off !!!")
+			torch_clon:enable_attachable_item(false)
+		end
+       return
+    end
+
+	local light = false
+	local forced = false
+
+--[[	if stalker:alive() == false then
+		light  = false
+		forced = true
+--get_console():execute("load ~~~ check_light "..stalker:name().." light "..tostring(light).." ~~~ stalker:alive() == false ")
+	end]]
+
+	if not forced then
+		if xr_meet.is_meet(stalker) then
+		  light  = false
+		  forced = true
+  --get_console():execute("load ~~~ check_light "..stalker:name().." light "..tostring(light).." ~~~ xr_meet.is_meet ")
+		end
+	end
+
+    --' Проверка по лайтзонам
+    if not forced then
+	    for k,v in pairs(light_zones) do
+			light, forced = v:check_stalker(stalker)
+			if forced == true then
+				break
+			end
+	    end
+--get_console():execute("load ~~~ check_light "..stalker:name().." light "..tostring(light).." ~~~ light_zones ")
+	end
+
+	if not forced then
+		--' Проверка на индор-аутдор (внутри всегда так, как указано в таблице!!! (sapsan))
+		if indoor_levels[level.name()] ~= nil then
+			light = indoor_levels[level.name()]
+			forced = true
+--get_console():execute("load ~~~ check_light "..stalker:name().." light "..tostring(light).." ~~~ indoor_levels["..level.name().."] == true")
+		end
+	end
+	
+	if not forced then
+		--' Проверка по времени суток (ночью всегда включено)
+		local htime = level.get_time_hours()
+		local mtime = level.get_time_minutes()
+		if htime < 5 or htime == 5 and mtime <= 60 - sstalker.night_minutes or htime > 22 or htime == 22 and mtime >= sstalker.night_minutes then
+			light = true
+		else
+			light = false
+		end
+--get_console():execute("load ~~~ check_light "..stalker:name().." light "..tostring(light).." ~~~ level.get_time_hours() "..tostring(htime).." level.get_time_minutes() "..tostring(mtime))
+	end
+
+	--' Проверка по активному действию
+	if not forced and light == true then
+		--' Фонарики должны быть выключены у костра
+		local scheme = db.storage[id].active_scheme
+		if scheme == "kamp" or
+		   scheme == "camper" or
+		   scheme == "sleeper" 
+		then
+			light = false
+			forced = true
+--get_console():execute("load ~~~ check_light "..stalker:name().." light "..tostring(light).." ~~~ scheme == kamp or scheme == camper")
+		end
+	end
+	
+	if light == true then
+		--' Фонарики должны быть выключены в бою. Но если в бою идет поиск врага - то включены.
+		if stalker:best_enemy() ~= nil then
+			light = false
+			forced = true
+--get_console():execute("load ~~~ check_light "..stalker:name().." light "..tostring(light).." ~~~ stalker:best_enemy() ~= nil")
+		end				
+	end
+	
+	if light ~= nil then
+--get_console():execute("load ~~~ check_light "..stalker:name().." light "..tostring(light))
+		 -- nv080224 - hack to force light off if it should be off
+		-- пара фонариков для свечения после смерти (sapsan)
+		--[[local sitem
+		stalker:iterate_inventory(
+			function (obj, item)
+				if item then
+					sitem = alife():object(item:id())
+					if sitem and sitem:section_name() == "device_torch" then
+						if light == false then item:enable_attachable_item(true) end
+						item:enable_attachable_item(light)
+						get_console():execute("load ~~~ check_light "..stalker:name().." torch present. id: "..tostring(item:id()).." attachable_item_enabled "..tostring(item:attachable_item_enabled()))
+					end
+				end
+			end
+			, stalker
+		)]]
+		if torch_clon then
+			if light == false then
+				torch:enable_attachable_item(true)
+			end
+			torch:enable_attachable_item(light)
+			
+			sstalker.torch_on = light
+		end
+		
+		--[[if light and not addTorch[id] then
+			local obj = alife():create("device_torch", stalker:position(), stalker:level_vertex_id(), stalker:game_vertex_id(), id)
+			if obj then
+				amk.start_timer("enable_attachable_item",1,{obj.id, stalker:name()})
+				get_console():execute("load ~~~ check_light "..stalker:name().." torch created. id: "..tostring(obj.id))
+				addTorch[id] = obj.id
+			end
+		elseif not light and addTorch[id] then
+			local obj = alife():object(addTorch[id])
+			if obj then
+				get_console():execute("load ~~~ check_light "..stalker:name().." torch deleted. id: "..tostring(obj.id))
+				alife():release(obj, true)
+			end
+		end ]]
+	end
+end
+
+function clean_up ()
+   light_zones = {} 
+end

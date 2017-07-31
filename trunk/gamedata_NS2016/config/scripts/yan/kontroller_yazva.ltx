@@ -1,0 +1,22 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = mob_home@yazva
+on_death = death@yazva
+on_hit = hit@yazva
+
+[mob_home@yazva]
+path_home = yantar_kontroller_yazva_walk
+home_min_radius = 15
+home_max_radius = 25
+on_signal = sig_attacked | mob_combat@yazva
+
+[mob_combat@yazva]
+on_timer = 30000 | mob_home@yazva
+
+[death@yazva]
+on_info = {-yan_yazva_hit =killed_by_actor_eagle} %+yan_yazva_hit =arhara_dialog.fotka_kont_yazva_have =arhara_dialog.foto_mozg_ok_sms%
+
+[hit@yazva]
+on_info = {-yan_yazva_hit =hit_by_actor_eagle} %+yan_yazva_hit =arhara_dialog.fotka_kont_yazva_have =arhara_dialog.foto_mozg_ok_sms%

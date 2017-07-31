@@ -1,0 +1,193 @@
+
+<game_task id="hand_zombie">
+<title>Принести 10 Рук Зомби Акиму</title>
+<objective>
+<text>Принести 10 Рук Зомби</text>
+<icon>ui_iconsTotal_find_item</icon>
+<infoportion_complete>hand_otdan</infoportion_complete>
+<article>tex_take_zombie</article>
+</objective>
+<objective>
+<text>Найти 10 Рук Зомби</text>
+<function_complete>arhara_dialog.have_a_hand</function_complete>
+<infoportion_set_complete>have_a_hand</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести 10 Рук Зомби Акиму</text>
+<map_location_type hint="Аким">blue_location</map_location_type>
+<object_story_id>esc_akim</object_story_id>
+<infoportion_complete>hand_otdan</infoportion_complete>
+</objective>
+</game_task>
+
+<game_task id="doc">
+<title>Принести Старые Документы Акиму</title>
+<objective>
+<text>Найти Старые Документы</text>
+<icon>ui_iconsTotal_find_item</icon>
+<infoportion_complete>doc_otdan</infoportion_complete>
+<article>tex_take_doc1</article>
+</objective>
+<objective>
+<text>Найти Старые Документы</text>
+<function_complete>arhara_dialog.have_a_doc</function_complete>
+<infoportion_set_complete>have_a_doc</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести Старые Документы Акиму</text>
+<map_location_type hint="Аким">blue_location</map_location_type>
+<object_story_id>esc_akim</object_story_id>
+<infoportion_complete>doc_otdan</infoportion_complete>
+</objective>
+</game_task>
+
+<game_task id="doc_2">
+<title>Принести Старые Документы Часть 2 Акиму</title>
+<objective>
+<text>Найти Старые Документы Часть 2</text>
+<icon>ui_iconsTotal_find_item</icon>
+<infoportion_complete>doc_otdan_p</infoportion_complete>
+<article>tex_take_doc2</article>
+</objective>
+<objective>
+<text>Найти Старые Документы Часть 2</text>
+<function_complete>arhara_dialog.have_doc2</function_complete>
+<infoportion_set_complete>have_doc2</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести Старые Документы Часть 2 Акиму</text>
+<map_location_type hint="Аким">blue_location</map_location_type>
+<object_story_id>esc_akim</object_story_id>
+<infoportion_complete>doc_otdan_p</infoportion_complete>
+</objective>
+</game_task>
+
+<game_task id="doc_3">
+<title>Принести Старые Документы Часть 3 Акиму</title>
+<objective>
+<text>Найти Старые Документы Часть 3</text>
+<icon>ui_iconsTotal_find_item</icon>
+<infoportion_complete>doc_otdan_s</infoportion_complete>
+<article>tex_take_doc3</article>
+</objective>
+<objective>
+<text>Найти Старые Документы Часть 3</text>
+<function_complete>arhara_dialog.have_a_doc_s</function_complete>
+<infoportion_set_complete>have_a_doc_s</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести Старые Документы Часть 3 Акиму</text>
+<map_location_type hint="Аким">blue_location</map_location_type>
+<object_story_id>esc_akim</object_story_id>
+<infoportion_complete>doc_otdan_s</infoportion_complete>
+</objective>
+</game_task>
+
+<game_task id="doc_4">
+<title>Принести Старые Документы Часть4 4 Костюма и ПДА Акиму</title>
+<objective>
+<text>Найти Старые Документы Часть 4 и 4 Костюма и ПДА</text>
+<icon>ui_iconsTotal_find_item</icon>
+<infoportion_complete>doc_otdan_q</infoportion_complete>
+<article>tex_take_doc4</article>
+</objective>
+<objective>
+<text>Найти Старые Документы Часть 4 и 4 Костюма и ПДА</text>
+<function_complete>arhara_dialog.have_a_doc_q</function_complete>
+<infoportion_set_complete>have_a_doc_q</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести Старые Документы Часть 4 и 4 Костюма и ПДА Акиму</text>
+<map_location_type hint="Аким">blue_location</map_location_type>
+<object_story_id>esc_akim</object_story_id>
+<infoportion_complete>doc_otdan_q</infoportion_complete>
+</objective>
+</game_task>
+
+
+<game_task id="doc_tvar">
+<title>Принести от "Каждой твари по части"</title>
+<objective>
+<text>Найти от "Каждой твари по части"</text>
+<icon>ui_iconsTotal_find_item</icon>
+<infoportion_complete>doc_tvar_done</infoportion_complete>
+<article>tex_take_doc5</article>
+</objective>
+<objective>
+<text>Найти от "Каждой твари по части"</text>
+<function_complete>arhara_dialog.have_doc_tvar</function_complete>
+<infoportion_set_complete>have_doc_tvar</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести от "Каждой твари по части"</text>
+<map_location_type hint="Аким">blue_location</map_location_type>
+<object_story_id>esc_akim</object_story_id>
+<infoportion_complete>doc_tvar_done</infoportion_complete>
+</objective>
+</game_task>
+
+<game_task id="qeast_q_1">
+<title>Принести 15 артов Кресту</title>
+<objective>
+<text>Найти 15 артов</text>
+<icon>ui_iconsTotal_find_item</icon>
+<infoportion_complete>otdan_q</infoportion_complete>
+<article>tex_take_qeast</article>
+</objective>
+<objective>
+<text>Найти 15 артов</text>
+<function_complete>arhara_dialog.have_art1</function_complete>
+<infoportion_set_complete>have_art1</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести 15 артов Кресту</text>
+<map_location_type hint="Крест">blue_location</map_location_type>
+<object_story_id>puz_crest</object_story_id>
+<infoportion_complete>otdan_q</infoportion_complete>
+</objective>
+</game_task>
+
+
+<game_task id="qeast_b">
+<title>Принести 6 Аномальных Бизонов Кресту</title>
+<objective>
+<text>Найти 6 Аномальных Бизонов</text>
+<icon>ui_iconsTotal_find_item</icon>
+<infoportion_complete>otda</infoportion_complete>
+<article>tex_take_qeast_bizon</article>
+</objective>
+<objective>
+<text>Найти пушки</text>
+<function_complete>arhara_dialog.have_bizon</function_complete>
+<infoportion_set_complete>have_bizon</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести пушки Кресту</text>
+<map_location_type hint="Крест">blue_location</map_location_type>
+<object_story_id>puz_crest</object_story_id>
+<infoportion_complete>otda</infoportion_complete>
+</objective>
+</game_task>
+
+<game_task id="teleporter">
+<title>Принести УРТ Кресту</title>
+<objective>
+<text>Найти УРТ</text>
+<icon>ui_iconsTotal_find_item</icon>
+<infoportion_complete>otan_aq</infoportion_complete>
+<article>tex_take_teleporter</article>
+</objective>
+<objective>
+<text>Найти телепортёр</text>
+<function_complete>arhara_dialog.have_true</function_complete>
+<infoportion_set_complete>have_true</infoportion_set_complete>
+</objective>
+<objective>
+<text>Принести телепортёр Кресту</text>
+<map_location_type hint="Крест">blue_location</map_location_type>
+<object_story_id>puz_crest</object_story_id>
+<infoportion_complete>otan_aq</infoportion_complete>
+</objective>
+</game_task>
+
+

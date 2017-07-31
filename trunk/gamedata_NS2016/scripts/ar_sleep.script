@@ -1,0 +1,36 @@
+--' Модуль сна $DreamMod '--
+---' revision and adaptation for NS_2012 lsclon 29.12.12 '---
+--' Антисмерть - проверка на снижение показателя жизни и наличия сильного кровотечения '--
+
+class "ar_sleep" (cse_alife_creature_actor)
+
+function ar_sleep:__init(actor,storage)
+	self.actor = actor
+	self.st = storage
+	self.primary_health = actor.health
+end
+
+function ar_sleep:update()
+	if self.primary_health/2 > db.actor.health or db.actor:get_bleeding() > 0.3 then
+		--get_console():execute("load [sleep] ar_sleep:update primary_health "..tostring(self.primary_health).." > actor.health "..tostring(db.actor.health).." or db.actor:get_bleeding() "..db.actor:get_bleeding().." > 0.3, thirst "..tostring(monnoroch_thirst.mon_thirst:get_thirst()))
+		sleep_manager.stopper()
+	end
+end
+
+function add_to_binder(actor,ini,scheme,section,storage)
+	local new_action = ar_sleep(actor,storage)
+	-- Регистрируем все actions, в которых будет вызван метод update()
+	xr_logic.subscribe_action_for_events(actor,storage,new_action)
+end
+
+function set_scheme(actor,ini,scheme,section)
+	xr_logic.assign_storage_and_bind(actor,ini,scheme,section)
+	db.storage[db.actor:id()].active_scheme = scheme
+end
+
+function disable_scheme()
+	local sta = db.storage[db.actor:id()]
+	sta["ar_sleep"] = nil
+	sta.active_scheme = nil
+	sta.active_section = nil
+end

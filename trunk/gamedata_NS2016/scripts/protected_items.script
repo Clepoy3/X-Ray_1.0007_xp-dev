@@ -1,0 +1,869 @@
+local string_find = string.find
+local string_sub = string.sub
+local debug_level = 0
+
+-- запускать проверку так:
+-- if protected_items.obj_is_protected(obj,tabl,method)==true then
+-- данное условие будет выполнено, если предмет в списке исключений
+-- вещи исключения.
+-- Проверка будет по точному имени секции предмета
+-- Эти предметы нельзя отбирать у ГГ (по точному совпадению):
+local items_protected = {
+	["3d_raziy"] = true,
+	["agroprom_pda"] = true,
+	["amk_zapiska"] = true,
+	["amul_naemn"] = true,
+	["ara_flash"] = true,
+	["ara_pda"] = true,
+	["arc_diary_1"] = true,
+	["arc_diary_10"] = true,
+	["arc_diary_11"] = true,
+	["arc_diary_12"] = true,
+	["arc_diary_13"] = true,
+	["arc_diary_14"] = true,
+	["arc_diary_15"] = true,
+	["arc_diary_16"] = true,
+	["arc_diary_17"] = true,
+	["arc_diary_18"] = true,
+	["arc_diary_19"] = true,
+	["arc_diary_2"] = true,
+	["arc_diary_20"] = true,
+	["arc_diary_21"] = true,
+	["arc_diary_22"] = true,
+	["arc_diary_23"] = true,
+	["arc_diary_24"] = true,
+	["arc_diary_25"] = true,
+	["arc_diary_26"] = true,
+	["arc_diary_27"] = true,
+	["arc_diary_28"] = true,
+	["arc_diary_29"] = true,
+	["arc_diary_3"] = true,
+	["arc_diary_30"] = true,
+	["arc_diary_31"] = true,
+	["arc_diary_32"] = true,
+	["arc_diary_33"] = true,
+	["arc_diary_4"] = true,
+	["arc_diary_5"] = true,
+	["arc_diary_6"] = true,
+	["arc_diary_7"] = true,
+	["arc_diary_8"] = true,
+	["arc_diary_9"] = true,
+	["arhara_instruk"] = true,
+	["arhara_listok"] = true,
+	["arhara_seif"] = true,
+	["biorad_prototip"] = true,
+	["bandranen_pda"] = true,
+	["bar_ecolog_flash"] = true,
+	["bar_lucky_pda"] = true,
+	["bar_tiran_pda"] = true,
+	["bland_flash"] = true,
+	["bloknot_pantera"] = true,
+	["bolt"] = true,
+	["book_xabarych"] = true,
+	["box_kalmyak"] = true,
+	["box_with_weapon"] = true,
+	["britva"] = true,
+	["case_freeman"] = true,
+	["case_nebo"] = true,
+	["chuchelo_body"] = true,
+	["cit_doctors_key"] = true,
+	["computer"] = true,
+	["computer_new"] = true,
+	["crazy_flash"] = true,
+	["dar_document1"] = true,
+	["dar_document2"] = true,
+	["dar_document3"] = true,
+	["dar_document4"] = true,
+	["dar_document5"] = true,
+	["dar_pass_document"] = true,
+	["dar_pass_flash"] = true,
+	["decoder"] = true,
+	["decoder1"] = true,
+	["device_pda"] = true,
+	["device_torch"] = true,
+	["device_torch_clon"] = true,
+	["diplomat"] = true,
+	["disk_adren"] = true,
+	["disk_pantera"] = true,
+	["pult_anders"] = true,
+	["doc_medal"] = true,
+	["doc_view"] = true,
+	["dosye_zvez"] = true,
+	["dynamite"] = true,
+	["ekza_akkumul"] = true,
+	["elek_plata"] = true,
+	["esc_wounded_flash"] = true,
+	["flame_parts"] = true,
+	["flyga"] = true,
+	["fonarik"] = true,
+	["foto_aver_mono"] = true,
+	["foto_aver_zvezd"] = true,
+	["foto_chaes_truba"] = true,
+	["foto_kontroller_yazva"] = true,
+	["foto_kordon"] = true,
+	["foto_kukla"] = true,
+	["foto_monolit"] = true,
+	["foto_mozg_x16"] = true,
+	["fraer_pda"] = true,
+	["garbage_pda"] = true,
+	["glushitel"] = true,
+	["gonets_flash"] = true,
+	["good_psy_helmet"] = true,
+	["gorelka"] = true,
+	["gunslinger_flash"] = true,
+	["inventory_new_box"] = true,
+	["inventory_sakbox_01"] = true,
+	["inventory_sakbox_02"] = true,
+	["inventory_sakbox_03"] = true,
+	["inventory_sakbox_04"] = true,
+	["inventory_sakbox_05"] = true,
+	["kapitan_pda"] = true,
+	["samopisez"] = true,
+	["af_kamen_udachy"] = true,
+	["sbit_vert"] = true,
+	["mini_antenna1"] = true,
+	["mini_antenna2"] = true,
+	["mini_antenna3"] = true,
+	["mini_antenna4"] = true,
+	["mini_antenna5"] = true,
+	["makrogenerator"] = true,
+	["karta_peschera"] = true,
+	["kisluy"] = true,
+	["kluch_dell_teleport"] = true,
+	["kluch_dell_teleport1"] = true,
+	["kluk_karta"] = true,
+	["kluk_karta_kopiy"] = true,
+	["klyak_forest_doc"] = true,
+	["kod_kamera"] = true,
+	["kolba_orand_poln"] = true,
+	["kolba_pustay"] = true,
+	["kolba_siniy_poln"] = true,
+	["kreditka"] = true,
+	["kruglov_flash"] = true,
+	["kukla_1"] = true,
+	["lab_x10_documents"] = true,
+	["lab_x16_documents"] = true,
+	["land_disketka"] = true,
+	["lekar_kalmyak"] = true,
+	["lekarstvo"] = true,
+	["malyva"] = true,
+	["manometr"] = true,
+	["maz"] = true,
+	["microshema"] = true,
+	["mil_bolt_pda"] = true,
+	["mil_svoboda_leader_pda"] = true,
+	["money"] = true,
+	["money1"] = true,
+	["money2"] = true,
+	["money3"] = true,
+	["mono_dead_doc"] = true,
+	["mono_note"] = true,
+	["mozg"] = true,
+	["naem_bloknot"] = true,
+	["nauch_flash"] = true,
+	["netpacket_pda"] = true,
+	["new_book"] = true,
+	["new_book_prizrak"] = true,
+	["new_document_sniper"] = true,
+	["new_prizrak_document1"] = true,
+	["new_prizrak_document2"] = true,
+	["new_prizrak_document3"] = true,
+	["notebook"] = true,
+	["notebook_new"] = true,
+	["ogg_flash_1"] = true,
+	["ogg_flash_10"] = true,
+	["ogg_flash_11"] = true,
+	["ogg_flash_12"] = true,
+	["ogg_flash_13"] = true,
+	["ogg_flash_14"] = true,
+	["ogg_flash_15"] = true,
+	["ogg_flash_16"] = true,
+	["ogg_flash_2"] = true,
+	["ogg_flash_3"] = true,
+	["ogg_flash_4"] = true,
+	["ogg_flash_5"] = true,
+	["ogg_flash_6"] = true,
+	["ogg_flash_7"] = true,
+	["ogg_flash_8"] = true,
+	["ogg_flash_9"] = true,
+
+	["aes_document"] = true,
+	["doc_1"] = true,
+	["doc_8"] = true,
+	["doc_10"] = true,
+	["kostya_documents"] = true,
+	["kostya_documents1"] = true,
+	["kostya_pda"] = true,
+	["kostya_pda2"] = true,
+	["kostya_pda3"] = true,
+	["kostya_pda4"] = true,
+	["kostya_pda5"] = true,
+	["kostya_pda6"] = true,
+	["kostya_pda7"] = true,
+	["kostya_pda8"] = true,
+	["kostya_pda9"] = true,
+	["matras"] = true,
+	["old_doc"] = true,
+	["old_doc_2"] = true,
+	["old_doc_3_1"] = true,
+	["old_doc_3_2"] = true,
+	["old_doc_3_3"] = true,
+	["old_doc_3_4"] = true,
+	["old_doc_4"] = true,
+	["pda_info"] = true,
+
+	["parcel"] = true,
+	["pda_art_mod"] = true,
+	["pda_francuz"] = true,
+	["pda_krysyka"] = true,
+	["pda_priz"] = true,
+	["pda_vasilyev"] = true,
+	["bezoar"] = true,
+	["perfuzor_poln"] = true,
+	["perfuzor_pust"] = true,
+	["pilot_zapiska"] = true,
+	["plan_document"] = true,
+	["playboy"] = true,
+	["playboy1"] = true,
+	["playboy10"] = true,
+	["playboy11"] = true,
+	["playboy2"] = true,
+	["playboy3"] = true,
+	["playboy4"] = true,
+	["playboy5"] = true,
+	["playboy6"] = true,
+	["playboy7"] = true,
+	["playboy8"] = true,
+	["playboy9"] = true,
+	["player"] = true,
+	["pri_decoder_documents"] = true,
+	["pribor"] = true,
+	["quest_case_01"] = true,
+	["quest_case_02"] = true,
+	["quest_case_05"] = true,
+	["quest_case_06"] = true,
+	["quest_manycase_01"] = true,
+	["rad_document6"] = true,
+	["rad_document7"] = true,
+	["rad_pda"] = true,
+	["razved_karta"] = true,
+	["recipi_bpb"] = true,
+	["red_mozg"] = true,
+	["sh_remnabor"] = true,
+	["rukzak_green"] = true,
+	["sak_book1"] = true,
+	["sak_book2"] = true,
+	["sak_book3"] = true,
+	["sak_book4"] = true,
+	["sak_document"] = true,
+	["sak_document2"] = true,
+	["sak_resiver"] = true,
+	["sak_resiver_yantar"] = true,
+	["scaintist_docs"] = true,
+	["scaintist_pda"] = true,
+	["shkatulka"] = true,
+	["shpriz"] = true,
+	["shuher"] = true,
+	["sidor_head"] = true,
+	["siv_pda"] = true,
+	["sniper_flash"] = true,
+	["soap"] = true,
+	["starik_chasy"] = true,
+	["strelok_pda"] = true,
+	["stukach_book"] = true,
+	["sumka_arhara"] = true,
+	["sysh_document"] = true,
+	["sysh_flash"] = true,
+	["tabletki_1"] = true,
+	["tabletki_2"] = true,
+	["tabletki_3"] = true,
+	["taynik_mg"] = true,
+	["telefon"] = true,
+	["televizor"] = true,
+	["termos_big"] = true,
+	["termos_small"] = true,
+	["tisku_arhara"] = true,
+	["travka"] = true,
+	["trubka"] = true,
+	["trupak"] = true,
+	["und_pda"] = true,
+	["val_key_to_underground"] = true,
+	["video_kasseta"] = true,
+	["detektor_baty"] = true,
+	["strannik_bloknot"] = true,
+	["voen_document"] = true,
+	["voen_pda"] = true,
+	["volkodav_pda"] = true,
+	["vorona_egg"] = true,
+	["wpn_binoc"] = true,
+	["x_ray_antenna"] = true,
+	["x_ray_antenna_small"] = true,
+	["zapiska_ranennogo"] = true,
+	["zhena_sahara"] = true,
+	["akkumulytor"] = true,
+	["bloknot_neizvestnogo"] = true,
+	["anomal_pole_foto"] = true,
+	["psewdofoto"] = true,
+	["mulyz_bomba"] = true,
+	["af_fotik_izomorf"] = true,
+	["neizv_zapiska"] = true,
+	["af_linza_izomorf"] = true,
+	["af_pushka_izomorf"] = true,
+	["forest_last_dead_listok"] = true,
+	["chemodan_piyan"] = true,
+	["klenov_opisalovo"] = true,
+	["pisma_stalka"] = true,
+	["predmet_planshetka"] = true,
+	["nauch_recomend"] = true,
+	["korobka_sigars"] = true,
+	["mem_module"] = true,
+	["iskra_listok"] = true,
+	["notebook_zlobnyi"] = true,
+	["verevka"] = true,
+	["trup_listok"] = true,
+	["mirror_listok"] = true,
+	["bar_listok"] = true,
+	["avu_door_cod"] = true,
+	["pult_cod"] = true,
+	["doki_gauss"] = true,
+	["doki_fritz"] = true,
+	["doki_monolit"] = true,
+	["plato_bloknot"] = true,
+	["biodoki"] = true,
+	["kondensatory"] = true,
+	["tranzistory"] = true,
+	["psewdoportator"] = true,
+	["tranzistory"] = true,
+	["shaxter_konteyner"] = true,
+	["case_wpn"] = true,
+	["remont_maslo"] = true,
+	["borov_listok"] = true
+	}
+-- табличка исключений трупов сталкеров для уборщика - проверка по точному совпадению
+local tabl_corps_keep = {
+	--трупики из алл_спавна, в порядке чтения функцией перебора
+	["atp_trupak_disk"] = true,
+	["muha_die"] = true,
+	["generators_pantera_dead"] = true,
+	["trupak_v_anomalii"] = true,
+	["hospital_muha_trup"] = true,
+	["dead_bandit_min"] = true,
+	["esc_dead_military"] = true,
+	["esc_stalker_corpse"] = true,
+	["esc_tutorial_dead_novice"] = true,
+	["esc_stalker_corps1"] = true,
+	["esc_stalker_corps1_0000"] = true,
+	["esc_stalker_corps1_0001"] = true,
+	["esc_stalker"] = true,
+	["esc_trup_bratka"] = true,
+	["esc_stalker_0000"] = true,
+	["esc_trup_scene"] = true,
+	["esc_trupak_antenna"] = true,
+	["gar_stalker_0000"] = true,
+	["gar_stalker_0001"] = true,
+	["gar_stalker_0002"] = true,
+	["gar_stalker"] = true,
+	["gar_stalker_0004"] = true,
+	["gar_stalker_0005"] = true,
+	["agr_stalker_0000"] = true,
+	["agr_stalker_0001"] = true,
+	["agr_stalker_0002"] = true,
+	["agr_stalker_0003"] = true,
+	["agr_stalker_0004"] = true,
+	["agr_stalker_0005"] = true,
+	["kat_bandit_0006"] = true,
+	["dead_korchagin_military"] = true,
+	["val_sos_dead1"] = true,
+	["val_sos_dead2"] = true,
+	["val_escort_bandit1_dead"] = true,
+	["val_escort_bandit2_dead"] = true,
+	["val_bandit_rpg_dead"] = true,
+	["val_lager_bandit16_0000"] = true,
+	["dar_stalker0000"] = true,
+	["dar_stalker0001"] = true,
+	["dar_stalker"] = true,
+	["dar_stalker0000_0000"] = true,
+	["bar_stalker"] = true,
+	["bar_ecolog_crush_dead"] = true,
+	["bar_ecolog_crush_dead_0000"] = true,
+	["bar_ecolog_crush_dead_0001"] = true,
+	["bar_ecolog_crush_dead_0002"] = true,
+	["bar_ecolog_crush_dead_0003"] = true,
+	["mil_stalker_0002"] = true,
+	["mil_stalker"] = true,
+	["mil_stalker_0000"] = true,
+	["yantar_stalk_ranen"] = true,
+	["yantar_dead_scientist_01"] = true,
+	["yan_stalker"] = true,
+	["yan_specnaz_dead"] = true,
+	["brainlab_ecolog_trupik"] = true,
+	["x16_stalker_ghost"] = true,
+	["rad_stalker_dead"] = true,
+	["rad_stalker_0005_dead"] = true,
+	["rad_stalker_0006_dead_scientist"] = true,
+	["rad_stalker_0007_dead_scientist"] = true,
+	["rad_stalker_0008_dead_scientist"] = true,
+	["ecolog_dead_bunker1"] = true,
+	["ecolog_dead_bunker2"] = true,
+	["dead_military_bunker1"] = true,
+	["dead_military_bunker2"] = true,
+	["radar_monolit_dead"] = true,
+	["aes_stalker_0000"] = true,
+	["aes_stalker"] = true,
+	["chees2_trup_vzruv_beter1"] = true,
+	["chees2_trup_vzruv_beter2"] = true,
+	["chees2_trup_vzruv_beter3"] = true,
+	["chees2_trup_vzruv_beter4"] = true,
+	["trupak_vert_krusha"] = true,
+	["trupak_na_2verte"] = true,
+	["trupak_2vert_s_zapiskoy"] = true,
+	["trupak_truba"] = true,
+	["lim_strannik_dead"] = true,
+	["village_stalk_dead1"] = true,
+	["village_stalk_dead2"] = true,
+	["village_stalk_dead3"] = true,
+	["village_brat_dead"] = true,
+	["blizn_krug_dead"] = true,
+	["peshera_stalker_dead"] = true,
+	["puz_dead_stalker"] = true,
+	["forest_lastday_dead"] = true,
+	["war_kostolom_dead"] = true,
+	["zat_trup_vert_boloto"] = true,
+	["zat_vstrecha1"] = true,
+	["zat_vstrecha2"] = true,
+	["zat_vstrecha3_boss"] = true,
+	["zat_vstrecha4"] = true,
+	["zat_vstrecha5"] = true,
+	["zat_vstrecha6"] = true,
+	["zat_barzha_mous_niz_dead"] = true,
+	["zat_barzha_mous_verh_dead"] = true,
+	["zat_podstansiy_dead1"] = true,
+	["zat_podstansiy_dead2"] = true,
+	["zat_sos_friend_dead"] = true,
+	["zat_cave_dead1"] = true,
+	["zat_cave_dead2"] = true,
+	["zat_cave_dead3"] = true,
+	["zat_cave_dead4"] = true,
+	--разные трупики
+        ["gar_bochka_stalker"] = true,
+        ["gar_diger_stalker"] = true,
+	["agr_ratcatcher"] = true,
+	["amk_mini_bar_kulinar"] = true,
+	["amk_mini_bar_voron"] = true,
+	["put_dead_stalker"] = true,
+	["del_dead_stalker"] = true,
+	["jup_dead_stalker"] = true
+	}
+-- квестовое оружие, которое спавнится скриптово на "землю".
+-- для уборщика - проверка по точному совпадению
+local tabl_wpn_keep = {
+	["wpn_gungauss"] = true,
+	["wpn_rg6"] = true,
+	["wpn_svd_foto"] = true
+	}
+-- уникальные бронежилеты
+-- для уборщика - проверка по точному совпадению
+local tabl_outfit_keep = {
+	["meceniy_outfit_new"] = true,
+	["exo_mil_exoskeleton"] = true,
+	}
+-- уникальное оружие. для уборщика - проверка по частичному совпадению
+local tabl_wpn_upgrade_keep = {
+	"_m1$",
+	"_m2$",
+	"_m3$"
+	}
+	
+-- ункальные предметы, которые:
+-- при необходимости очистить рюкзак ГГ, перемещаются в бокс 
+-- при разрыве рюкзака - выбрасываются на землю
+local tabl_uniq_equipment_keep = {
+	["acumm"] = true,
+	["exo_mil_exoskeleton"] = true,
+	["exo_mil_exoskeleton_add"] = true,
+	["exo_mil_exoskeleton_addr"] = true,
+	["exo_mil_exoskeleton_addrs"] = true,
+	["hand_teleporter"] = true,
+	["hand_teleporter_arhara"] = true,
+	["hand_teleporter_fake"] = true,
+	["meceniy_outfit_new"] = true,
+
+	["grenade_rgd5_new"] = true,
+	["af_globus_izomorf"] = true,
+	["af_kompas_izomorf"] = true,
+	["af_kaktus_izomorf"] = true,
+	["af_preplastilin"] = true,
+	["af_plastilin_izomorf"] = true,
+	["af_kristal_izomorf"] = true,
+	["af_deokristall"] = true,
+	["af_wa2000_izomorf"] = true,
+	["af_762x54_izomorf"] = true,
+	["af_545x39_izomorf"] = true,
+	["af_9x39_izomorf"] = true,
+	["af_zhekan_izomorf"] = true,
+	["antizombie"] = true,
+	["zamok"] = true,
+	["science_teleport3"] = true,
+	["science_teleport2"] = true,
+	["device_atifact_merger"] = true,
+	["amk_transmutator"] = false,
+	["stco"] = true,
+	["arhara_obman"] = true,
+	["ammo_igl_new"] = true,
+	["det_artefact_indy"] = false,
+	["detector_advances"] = true,
+	["detector_elite"] = true,
+	["detector_elite_john"] = true,
+	["detector_elite_sak"] = true,
+	["detector_simple"] = true,
+	["detektor_amorf"] = true,
+	["flamethrower_bad"] = true,
+	["stalker_outfit_m3"] = true,
+	["hunters_toz"] = true, --оружие, но без wpn_ - поэтому здесь :)
+	["wpn_eagle_m2"] = true,
+	["wpn_svd_foto"] = true,
+	["wpn_awm_new"] = true,
+	["wpn_flame"] = true,
+	["wpn_dark_gauss"] = true,
+	["science_teleport"] = true,
+	["ex_hoard_tip1"] = true,
+	["ex_hoard_tip2"] = true,
+	["ex_hoard_tip3"] = true,
+	["ex_hoard_tip4"] = true,
+	["ex_hoard_tip5"] = true,
+	["ex_hoard_tip6"] = true,
+	["ex_hoard_tip7"] = true,
+	["ex_hoard_tip8"] = true,
+	["ex_hoard_tip9"] = true,
+	["ex_hoard_tip10"] = true,
+	["ex_hoard_tip11"] = true,
+	["ex_hoard_tip12"] = true
+}
+
+-- таблица исключений для похода за хабаром - проверка по точному совпадению
+-- тестовые гранаты - чтобы даже ни на мгновение не обращал внимание
+local tabl_watcher_act_ignore = {
+	["mushroom"] = true,
+	["grenade_rgd5_test"] = true,
+	["grenade_f1_test"] = true,
+	["grenade_rgd5_fake"] = true,
+	["grenade_f1_fake"] = true,
+	["caps_ameba"] = true,
+	["caps_electra"] = true,
+	["caps_gravi"] = true,
+	["caps_ice"] = true,
+	["caps_mincer"] = true,
+	["caps_mosquito_bald"] = true,
+	["caps_zharka"] = true,
+	["mutant_boar_cocoon"] = true,
+	["mutant_burer_cocoon"] = true,
+	["mutant_burer_red_hand"] = true,
+	["mutant_cat_cocoon"] = true,
+	["mutant_chimera_cocoon"] = true,
+	["mutant_controller_cocoon"] = true,
+	["mutant_dog_cocoon"] = true,
+	["mutant_flesh_cocoon"] = true,
+	["mutant_gigant_cocoon"] = true,
+	["mutant_krovosos_cocoon"] = true,
+	["mutant_krovosos_red_jaw"] = true,
+	["mutant_poltergeist_cocoon"] = true,
+	["mutant_psevdodog_cocoon"] = true,
+	["mutant_psydog_cocoon"] = true,
+	["mutant_snork_cocoon"] = true,
+	["mutant_tushkano_cocoon"] = true,
+	["mutant_zombie_cocoon"] = true,
+	["wpn_pm_arena"] = true,
+	["wpn_mp5_arena"] = true,
+	["wpn_toz34_arena"] = true,
+	["wpn_spas12_arena"] = true,
+	["wpn_ak74_arena"] = true,
+	["wpn_bm16_arena"] = true,
+	["wpn_ak74u_arena"] = true,
+	["wpn_val_arena"] = true,
+	["wpn_groza_arena"] = true,
+	["wpn_fn2000_arena"] = true,
+	["wpn_g36_arena"] = true
+}
+
+-- табличка исключений предметов для уборщика - проверка по частичному совпадению
+local tabl_upgrade_keep = {
+	"_m1$", -- уникальные оружие и бронь
+	"_m2$",
+	"_m3$"
+}
+
+-- таблица игнорирования проверки (по точному совпадению)
+local tabl_ignore = {
+	["outfit_soldier_m1"] = true,
+	["neytral_novice_outfit_m1"] = true,
+	["neytral_novice_gaz_outfit_m1"] = true,
+	["neytral_gaz_outfit_m1"] = true,
+	["neytral_gaz_outfit_m2"] = true,
+	["neytral_exo_gaz_outfit_m1"] = true,
+	["bandit_gaz_outfit_m1"] = true,
+	["bandit_veteran_outfit_m1"] = true,
+	["svoboda_gaz_outfit_m1"] = true,
+	["svoboda_heavy_gaz_outfit_m1"] = true,
+	["dolg_gaz_outfit_m1"] = true,
+	["killer_gaz_outfit_m1"] = true,
+	["monolit_gaz_outfit_m1"] = true,
+	["outfit_killer_m1"] = true
+}
+
+-- таблица игнорирования для торговли (чтобы можно было выкупить у непися что-то уникальное)
+local tabl_ignore_for_trade = {
+	["telefon"] = true,
+}
+
+-- Получаем имя секции проверяемого объекта
+-- obj может быть как игровым, так и серверным объектом (см. news_main.get_object_name(obj))
+function get_obj_name(obj)
+	local s_name = ""
+	if not obj then return s_name end
+	local i = 0
+	if (news_main.isGameObject(obj) and obj.section) then
+		-- s_name = obj:section()
+		i = string_find (obj:name(), tostring(obj:id())) --номер символа начала id, вернет nil если не найден
+		if i then -- респавн-объекты: стори_ид в конце obj:name()
+			-- get_console():execute("load ~#I#: начало id с символа "..i)
+			s_name = string_sub(obj:name(),1,i-1)
+		else	-- стори_ид нет в obj:name() (в аллспавн?)
+			s_name = string_sub(obj:name(),1,-1)
+		end
+	elseif (obj.section_name) then
+		s_name = obj:name() --obj:section_name()
+	end
+	if (s_name == nil) then s_name = "" end	
+	return s_name
+end
+
+local table_by_name = {
+	["items_protected"] = {
+		["tbl"] = items_protected,
+		["method"] = "exactly",
+		["use_names"] = false
+	},
+	["tabl_corps_keep"] = {
+		["tbl"] = tabl_corps_keep,
+		["method"] = "exactly",
+		["use_names"] = true
+	},
+	["tabl_uniq_equipment_keep"] = {
+		["tbl"] = tabl_uniq_equipment_keep,
+		["method"] = "exactly",
+		["use_names"] = false
+	},
+	["tabl_wpn_keep"] = {
+		["tbl"] = tabl_wpn_keep,
+		["method"] = "exactly",
+		["use_names"] = false
+	},
+	["tabl_outfit_keep"] = {
+		["tbl"] = tabl_outfit_keep,
+		["method"] = "exactly",
+		["use_names"] = false
+	},
+	["tabl_wpn_upgrade_keep"] = {
+		["tbl"] = tabl_wpn_upgrade_keep,
+		["method"] = "like",
+		["use_names"] = false
+	},
+	["tabl_upgrade_keep"] = {
+		["tbl"] = tabl_upgrade_keep,
+		["method"] = "like",
+		["use_names"] = false
+	},
+	["tabl_watcher_act_ignore"] = {
+		["tbl"] = tabl_watcher_act_ignore,
+		["method"] = "exactly",
+		["use_names"] = false
+	}
+}
+
+-- Здесь проверка по имени секции по таблицам выбранным методом
+-- Вернет true, если предмет внесен в исключения
+-- параметры:
+-- sobj - объект для проверки
+-- tabl - по какой таблице прверять
+-- method - либо "exactly" - по точному имени секции, либо "like" - по части имени
+-- прим.: таблицы для проверки точного совпадения - свои, для частичного - свои
+function obj_is_protected(obj, tabl_name)
+	local result = false
+	local item_str
+	
+	if table_by_name[tabl_name]["use_names"] then
+		item_str = get_obj_name(obj)
+	else
+		if obj.section_name then -- серверный объект
+			item_str = obj:section_name()
+		else
+			item_str = obj:section()
+		end
+	end
+	
+	local tabl = table_by_name[tabl_name]["tbl"]
+	
+	-- более быстрый метод, без цикла
+	if table_by_name[tabl_name]["method"] == "exactly" then
+		if tabl[item_str] == true then
+			if debug_level then
+				result = item_str.." is in table "..tabl_name
+			else
+				result = true
+			end
+		end
+	-- более медленный, перебираем таблицу, нашли совпадение - прерываем
+	elseif table_by_name[tabl_name]["method"] == "like" then
+		for i = 1, #tabl do			
+			if string_find(item_str, tabl[i]) then
+				if debug_level ~= 0 then
+					result = item_str.." is in table "..tabl_name
+				else
+					result = true
+				end
+				break
+			end				
+		end
+	end
+	
+	return result
+end
+
+function obj_is_ignored(obj)
+	local result = false
+	if obj then
+		local item_str
+		
+		if obj.section_name then -- серверный объект
+			item_str = obj:section_name()
+		else
+			item_str = obj:section()
+		end
+		
+		result = tabl_ignore[item_str] == true
+	end
+	
+	return result
+end
+
+function obj_is_ignored_for_trade(obj)
+	local result = false
+	if obj then
+		local item_str
+		
+		if obj.section_name then -- серверный объект
+			item_str = obj:section_name()
+		else
+			item_str = obj:section()
+		end
+		
+		result = tabl_ignore_for_trade[item_str] == true
+	end
+	
+	return result
+end
+
+function doNotTouchItemEquipmentForTrade(sobj)
+	return not obj_is_ignored_for_trade(sobj) and not obj_is_ignored(sobj) and (obj_is_protected(sobj, "items_protected") or obj_is_protected(sobj, "tabl_uniq_equipment_keep"))
+end
+function doNotTouchItemEquipment(sobj)
+	return not obj_is_ignored(sobj) and (obj_is_protected(sobj, "items_protected") or obj_is_protected(sobj, "tabl_uniq_equipment_keep"))
+end
+function watcherActDoNotTouchItemEquipment(sobj)
+	return not obj_is_ignored(sobj) and (obj_is_protected(sobj, "tabl_watcher_act_ignore") or obj_is_protected(sobj, "items_protected") or obj_is_protected(sobj, "tabl_uniq_equipment_keep"))
+end
+function doNotTouchItem(sobj)
+	return not obj_is_ignored(sobj) and obj_is_protected(sobj, "items_protected")
+end
+function doNotTouchAnything(sobj)
+	return sobj.m_story_id ~= 4294967296 or not obj_is_ignored(sobj) and (obj_is_protected(sobj, "items_protected") or obj_is_protected(sobj, "tabl_uniq_equipment_keep") or obj_is_protected(sobj, "tabl_upgrade_keep") or obj_is_protected(sobj, "tabl_wpn_keep") or obj_is_protected(sobj, "tabl_wpn_upgrade_keep"))
+end
+
+function cleanerDoNotTouchItem(sobj)
+	if debug_level >= 2 then
+		local why
+		if sobj.m_story_id ~= 4294967296 then
+			return "sid = "..sobj.m_story_id
+		elseif obj_is_ignored(sobj) then
+			return false
+		else
+			local tables = {"items_protected","tabl_uniq_equipment_keep","tabl_upgrade_keep"}
+			for i = 1, #tables do
+				why = obj_is_protected(sobj, tables[i])
+				if why then
+					return "[Item]obj_is_protected by: "..why
+				end
+			end
+			return false
+		end
+	else
+		return sobj.m_story_id ~= 4294967296 or not obj_is_ignored(sobj) and (obj_is_protected(sobj, "items_protected") or obj_is_protected(sobj, "tabl_uniq_equipment_keep") or obj_is_protected(sobj, "tabl_upgrade_keep"))
+	end
+end
+function cleanerDoNotTouchWeapon(sobj)
+	if debug_level == 3 then
+		local why
+		if sobj.m_story_id ~= 4294967296 then
+			return "sid = "..sobj.m_story_id
+		elseif (string_sub(sobj:name(),1,4) ~= "wpn_" and string_sub(sobj:name(),1,8) ~= "grenade_") then	
+			return "[Weapon]name:"..sobj:name()
+		else
+			local tables = {"tabl_wpn_keep","tabl_wpn_upgrade_keep"}
+			for i = 1, #tables do
+				why = obj_is_protected(sobj, tables[i])
+				if why then
+					return "[Weapon]obj_is_protected by: "..why
+				end
+			end
+			return false			
+		end
+	else
+		return sobj.m_story_id ~= 4294967296 or (string_sub(sobj:name(),1,4) ~= "wpn_" and string_sub(sobj:name(),1,8) ~= "grenade_") or obj_is_protected(sobj, "tabl_wpn_keep") or obj_is_protected(sobj, "tabl_wpn_upgrade_keep")
+	end
+end
+
+function cleanerDoNotTouchOutfit(sobj)
+	if debug_level == 3 then
+		if sobj.m_story_id ~= 4294967296 then
+			return "sid = "..sobj.m_story_id
+		else
+			local why = obj_is_protected(sobj, "tabl_outfit_keep")
+			if why then
+				return "[Outfit]obj_is_protected by: "..why
+			end
+			return false
+		end
+		return false
+	else
+		return sobj.m_story_id ~= 4294967296 or obj_is_protected(sobj, "tabl_outfit_keep")
+	end
+end
+
+function cleanerDoNotTouchHlam(sobj)
+	if debug_level == 3 then
+		if sobj.m_story_id ~= 4294967296 or string_find(sobj:name(),tostring(sobj.id),1,true) then
+			return "sid = "..(sobj.m_story_id ~= 4294967296 and sobj.m_story_id or sobj:name().." from all.spawn")
+		end
+		return false
+	else
+		return sobj.m_story_id ~= 4294967296 or not string_find(sobj:name(),tostring(sobj.id),1,true)
+	end
+end
+
+function cleanerDoNotTouchStalkersCorps(sobj)
+	if debug_level >=1 then
+		local why
+		if sobj.m_story_id ~= 4294967296 and not sobj.treasure_processed then
+			return "sid = "..sobj.m_story_id..", treasure_processed: "..(sobj.treasure_processed and "true" or "false")
+		else
+			why = not sobj.treasure_processed and obj_is_protected(sobj, "tabl_corps_keep")
+			if why then
+				return "[Corpse]obj_is_protected by: "..why
+			else
+				return false
+			end
+		end
+	else
+		return not sobj.treasure_processed and (sobj.m_story_id ~= 4294967296 or obj_is_protected(sobj, "tabl_corps_keep"))
+	end
+end

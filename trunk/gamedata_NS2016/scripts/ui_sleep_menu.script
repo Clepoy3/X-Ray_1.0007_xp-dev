@@ -1,0 +1,171 @@
+--[[-----------------------------------------------------------------------------------------------
+ File         : cop_sleep_menu.script
+ Description  : Меню сна
+ Copyright    : DMX MOD
+ Author       : Charsi
+ Date         : 22.04.2011
+ Last Edit    : 12.09.2012
+ NS Team	Edit	: 16.05.2013
+--]]-----------------------------------------------------------------------------------------------
+
+local w_btn = 25
+class "sleep_menu" (CUIScriptWnd)
+
+function sleep_menu:__init() super()
+	self.sleep_time = 8
+	self.hour = level.get_time_hours()
+	self:InitControls()
+end
+
+function sleep_menu:__finalize() end
+
+function sleep_menu:InitControls()
+	self:Init(0,0,1024,768)
+
+	-- подложка
+	self.bkgr=CUIStatic()
+	self.bkgr:InitTexture("ui\\ui_actor_sleep_screen")
+	self.bkgr:SetOriginalRect(0,0,680,270)
+	self.bkgr:Init((1024-680)/2,(768-270)/2,680,270)
+	self.bkgr:SetStretchTexture(true)
+	self.bkgr:Show(true)
+	self:AttachChild(self.bkgr)
+
+	--A.M.
+	self.stam = CUIStatic()
+	self.stam:InitTexture("ui\\ui_actor_sleep_screen")
+	self.stam:SetStretchTexture(true)
+	self.bkgr:AttachChild(self.stam)
+
+	--P.M.
+	self.stpm = CUIStatic()
+	self.stpm:InitTexture("ui\\ui_actor_sleep_screen")
+	self.stpm:SetStretchTexture(true)
+	self.bkgr:AttachChild(self.stpm)
+	
+	self:reinit_am_pm()
+
+	--оправа
+	self.st = CUIStatic()
+	self.st:InitTexture("ui\\ui_actor_sleep_screen")
+	self.st:SetOriginalRect(0,275,600,125)
+	self.bkgr:AttachChild(self.st)
+	self.st:Init(38,30,600,125)
+	self.st:SetStretchTexture(true)
+
+	self.btn_pressed = function(i)
+		local btn = self:GetButton("btn_"..self.sleep_time)
+		btn:DetachChild(self.st)
+		btn:DetachChild(self.st1)
+		self.sleep_time = i
+		btn = self:GetButton("btn_"..i)
+		btn:AttachChild(self.st)
+		btn:AttachChild(self.st1)
+	end
+
+	self.tst={}
+	
+	for i=1,24 do		
+		if i<9 then
+		self.btn = CUIButton()
+		self.btn:Init((i-1)*w_btn + 38,38,w_btn,180)
+		self:Register(self.btn,"btn_"..i)
+		self.bkgr:AttachChild(self.btn)
+		self:AddCallback(self.btn:WindowName(),ui_events.BUTTON_DOWN, self.btn_pressed,i)
+		end
+		
+		local st = CUIStatic()
+		local txt = self.hour + i
+		if txt>23 then txt = txt-24 end
+		st:SetText(tostring(txt).."ч")
+		st:SetTextX(7)
+		st:SetTextY(122)
+		st:Init((i-1)*w_btn + 38,38,w_btn,180)
+		self.bkgr:AttachChild(st)
+		table.insert(self.tst,st)
+		if i==self.sleep_time and i<9 then
+			-- указатель
+			self.st=CUIStatic()
+			self.st:InitTexture("ui\\ui_actor_sleep_screen")
+			self.st:SetOriginalRect(620,270,35,125)
+			self.st:SetStretchTexture(true)
+			self.st:Init(0,0,w_btn,125)
+			self.btn:AttachChild(self.st)
+			--движок
+			self.st1=CUIStatic()
+			self.st1:InitTexture("ui\\ui_actor_sleep_screen")
+			self.st1:SetOriginalRect(620,420,35,35)
+			self.st1:Init(-4,125,w_btn,50)
+			self.btn:AttachChild(self.st1)
+		end
+	end
+
+	local btn = CUI3tButton()
+	btn:Init(215,217,114,26)
+	btn:InitTexture("ui\\ui_up_clicked")
+	btn:SetOriginalRect(0,0,114,26)
+	btn:SetStretchTexture(true)
+	btn:SetText("Спать")
+	self:Register(btn,"sleep_start_btn")
+	self.bkgr:AttachChild(btn)
+	self:AddCallback("sleep_start_btn",ui_events.BUTTON_CLICKED,self.start_sleep,self)
+
+	btn = CUI3tButton()
+	btn:Init(346,217,114,26)
+	btn:InitTexture("ui\\ui_up_clicked")
+	btn:SetOriginalRect(0,0,114,26)
+	btn:SetStretchTexture(true)
+	btn:SetText("Отмена")
+	self:Register(btn,"quit_btn")
+	self.bkgr:AttachChild(btn)
+	self:AddCallback(btn:WindowName(),ui_events.BUTTON_CLICKED,self.on_quit,self)
+end
+
+function sleep_menu:reinit_am_pm()
+	local screen_w = 600
+	local a = 591*self.hour/24
+	local b = (24-self.hour)*screen_w/24
+	self.stam:SetOriginalRect(a,413,591-a,115)
+	self.stam:Init(38,30,b,125)
+	self.stpm:SetOriginalRect(0,413,a-1,115)
+	self.stpm:Init(37 + b, 30 ,screen_w*self.hour/24,125)
+end
+
+function sleep_menu:Update()
+	CUIScriptWnd.Update(self)
+	local h = level.get_time_hours()
+	if self.hour ~= h then
+		self.hour = h
+		self:reinit_am_pm()
+		for i=1,24 do
+			local st = self.tst[i]
+			local txt = tonumber(string.sub(st:GetText(),1,-2))
+			if txt>23 then txt = txt - 24 end
+			st:SetText(tostring(txt).."ч")
+		end
+	end
+end
+
+function sleep_menu:start_sleep()
+	local ok = ""
+	local sst = self.sleep_time	
+	if sleep_manager then sleep_manager.main(self.sleep_time) end
+	if sst >= 2 and sst <= 4 then ok = "а" elseif sst >4 then ok = "ов" end
+	news_manager.send_tip(db.actor, "%c[255,240,155,25]спим "..(self.sleep_time).." час"..ok, nil, nil, 1000)
+	self:on_quit()
+end
+
+function sleep_menu:on_quit()
+	level.start_stop_menu (self,true)
+end
+
+function sleep_menu:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE then self:on_quit()
+		elseif dik == DIK_keys.DIK_F then self:on_quit()
+		elseif dik == DIK_keys.DIK_RETURN then self:start_sleep()
+		end
+	end
+	return true
+end

@@ -1,0 +1,1936 @@
+-- Red75 (c) 2008
+-- Marauder scheme v 1.1
+-- Part of AMK MOD
+
+local math_random = math.random
+local math_sqrt = math.sqrt
+local string_find = string.find
+local string_sub = string.sub
+local string_format = string.format
+
+evid_see_stuff = 6931
+evid_near_stuff = evid_see_stuff + 1
+evid_see_body = evid_see_stuff + 2
+--evid_position_corrected = evid_see_stuff + 3
+
+actid_reach_item = evid_see_stuff
+actid_grab_item = evid_see_stuff + 1
+actid_grab_body = evid_see_stuff + 2
+actid_correct_position = evid_see_stuff + 3
+
+
+
+local timeKick = 2000
+local timeWait = 4000
+local timeSearch = 7000
+
+-- холодное оружие для разделки монстров на запчасти (проверка неписей на наличие)
+-- прописать в gamedata\config\creatures\m_stalker.ltx в параметре attachable_items
+local holodnoyeCheck = {
+--	"fake_knife",--"Штык-нож М9"
+	"fake_knife_skin",--"Штык-нож М9" временный для освежевания
+}
+
+-- холодное оружие для разделки монстров на запчасти (спавн если ничего нету)
+-- вносить в \config\misc\death_generic.ltx [delete_items]
+local holodnoyeSpawn = {
+	"fake_knife_skin",--"Штык-нож М9"
+}
+
+-- слишком мелкие
+local dontShootSections = {
+	["m_eltush_e"] = true,
+	["eltush_normal"] = true,
+	["eltush_strong"] = true,
+	["mouses"] = true,
+	["m_rat_e"] = true,
+	["rat_weak"] = true,
+	["rat_normal"] = true,
+	["rat_strong"] = true,
+	["m_tushkano_e"] = true,
+	["m_tushkano_normal"] = true,
+	["tushkano_weak"] = true,
+	["tushkano_normal"] = true,
+	["tushkano_strong"] = true,
+	["tarakan_normal"] = true,
+	["tarakan_strong"] = true,
+--	["m_dog_e"] = true,
+--	["dog_weak"] = true,
+--	["dog_normal"] = true,
+--	["dog_strong"] = true,
+}
+
+local dist_min = 7*7	-- расстояние, на котором пытаемся ухватить что-либо ценное "по-быстрому"
+local dist_busy = 10*10	-- максимальное расстояние, разрешенное для кэмпера или патрульного
+local dist_max = 50*50	-- дальше не смотрим вообще
+local dist_walk = 150*150	-- если добираться нужно окольными путями
+local reach_item_time_limit = 120000 -- если добираться нужно окольными путями
+
+local npc_playing_phase = { ["act_grab_body_initialize"] = {}, ["act_grab_body_execute"] = {} }
+local npc_playing_want = {}
+local any_npc_playing_want = false
+local time_next_npc_playing = 0
+local time_next_npc_playing_delta = 60000
+
+obj_owner = {}
+-- неписи игнорирующие хабар (зомби, со стори_ид, монолит, торговцы, на арене)
+disabled_npc = {}
+local disabled_objects = {}
+
+--local corpse_checked = {} -- true - has loot, false - hasn't loot, nil - not checked
+--[[local corpseCheckedMemory = {}
+local corpseCheckedMemoryLimitCount = 64
+local corpseCheckedMemoryLimitHours = 30*24 
+]]
+local bad_dangers={
+	[danger_object.hit]		= true,
+	[danger_object.attacked]	= true,
+	[danger_object.bullet_ricochet]	= true,
+	[danger_object.grenade]		= true,
+	[danger_object.entity_death]	= true,
+	[danger_object.enemy_sound]	= true
+}
+
+local inertion_time = 60000
+
+function bad_danger(npc)
+	local danger = npc:best_danger()
+	if danger then return bad_dangers[danger:type()] and time_global() - danger:time() < inertion_time end
+	if xr_danger.actor_danger[npc:id()] and time_global() - xr_danger.actor_danger[npc:id()] < inertion_time then return time_global() - xr_danger.actor_danger[npc:id()] < inertion_time end
+	return false
+end
+--[[
+function memoryRestore(npc) counterAdd("watcher_act.memoryRestore")
+	if npc then
+		local npc_id = npc:id()
+		local hoursNow = amk.game_hours()
+
+		if corpseCheckedMemory[npc_id] ~= nil then
+		else
+			-- для совместимости оставлен старый вариант с распаковкой
+			local corpses_checked = xr_logic.pstor_retrieve(npc, "corpses_checked", "")
+			if type(corpses_checked) == "table" then
+				corpseCheckedMemory[npc_id] = corpses_checked
+			else
+				corpseCheckedMemory[npc_id] = amk.unpack_array_from_string(corpses_checked)
+			end
+		end
+		
+		-- забывает те, которые больше corpseCheckedMemoryLimitHours не видел
+		for id,hours in pairs(corpseCheckedMemory[npc_id]) do
+			if hours < hoursNow - corpseCheckedMemoryLimitHours then
+				corpseCheckedMemory[npc_id][id] = nil
+			end
+		end
+	end
+end
+
+function memoryAdd(npcId, gi)
+	local giId = gi and gi:id()
+	local obj = level.object_by_id(npcId)
+	if giId and obj and IAmAStalker[obj:clsid()] and obj:alive() and not xr_wounded.is_heavy_wounded_by_id(npcId) and not obj:wounded() and not obj:critically_wounded() 
+		and (obj_owner[giId] == npcId or obj:see(gi)) then
+		
+		if corpseCheckedMemory[npcId] == nil then
+			corpseCheckedMemory[npcId] = {}
+		end
+		corpseCheckedMemory[npcId][giId] = amk.game_hours()
+
+		local oldestId, oldestHours = nil, 0
+		local count = 0
+		for id2,hours in pairs(corpseCheckedMemory[npcId]) do
+			if id2 ~= giId and (oldestId == nil or oldestHours < hours) then
+				oldestId = id2
+				oldestHours = hours
+				count = count + 1
+			end
+		end
+		if count > corpseCheckedMemoryLimitCount then
+			corpseCheckedMemory[npcId][oldestId] = nil
+		end
+		xr_logic.pstor_store(obj, "corpses_checked", corpseCheckedMemory[npcId])
+	end
+end
+
+function memoryRefresh(npcId, objId)
+	corpseCheckedMemory[npcId][objId] = amk.game_hours()
+end
+
+function memoryObject(npcId, objId)
+	return corpseCheckedMemory[npcId][objId] ~= nil
+end]]
+
+function freeGObject(st, npc_id) counterAdd("watcher_act.freeGObject")
+	if st.grabitemid then
+		if npc_id == obj_owner[st.grabitemid] then
+			obj_owner[st.grabitemid] = nil
+		end
+		st.valuableObjects[st.grabitemid] = nil
+		st.grabitemid = nil
+		st.dest_lvid = nil
+		st.dest_pos = nil
+		st.accessible = nil
+		return true
+	end
+	return false
+end
+
+function clearGObject(st, npc_id) counterAdd("watcher_act.clearGObject")
+	if st.grabitemid then
+		st.valuableObjects[st.grabitemid] = nil
+		if npc_id == obj_owner[st.grabitemid] then
+			obj_owner[st.grabitemid] = nil
+		end
+		st.grabitemid = nil
+	end
+end
+
+function getGObject(st, npc_id) counterAdd("watcher_act.getGObject")
+	if st.grabitemid then
+		local obj = level.object_by_id(st.grabitemid)
+		if obj then
+			local anoms = amk_anoms.get_anomaly_list_for_pos(obj:position(),1)
+			if #anoms > 0 then
+				disabled_objects[st.grabitemid] = true
+				freeGObject(st, npc_id)
+			else
+				return obj
+			end
+		else
+			freeGObject(st, npc_id)
+		end
+	end
+end
+
+function mypGObject(npc, st) counterAdd("watcher_act.mypGObject")
+	return st.grabitemid ~= nil and obj_owner[st.grabitemid] == npc:id()
+end
+
+function onUse(obj)
+	if obj and npc_by_clsid[obj:clsid()] and not obj:alive() then
+		local sobj = alife():object(obj:id())
+		if sobj then
+			sobj.cut_part = true
+			disabled_objects[obj:id()] = true
+		end
+	end
+end
+
+function removeKnife(npc)
+	if npc then
+		local st = db.storage[npc:id()] and db.storage[npc:id()]["watcher_act"]
+		if st and st.knifeSpawned then
+			local knife = npc:object(st.knifeSpawned)
+			if knife then
+				local sknife = alife():object(knife:id())
+				if sknife then
+					alife():release(sknife, true)
+				end
+			end
+			st.knifeSpawned = nil
+		end
+	end
+end
+
+class "ev_see_stuff" (property_evaluator)
+
+function ev_see_stuff:__init(st, name, npc) super(nil, name) counterAdd("watcher_act.ev_see_stuff:__init")
+	self.st = st
+	self.st.scan_time = time_global()
+	self.st.valuableObjects = {}
+	db.storage[npc:id()].newGrabItem = true
+end
+
+local dist_limit = dist_max
+
+function ev_see_stuff:evaluate() counterAdd("watcher_act.ev_see_stuff:evaluate")
+	local npc = self.object
+	local npc_id = npc:id()
+	local db_st = db.storage[npc_id]
+	local st = self.st
+	local active_scheme = db_st["active_scheme"]
+	active_scheme = active_scheme and db_st[active_scheme]
+	local actor = db.actor
+--	if active_scheme and actor then xr_logic.try_switch_to_another_section(npc, active_scheme, actor) end
+	
+	if st.grabitemid and obj_owner[st.grabitemid] ~= npc:id() or disabled_objects[st.grabitemid] then
+		st.valuableObjects[st.grabitemid] = nil
+		st.grabitemid = nil
+	end
+	
+	if self.mgr == nil then self.mgr = self.object:motivation_action_manager() end
+	if not npc:alive() or xr_wounded.is_wounded(npc) or (active_scheme and active_scheme["no_loot"]) or db_st["active_scheme"] == "camper"
+		or self.mgr:evaluator(stalker_ids.property_enemy):evaluate() or self.mgr:evaluator(stalker_ids.property_danger):evaluate()
+		or xr_sleeper.is_npc_asleep(npc)
+	then
+		if st.grabitemid then			-- раз не можем пограбить сами - даем другим
+			st.valuableObjects = {}
+			if obj_owner[st.grabitemid] == npc_id then
+				obj_owner[st.grabitemid] = nil
+			end
+			st.grabitemid = nil
+		end
+		db_st.newGrabItem = true
+		return false
+	end
+
+	local res = getGObject(st, npc_id)		-- уже идем грабить ?
+	if res and st.block_search then
+		return true
+	end
+
+	local tg = time_global()
+	if tg < st.scan_time then return res ~= nil end
+	st.scan_time = tg + 2000 + math_random(2000)
+
+	local act_sec = db_st["active_section"] or db_st["section_logic"] or db_st["loaded_section_logic"] or "none"
+
+	local dangerSettings = xr_danger.getDangerSettings(npc_id)
+	dist_limit = (dangerSettings.ignore_distance_corpse ~= 0 and dangerSettings.ignore_distance_corpse or xr_danger.default_danger_settings.ignore_distance_corpse)*0.9
+
+	local obj, obj_id, obj_interest, objVrtxPosition, obj2, anybodyNear
+	local best_obj
+	local best_obj_interest = 0
+	local owner, owner_id, owner2, npc2
+	local lobj_by_id = level.object_by_id
+	local npcPosition = npc:position()
+	local actorPosition = actor and actor:alive() and actor:position()
+	--memoryRestore(npc)
+	for o in npc:memory_visible_objects() do
+		obj = o:object()
+		if obj then
+			obj_id = obj:id()
+			if disabled_objects[obj_id] then
+			elseif obj_id == npc_id then
+			else
+				local value = 0
+				obj_clsid = obj:clsid()
+				if npc_by_clsid[obj_clsid] then
+					if not obj:alive() then
+						if IAmAMonster[obj_clsid] or IAmAStalker[obj_clsid] then
+							local sobj = alife():object(obj_id)
+							if not sobj or sobj.cut_part or protected_items.cleanerDoNotTouchStalkersCorps(sobj) then
+								disabled_objects[obj_id] = true
+								freeGObject(st, npc_id)
+							else
+								value = 1000
+							end
+						else
+							value = 3000
+						end
+					end
+				elseif obj:parent() then
+				elseif protected_items.watcherActDoNotTouchItemEquipment(obj) then
+					disabled_objects[obj_id] = true
+				else
+					local sec = obj:section()
+					if sec and sec ~= "amk_metka" then
+						local multiplier
+						if valuable_clsid[obj_clsid] then
+							multiplier = 1
+						end
+						if multiplier then
+							value = getIniValueFloatSimple(sec, "cost", 0) * multiplier
+						end
+					end
+				end
+				if value > 0 then
+					local obj_lv = obj:level_vertex_id()
+					local obj_pos = obj:position()
+					objVrtxPosition = level.vertex_position(obj_lv)
+					local accessible = isAccessible(obj, npc)
+					if accessible then
+						obj_lv = accessible
+						objVrtxPosition = level.vertex_position(obj_lv)
+						if actorPosition and actorPosition:distance_to_sqr(objVrtxPosition) < 9 then
+							if obj_id == st.grabitemid then
+								freeGObject(st, npc_id)
+							end
+							st.valuableObjects[obj_id] = nil
+						else
+							dist = objVrtxPosition:distance_to_sqr(npcPosition)
+							if dist < dist_limit or obj_id == st.grabitemid and dist < dist_walk then
+								-- есть ли кто-то рядом с увиденным хабаром
+								local dist2
+								anybodyNear = false
+								for o2 in npc:memory_visible_objects() do
+									npc2 = o2:object()
+									if npc2 and IAmAStalker[npc2:clsid()] and not disabled_npc[npc2:id()] and npc2:id() ~= npc_id and npc2:alive() and not xr_wounded.is_wounded(npc2) and not npc2:wounded() and not npc2:critically_wounded() then
+										dist2 = npc2:position():distance_to_sqr(objVrtxPosition)
+										if dist2 < 4 and dist2 < dist and dist > 4 then
+											anybodyNear = true
+											break
+										end
+									end
+								end
+								-- если никого нет
+								if not anybodyNear then
+									-- где тот, кто "забил" предмет ?
+									for k, v in pairs(obj_owner) do
+										if v ~= npc_id then
+											obj2 = lobj_by_id(k)
+											owner2 = lobj_by_id(v)
+											if obj2 and owner2
+												-- другой предмет находится рядом с увиденным
+												and level.vertex_position(obj2:level_vertex_id()):distance_to_sqr(objVrtxPosition) < 2
+												-- непись "забивший" другой предмет ближе, чем текущий непись, на 5 м
+												and dist - level.vertex_position(obj2:level_vertex_id()):distance_to_sqr(owner2:position()) > 25
+											then
+												anybodyNear = true
+												break
+											end
+										end
+									end
+									-- если никого нет
+									if not anybodyNear then
+										owner = nil
+										-- что там с "забившим" этот предмет ранее ?
+										if obj_owner[obj_id] then
+											if obj_owner[obj_id] ~= npc_id then
+												owner = lobj_by_id(obj_owner[obj_id])
+												if not owner or not owner:alive() or owner:wounded() or owner:critically_wounded() or xr_wounded.is_wounded(owner) then
+													obj_owner[obj_id] = nil
+													owner = nil
+												end
+											else
+												owner = npc
+											end
+										end
+										-- если предмет никто не "забил" или "забивший" далее 5м, чем текущий непись
+										if not owner or owner:id() == npc_id or owner:position():distance_to_sqr(objVrtxPosition) - dist > 25 then
+											-- непись выбирает рациональный поход за хабаром
+											obj_interest = value/dist
+											if obj_interest > best_obj_interest then
+												best_obj = obj
+												best_obj_interest = obj_interest
+											end
+											st.valuableObjects[obj_id] = value
+										end
+									end
+								end
+								-- если кто-то есть
+								if anybodyNear then
+									-- и предмет был "забит" текущим неписем
+									if obj_id == st.grabitemid then
+										freeGObject(st, npc_id)
+									end
+									st.valuableObjects[obj_id] = nil
+								end
+							else
+								if obj_id == st.grabitemid then
+									freeGObject(st, npc_id)
+								end
+								st.valuableObjects[obj_id] = nil
+							end
+						end
+					else
+						if obj_id == st.grabitemid then
+							freeGObject(st, npc_id)
+						end
+						st.valuableObjects[obj_id] = nil
+					end
+				elseif not npc_by_clsid[obj_clsid] then
+					disabled_objects[obj_id] = true
+					freeGObject(st, npc_id)
+				end
+			end
+		end
+	end
+	if best_obj then
+		if st.grabitemid and obj_owner[st.grabitemid] == npc_id then
+			obj_owner[st.grabitemid] = nil
+		end
+		obj_id = best_obj:id()
+		st.grabitemid = obj_id
+		obj_owner[obj_id] = npc_id
+		return true
+	end
+	db_st.newGrabItem = true
+	return false
+end
+
+class "ev_near_stuff" (property_evaluator)
+
+function ev_near_stuff:__init(st, name) super(nil, name) counterAdd("watcher_act.ev_near_stuff:__init")
+	self.st = st
+end
+
+function ev_near_stuff:evaluate() counterAdd("watcher_act.ev_near_stuff:evaluate")
+	local result = false
+	local npc = self.object
+	local gi = npc:alive() and getGObject(self.st, npc:id())
+	local dist, dist_xz = -1, -1
+	if gi then
+		local clsidGI = gi:clsid()
+		local distMax = npc_by_clsid[clsidGI] and 4 or 2
+		local distMaxXZ = npc_by_clsid[clsidGI] and 2 or 1
+		local npcPos = npc:position()
+		local npcVrtx = npc:level_vertex_id()
+		local giPos = gi:position()
+		local giVrtx = gi:level_vertex_id()
+		local npcGIDist = npcPos:distance_to_sqr(giPos)
+		local npcGIDistXZ = npcPos:distance_to_xz(giPos)
+
+		if self.st.block_search then
+			dist = giPos:distance_to_sqr(npcPos)
+			dist_xz = giPos:distance_to_xz(npcPos)
+			result = true
+		elseif self.st.dest_pos then
+			dist = self.st.dest_pos:distance_to_sqr(npcPos)
+			dist_xz = self.st.dest_pos:distance_to_xz(npcPos)
+			result = (
+				dist_xz < distMaxXZ and dist < distMax
+				or
+					(
+					self.st.dest_lvid and self.st.dest_lvid == npcVrtx
+					)
+				)
+			
+			
+				--[[or not self.st.accessible and 
+				(
+					npcVrtx == self.st.dest_lvid or npcVrtx == giVrtx
+					or 
+					level.vertex_position(self.st.dest_lvid):distance_to_sqr(npcPos) < 12 and level.vertex_position(self.st.dest_lvid):distance_to_xz(npcPos) < 3
+					or 
+					giPos:distance_to_sqr(npcPos) < 12 and giPos:distance_to_xz(npcPos) < 3 
+					or 
+					dist < 12 and dist_xz < 3
+				)]]
+		elseif self.st.dest_lvid then
+			result = npcVrtx == self.st.dest_lvid --or dist < 2
+--		else
+--			dist = --[[level.vertex_position(giVrtx)]]giPos:distance_to_sqr(npcPos)
+--			result = dist < 2 or not self.st.accessible and (npcVrtx == self.st.dest_lvid or dist < 4)
+		end
+		---dist = level.vertex_position(gi:level_vertex_id()):distance_to_sqr(npc:position())
+		---result = dist < 1.44 or self.st.dest_lvid and npc:level_vertex_id() == self.st.dest_lvid or false
+	end
+	return result
+end
+
+class "ev_see_body" (property_evaluator)
+
+function ev_see_body:__init(st) super(nil, "ev_see_body") counterAdd("watcher_act.ev_see_body:__init")
+	self.st = st
+end
+
+function ev_see_body:evaluate() counterAdd("watcher_act.ev_see_body:evaluate")
+	local result = false
+	local npc = self.object
+	local gi = getGObject(self.st, npc:id())
+	result = gi ~= nil and npc_by_clsid[gi:clsid()] ~= nil
+	return result
+end
+
+--[[class "ev_position_corrected" (property_evaluator)
+
+function ev_position_corrected:__init(st) super(nil, "ev_position_corrected") counterAdd("watcher_act.ev_position_corrected:__init")
+	self.st = st
+end
+
+function ev_position_corrected:evaluate() counterAdd("watcher_act.ev_position_corrected:evaluate")
+	return self.st.position_corrected == true
+end]]
+
+class "act_grab_item" (action_base)
+
+function act_grab_item:__init (action_name, st) super (nil, action_name) counterAdd("watcher_act.act_grab_item:__init")
+	self.st = st
+end
+
+function act_grab_item:initialize() counterAdd("watcher_act.act_grab_item:initialize")
+	action_base.initialize(self)
+	local npc = self.object
+	local gi=getGObject(self.st, npc:id())
+		npc:clear_animations()
+		npc:movement_enabled(false)
+		if npc:position().y - gi:position().y < -0.6 then
+			state_mgr.set_state(npc, "npctrade", nil, nil, {look_position = gi:position()}, {animation = true})
+		else
+			state_mgr.set_state(npc, "dynamite", nil, nil, {look_position = gi:position()}, {animation = true})
+		end
+	
+	self.st.block_search = true
+	if gi then
+		local npcToItemDir = gi:position():sub(npc:position())
+		local yawToItem = math.abs(yaw_degree(npcToItemDir, npc:direction()))
+		if yawToItem < 1 or npc:position():distance_to_sqr(gi:position()) > 16 then
+			npc:set_sight(gi,true)
+		end
+		--if npc_by_clsid[gi:clsid()] then
+		--	self.tt = time_global() + 6000
+		--else
+			if db.storage[npc:id()].newGrabItem then
+				self.tt = time_global() + 1250 + 750
+				if npc:weapon_unstrapped() then
+					self.tt = self.tt + 1000
+				end
+			else
+				self.tt = time_global() + 1000 + 750
+			end
+			--utils.send_to_nearest_accessible_vertex(npc, gi:level_vertex_id())
+			--utils.send_to_nearest_accessible_vertex(npc, correct_position(gi,npc))
+			----local vrtx, pos = correct_position(gi,npc)
+			----npc:set_dest_level_vertex_id(vrtx)
+			----npc:set_desired_position(pos)
+			----npc:set_desired_direction(pos:sub(npc:position()))
+		--end
+	end
+	self.force = vector():set(0,0,0)
+end
+
+function act_grab_item:execute() counterAdd("watcher_act.act_grab_item:execute")
+	action_base.execute(self)
+	local npc = self.object
+
+	local gi = getGObject(self.st, npc:id())
+	if not gi then
+		----self.st.dest_lvid = nil
+		----self.st.dest_pos = nil
+		freeGObject(self.st, npc:id())
+
+		self.object:set_movement_type(move.walk)
+		self.object:set_mental_state(anim.free)
+		self.object:set_body_state(move.standing)
+		self.object:movement_enabled(true)
+		return
+	end
+    
+	if self.tt < time_global() then
+		if gi and gi:parent() == nil then
+			if not protected_items.watcherActDoNotTouchItemEquipment(gi) then
+				gi:transfer_item(gi, npc)
+			end
+			npc:enable_memory_object(gi, false)
+			db.storage[npc:id()].newGrabItem = false
+		end
+		-- Тут нельзя освобождать объект. transfer_item выполняется асинхронно. Поэтому делаем clearGObject
+		freeGObject(self.st, npc:id())
+		
+		-- если есть рядом ещё предметы - подбираем и их не выходя из текущего действия (sapsan)
+		-- вариант попроще - прямо здесь прицениваемся ко всему, что видели
+		-- вариант посложнее - составлять список в эвалуаторе <==
+		local nearestItem, nearestItemDist, itemDist, itemDistXZ = nil, 10000, nil, nil
+		local npc_pos = npc:position()
+		local obj
+		for k,v in pairs(self.st.valuableObjects) do
+			obj = level.object_by_id(k)
+			if obj and not npc_by_clsid[obj:clsid()] then
+				itemDist = obj:position():distance_to_sqr(npc_pos)
+				itemDistXZ = obj:position():distance_to_xz(npc_pos)
+				local npcToItemDir = obj:position():sub(npc:position())
+				local yawToItem = math.abs(yaw_degree(npcToItemDir, npc:direction()))
+				yawToItem = yawToItem * yawToItem
+				if itemDistXZ < 2 and itemDist < 12 and itemDist * yawToItem < nearestItemDist then
+					nearestItemDist = itemDist * yawToItem
+					nearestItem = obj
+				end
+			end
+		end
+		
+		if nearestItem then
+			self.st.accessible = true
+			npc:movement_enabled(true)
+			local v_id = utils.send_to_nearest_accessible_vertex(npc, nearestItem:level_vertex_id())
+			----npc:set_desired_position(nearestItem:position())
+			npc:set_desired_direction(vector():sub(npc:position()--[[level.vertex_position(v_id)]], nearestItem:position()))
+			obj_owner[nearestItem:id()] = npc:id()
+			self.st.grabitemid = nearestItem:id()
+			
+			--if db.storage[npc:id()].newGrabItem then
+				npc:clear_animations()
+				if npc:position().y - gi:position().y < - 0.6 then
+					state_mgr.set_state(npc, "npctrade", nil, nil, {look_position = nearestItem:position()}, {animation = true})
+				else
+					state_mgr.set_state(npc, "dynamite", nil, nil, {look_position = nearestItem:position()}, {animation = true})
+				end
+				if npc:weapon_unstrapped() then
+					self.tt = self.tt + 1000
+				end
+			--end
+			--npc:set_sight(nearestItem)
+			self.tt = time_global() + 1000
+		else
+			npc:clear_animations()
+			npc:set_movement_type(move.walk)
+			npc:set_mental_state(anim.free)
+			npc:set_body_state(move.standing)
+			npc:movement_enabled(true)
+			npc:set_sight(look.cur_dir, nil, 0)
+		end
+		
+	end
+end
+
+function act_grab_item:finalize() counterAdd("watcher_act.act_grab_item:finalize")
+	local npc = self.object
+	self.st.block_search = nil
+	self.st.scan_time = 0
+	--npc:set_sight(look.danger, nil, 0)
+	--trigger_timed(self.st, "tm1")
+	self.st.dest_lvid = nil -- Очищаем скорректированную точку назначения
+	self.st.dest_pos = nil -- Очищаем скорректированную точку назначения
+	inv_npc.set_need_update(npc:id())
+	action_base.finalize(self)
+end
+
+class "act_grab_body" (action_base)
+
+function act_grab_body:__init (st) super (nil, "act_grab_body") counterAdd("watcher_act.act_grab_body:__init")
+	self.st = st
+end
+
+function act_grab_body:initialize() counterAdd("watcher_act.act_grab_body:initialize")
+	action_base.initialize(self)
+	local npc = self.object
+	local npc_id = npc:id()
+	self.timeRotate = 0
+
+	local gi = getGObject(self.st, npc_id)
+	local dist = npc:position():distance_to_sqr(gi:position())
+	self.st.wpn_shoot = self.st.wpn_shoot and not xr_kamp.deadmansidsuses[gi:id()] and dist > 1 --and dist < 4
+	
+	self.st.block_search = true
+	npc_playing_phase["act_grab_body_execute"][npc_id] = false
+	if gi then
+		local time_g = time_global()
+		local npcToBodyDir = gi:position():sub(npc:position())
+		
+		-- пинаем труп только из положения стоя и смотря прямо на него
+		self.timeRotate = (math.abs(yaw_degree(npcToBodyDir, npc:direction())) / 45) * 1000
+		if self.st.standing and math.abs(yaw_degree(npcToBodyDir, npc:direction())) < 30 or self.st.wpn_shoot then
+			if (math_random() > 0.5 or self.st.wpn_shoot) and npc:relation(gi) == game_object.enemy then
+				self.st.w_kick = true
+				self.tt = time_g + timeSearch + timeKick + timeWait + self.timeRotate
+			else
+				self.st.w_kick = false
+				self.tt = time_g + timeSearch + self.timeRotate
+			end
+		else
+			self.tt = time_g + timeSearch --+ self.timeRotate
+		end
+		if self.st.standing and self.st.w_kick then
+			local bones = {
+				"bip01_pelvis", "bip01_spine", "bip01_spine1", --[["bip01_spine2",]] "bip01_head",
+				"bip01_l_upperarm", "bip01_l_forearm", --[["bip01_l_hand",]] "bip01_l_thigh", "bip01_l_calf", --"bip01_l_foot",
+				"bip01_r_upperarm", "bip01_r_forearm", --[["bip01_r_hand",]] "bip01_r_thigh", "bip01_r_calf", --"bip01_r_foot",
+			}
+			local boneNear, dist
+			local boneNearDist = 100000
+			local npcFootPosition = npc:bone_position("bip01_l_foot")
+			local ps = gi:get_physics_shell()
+			for i=1, #bones do
+				if ps:get_element_by_bone_name(bones[i]) then
+					dist = gi:bone_position(bones[i]):distance_to_sqr(npcFootPosition)
+					if dist < boneNearDist then
+						boneNearDist = dist
+						boneNear = bones[i]
+					end
+				end
+			end
+			local npcFootToBoneDir = gi:bone_position(boneNear):sub(npc:bone_position("bip01_l_foot"))
+			self.st.boneNear = boneNear
+			if self.st.wpn then
+				if self.st.wpn_shoot then
+					--self.object:set_sight(gi, true, true)
+					npc:set_sight(look.fire_point,gi:position(),true)
+					state_mgr.set_state(npc, "threat_sniper_fire", nil, nil, {look_object = gi})
+					--state_mgr.set_state(npc, "threat_fire", nil, nil, {look_object = gi})
+					--xr_sound.set_sound(self.object, "fight_attack")
+					--npc:set_sight(look.fire_point,gi:position(),true)
+					--local dir = vector():sub(gi:position(), npc:position())
+					--npc:set_sight(look.direction, dir, true)
+
+					--npc:set_item(object.fire1, npc:active_item(), 3, 1000)
+					--npc:set_sight(gi, true, false, true)
+					--npc:set_desired_direction(npcToBodyDir)
+				else
+					--npc:add_animation("wedro")
+					state_mgr.set_state(npc, "wedro", nil, nil, {look_position = gi:bone_position(self.st.boneNear)}, {animation = true})
+				end
+			elseif npc:active_item() ~= nil then
+				--npc:add_animation("myach_2")
+				state_mgr.set_state(npc, "myach_2", nil, nil, {look_position = gi:bone_position(self.st.boneNear)}, {animation = true})
+			else
+				self.st.standing = false
+				self.st.w_kick = false
+				self.tt = time_g + timeSearch + self.timeRotate
+				self:grabBodyAnimationGrab(npc, gi, self.st)
+			end
+			--npc:set_desired_direction(npcToBodyDir)
+			--npc:set_sight(gi, true)
+			--npc:set_sight(look.danger, npcDir, true)
+			--npc:set_sight(look.direction, npcToBodyDir, true)
+		else
+			-- local v_id = utils.send_to_nearest_accessible_vertex(npc, gi:level_vertex_id())
+			-- npc:set_desired_position(gi:position())
+			-- npc:set_desired_direction(vector():sub(level.vertex_position(v_id), gi:position()))
+			self:grabBodyAnimationGrab(npc, gi, self.st)
+		end
+		--npc:set_sight(gi, false)
+		--npc:set_desired_direction(npc:position():sub(gi:position()))
+		--state_mgr.set_state(npc, "dynamite", nil, nil, nil)
+		
+		if not self.st.wpn_shoot then
+			if time_g > time_next_npc_playing then
+				time_next_npc_playing = time_g + time_next_npc_playing_delta
+				if not npc_playing_phase["act_grab_body_initialize"][npc_id] then
+					npc_playing_phase["act_grab_body_initialize"][npc_id] = true
+					npc_playing_want[npc_id] = npc_playing_want[npc_id] or (not any_npc_playing_want and math_random() > 0.5)
+					if npc_playing_want[npc_id] then
+						any_npc_playing_want = true
+						if IAmAMonster[gi:clsid()] then sol_sound.direct_play_sound_on_npc_by_id(
+							"characters_voice\\loot_monster\\"..npc:character_community().."\\loot_begin_1", 0, true, nil, npc_id)
+						else sol_sound.direct_play_sound_on_npc_by_id(
+							"characters_voice\\loot\\"..npc:character_community().."\\loot_begin_"..math_random(1,3), 0, true, nil, npc_id)
+						end
+					end
+				end
+			end
+		end
+
+	else
+		self.st.dest_lvid = nil
+		self.st.dest_pos = nil
+	end
+	
+end
+
+function act_grab_body:grabBodyAnimationGrab(npc, gi, st)
+
+	if IAmAStalker[gi:clsid()] then
+		state_mgr.set_state(npc, "dynamite", nil, nil, {look_position = gi:position()}, {animation = true})
+		local dir = utils.vector_copy_by_val(gi:position()):sub(npc:position())
+		npc:set_desired_direction(vector():sub(npc:position(), gi:position()))
+	else
+		st.knifePresent = false
+		for i = 1, #holodnoyeCheck do
+			if npc:object(holodnoyeCheck[i]) then
+				st.knifePresent = holodnoyeCheck[i]
+				break
+			end
+		end
+		if st.knifePresent then
+			self.tt = self.tt - 1500
+			npc:object(st.knifePresent):enable_attachable_item(true)
+			state_mgr.set_state(npc, "dynamite", nil, nil, {look_position = gi:position()}, {animation = true})
+		else
+			state_mgr.set_state(npc, "dynamite", nil, nil, {look_position = gi:position()}, {animation = true})
+		end
+	end
+end
+
+function act_grab_body:execute() counterAdd("watcher_act.act_grab_body:execute")
+	action_base.execute(self)
+	local npc = self.object
+	local npc_id = npc:id()
+
+	local gi = getGObject(self.st, npc_id)
+	if not gi then
+		----self.st.dest_lvid = nil
+		----self.st.dest_pos = nil
+		freeGObject(self.st, npc:id())
+
+		self.object:set_movement_type(move.walk)
+		self.object:set_mental_state(anim.free)
+		self.object:set_body_state(move.standing)
+		self.object:movement_enabled(true)
+		return
+	end
+	
+	-- пинаем или стреляем в труп
+	if self.st.standing and self.st.w_kick and self.tt - timeSearch - self.timeRotate - timeWait --[[timeKick/2]] < time_global() then
+		local npcToBodyDir = gi:position():sub(npc:position())
+		if --[[math.abs(yaw_degree(npcToBodyDir, npc:direction())) < 30 and]] (self.st.wpn or npc:active_item() == nil or npc:weapon_strapped()) then
+			if self.st.wpn_shoot then
+				state_mgr.set_state(npc, "threat_sniper_fire", nil, nil, {look_object = gi}, nil, nil, {force_fire = true, force_fire_rate = {1, 7000}})
+			else
+				local ps = gi:get_physics_shell()
+				if ps then
+
+					local dir = gi:bone_position(self.st.boneNear):sub(npc:bone_position("bip01_l_foot"))
+					dir:mul(13000)
+					ps:get_element_by_bone_name(self.st.boneNear):apply_force(dir.x,dir.y,dir.z)
+				end
+				state_mgr.set_state(npc,"search",nil,nil,{look_object=gi})
+			end
+			self.st.wpn = false
+			self.st.w_kick = false
+			self.st.w_kick2 = true
+		else
+			self.st.standing = false
+			self.st.wpn = false
+			self.st.w_kick = false
+			self.st.w_kick2 = false
+			self:grabBodyAnimationGrab(npc, gi, self.st)
+			self.tt = self.tt - timeKick - timeWait
+		end
+	end
+	
+	-- после выстрела
+	if self.st.wpn_shoot and self.tt - timeSearch - self.timeRotate - timeWait + 2000 --[[timeKick/2]] < time_global() then
+		state_mgr.set_state(npc,"search",nil,nil,{look_object=gi})
+		self.st.wpn_shoot = false
+		self.tt = self.tt + 1000
+	end
+	
+	-- смотрим на труп после пинка
+	if self.st.standing and self.tt - timeSearch < time_global() and self.st.w_kick2 then
+		---npc:clear_animations()
+		---npc:set_sight()
+		self:grabBodyAnimationGrab(npc, gi, self.st)
+		self.st.standing = false
+		self.st.wpn = false
+		self.st.w_kick2 = false
+	end
+	
+	-- начали обыскивать
+	if self.tt < time_global() then
+        if gi:parent() == nil then
+			local cost = 0
+			gi:iterate_inventory(function(d,item)
+				local section = item:section()
+				if --[[section ~= "bolt" and section ~= "device_torch" and section ~= "device_torch_clon" and]] not protected_items.watcherActDoNotTouchItemEquipment(item) then
+					gi:transfer_item(item, npc)
+					cost = cost + getIniValueFloatSimple(section, "cost", 0) * item:condition()
+				end
+				end, nil )
+			local num = gi:money()
+			if num and num > 0 or IAmAMonster[gi:clsid()] then
+				local deadmoney = IAmAMonster[gi:clsid()] and 0 or num
+				if IAmAStalker[gi:clsid()] then
+					local gi_rank = ranks.get_obj_rank_name(gi)
+					if gi_rank then
+						if gi_rank == "novice" and deadmoney >= 70 then
+							deadmoney = math_random(25, 70)
+						elseif gi_rank == "experienced" and deadmoney >= 150 then
+							deadmoney = math_random(50, 150)
+						elseif gi_rank == "veteran" and deadmoney >= 220 then
+							deadmoney = math_random(100, 220)
+						elseif gi_rank == "master" and deadmoney >= 300 then
+							deadmoney = math_random(200, 300)
+						end
+					end
+					npc:give_money(deadmoney)
+					game_stats.money_quest_update(deadmoney)
+					gi:give_money(-num)
+					game_stats.money_quest_update(-num)
+				end
+				if npc_playing_phase["act_grab_body_initialize"][npc_id]
+				  and not npc_playing_phase["act_grab_body_execute"][npc_id] then
+					npc_playing_phase["act_grab_body_execute"][npc_id] = true
+					if npc_playing_want[npc_id] then
+						local good_bad 
+						local good_bad_koef = npc:character_rank() / 1000
+						if deadmoney + cost > 5000 * good_bad_koef then good_bad = "good"
+						else good_bad = "bad"
+						end
+						if IAmAMonster[gi:clsid()] then sol_sound.direct_play_sound_on_npc_by_id(
+							"characters_voice\\loot_monster\\"..npc:character_community().."\\loot_"..good_bad.."_1", 0, true, nil, npc_id)
+						else sol_sound.direct_play_sound_on_npc_by_id(
+							"characters_voice\\loot\\"..npc:character_community().."\\loot_"..good_bad.."_"..math_random(1,3), 0, true, nil, npc_id)
+						end
+					end
+				end
+ 			end
+ 			
+			--memoryAdd(npc_id, gi)
+
+			if IAmAMonster[gi:clsid()] or IAmAStalker[gi:clsid()] then
+				local sobj = alife():object(gi:id())
+				if sobj then
+					sobj.cut_part = true
+					disabled_objects[gi:id()] = true
+				end
+			end
+		end
+		freeGObject(self.st, npc_id)
+	end
+end
+
+function act_grab_body:finalize() counterAdd("watcher_act.act_grab_body:finalize")
+	local npc = self.object
+	local id = npc:id()
+	
+	if self.st.knifeSpawned then
+		knife = npc:object(self.st.knifeSpawned)
+		if knife then
+			local sknife = alife():object(knife:id())
+			if sknife then
+				alife():release(sknife, true)
+			end
+		end
+		self.st.knifeSpawned = nil
+		self.st.knifePresent = false
+	elseif self.st.knifePresent then
+		local knife = npc:object(self.st.knifePresent)
+		if knife then
+			knife:enable_attachable_item(false)
+		end
+		self.st.knifePresent = false
+	end
+	npc_playing_phase["act_grab_body_initialize"][id] = false
+	npc_playing_phase["act_grab_body_execute"][id] = false
+	if any_npc_playing_want and npc_playing_want[id] then
+		any_npc_playing_want = false
+		npc_playing_want[id] = false
+		time_next_npc_playing = time_global() + time_next_npc_playing_delta
+	end
+	self.st.scan_time = 0
+	self.st.block_search = nil
+	--trigger_timed(self.st, "tm1")
+	self.st.dest_lvid = nil -- Очищаем скорректированную точку назначения
+	self.st.dest_pos = nil -- Очищаем скорректированную точку назначения
+	inv_npc.set_need_update(npc:id())
+	---npc:clear_animations()
+	self.st.standing = false
+	self.st.wpn = false
+	action_base.finalize(self)
+end
+
+function act_grab_body:death_callback(npc) counterAdd("watcher_act.act_grab_body:death_callback")
+	removeKnife(npc)
+end
+
+function act_grab_body:net_destroy(npc) counterAdd("watcher_act.act_grab_body:net_destroy")
+	removeKnife(npc)
+end
+
+function act_grab_body:deactivate(npc) counterAdd("watcher_act.act_grab_body:deactivate")
+	removeKnife(npc)
+end
+
+function isAccessible(gi, npc)
+	if not gi or not npc then return false end
+
+	local vrtxGI = gi:level_vertex_id()
+	local posGI = gi:position()
+	local objVrtxPosition = level.vertex_position(vrtxGI)
+	local clsidGI = gi:clsid()
+	local distMax = npc_by_clsid[clsidGI] and 9 or 4
+	local distMaxXZ = npc_by_clsid[clsidGI] and 3 or 2
+	local accessible = npc:accessible(vrtxGI) and objVrtxPosition:distance_to_xz(posGI) < distMaxXZ and objVrtxPosition:distance_to_sqr(posGI) < distMax
+	if not accessible then
+		local v_id
+		local vtemp = vector()
+		v_id, vtemp = npc:accessible_nearest( level.vertex_position( vrtxGI ), vtemp )
+		if level.vertex_position(v_id):distance_to_xz(posGI) < distMaxXZ and level.vertex_position(v_id):distance_to_sqr(posGI) < distMaxXZ then
+			vrtxGI = v_id
+		else
+			return false
+		end
+	end
+	return vrtxGI
+		end
+
+function correct_position(gi, npc, wpn_shoot, skinned) counterAdd("watcher_act.correct_position")
+	local vrtxGI = gi:level_vertex_id()
+	--local posGI = level.vertex_position(vrtxGI)
+	local posGI = gi:position()
+	
+	--local obj_lv = obj:level_vertex_id()
+	--local obj_pos = obj:position()
+	local accessible = isAccessible(gi, npc)
+	if not accessible then
+		return nil, nil, false
+	end
+
+	
+	local posNpc = npc:position()
+	if npc_by_clsid[gi:clsid()] then
+        	-- Вычисляем вектор разницы между координатами кости и level vertex.
+		-- Пытаемся найти level vertex наиболее близкий к кости
+		--local diff = gi:bone_position("bip01_head"):sub(level.vertex_position(gi:level_vertex_id()))
+		local diff = gi:bone_position("bip01_pelvis"):sub(gi:bone_position("bip01_head"))
+		diff.y = 0
+		----local len = diff:magnitude()
+		----local diffp = vector():set(diff.z, 0, -diff.x):mul(0.5)
+		-- Сдвигаем целевую точку вбок, чтобы непись не залазил ногами в труп
+		----diff:add(diffp)
+		
+		local giSizes = getIniValueStringSimple(gi:section(), "ph_box0_size", "0.50, 0.4, 0.50")
+		giSizes = Parse_StrToTbl(giSizes, ",")
+		local giHalfSize
+		
+		local diffLeft, diffRight
+		local vrtxLeft, vrtxRight = vrtxGI, vrtxGI
+		local vrtxLeftPrev, vrtxRightPrev = vrtxGI, vrtxGI
+		
+		-- если нужен контрольный - подходим с головы или ног (проблемы с точным прицеливанием)
+		if wpn_shoot then
+			diffLeft = diff 
+			diffRight = vector_rotate_y(diff, 179)
+			giHalfSize = tonumber(giSizes[2])/2
+		else
+			diffLeft = vector_rotate_y(diff, 90)
+			diffRight = vector_rotate_y(diff, -90)
+			giHalfSize = tonumber(math.max(giSizes[1], giSizes[3]))/2
+		end
+		local distBase = giHalfSize + 0.5 -- 0,5 - это размер непися
+		if skinned then-- если непись будет разделывать монстра
+			distBase = distBase - 0.2
+		end
+		
+		local tryCount = 0
+		local tryCountMax = 10
+		local posLeftVrtx, posRightVrtx
+		local distLeftToGI, distRightToGI
+		local distLeftToNpc, distRightToNpc, distGIToNpc
+		local delta = 0
+		repeat
+			tryCount = tryCount + 1
+			posLeftVrtx, posRightVrtx = nil, nil
+			distLeftToGI, distRightToGI = 0, 0
+			distLeftToNpc, distRightToNpc, distGIToNpc = 0, 0, posNpc:distance_to_sqr(posGI)
+			delta = 0
+			repeat
+				--if wpn_shoot then
+				--	if distLeftToGI < distBase+0.2 then vrtxLeft = npc:vertex_in_direction(vrtxGI, diffLeft, distBase + 0.2 + delta) end
+				--	if distRightToGI < distBase+0.2 then vrtxRight = npc:vertex_in_direction(vrtxGI, diffRight, distBase + 0.2 + delta) end
+				--else
+					if distLeftToGI < distBase then vrtxLeft = npc:vertex_in_direction(vrtxGI, diffLeft, distBase + delta) end
+					if distRightToGI < distBase then vrtxRight = npc:vertex_in_direction(vrtxGI, diffRight, distBase + delta) end
+				--end
+				
+				if npc:accessible(vrtxLeft) then
+					posLeftVrtx = level.vertex_position(vrtxLeft)
+					distLeftToGI = posLeftVrtx:distance_to_sqr(posGI)
+					distLeftToNpc = posLeftVrtx:distance_to_sqr(posNpc)
+					vrtxLeftPrev = vrtxLeft
+				else
+					vrtxLeft = vrtxLeftPrev
+				end
+				if npc:accessible(vrtxRight) then
+					posRightVrtx = level.vertex_position(vrtxRight)
+					distRightToGI = posRightVrtx:distance_to_sqr(posGI)
+					distRightToNpc = posRightVrtx:distance_to_sqr(posNpc)
+					vrtxRightPrev = vrtxRight
+				else
+					vrtxRight = vrtxRightPrev
+				end
+				
+				delta = delta + 0.1
+				
+			until --[[wpn_shoot and (distLeftToGI >= distBase or distRightToGI >= distBase) or]] (distLeftToGI >= distBase or distRightToGI >= distBase) or delta >= 1 
+			
+			if not npc:accessible(vrtxLeft) then
+				vrtxLeft = vrtxGI
+				distLeftToGI = 0
+				distLeftToNpc = 9999999--distGIToNpc
+			--else
+				diffLeft = vector_rotate_y(diffLeft, 179/tryCountMax)
+			end
+			if not npc:accessible(vrtxRight) then
+				vrtxRight = vrtxGI
+				distRightToGI = 0
+				distRightToNpc = 9999999--distGIToNpc
+			--else
+				diffRight = vector_rotate_y(diffRight, 179/tryCountMax)
+			end
+		until npc:accessible(vrtxLeft) or npc:accessible(vrtxRight) or tryCount == tryCountMax
+		
+		if not npc:accessible(vrtxLeft) and not npc:accessible(vrtxRight) then
+			accessible = false
+			local vtemp = vector()
+			vrtxLeft, vtemp = npc:accessible_nearest( posGI, vtemp )
+			vtemp = vector()
+			vrtxRight, vtemp = npc:accessible_nearest( posGI, vtemp )
+		end
+		
+		if distLeftToNpc < distRightToNpc then
+			return vrtxLeft, posGI:add(diffLeft:set_length(distBase)), accessible
+		else
+			return vrtxRight, posGI:add(diffRight:set_length(distBase)), accessible
+		end
+		
+		----return npc:vertex_in_direction(vrtxGI, diff, len/2)
+		--return 
+	else
+		local dist = posNpc:distance_to_sqr(posGI)
+		local diff = posNpc:sub(posGI):set_length(0.2)
+		diff.y = 0
+		return vrtxGI, posGI:add(diff), accessible
+		
+		--[[if dist > 2 then
+			local vrtx
+			if level.vertex_position(vrtxGI):distance_to_sqr(posGI) > 1 then
+				accessible = npc:accessible(vrtxGI)
+				vrtx, vtemp = npc:accessible_nearest( posGI, diff )
+			else
+				vrtx = npc:vertex_in_direction(vrtxGI, diff, 0.2)
+				accessible = npc:accessible(vrtx)
+				if not vrtx or not accessible then
+					--local vtemp = vector()
+					vrtx, vtemp = npc:accessible_nearest( posGI, diff )
+				end
+			end
+			return vrtx, posGI:add(diff), accessible --level.vertex_position(vrtx):add(diff)
+		else
+			accessible = npc:accessible(vrtxGI)
+			if not accessible then
+				vrtxGI = npc:accessible_nearest( posGI, diff )
+			end
+			return vrtxGI, posGI:add(diff), accessible
+		end]]
+	end
+end
+
+class "act_reach_item" (action_base)
+
+function act_reach_item:__init (action_name, st) super (nil, action_name) counterAdd("watcher_act.act_reach_item:__init")
+	self.st = st
+end
+
+function act_reach_item:initialize() counterAdd("watcher_act.act_reach_item:initialize")
+	action_base.initialize(self)
+	
+	self.st.standing = false
+	self.st.wpn = false
+	self.st.wpn_shoot = false
+	self.st.knifeSpawned = nil
+	self.st.knifePresent = false
+	
+	local npc = self.object
+	local gi = getGObject(self.st, npc:id())
+	self.st.dest_lvid = nil
+	self.st.dest_pos = nil
+	self.tgt_lvid = 0
+	if gi then
+			npc:set_detail_path_type(move.curve)
+			npc:set_path_type(game_object.level_path)
+	
+			-- если рядом больше врагов -- крадемся
+			local friends_enemies = 0
+			local npcs = {}
+			local obj
+			local time = time_global()
+			local npc_pos = npc:position()
+			for o in npc:memory_visible_objects() do
+				obj = o:object()
+				if obj and npc_by_clsid[obj:clsid()] and obj:alive() and not obj:wounded() then
+					npcs[obj:id()] = true
+					friends_enemies = friends_enemies + (npc:relation(obj) == game_object.enemy and -1 or 1) / npc_pos:distance_to_sqr(obj:position())
+				end
+			end
+			for o in npc:memory_sound_objects() do
+				obj = o:object()
+				if obj and npc_by_clsid[obj:clsid()] and obj:alive() and not obj:wounded() and not npcs[obj:id()] then
+					npcs[obj:id()] = true
+					friends_enemies = friends_enemies + (npc:relation(obj) == game_object.enemy and -1 or 1) / npc_pos:distance_to_sqr(obj:position())
+				end
+			end
+			
+			npc:set_mental_state(anim.danger)
+			
+			if npc_by_clsid[gi:clsid()] then
+				
+				if friends_enemies < 0 --[[math_random() > 0.75]] then
+					npc:set_body_state(move.crouch)
+				else
+					npc:set_body_state(move.standing)
+					self.st.standing = true
+				end
+				
+				-- монстра резать ножом
+				if IAmAMonster[gi:clsid()] then
+					for i = 1, #holodnoyeCheck do
+						if npc:object(holodnoyeCheck[i]) then
+							self.st.knifePresent = holodnoyeCheck[i]
+							break
+						end
+					end
+					if not self.st.knifePresent then
+						local knife = holodnoyeSpawn[math.random(#holodnoyeSpawn)]
+						amk.spawn_item_in_inv(knife, npc)
+						self.st.knifeSpawned = knife
+						self.st.knifePresent = knife
+					end
+				end
+			elseif friends_enemies < 0 --[[db.storage[npc:id()].newGrabItem]] then
+				npc:set_body_state(move.crouch)
+			else
+				npc:set_body_state(move.standing)
+				self.st.standing = true
+			end
+			local mt = npc:movement_type()
+			if mt ~= move.walk and mt ~= move.run then
+				npc:set_movement_type(move.walk)
+			end
+			
+			if rx_wmgr
+				and npc_by_clsid[gi:clsid()]
+				and level.vertex_position(gi:level_vertex_id()):distance_to_sqr(npc:position()) > 25
+				and not xr_kamp.deadmansidsuses[gi:id()]
+				and npc:relation(gi) == game_object.enemy
+			then
+					local wpn = rx_wmgr.get_wm(npc):get_weapon() or npc:best_weapon()
+					if wpn and IAmAWeaponFireOnly[wpn:clsid()] then
+						self.st.wpn = true
+						if math_random() > 0.5 then
+							npc:set_item(object.aim1, wpn)
+						else
+							npc:set_item(object.aim2, wpn)
+						end
+						self.st.wpn_shoot = self.st.standing and gi:death_time()+1000*60*5 > time_global() and not dontShootSections[gi:section()]
+						if self.st.wpn_shoot and wpn:get_ammo_in_magazine() == 0 then
+							--wpn:unload_magazine()
+							local magsize = rx_reload and rx_reload.get_mag_size(wpn:section()) or 1
+							wpn:set_ammo_elapsed(magsize)
+						end
+					end
+			else
+				if npc:weapon_unstrapped() then
+					local weap = npc:active_item() and IAmAWeaponFireOnly[npc:active_item():clsid()] and npc:active_item() or npc:best_weapon()
+					if weap then
+						if state_mgr_weapon.strappable_weapon(weap) then
+							npc:set_item(object.strap, weap)
+						else
+							npc:set_item(object.idle, nil)
+						end
+					end
+				end
+			end
+			npc:movement_enabled(true)
+			self.st.dest_lvid, self.st.dest_pos, self.st.accessible = correct_position(gi, npc, self.st.wpn_shoot, IAmAMonster[gi:clsid()] and self.st.knifePresent)
+			if self.st.accessible and npc:accessible(self.st.dest_lvid) then
+				self.tgt_lvid = gi:level_vertex_id()
+				npc:set_dest_level_vertex_id(self.st.dest_lvid)
+				npc:set_desired_direction(gi:position():sub(level.vertex_position( self.st.dest_lvid )))
+			else
+				freeGObject(self.st, npc:id())
+			end
+	end
+	self.ct = time_global()
+	self.startTime = time_global()
+	self.clvid=npc:level_vertex_id()
+end
+
+function act_reach_item:execute() counterAdd("watcher_act.act_reach_item:execute")
+	action_base.execute(self)
+	local npc = self.object
+	
+	local gi = getGObject(self.st, npc:id())
+	
+	if self.startTime + reach_item_time_limit < time_global() or not gi then
+		--[[if gi then
+			memoryAdd(npc:id(), gi)
+		end]]
+		----self.st.dest_lvid = nil
+		----self.st.dest_pos = nil
+		freeGObject(self.st, npc:id())
+
+		npc:set_movement_type(move.walk)
+		npc:set_mental_state(anim.free)
+		npc:set_body_state(move.standing)
+		npc:movement_enabled(true)
+		return 
+	end
+
+	if gi then
+		if gi:parent() then	-- ГГ забрал вкусность. Можно добавить наезд на ГГ.
+
+			local parent = gi:parent()
+			freeGObject(self.st, npc:id())
+			npc:set_movement_type(move.walk)
+			npc:set_mental_state(anim.free)
+			npc:set_body_state(move.standing)
+			npc:movement_enabled(true)
+		else
+			if self.st.wpn then
+				npc:set_sight(gi, true, true)
+			else
+				npc:set_sight(gi)
+			end
+			if self.clvid == npc:level_vertex_id() then
+				if time_global() - self.ct > 5000 then
+					freeGObject(self.st, npc:id())
+
+					npc:set_movement_type(move.walk)
+					npc:set_mental_state(anim.free)
+					npc:set_body_state(move.standing)
+					if self.st.wpn_shoot then
+						--npc:set_sight(gi, false, true, false)
+						--npc:set_sight(gi, true, false, true)
+						--npc:set_sight(look.fire_point,gi:position(),true)
+--						local dir = vector():sub(gi:position(), npc:position())
+--						npc:set_sight(look.direction, dir, true)
+					end
+					npc:movement_enabled(true)
+
+				end
+			else
+				self.clvid = npc:level_vertex_id()
+				self.ct = time_global()
+			end
+			if true or self.tgt_lvid ~= gi:level_vertex_id() then
+				self.tgt_lvid = gi:level_vertex_id()
+				self.st.dest_lvid, self.st.dest_pos, self.st.accessible = correct_position(gi, npc, self.st.wpn_shoot, IAmAMonster[gi:clsid()] and self.st.knifePresent)
+				if self.st.accessible and npc:accessible(self.st.dest_lvid) then
+					npc:set_dest_level_vertex_id(self.st.dest_lvid)
+					----npc:set_desired_position(self.st.dest_pos)
+				else
+					freeGObject(self.st, npc:id())
+				end
+			end
+		end
+	end
+end
+
+function act_reach_item:finalize() counterAdd("watcher_act.act_reach_item:finalize")
+	local npc = self.object
+	if self.mgr == nil then
+		self.mgr = npc:motivation_action_manager()
+	end
+	if not self.mgr:evaluator(ev_near_stuff):evaluate() then
+		removeKnife(npc)
+	end
+	action_base.finalize(self)
+end
+
+function act_reach_item:death_callback(npc) counterAdd("watcher_act.act_reach_item:death_callback")
+	removeKnife(npc)
+end
+
+function act_reach_item:net_destroy(npc) counterAdd("watcher_act.act_reach_item:net_destroy")
+	removeKnife(npc)
+end
+
+function act_reach_item:deactivate(npc) counterAdd("watcher_act.act_reach_item:deactivate")
+	removeKnife(npc)
+end
+
+
+local commNo = {
+	["monolith"] = true,
+	["military"] = true,
+	["killer"] = true,
+	["ecolog"] = true,
+	["zombied"] = true,
+	["stranger"] = true,
+	["trader"] = true,
+	["arena_enemy"] = true,
+	["sniper"] = true,
+	["lastday"] = true,
+	["fotoman"] = true
+}
+
+local nameNo = {
+	["mil_stalker0012"] = true, -- сумашедший на милитари
+	["yantar_ecolog_general"] = true, -- Сахаров
+	["mil_freedom_member0021"] = true -- Скряга
+}
+
+function add_to_binder(object, char_ini, scheme, section, st) counterAdd("watcher_act.add_to_binder")
+	local npc = object
+	--st.disabled_objects = {}
+	local manager = object:motivation_action_manager()
+	local community = npc:character_community()
+	local name = npc:name()
+	local noHabar = commNo[community] or nameNo[name]
+	local state_mgr_idle_off = xr_evaluators_id.state_mgr + 3 
+	local prop_contact = xr_evaluators_id.stohe_meet_base + 1
+	local state_mgr_idle_combat 	= xr_evaluators_id.state_mgr + 1
+	local state_mgr_idle_alife	 	= xr_evaluators_id.state_mgr + 2
+	local need_sleeper   			= xr_evaluators_id.zmey_sleeper_base + 1
+
+	if npc:story_id() ~= 4294967296 or noHabar then
+		disabled_npc[npc:id()] = true
+		manager:add_evaluator(evid_see_stuff, property_evaluator_const(false))
+		manager:add_evaluator(evid_see_body, property_evaluator_const(false))
+		manager:add_evaluator(evid_near_stuff, property_evaluator_const(false))
+		--manager:add_evaluator(evid_position_corrected, property_evaluator_const(false))
+	else
+		manager:add_evaluator(evid_see_stuff, ev_see_stuff(st, "ev_see_stuff", npc))
+		manager:add_evaluator(evid_see_body, ev_see_body(st))
+		--manager:add_evaluator(evid_position_corrected, ev_position_corrected(st))
+		manager:add_evaluator(evid_near_stuff, ev_near_stuff(st, "ev_near_stuff"))
+		
+		local action = act_grab_item("act_grab_item", st)
+		action:add_precondition (world_property(xr_evaluators_id.chugai_heli_hunter_base, false))
+		action:add_precondition (world_property(xr_evaluators_id.abuse_base, false))
+		if ricochet_scheme then action:add_precondition(world_property(ricochet_scheme.evid_ricochet_danger, false)) end
+		if xrs_ai then xrs_ai.addCommonPrecondition(action) end
+		---if rx_ai then rx_ai.addCommonPrecondition(action) end
+		action:add_precondition(world_property(stalker_ids.property_alive, true))
+		action:add_precondition(world_property(stalker_ids.property_danger,false))
+		action:add_precondition(world_property(stalker_ids.property_enemy, false))
+		action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
+		action:add_precondition(world_property(blowout_scheme.evid_anomaly, false))
+		action:add_precondition(world_property(blowout_scheme.evid_outside, false))
+		action:add_precondition(world_property(blowout_scheme.evid_blowout, false))
+		action:add_precondition(world_property(blowout_scheme.evid_preblowout, false))
+		--action:add_precondition(world_property(need_sleeper, false))
+		action:add_precondition(world_property(evid_see_stuff, true))
+		action:add_precondition(world_property(evid_near_stuff, true))
+		action:add_precondition(world_property(evid_see_body, false))
+----		if xrs_medic then
+----			action:add_precondition(world_property(xrs_medic.evid_self_medic, false))
+----			action:add_precondition(world_property(xrs_medic.evid_medic, false))
+----		end
+		--action:add_precondition(world_property(state_mgr_idle_off, true))
+		--action:add_precondition(world_property(state_mgr_idle_combat, true))
+		--action:add_precondition(world_property(state_mgr_idle_alife, true))
+		action:add_effect(world_property(evid_near_stuff, false))
+		action:add_effect(world_property(evid_see_stuff, false))
+		action:add_effect(world_property(evid_see_body, true)) -- для переключения на обыск трупа
+		manager:add_action (actid_grab_item, action)
+		
+		action = act_grab_body(st)
+		action:add_precondition (world_property(xr_evaluators_id.chugai_heli_hunter_base, false))
+		action:add_precondition (world_property(xr_evaluators_id.abuse_base, false))
+		if ricochet_scheme then action:add_precondition(world_property(ricochet_scheme.evid_ricochet_danger, false)) end
+		if xrs_ai then xrs_ai.addCommonPrecondition(action) end
+		---if rx_ai then rx_ai.addCommonPrecondition(action) end
+		action:add_precondition(world_property(stalker_ids.property_alive, true))
+		action:add_precondition(world_property(stalker_ids.property_danger,false))
+		action:add_precondition(world_property(stalker_ids.property_enemy, false))
+		action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
+		action:add_precondition(world_property(blowout_scheme.evid_anomaly, false))
+		action:add_precondition(world_property(blowout_scheme.evid_outside, false))
+		action:add_precondition(world_property(blowout_scheme.evid_blowout, false))
+		action:add_precondition(world_property(blowout_scheme.evid_preblowout, false))
+		--action:add_precondition(world_property(need_sleeper, false))
+		--action:add_precondition(world_property(state_mgr_idle_combat, true))
+		--action:add_precondition(world_property(state_mgr_idle_alife, true))
+		--action:add_precondition(world_property(state_mgr_idle_off, true))
+		action:add_precondition(world_property(evid_see_stuff, true))
+		action:add_precondition(world_property(evid_see_body, true))
+		action:add_precondition(world_property(evid_near_stuff, true))
+		action:add_effect(world_property(evid_near_stuff, false))
+		action:add_effect(world_property(evid_see_stuff, false))
+		action:add_effect(world_property(evid_see_body, false))
+----		if xrs_medic then
+----			action:add_precondition(world_property(xrs_medic.evid_self_medic, false))
+----			action:add_precondition(world_property(xrs_medic.evid_medic, false))
+----		end
+		manager:add_action (actid_grab_body, action)
+
+		action = act_reach_item("act_reach_item", st)
+		action:add_precondition (world_property(xr_evaluators_id.chugai_heli_hunter_base, false))
+		action:add_precondition (world_property(xr_evaluators_id.abuse_base, false))
+		if ricochet_scheme then action:add_precondition(world_property(ricochet_scheme.evid_ricochet_danger, false)) end
+		if xrs_ai then xrs_ai.addCommonPrecondition(action) end
+		---if rx_ai then rx_ai.addCommonPrecondition(action) end
+		action:add_precondition(world_property(stalker_ids.property_alive, true))
+		action:add_precondition(world_property(stalker_ids.property_danger,false))
+		action:add_precondition(world_property(stalker_ids.property_enemy, false))
+		action:add_precondition(world_property(prop_contact, false))
+		action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
+		action:add_precondition(world_property(blowout_scheme.evid_anomaly, false))
+		action:add_precondition(world_property(blowout_scheme.evid_outside, false))
+		action:add_precondition(world_property(blowout_scheme.evid_blowout, false))
+		action:add_precondition(world_property(blowout_scheme.evid_preblowout, false))
+		--action:add_precondition(world_property(need_sleeper, false))
+		action:add_precondition(world_property(evid_see_stuff, true))
+		action:add_precondition(world_property(evid_near_stuff, false))
+		--action:add_precondition(world_property(state_mgr_idle_combat, true))
+		--action:add_precondition(world_property(state_mgr_idle_alife, true))
+		action:add_precondition(world_property(state_mgr_idle_off, true))
+----		if xrs_medic then
+----			action:add_precondition(world_property(xrs_medic.evid_self_medic, false))
+----			action:add_precondition(world_property(xrs_medic.evid_medic, false))
+----		end
+		action:add_effect (world_property(evid_near_stuff, true))
+		manager:add_action (actid_reach_item, action)
+		
+----		action = manager:action(xr_actions_id.alife)
+	----	action:add_precondition(world_property(evid_see_stuff, false))
+		
+		blockAlienActions(manager)
+		blockAlienActions2(manager)
+		
+		-- запомненные обысканные трупы
+		--memoryRestore(npc)
+	end
+end
+
+function set_scheme(npc, ini, scheme, section) counterAdd("watcher_act.set_scheme")
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.ini = ini
+end 
+
+-- Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
+function reset_watcher(npc, scheme, st, section) counterAdd("watcher_act.reset_watcher")
+  local no_loot_section
+--  printf("[%s]", utils.to_str(st.section_logic))
+  if scheme == nil or scheme == "nil" then
+    no_loot_section = utils.cfg_get_string(st.ini, st.section_logic, "no_loot", npc, false, "nil")
+  else
+    no_loot_section = utils.cfg_get_string(st.ini, section, "no_loot", npc, false, "nil")
+  end
+  
+  st.no_loot = tostring(section) ~= "nil"
+end
+
+function blockAlienActions(manager)
+		----
+		
+		----------------------------------------------------------------------------------------------------------------------
+		--  Айдишники экшинов
+		----------------------------------------------------------------------------------------------------------------------
+		local atbl = {
+			-- Глобальные
+			--xr_actions_id.global_actions           ,
+			--xr_actions_id.action_script            ,
+			xr_actions_id.alife                    ,
+			--xr_actions_id.script_combat_planner    ,
+		----	xr_actions_id.reach_strn_job_location  ,
+		----	xr_actions_id.state_mgr                ,
+
+			-- Стохе
+			--[[xr_actions_id.stohe_actions ,
+
+			xr_actions_id.stohe_tradeseller_init      ,
+
+			xr_actions_id.stohe_tradeseller_base      ,
+			xr_actions_id.stohe_kamp_base             ,
+			xr_actions_id.stohe_meet_base             ,
+			xr_actions_id.stohe_reactions_base        ,
+			xr_actions_id.stohe_state_base			,
+			xr_actions_id.stohe_position				,
+			xr_actions_id.stohe_gulag_base			,
+			xr_actions_id.stohe_bobik_base			,
+			xr_actions_id.stohe_camper_base			,
+			xr_actions_id.assistance					,
+			xr_actions_id.death						,
+			xr_actions_id.abuse_base					,
+
+			--Sidorovich
+			xr_actions_id.sidor_actions ,
+
+			xr_actions_id.sidor_act_commander ,
+			xr_actions_id.sidor_act_soldier   ,
+			xr_actions_id.sidor_act_patrol        ,
+			xr_actions_id.sidor_act_wounded_base  ,
+			xr_actions_id.sidor_act_bandits_base  ,
+			xr_actions_id.sidor_act_swat_base    ,
+			xr_actions_id.sidor_act_follower_base ,
+			xr_actions_id.sidor_act_report_leader,
+			xr_actions_id.sidor_act_report_soldier,
+			xr_actions_id.sidor_act_rest          ,
+			xr_actions_id.sidor_act_bar           ,
+			xr_actions_id.sidor_act_chaser        ,
+			xr_actions_id.sidor_act_sos           ,
+			xr_actions_id.sidor_act_ptr           ,
+			xr_actions_id.sidor_act_yantar        ,
+			xr_actions_id.sidor_act_secret_lab    ,
+			xr_actions_id.sidor_attendant_act     ,
+
+			-- chugai
+			xr_actions_id.chugai_actions                      ,
+			xr_actions_id.chugai_act_tutor                    ,
+			xr_actions_id.chugai_commander_base               ,
+			xr_actions_id.chugai_scout_base                   ,
+			xr_actions_id.chugai_military_commander_base      ,
+			xr_actions_id.chugai_escape_factory_bandits_base  ,
+			xr_actions_id.chugai_barman_base                  ,
+			xr_actions_id.chugai_ambush_base                  ,
+			xr_actions_id.chugai_formation_base               ,
+			xr_actions_id.chugai_replics_base                 ,
+			xr_actions_id.chugai_heli_hunter_base             ,
+			xr_actions_id.combat_zombied_base                 ,
+			xr_actions_id.combat_monolith_base                ,
+			xr_actions_id.combat_camper_base                  ,
+
+			-- Змей
+			xr_actions_id.zmey_actions ,
+			xr_actions_id.zmey_action_guard_activity ,
+			xr_actions_id.zmey_guard_base        ,
+			xr_actions_id.zmey_robber_base       ,
+			xr_actions_id.zmey_camper_base       ,
+			xr_actions_id.zmey_sleeper_base      ,
+			xr_actions_id.zmey_talker_base       ,
+			xr_actions_id.zmey_bodyguard_base    ,
+			xr_actions_id.zmey_punch_base        ,
+			xr_actions_id.zmey_guide_base        ,
+			xr_actions_id.zmey_robber_guard_base ,
+			xr_actions_id.zmey_walker_base       ,
+			xr_actions_id.zmey_assassin_base     ,
+			xr_actions_id.zmey_scared_base       ,
+			xr_actions_id.zmey_zoneguard_base    ,
+			xr_actions_id.zmey_test_base         ,
+			xr_actions_id.zmey_remark_base       ,
+			xr_actions_id.zmey_companion_base    ,
+
+			-- Женя
+			xr_actions_id.jon_actions ,
+
+			xr_actions_id.jon_stalker_zombie     ,
+			xr_actions_id.jon_stalker_novice     ,
+			xr_actions_id.jon_stalker_novice2    ,
+			xr_actions_id.jon_stalker_novice3    ,
+			xr_actions_id.jon_stalker_attack     ,
+
+			xr_actions_id.jon_scientist          ,
+			xr_actions_id.jon_security           ,
+
+
+			xr_actions_id.jon_sniper_enabled     ,
+			xr_actions_id.jon_sniper_see_monster ,
+			xr_actions_id.jon_sniper_see_enemy  ,
+			xr_actions_id.jon_sniper_camper      ,
+			--+5 Занято
+
+			xr_actions_id.jon_outcast			   ,
+			xr_actions_id.jon_outcast_replics    ,
+
+			--
+			xr_actions_id.narrator_actions ,
+			
+			
+			stalker_ids.action_accomplish_task ,
+			stalker_ids.action_aim_enemy ,
+			stalker_ids.action_alife_planner ,
+			stalker_ids.action_anomaly_planner ,
+			stalker_ids.action_combat_planner ,
+			stalker_ids.action_communicate_with_customer ,
+			stalker_ids.action_critically_wounded ,
+			stalker_ids.action_danger_by_sound_planner ,
+			stalker_ids.action_danger_grenade_look_around ,
+			stalker_ids.action_danger_grenade_planner ,
+			stalker_ids.action_danger_grenade_search ,
+			stalker_ids.action_danger_grenade_take_cover ,
+			stalker_ids.action_danger_grenade_take_cover_after_explosion ,
+			stalker_ids.action_danger_grenade_wait_for_explosion ,
+			stalker_ids.action_danger_in_direction_detour ,
+			stalker_ids.action_danger_in_direction_hold_position ,
+			stalker_ids.action_danger_in_direction_look_out ,
+			stalker_ids.action_danger_in_direction_planner ,
+			stalker_ids.action_danger_in_direction_search ,
+			stalker_ids.action_danger_in_direction_take_cover ,
+			stalker_ids.action_danger_planner ,
+			stalker_ids.action_danger_unknown_look_around ,
+			stalker_ids.action_danger_unknown_planner ,
+			stalker_ids.action_danger_unknown_search ,
+			stalker_ids.action_danger_unknown_take_cover ,
+			stalker_ids.action_dead ,
+			stalker_ids.action_death_planner ,
+			stalker_ids.action_detour_enemy ,
+			stalker_ids.action_dying ,
+			stalker_ids.action_find_ammo ,
+			stalker_ids.action_find_item_to_kill ,
+			stalker_ids.action_gather_items ,
+			stalker_ids.action_get_distance ,
+			stalker_ids.action_get_item_to_kill ,
+			stalker_ids.action_get_ready_to_kill ,
+			stalker_ids.action_hold_position ,
+			stalker_ids.action_kill_enemy ,
+			stalker_ids.action_kill_enemy_if_not_visible ,
+			stalker_ids.action_kill_if_enemy_critically_wounded ,
+			stalker_ids.action_kill_if_player_on_the_path ,
+			stalker_ids.action_kill_wounded_enemy ,
+			stalker_ids.action_look_out ,
+			stalker_ids.action_make_item_killing ,
+			stalker_ids.action_no_alife ,
+			stalker_ids.action_post_combat_wait ,
+			stalker_ids.action_prepare_wounded_enemy ,
+			stalker_ids.action_reach_customer_location ,
+			stalker_ids.action_reach_task_location ,
+			stalker_ids.action_reach_wounded_enemy ,
+			stalker_ids.action_retreat_from_enemy ,
+			stalker_ids.action_script ,
+			stalker_ids.action_search_enemy ,
+			stalker_ids.action_smart_terrain_task ,
+			stalker_ids.action_solve_zone_puzzle ,
+			stalker_ids.action_sudden_attack ,
+			stalker_ids.action_take_cover ]]
+
+			}
+		for i = 1, #atbl do
+			action = manager:action(atbl[i])
+			if action then
+				action:add_precondition(world_property(evid_see_stuff,false))
+			--	action:add_precondition(world_property(evid_near_stuff,false))
+			end
+		end
+
+		
+		----
+end
+
+function blockAlienActions2(manager)
+		----
+		
+		----------------------------------------------------------------------------------------------------------------------
+		--  Айдишники экшинов
+		----------------------------------------------------------------------------------------------------------------------
+		local atbl = {
+			-- Глобальные
+			--xr_actions_id.global_actions           ,
+			--xr_actions_id.action_script            ,
+		----	xr_actions_id.alife                    ,
+			--xr_actions_id.script_combat_planner    ,
+			xr_actions_id.reach_strn_job_location  ,
+			xr_actions_id.state_mgr                ,
+
+			-- Стохе
+			--[[xr_actions_id.stohe_actions ,
+
+			xr_actions_id.stohe_tradeseller_init      ,
+
+			xr_actions_id.stohe_tradeseller_base      ,
+			xr_actions_id.stohe_kamp_base             ,
+			xr_actions_id.stohe_meet_base             ,
+			xr_actions_id.stohe_reactions_base        ,
+			xr_actions_id.stohe_state_base			,
+			xr_actions_id.stohe_position				,
+			xr_actions_id.stohe_gulag_base			,
+			xr_actions_id.stohe_bobik_base			,
+			xr_actions_id.stohe_camper_base			,
+			xr_actions_id.assistance					,
+			xr_actions_id.death						,
+			xr_actions_id.abuse_base					,
+
+			--Sidorovich
+			xr_actions_id.sidor_actions ,
+
+			xr_actions_id.sidor_act_commander ,
+			xr_actions_id.sidor_act_soldier   ,
+			xr_actions_id.sidor_act_patrol        ,
+			xr_actions_id.sidor_act_wounded_base  ,
+			xr_actions_id.sidor_act_bandits_base  ,
+			xr_actions_id.sidor_act_swat_base    ,
+			xr_actions_id.sidor_act_follower_base ,
+			xr_actions_id.sidor_act_report_leader,
+			xr_actions_id.sidor_act_report_soldier,
+			xr_actions_id.sidor_act_rest          ,
+			xr_actions_id.sidor_act_bar           ,
+			xr_actions_id.sidor_act_chaser        ,
+			xr_actions_id.sidor_act_sos           ,
+			xr_actions_id.sidor_act_ptr           ,
+			xr_actions_id.sidor_act_yantar        ,
+			xr_actions_id.sidor_act_secret_lab    ,
+			xr_actions_id.sidor_attendant_act     ,
+
+			-- chugai
+			xr_actions_id.chugai_actions                      ,
+			xr_actions_id.chugai_act_tutor                    ,
+			xr_actions_id.chugai_commander_base               ,
+			xr_actions_id.chugai_scout_base                   ,
+			xr_actions_id.chugai_military_commander_base      ,
+			xr_actions_id.chugai_escape_factory_bandits_base  ,
+			xr_actions_id.chugai_barman_base                  ,
+			xr_actions_id.chugai_ambush_base                  ,
+			xr_actions_id.chugai_formation_base               ,
+			xr_actions_id.chugai_replics_base                 ,
+			xr_actions_id.chugai_heli_hunter_base             ,
+			xr_actions_id.combat_zombied_base                 ,
+			xr_actions_id.combat_monolith_base                ,
+			xr_actions_id.combat_camper_base                  ,
+
+			-- Змей
+			xr_actions_id.zmey_actions ,
+			xr_actions_id.zmey_action_guard_activity ,
+			xr_actions_id.zmey_guard_base        ,
+			xr_actions_id.zmey_robber_base       ,
+			xr_actions_id.zmey_camper_base       ,
+			xr_actions_id.zmey_sleeper_base      ,
+			xr_actions_id.zmey_talker_base       ,
+			xr_actions_id.zmey_bodyguard_base    ,
+			xr_actions_id.zmey_punch_base        ,
+			xr_actions_id.zmey_guide_base        ,
+			xr_actions_id.zmey_robber_guard_base ,
+			xr_actions_id.zmey_walker_base       ,
+			xr_actions_id.zmey_assassin_base     ,
+			xr_actions_id.zmey_scared_base       ,
+			xr_actions_id.zmey_zoneguard_base    ,
+			xr_actions_id.zmey_test_base         ,
+			xr_actions_id.zmey_remark_base       ,
+			xr_actions_id.zmey_companion_base    ,
+
+			-- Женя
+			xr_actions_id.jon_actions ,
+
+			xr_actions_id.jon_stalker_zombie     ,
+			xr_actions_id.jon_stalker_novice     ,
+			xr_actions_id.jon_stalker_novice2    ,
+			xr_actions_id.jon_stalker_novice3    ,
+			xr_actions_id.jon_stalker_attack     ,
+
+			xr_actions_id.jon_scientist          ,
+			xr_actions_id.jon_security           ,
+
+
+			xr_actions_id.jon_sniper_enabled     ,
+			xr_actions_id.jon_sniper_see_monster ,
+			xr_actions_id.jon_sniper_see_enemy  ,
+			xr_actions_id.jon_sniper_camper      ,
+			--+5 Занято
+
+			xr_actions_id.jon_outcast			   ,
+			xr_actions_id.jon_outcast_replics    ,
+
+			--
+			xr_actions_id.narrator_actions ,
+			
+			
+			stalker_ids.action_accomplish_task ,
+			stalker_ids.action_aim_enemy ,
+			stalker_ids.action_alife_planner ,
+			stalker_ids.action_anomaly_planner ,
+			stalker_ids.action_combat_planner ,
+			stalker_ids.action_communicate_with_customer ,
+			stalker_ids.action_critically_wounded ,
+			stalker_ids.action_danger_by_sound_planner ,
+			stalker_ids.action_danger_grenade_look_around ,
+			stalker_ids.action_danger_grenade_planner ,
+			stalker_ids.action_danger_grenade_search ,
+			stalker_ids.action_danger_grenade_take_cover ,
+			stalker_ids.action_danger_grenade_take_cover_after_explosion ,
+			stalker_ids.action_danger_grenade_wait_for_explosion ,
+			stalker_ids.action_danger_in_direction_detour ,
+			stalker_ids.action_danger_in_direction_hold_position ,
+			stalker_ids.action_danger_in_direction_look_out ,
+			stalker_ids.action_danger_in_direction_planner ,
+			stalker_ids.action_danger_in_direction_search ,
+			stalker_ids.action_danger_in_direction_take_cover ,
+			stalker_ids.action_danger_planner ,
+			stalker_ids.action_danger_unknown_look_around ,
+			stalker_ids.action_danger_unknown_planner ,
+			stalker_ids.action_danger_unknown_search ,
+			stalker_ids.action_danger_unknown_take_cover ,
+			stalker_ids.action_dead ,
+			stalker_ids.action_death_planner ,
+			stalker_ids.action_detour_enemy ,
+			stalker_ids.action_dying ,
+			stalker_ids.action_find_ammo ,
+			stalker_ids.action_find_item_to_kill ,
+			stalker_ids.action_gather_items ,
+			stalker_ids.action_get_distance ,
+			stalker_ids.action_get_item_to_kill ,
+			stalker_ids.action_get_ready_to_kill ,
+			stalker_ids.action_hold_position ,
+			stalker_ids.action_kill_enemy ,
+			stalker_ids.action_kill_enemy_if_not_visible ,
+			stalker_ids.action_kill_if_enemy_critically_wounded ,
+			stalker_ids.action_kill_if_player_on_the_path ,
+			stalker_ids.action_kill_wounded_enemy ,
+			stalker_ids.action_look_out ,
+			stalker_ids.action_make_item_killing ,
+			stalker_ids.action_no_alife ,
+			stalker_ids.action_post_combat_wait ,
+			stalker_ids.action_prepare_wounded_enemy ,
+			stalker_ids.action_reach_customer_location ,
+			stalker_ids.action_reach_task_location ,
+			stalker_ids.action_reach_wounded_enemy ,
+			stalker_ids.action_retreat_from_enemy ,
+			stalker_ids.action_script ,
+			stalker_ids.action_search_enemy ,
+			stalker_ids.action_smart_terrain_task ,
+			stalker_ids.action_solve_zone_puzzle ,
+			stalker_ids.action_sudden_attack ,
+			stalker_ids.action_take_cover ]]
+
+			}
+		for i = 1, #atbl do
+			action = manager:action(atbl[i])
+			if action then
+	--			action:add_precondition(world_property(evid_see_stuff,false))
+				action:add_precondition(world_property(evid_near_stuff,false))
+			end
+		end
+
+		
+		----
+end

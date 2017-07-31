@@ -1,0 +1,66 @@
+[logic]
+active = {-iskra_koster} walker1, kamp2
+combat_ignore = combat_ignore
+
+[walker1]
+path_walk = zaton_iskra_walk
+path_look = zaton_iskra_look
+combat_ignore_cond = always
+on_info = {+othod_iskra} walker2
+
+[walker2]
+path_walk = zaton_iskra2_walk
+path_look = zaton_iskra2_look
+combat_ignore_cond = always
+on_signal = finish | %=arhara1_dialog1.dell_iskra_restr%
+on_info = {+liniem_otsyuda} karavan
+meet = no_meet
+
+[karavan]
+close_dist = 3
+near_dist = 15
+faraway_dist = 40
+close_state = guard
+near_state = patrol
+faraway_state = sprint
+wait_state = hide 
+look_on_actor = false
+no_loot = true 
+radius = 1
+combat_ignore_cond = {=fighting_dist_ge(1)} always
+meet = no_meet
+on_info = {+doshli_do_negra} walker3
+
+[walker3]
+path_walk = zaton1_iskra1_walk
+path_look = zaton1_iskra1_look
+meet = no_meet
+on_info = {+iskra_go2} karavan1
+
+[karavan1]
+close_dist = 3
+near_dist = 10
+faraway_dist = 40
+close_state = guard
+near_state = rush
+faraway_state = sprint
+wait_state = hide 
+look_on_actor = false
+no_loot = true 
+radius = 1
+meet = no_meet
+combat_ignore_cond = {=fighting_dist_ge(1)} always
+on_info = {+iskra_koster} kamp2
+
+[kamp2]
+center_point = krovososolov_camp_center
+path_walk = krovososolov_camp_center_task
+radius = 2.1
+no_declarate = true
+no_play = true
+meet = meet
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true

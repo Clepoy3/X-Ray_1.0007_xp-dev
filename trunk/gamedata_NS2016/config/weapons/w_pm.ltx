@@ -1,0 +1,182 @@
+;Пистолет системы Макарова ПМ
+[wpn_pm]:identity_immunities
+GroupControlSection  = spawn_group
+discovery_dependency =
+
+$spawn    = "weapons\pm"
+$npc      = on
+$prefetch = 8
+scheduled = off
+cform     = skeleton
+class     = WP_PM
+
+min_radius = 0
+max_radius = 46
+
+description = enc_weapons1_wpn-pm
+
+script_binding = bind_wpn.init
+
+ef_weapon_type = 5
+
+holder_range_modifier = 1.0
+holder_fov_modifier   = 1.0
+
+cost = 100
+
+ammo_limit   = 80
+ammo_current = 64
+ammo_elapsed = 8
+
+f_mode = 1
+
+ammo_mag_size = 8
+ammo_class    = ammo_9x18_fmj, ammo_9x18_pmm
+
+hand_dependence = 1
+single_handed   = 1
+
+slot           = 1
+animation_slot = 1
+
+inv_name       = wpn-pm
+inv_name_short = wpn-pm
+inv_weight     = 0.73
+
+inv_grid_width  = 1
+inv_grid_height = 1
+inv_grid_x      = 18
+inv_grid_y      = 39
+
+kill_msg_x      = 227
+kill_msg_y      = 82
+kill_msg_width  = 27
+kill_msg_height = 23
+
+fire_dispersion_base = 0.33
+disp_rate            = 1.85
+
+cam_relax_speed     = 8
+cam_dispersion      = 0.4
+cam_dispersion_inc  = 0.0
+cam_dispertion_frac = 1.0
+cam_max_angle       = 20.0
+cam_max_angle_horz  = 5.0
+cam_step_angle_horz = 1.0
+
+fire_dispersion_condition_factor = 3
+misfire_probability              = 0.002
+misfire_condition_k              = 0.13
+condition_shot_dec               = 0.0002
+
+direction  = 0, 0, 1
+fire_point = 0.0, 0.127, 0.117
+
+flame_particles = weapons\generic_weapon03
+smoke_particles = weapons\generic_shoot_00
+
+shell_point     = 0.00, 0.127, 0.03
+shell_dir       = 0.0, 0.0, 0.4
+shell_particles = weapons\generic_shells
+
+PDM_disp_base         = 1.0
+PDM_disp_vel_factor   = 0.7
+PDM_disp_accel_factor = 0.7
+PDM_crouch            = 1.0
+PDM_crouch_no_acc     = 1.0
+
+hit_power       = 0.65
+hit_impulse     = 2
+hit_type        = fire_wound
+hit_rate        = 1.83
+fire_distance   = 50
+bullet_speed    = 315
+rpm             = 250
+rpm_empty_click = 100
+
+use_aim_bullet = true
+time_to_aim    = 1.0
+
+hud         = wpn_pm_hud
+normal      = 0, 1, 0
+position    = -0.021, -0.09, 0.0
+orientation = 0, 0, 1
+visual      = weapons\pm\wpn_pm.ogf
+
+light_color     = 0.6,0.5,0.3
+light_range     = 3.0
+light_var_color = 0.05
+light_var_range = 0.5
+light_time      = 0.2
+
+ph_mass = 1
+
+;addons
+scope_status            = 0
+silencer_status         = 2
+grenade_launcher_status = 0
+
+zoom_enabled        = true
+scope_zoom_factor   = 55
+
+silencer_name = wpn_addon_sil_9_p
+silencer_x    = 39
+silencer_y    = -17
+silencer_bone = wpn_sliencer
+
+silencer_hit_power     = 0.6
+silencer_hit_impulse   = 1
+silencer_fire_distance = 47
+silencer_bullet_speed  = 280
+
+silencer_smoke_particles = weapons\generic_shoot_00
+silencer_light_color     = 0.6,0.5,0.3
+silencer_light_range     = 2
+silencer_light_var_color = 0.05
+silencer_light_var_range = 0.5
+silencer_light_time      = 0.2
+
+;звуки
+snd_draw         = weapons\pm\pm_draw, 0.5
+snd_holster      = weapons\pistol_holster, 0.3
+snd_shoot        = weapons\pm\pm_shoot
+snd_shoot1       = weapons\pm\pm_shoot1
+snd_shoot2       = weapons\pm\pm_shoot2
+snd_shoot3       = weapons\pm\pm_shoot3
+snd_empty        = weapons\pm\pm_empty
+snd_reload       = weapons\hpsa\hpsa_reload, 0.8
+snd_close        = weapons\pm\pm_close
+snd_silncer_shot = weapons\pm\pm_shot_sil
+
+weapon_remove_time = 5000
+
+[wpn_pm_hud]
+shell_point = 0,0,-0.5
+fire_point  = 0,0,-0.62
+fire_bone   = muzzle
+orientation = 0,0,0
+position    = 0.15,-0.10,0.3
+visual      = weapons\pm\wpn_pm_hud.ogf
+
+anim_holster      = holster
+anim_idle         = idle
+anim_empty        = empty
+anim_reload       = reload_full
+anim_reload_empty = reload
+anim_draw         = draw
+anim_draw_empty   = draw_empty
+anim_shoot        = shoot1
+anim_shot_last    = shoot_last
+anim_close        = close
+anim_idle_aim     = idle_aim
+anim_idle_sprint  = idle_sprint
+
+;смещения HUD для режима приближения
+zoom_offset         = -0.15,0.10,0
+zoom_rotate_x       = 0
+zoom_rotate_y       = 0
+zoom_hide_crosshair = true
+
+;время поворота HUD (сек)
+zoom_rotate_time = 0.2
+rotate_time      = 0.2

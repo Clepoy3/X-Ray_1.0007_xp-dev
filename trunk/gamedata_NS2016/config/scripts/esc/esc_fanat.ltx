@@ -1,0 +1,84 @@
+[logic]
+active = {-escape_lager_killers_die} walker1, walker4
+meet = meet
+on_death = death
+
+[walker1]
+path_walk = esc_wolf_walk
+path_look = esc_wolf_look
+danger = danger_condition
+on_actor_dist_le = 7 | {-escape_lager_spawn_killers -escape_lager_killers_die} remark1
+on_info = {+escape_lager_spawn_killers} walker3
+on_info2 = {+esc_lager_alarm} walker5
+
+[remark1]
+abuse = false
+anim = guard
+danger = danger_condition
+meet = no_meet
+snd = esc_fanat_dialog
+target = actor
+on_signal = sound_end| walker2
+
+[walker2]
+path_walk = esc_wolf_walk
+path_look = esc_wolf_look
+danger = danger_condition
+on_info = {+escape_lager_spawn_killers} walker3
+
+[walker3]
+path_walk = esc_fanat_walk
+path_look = esc_fanat_look
+danger = danger_condition@alarm
+on_death = death@alarm
+on_info = {+escape_lager_killers_die} walker4
+on_info2 = {+esc_lager_alarm} walker5
+
+[walker4]
+path_walk = esc_wolf_walk
+path_look = esc_wolf_look
+danger = danger_condition
+on_info = {=is_night} kamp1
+on_info2 = {+esc_lager_alarm} walker5
+
+[kamp1]
+center_point = esc_lager_kamp1
+path_walk = esc_lager_kamp1_task
+on_info = {!is_night} walker4
+on_info2 = {+esc_lager_alarm} walker5
+
+[walker5]
+path_walk = esc_fanat_walk
+path_look = esc_fanat_look
+danger = danger_condition@alarm
+on_death = death@alarm
+on_info = {-esc_lager_alarm} walker6
+
+[walker6]
+path_walk = esc_wolf_walk
+path_look = esc_wolf_look
+danger = danger_condition
+on_info = {-escape_lager_spawn_killers} walker1
+on_info2 = {+escape_lager_spawn_killers -escape_lager_killers_die} walker3
+on_info3 = {+escape_lager_killers_die} walker4
+
+[danger_condition]
+ignore_distance = 75
+ignore_distance_grenade = 40
+ignore_distance_corpse = 0
+ignore_distance_sound = 10
+[danger_condition@alarm]
+ignore_distance = 25
+ignore_distance_grenade = 40
+ignore_distance_corpse = 0
+ignore_distance_sound = 5
+
+[death]
+on_info = %+esc_fanat_die%
+
+[death@alarm]
+on_info = %+esc_open_lager_fire +esc_fanat_die%
+
+[meet]
+use = true
+use_wpn = true

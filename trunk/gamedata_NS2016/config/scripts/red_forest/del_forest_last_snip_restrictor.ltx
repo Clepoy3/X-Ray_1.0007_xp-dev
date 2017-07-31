@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_npc_in_zone = 19026 |del_forest_last_snip_restrictor| sr_idle@time 
+single = true
+
+[sr_idle@time]
+on_timer = 200 | sr_idle@nil %+forest_last_snip_proval =arhara_dialog.dell_forest_last_snip =arhara_dialog.spawn_pushka_fot%
+single = true
+
+[sr_idle@nil]

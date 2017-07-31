@@ -1,0 +1,173 @@
+;--- base zone ------------------------------------------------------------
+[zone_buzz]
+GroupControlSection			= spawn_group_zone
+$spawn 						= "zones\buzz"
+$prefetch 					= 16
+; === Johnson ===
+class						= ZS_BUZZ
+; === Johnson ===
+script_binding = amk_anoms.bind
+
+hit_impulse_scale		= 0
+effective_radius		= 1			;размер радиуса в процентах от оригинального, где действует зона
+
+ef_anomaly_type		= 1
+ef_weapon_type		= 13
+
+sound				=
+postprocess			= postprocess_flame
+	
+artefacts			=
+BirthProbability 		= 0.2
+
+min_start_power		= 0.99
+max_start_power		= 1
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+idle_particles		= anomaly2\studen_idle_bottom
+blowout_particles		= anomaly2\studen_blowout
+
+hit_small_particles	= anomaly2\group_items\studen_idle_bottom_00
+hit_big_particles		= anomaly2\group_items\studen_idle_bottom_00
+idle_small_particles	= anomaly2\group_items\studen_idle_bottom_00
+idle_big_particles	= anomaly2\group_items\studen_idle_bottom_00
+
+idle_sound			= anomaly\buzz_idle	;постоянный звук
+blowout_sound		= anomaly\buzz_hit	;во время выброса(удара) в центре аномалии
+hit_sound			= anomaly\buzz_hit	;на персонаже, когда тот получает хит
+entrance_sound		= anomaly\buzz_hit	;при попадании объекта в аномалию
+
+hit_type			= chemical_burn
+
+disable_time		= 10000		;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small	= -1			;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time		= 50000		;время отключения idle партиклов
+
+ignore_nonalive		= false
+ignore_small		= false
+ignore_artefacts		= false
+
+blowout_light		= on
+light_color			= 1.1,1.7,1.4
+light_animation		= light_green_01
+light_range			= 5
+light_time			= 0.35
+light_height		= 0.75		;подъем источника света на высоту
+
+idle_light			= on
+idle_light_range		= 3
+idle_light_range_delta	= 0.25
+idle_light_anim		= light_green_02
+idle_light_height		= 0.7			;подъем источника света на высоту
+
+awaking_time		= 50
+blowout_time		= 100
+accamulate_time		= 2000
+
+visible_by_detector	= on
+
+blowout_wind		= off
+
+blowout_wind_time_start	= 0
+blowout_wind_time_peak	= 600
+blowout_wind_time_end	= 899
+blowout_wind_power	= 0.5			;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak
+
+;рождение артефактов во время срабатывания
+spawn_blowout_artefacts	= off
+;--- base zone ---------------------------------------------------- end ---
+
+;--- variable zone --------------------------------------------------------
+[zone_buzz_weak]:zone_buzz
+$spawn = "zones\buzz_weak"
+min_start_power = 0.14
+max_start_power = 0.15
+
+[zone_buzz_average]:zone_buzz
+$spawn = "zones\buzz_average"
+min_start_power = 0.49
+max_start_power = 0.5
+
+[zone_buzz_strong]:zone_buzz
+$spawn = "zones\buzz_strong"
+
+idle_particles    = anomaly2\studen_idle_bottom000
+blowout_particles = anomaly2\studen_blowout000
+
+hit_small_particles  = anomaly2\group_items\studen_idle_bottom_000
+hit_big_particles    = anomaly2\group_items\studen_idle_bottom_000
+idle_small_particles = anomaly2\group_items\studen_idle_bottom_000
+idle_big_particles   = anomaly2\group_items\studen_idle_bottom_000
+
+light_color     = 0.7,0.8,1 
+light_animation = light_blue_01
+
+idle_light_anim = light_blue_02
+
+[zone_lava]:zone_buzz
+$spawn = "zones\lava"
+min_start_power = 0.1
+max_start_power = 0.2
+
+idle_particles    = anomaly2\studen_idle_bottom_new_small_red
+blowout_particles = anomaly2\group_items\hit_studen_bubble
+
+hit_small_particles  = anomaly2\group_items\studen_idle_bottom_new_small_red
+hit_big_particles    = anomaly2\group_items\studen_idle_bottom_new_small_red
+idle_small_particles = anomaly2\group_items\studen_idle_bottom_new_small_red
+idle_big_particles   = anomaly2\group_items\studen_idle_bottom_new_small_red
+
+disable_time       = 10000
+disable_time_small = 1000
+disable_idle_time  = -1
+
+ignore_nonalive  = true
+ignore_small     = true
+ignore_artefacts = true
+
+light_color     = 1.8,1.2,0.8
+light_animation = koster_00
+light_range     = 9.6
+light_time      = 2
+light_height    = 0.8
+
+idle_light_range       = 8
+idle_light_range_delta = 0.205
+idle_light_anim        = koster_00
+idle_light_height      = 0.8
+
+awaking_time    = 0
+blowout_time    = 1000
+accamulate_time = 0
+
+visible_by_detector = off
+
+[zone_lava_big]:zone_lava
+$spawn = "zones\lava_big"
+
+idle_particles   = anomaly2\studen_idle_bottom_new_small_red_2
+light_range      = 25
+idle_light_range = 20
+;--- variable zone ------------------------------------------------ end ---
+
+;--- amk_zone -------------------------------------------------------------
+[amk_zone_buzz]:zone_buzz
+$spawn = "zones\amk_buzz"
+
+[amk_zone_buzz_weak]:zone_buzz_weak
+$spawn = "zones\amk_buzz_weak"
+
+[amk_zone_buzz_average]:zone_buzz_average
+$spawn = "zones\amk_buzz_average"
+
+[amk_zone_buzz_strong]:zone_buzz_strong
+$spawn = "zones\amk_buzz_strong"
+;--- amk_zone ----------------------------------------------------- end ---
+
+;--- caps_zone ------------------------------------------------------------
+[caps_buzz_average]:amk_zone_buzz_average
+$spawn = "zones\caps_buzz_average"
+;--- caps_zone ---------------------------------------------------- end ---

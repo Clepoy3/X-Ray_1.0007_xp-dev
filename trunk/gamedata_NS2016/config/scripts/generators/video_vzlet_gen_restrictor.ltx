@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle@ready
+
+[sr_idle@ready]
+on_info = {+vzlet_gen_poehali} sr_idle@wait_dream %=arhara_dialog.otsek_varka_kamen% 
+
+[sr_idle@wait_dream]
+on_timer = 600 | sr_idle@dream %=start_vzlet_generators%
+
+[sr_idle@dream]
+on_info = nil %+na_bolota =arhara_dialog.otsek_varka_kamen%

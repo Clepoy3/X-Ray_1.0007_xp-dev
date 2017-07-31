@@ -1,0 +1,286 @@
+---' revision and adaptation for NS_2016 lsclon 09.10.16 '---
+--' Биндер артефактов, совмещенный с детекторами. '--
+--[[
+	Одновременно может работать только один тип детектора.
+	Радиус действия одинаковый для всех детекторов.
+	Простой детектор издает звуковой сигнал. Интенсивность зависит от дистанции до объекта
+	Детектор изоморфов, подает сигнал с постоянной частотой и ставит метку на карте
+	Метки остаются пока объект в зоне действия детектора
+--]]
+
+local dbg_lvl = 0 -- 1 - отладка обычная, 2 - параноидальная
+
+local actor = db.actor
+local snd_obj = xr_sound.get_safe_sound_object("ambient\\da_beep")
+local snd_yaws = {
+	[0] = xr_sound.get_safe_sound_object("ambient\\da_beep_0"),
+	[45] = xr_sound.get_safe_sound_object("ambient\\da_beep_45"),
+	[90] = xr_sound.get_safe_sound_object("ambient\\da_beep_90"),
+	[135] = xr_sound.get_safe_sound_object("ambient\\da_beep_135"),
+	[180] = xr_sound.get_safe_sound_object("ambient\\da_beep_180"),
+}
+local det_super, det_indy = false, false
+local tim_beep = 0
+local beep = false
+
+
+function bind(obj)
+	obj:bind_object(art_binder(obj))
+end
+
+class "art_binder" (object_binder)
+
+function art_binder:__init(obj) super(obj)
+	self.init = true   -- флаг инициализации
+	self.spot = nil    -- флаг постановки метки
+end
+
+function art_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function art_binder:reinit() 
+	object_binder.reinit(self)
+end 
+
+function art_binder:net_save_relevant()
+	return true
+end
+
+function art_binder:net_spawn(sobj)
+	if not object_binder.net_spawn(self, sobj) then
+		return false
+	end
+	-- серверный объект и его ид
+	self.id = sobj.id
+	self.art = alife():object(self.id)
+	self.name = sobj:name()
+	db.artefacts[self.id] = sobj:name()
+	return true 
+end 
+
+function art_binder:update(delta)
+	object_binder.update(self, delta)
+	local art = self.object
+	-- утверждают, что это от провала артов под текстуры
+	if self.init then
+--		local ps = art:get_physics_shell()
+--		if ps and not art:parent() then
+--			local impulse = art:mass() * 1300
+--			ps:apply_force( 0, impulse, 0 )
+--		end
+		self.init = nil
+	end
+	-- проверка пояса на детекторы.
+	det_super, det_indy = belt()
+	
+	-- если есть детектор
+	if det_indy or det_super then
+		local sobj = self.art
+		-- правильно будет запрашивать парент у серверного объекта
+		if sobj and sobj.parent_id == 65535 then
+			local apos = actor:position()
+			local pos = art:position()
+			local dist = apos and pos and apos:distance_to_sqr(pos)
+			-- проверка на дистанцию, для всех детекторов одна
+			if dist and dist < 60*60 then
+				local time_g = time_global()
+				-- детектор изоморфов - сигнал с равномерным промежутком
+				if det_super then
+					-- метка - проверка в два этапа: флаг потом наличие метки
+					if not self.spot then
+						if level.map_has_object_spot(self.id, "artefact_location") == 0 then
+							level.map_add_object_spot(self.id,"artefact_location",art:section())
+						end
+						self.spot = true
+						if dbg_lvl > 0 then get_console():execute("load ~bind_art~ art_binder:update: self.spot = true, self.id: "..tostring(self.id)..", self.name: "..tostring(self.name)) end
+					end
+				else
+					if self.spot then
+						level.map_remove_object_spot(self.id,"artefact_location")
+						self.spot = nil
+						if dbg_lvl > 0 then get_console():execute("load ~bind_art~ art_binder:update: self.spot = nil, self.id: "..tostring(self.id)..", self.name: "..tostring(self.name)) end
+					end
+				end
+			-- вне зоны действия детектора
+			else
+				if self.spot then
+					level.map_remove_object_spot(self.id,"artefact_location")
+					self.spot = nil
+					if dbg_lvl > 0 then get_console():execute("load ~bind_art~ art_binder:update: self.spot = nil, self.id: "..tostring(self.id)..", self.name: "..tostring(self.name)) end
+				end
+			end
+		-- нет парента - снимаем метку и заниляем флаги
+		else
+			if self.spot then
+				level.map_remove_object_spot(self.id,"artefact_location")
+				self.spot = nil
+				if dbg_lvl > 0 then get_console():execute("load ~bind_art~ art_binder:update: self.spot = nil, self.id: "..tostring(self.id)..", self.name: "..tostring(self.name)) end
+			end
+		end
+	-- если на поясе нет детекторов - снимаем метку если есть флаг
+	else
+		if self.spot then
+			level.map_remove_object_spot(self.id,"artefact_location")
+			self.spot = nil
+			if dbg_lvl > 0 then get_console():execute("load ~bind_art~ art_binder:update: self.spot = nil, self.id: "..tostring(self.id)..", self.name: "..tostring(self.name)) end
+		end
+	end
+end
+
+-- Проверка пояса на детекторы. Одновременно может работать только один тип детектор.
+function art_binder:belt(det_super, det_indy)
+	-- если нет флага детектора изоморфов
+	if not det_super then
+		-- и нет флага простого детектора
+		if not det_indy then
+			-- проверяем пояс на детектор изоморфов
+			if inventory.belt["detektor_amorf"] then
+				return true, nil
+			end
+			-- проверяем пояс на простой детектор
+			if inventory.belt["det_artefact_indy"] then
+				return nil, true
+			end
+		-- если есть флаг простого детектора
+		else
+			-- проверяем пояс на снятие простого детектора
+			if not inventory.belt["det_artefact_indy"] then
+				return nil, nil
+			end
+		end
+	-- если есть флаг детектора изоморфов
+	else
+		-- проверяем пояс на снятие детектора изоморфов
+		if not inventory.belt["detektor_amorf"] then
+			return nil, nil
+		end
+	end
+	-- ни чего не поменялось - выдаем входящие значения
+	return det_super, det_indy
+end
+
+-- Переход в оффлайн. Снимаем метку если есть флаг - self.spot
+function art_binder:net_destroy()
+	db.artefacts[self.id] = nil
+	if self.spot then
+		level.map_remove_object_spot(self.id,"artefact_location")
+		self.spot = nil
+	end
+	object_binder.net_destroy(self)
+end 
+
+function art_binder:load(reader)
+	object_binder.load(self, reader)
+end
+
+function art_binder:save(packet)
+	object_binder.save(self, packet)
+end
+
+-- Проверка пояса на детекторы. Одновременно может работать только один тип детектор.
+function belt()
+	local old_super = det_super
+	local old_indy = det_indy
+	
+	det_super = inventory.belt["detektor_amorf"]
+		and (not inventory.belt["det_artefact_indy"] or not det_indy)
+		
+	det_indy = inventory.belt["det_artefact_indy"]
+		and not det_super
+	
+	if dbg_lvl > 0 then 
+		if old_super ~= det_super or old_indy ~= det_indy then
+			get_console():execute("load ~bind_art~ belt() det_super: "..tostring(old_super).."->"..tostring(det_super).." det_indy: "..tostring(old_indy).."->"..tostring(det_indy))
+			db.actor:give_game_news("%c[255,160,160,160]debug\\n".."%c[default]".."det_super: "..tostring(old_super).."->"..tostring(det_super).." det_indy: "..tostring(old_indy).."->"..tostring(det_indy), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 1000)
+		end
+	end
+	
+	return det_super, det_indy
+end
+
+-- находим самый близкий арт
+function nearestArt()
+	local art, artPos, artDist, artNearest, artNearestDist, artNearestPos
+	local apos = actor:position()
+	for artId,_ in pairs(db.artefacts) do
+		art = level.object_by_id(artId)
+		if art and art:parent() == nil then
+			artPos = art:position()
+			artDist = artPos:distance_to_sqr(apos)
+			if artNearest == nil or artDist < artNearestDist then
+				artNearest = art
+				artNearestDist = artDist
+				artNearestPos = artPos
+			end
+		end
+	end
+		
+	return artNearest, artNearestDist, artNearestPos
+end
+
+function beep_art(delta)
+
+	-- проверка пояса на детекторы.
+	local det_super, det_indy = belt()
+
+	if det_super or det_indy then
+		-- находим самый близкий арт
+		local artNearest, artNearestDist, artNearestPos = nearestArt()
+		if dbg_lvl > 1 then get_console():execute("load ~bind_art~ beep_art artNearest: "..tostring(artNearest and artNearest:section()).."["..tostring(artNearest and artNearest:name()).."], dist: "..tostring(artNearestDist)..", det_super: "..tostring(det_super).." det_indy: "..tostring(det_indy)) end
+		
+		if artNearest then
+			
+			-- проверка на дистанцию, для всех детекторов одна
+			if artNearestDist < 60*60 then
+				if dbg_lvl > 1 then get_console():execute("load ~bind_art~ beep: "..tostring(beep)..", det_super: "..tostring(det_super).." det_indy: "..tostring(det_indy)) end
+				local time_g = time_global()
+				-- простой детектор - звуковой сигнал в зависимости от дистанции
+				if det_indy and math.max(artNearestDist, 100) < time_g - tim_beep then
+					if dbg_lvl > 1 then 
+						get_console():execute("load ~bind_art~ beep: "..tostring(beep)..", det_super: "..tostring(det_super).." det_indy: "..tostring(det_indy))
+						db.actor:give_game_news("%c[255,160,160,160]debug\\n".."%c[default]".."beep: "..tostring(beep)..", det_super: "..tostring(det_super).." det_indy: "..tostring(det_indy), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 1000)
+					end
+					tim_beep = time_g
+					beep = true
+				end
+				-- детектор изоморфов - сигнал с равномерным промежутком
+				if det_super then
+					if tim_beep < time_g then
+						if dbg_lvl > 0 then
+							get_console():execute("load ~bind_art~ beep: "..tostring(beep)..", det_super: "..tostring(det_super).." det_indy: "..tostring(det_indy))
+							db.actor:give_game_news("%c[255,160,160,160]debug\\n".."%c[default]".."beep: "..tostring(beep)..", det_super: "..tostring(det_super).." det_indy: "..tostring(det_indy), "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 1000)
+					end
+						tim_beep = time_g + 3000
+						beep = true
+					end
+				end
+				-- проиграть сигнал
+				if beep then
+					local apos = db.actor:position()
+					local actortoartDir = artNearestPos:sub(apos)
+					local adir = device().cam_dir
+					local yawToItem = math.abs(yaw_degree(actortoartDir, adir))
+					local sector = math.floor((yawToItem + 45/2)/45)
+					local snd_yaw = snd_yaws[sector*45]
+					if not snd_yaw then snd_yaw = snd_yaws[0] end -- баг в yaw_degree
+					if dbg_lvl > 0 then 
+						get_console():execute("load ~bind_art~ yawToItem:"..tostring(yawToItem).."["..tostring(tonumber(yawToItem)).."], sector: "..tostring(sector).."["..tostring(tonumber(sector)).."]")
+						db.actor:give_game_news("%c[255,160,160,160]debug\\n".."%c[default]".."yawToItem:"..tostring(yawToItem).."["..tostring(tonumber(yawToItem)).."], sector: "..tostring(sector).."["..tostring(tonumber(sector)).."]", "ui\\ui_VDGicon", Frect():set(0,47,83,47), 0, 1000)
+					end
+					if not snd_yaw:playing() then
+						snd_yaw:play_no_feedback(db.actor,sound_object.s2d,0,vector(),1.0)
+						beep = false
+					end
+				end
+			-- вне зоны действия детектора
+			else
+				beep = false
+			end
+		else
+			beep = false
+		end
+	else
+		beep = false
+	end
+end

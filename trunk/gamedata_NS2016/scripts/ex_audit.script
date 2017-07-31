@@ -1,0 +1,112 @@
+		---- *** Работа над ошибками *** ----
+--- Вывод в лог --------------------------------------------------------------------------
+local string_format = string.format
+local string_find = string.find
+function log(ct,...)
+	get_console():execute( string_format("load ~[%s]:[ex_audit]: %s",ct,string_format(...)))
+end
+local bag_sect = {}
+local bag_name = {}
+---' Функции для проверки аллспавна
+--' Определить смарты 'gulag1' без конфигурации, либо смарты без обозначения типа:
+-- вызывается из smart_terrain.read_params()
+function smart_gulag1(ini,sect,self)
+--	if sect == "gulag1" then
+--		log("инфо_лог","[smart_gulag1]: смарт:%s тип:GULAG1",self:name())
+--	end
+--	if not ini:section_exist(sect) then
+--		log("инфо_лог","[smart_gulag1]: смарт:%s тип:GULAG1 отсутствует конфигурация!!!",self:name())
+--	end
+--	if not ini:line_exist(sect,"type") then
+--		log("инфо_лог","[read_params]: не обозначен тип смарта: %s!!!",self:name())
+--	end
+end
+
+--' Выявляет записанные с ошибкой в секцию [smart_terrains] смарты, либо смарт спавнится позже объекта:
+-- вызывается из smart_terrain.read_smart_terrain_conditions(self)
+function not_smart_name(obj,field)
+--	local sim = alife()
+--	local obj_name = obj:name()
+--	local sobj = sim:object(field)
+--	local sect = sobj and sobj:section_name()
+--	if (not sobj and field ~= 'none') or (sobj and sect ~= 'smart_terrain') then
+--		if not bag_name[obj_name] then
+--			log("инфо_лог","[not_smart_name]:объект:(%s) неверный смарт:%s",obj_name,field)
+--			bag_name[obj_name] = true
+--			--bag_name[obj:name()] = {field}
+--			amk.save_table('no_smart_name',bag_name)
+--		end
+--	end
+end
+
+--' Выявляет объекты без секции [smart_terrains], либо написанной с ошибкой:
+-- вызывается из smart_terrain.obj_accepts_smart_terrain(obj)
+function not_smart_sect(obj)
+	local obj_name = obj:name()
+	local spawn_id = string_find(obj_name,tostring(obj.id))
+	if obj:alive() and not spawn_id and not bag_sect[obj_name] then
+		log("инфо_лог","[not_smart_sect]:нет секции объект:(%s)",obj_name)
+		bag_sect[obj_name] = true
+		amk.save_table('no_smart_sect',bag_sect)
+	end
+end
+
+--' Определить смарты с излишним количеством эксклюзивов:
+-- вызывается из smart_terrain.preserve_exclusives(obj)
+function smart_exclusives(smart,exclusive,non_exclusive)
+--	if non_exclusive < 0 then
+--		log("инфо_лог","[smart_exclusives]: смарт:%s назначено/вместимость: %s/%s ",smart,exclusive,non_exclusive)
+--	end
+end
+
+--' Выявляет гулаги без работ(real_capacity = 0), без заданной вместимости(give_capacity = 100), а так же ресбаланс вместимость/работы:
+-- вызывается из xr_gulag.load_jobs()
+function capacity_job(gulag,capacity,give_capacity,real_capacity)
+--	-- определить смарты без работы:
+--	if real_capacity == 0 then
+--		log("инфо_лог","[load_jobs]:смарт(%s) емкость:%s отсутствуют работы!!!",gulag,real_capacity)
+--	-- определить смарты c заданной вместимостью, больше реальной:
+--	elseif give_capacity > real_capacity then
+--		log("инфо_лог","[load_jobs]:смарт(%s) емкость:%s / %s",gulag,give_capacity,real_capacity)
+--	-- определить смарты c заданной вместимостью, меньше реальной:
+--	elseif capacity > real_capacity then
+--		log("инфо_лог","[load_jobs]:смарт(%s) работы:%s / %s",gulag,capacity,real_capacity)
+--	end
+end
+
+function not_wpn(npc,news,sound)
+	if npc then
+		local ch_name = npc:character_name()
+		local comm = npc:character_community()
+		local id = npc:id()
+		local name = npc:name()
+		if news then
+			local text = string.format("%s, из группировки: %s, при выходе в онлайн остался без оружия!!",tostring(ch_name),tostring(comm)) 
+			local desc = "%c[255,160,160,160]".."Внимание!!".."\\n".."%c[default]"..text
+			db.actor:give_game_news(desc, "ui\\ui_iconsTotal", Frect():set(0,658,83,47),0, 24000)
+			if sound then
+				local sound_obj = xr_sound.get_safe_sound_object([[device\pda\pda_sos]]) 
+				sound_obj:play(db.actor, 0, sound_object.s2d)
+			end
+		end
+		log("Внимание", "[not_wpn]: выход в онлайн без оружия - нпс: %s ид: %s группировка: %s",tostring(name),tostring(id),tostring(comm))
+	end
+end
+
+function info_call(info_id)
+	if not db.actor or not info_id or string.sub(info_id, 1, 3) == "ui_" or string.sub(info_id, 1, 4) == "aem_" then
+		return
+	end
+	log("инфо_лог","[info_call]: получен инфопоршень: %s",info_id)
+end
+
+---' Распечатка:
+function print_no_smart_sect()
+	log("инфо_лог","[print_no_smart_sect]:таблица(%s)","bag_sect")
+	amk.dump_table(bag_sect,1,'Нет секции [smart_terrains]')
+end
+
+function print_no_smart_name()
+	log("инфо_лог","[print_no_smart_name]:таблица(%s)","bag_name")
+	amk.dump_table(bag_name,1,'Ошибка в имени смарта')
+end

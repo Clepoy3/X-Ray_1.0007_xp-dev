@@ -1,0 +1,270 @@
+; работа Sin
+[wpn_aek971]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	= 
+$spawn					= "weapons\w_aek971"
+$npc					= on
+$prefetch 			=	 8
+scheduled				= off
+cform					= skeleton
+class					= WP_AK74
+min_radius				= 30
+max_radius				= 100
+description				= enc_wpn_aek971
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		= 2
+ef_weapon_type			= 6
+
+holder_range_modifier	= 1.0
+holder_fov_modifier		= 0.7
+
+cost					= 7000
+weapon_class			= assault_rifle
+
+ammo_limit			= 210
+ammo_elapsed		= 30
+
+ammo_mag_size		= 30
+fire_modes			= 1, -1
+
+ammo_class			= ammo_5.45x39_fmj, ammo_5.45x39_ap, ammo_5.45x39_izomorf    
+grenade_class		= ammo_vog25, ammo_vog25p 
+launch_speed		= 0
+
+hand_dependence		= 1
+single_handed		= 0
+
+slot 				= 2
+animation_slot		= 2
+
+inv_name			= wpn-aek971
+inv_name_short		= wpn-aek971
+inv_weight			= 3.3
+
+inv_grid_width		= 4
+inv_grid_height		= 2
+inv_grid_x			= 21
+inv_grid_y			= 26
+
+
+kill_msg_x		= 0
+kill_msg_y		= 28
+kill_msg_width	= 84
+kill_msg_height	= 28
+
+;params of weapon recoil
+fire_dispersion_base		= 0.15
+control_inertion_factor		= 1.25f
+
+;отдача
+cam_relax_speed			= 3.5
+cam_dispersion			= 0.4
+cam_dispersion_inc		= 0.08
+cam_dispertion_frac		= 0.5
+cam_max_angle			= 5
+cam_max_angle_horz		= 5
+cam_step_angle_horz		= 0.6
+
+fire_dispersion_condition_factor = 3 
+misfire_probability 			= 0.0013
+misfire_condition_k				= 0.12
+condition_shot_dec 				= 0.0001
+
+fire_point				= 0,0.216,0.708
+fire_point2				= 0,0.216,0.730
+
+flame_particles			= weapons\generic_weapon05
+smoke_particles			= weapons\generic_shoot_00
+grenade_flame_particles	= weapons\generic_weapon01
+
+shell_point	 			= 0,0.252,0.146
+shell_particles	 		= weapons\shells_r_ns_762
+
+PDM_disp_base			= 1.0
+PDM_disp_vel_factor		= 1.3
+PDM_disp_accel_factor	= 1.3
+PDM_crouch				= 1.0
+PDM_crouch_no_acc		= 1.0
+
+; ttc
+hit_power				= 0.82
+hit_impulse		 		= 4
+hit_type 				= fire_wound
+fire_distance			= 225
+bullet_speed			= 880
+rpm						= 900
+
+use_aim_bullet			= true
+time_to_aim				= 1.0
+
+silencer_hit_power		= 0.74
+silencer_hit_impulse	= 3
+silencer_fire_distance	= 200
+silencer_bullet_speed	= 800
+
+hud					= wpn_aek971_hud
+
+position			= -0.026,-0.152,-0.003
+orientation			= 0,-5,0
+
+strap_position		= -0.16,-0.40,0.15
+strap_orientation	= -10,-5,10
+strap_bone0			= bip01_spine2
+strap_bone1			= bip01_spine1
+
+visual				= weapons\aek971\wpn_aek971
+
+ph_mass				= 5
+
+;addons
+scope_status			= 2
+silencer_status			= 2
+grenade_launcher_status	= 2
+
+zoom_enabled			= true
+scope_zoom_factor		= 50
+
+scope_name				= wpn_addon_scope
+scope_x					= 24
+scope_y					= 0
+silencer_name			= wpn_addon_silencer
+silencer_x				= 184  ; offset in inventory icon
+silencer_y				= 14
+grenade_launcher_name 	= wpn_addon_grenade_launcher
+grenade_launcher_x		= 97
+grenade_launcher_y		= 22
+
+snd_draw				= weapons\ak74_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\ak74u\ak74u_shoot
+snd_shoot1				= weapons\ak74u\ak74u_shoot1
+snd_shoot2				= weapons\ak74u\ak74u_shoot2
+snd_shoot3				= weapons\ak74u\ak74u_shoot3
+snd_empty				= weapons\gen_empty, 0.5
+snd_reload				= weapons\aek971_reload
+snd_shoot_grenade		= weapons\gen_grenshoot
+snd_reload_grenade		= weapons\gen_grenload, 1.0, 0.8
+snd_switch				= weapons\groza_switch, 1.0, 0.5
+
+silencer_smoke_particles	= weapons\generic_shoot_00
+
+snd_silncer_shot			= weapons\w_ak74_shot1 
+
+light_color			= 0.6,0.5,0.3
+light_range			= 5
+light_var_color		= 0.05
+light_var_range		= 0.5
+light_time			= 0.2
+
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 2
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+ 
+[wpn_aek971_hud]
+shell_point		= 0.2,0.0,0.09
+shell_dir		= 0.0, 1.0, 0.0
+
+fire_point		= 0.0009,0.050,0.20
+fire_bone		= wpn_body
+
+position		= -0.101800,-0.182700,0.012501
+orientation		= 2.599998,7.000000,3.549999
+visual			= weapons\aek971\wpn_aek971_hud.ogf
+
+grenade_bone	= grenade
+
+; animation names
+anim_idle		= idle
+anim_idle_aim	= idle_aim
+anim_reload		= aek971_reload
+anim_draw		= draw
+anim_holster	= holster
+anim_shoot		= shoot
+
+; animation names
+; attached grenade launcher [GRENADE fire mode]
+anim_idle_g				= idle_w_gl
+anim_idle_g_aim			= idle_aim_w_gl
+anim_reload_g			= reload_grenade
+anim_shoot_g			= shoot_grenade
+anim_switch_grenade_on	= switch_on
+anim_switch_grenade_off	= switch_off
+anim_draw_g				= draw_w_gl
+anim_holster_g			= holster_w_gl
+
+; attached grenade launcher [NORMAL fire mode]
+anim_idle_gl			= idle_w_gl
+anim_idle_gl_aim		= idle_aim_w_gl
+anim_reload_gl			= aek971_reload_w_gl
+anim_draw_gl			= draw_w_gl
+anim_holster_gl			= holster_w_gl
+anim_shoot_gl			= shoot_w_gl
+anim_idle_sprint		= idle_sprint
+
+zoom_offset		= -0.118800,0.035100,-0.050000
+zoom_rotate_x	= 0.042200
+zoom_rotate_y	= 0.040000
+
+zoom_hide_crosshair	= true
+
+; same as above, but for attached grenade launcher for
+; in NORMAL shoot mode
+grenade_normal_zoom_offset		= -0.118800,0.035100,-0.050000
+grenade_normal_zoom_rotate_x	= 0.042200
+grenade_normal_zoom_rotate_y	= 0.040000
+
+; same as above, but for attached grenade launcher for
+; in GRENADE mode
+grenade_zoom_offset		= 0,0,0
+grenade_zoom_rotate_x	= 0
+grenade_zoom_rotate_y	= -0.033800
+
+;время поворота HUD (сек)
+zoom_rotate_time	= 0.3
+rotate_time			= 0.3
+
+;-----апгрейды-
+
+; Снижение отдачи
+[wpn_aek971_otdaca]:wpn_aek971
+$spawn					= "weapons\w_aek971\wpn_aek971_otdaca"
+fire_dispersion_base	= 0.075
+cam_relax_speed			= 1.75
+cam_dispersion			= 0.2
+cam_dispersion_inc		= 0.04
+cam_max_angle			= 2.5
+inv_weight				= 3.3
+inv_name				= wpn-aek971_otdaca
+inv_name_short			= wpn-aek971_otdaca
+description				= enc_otdaca_wpn_aek971
+inv_grid_width			= 5
+inv_grid_height			= 2
+cost					= 15000
+
+
+; Снижение веса
+[wpn_aek971_ves]:wpn_aek971
+$spawn			= "weapons\w_aek971\wpn_aek971_ves
+inv_weight		= 2.5
+inv_name		= wpn-aek971_ves
+inv_name_short	= wpn-aek971_ves
+description		= enc_ves_wpn_aek971
+inv_grid_width	= 5
+inv_grid_height	= 2
+cost			= 15000
+
+; Отдача и вес
+[wpn_aek971_otdaca_ves]:wpn_aek971_otdaca
+$spawn			= "weapons\w_aek971\wpn_aek971_otdaca_ves
+inv_weight		= 2.5
+inv_name		= wpn-aek971_otdaca_ves
+inv_name_short	= wpn-aek971_otdaca_ves
+description		= enc_otdaca_ves_wpn_aek971
+cost			= 20000
+
+

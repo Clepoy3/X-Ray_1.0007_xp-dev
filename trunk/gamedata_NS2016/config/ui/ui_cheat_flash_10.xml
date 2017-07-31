@@ -1,0 +1,52 @@
+	<?-- Vergas подписи кнопок выбора музыкального файла В слоте флешка 10--?>
+	<background_f10_t1 x="180" y="157" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >S.Tankian, Gigi and M.Davis: Running from the Light</text>
+	</background_f10_t1>
+	
+	<background_f10_t2 x="180" y="178" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Black Label Society: Just Killing Time</text>
+	</background_f10_t2>
+	
+	<background_f10_t3 x="180" y="199" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Earlimart: It's Okay to think about Ending</text>
+	</background_f10_t3>
+	
+	<background_f10_t4 x="180" y="220" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Twin Peaks: Falling</text>
+	</background_f10_t4>
+	
+	<background_f10_t5 x="180" y="241" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Gorillaz: Sound Check (Gravity)</text>
+	</background_f10_t5>
+	
+	<background_f10_t6 x="180" y="262" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Deep Purple: Soldier of Fortune</text>
+	</background_f10_t6>
+	
+	<background_f10_t7 x="180" y="283" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Marc Cohn: One Safe Place</text>
+	</background_f10_t7>
+	
+	<background_f10_t8 x="180" y="304" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Melissa Wiliamson: Room of Angel</text>
+	</background_f10_t8>
+	
+	<background_f10_t9 x="180" y="325" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >System of A Down: Lonely Day</text>
+	</background_f10_t9>
+	
+	<background_f10_t10 x="180" y="346" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Roxette: Queen of Rain</text>
+	</background_f10_t10>
+	
+	<background_f10_t11 x="180" y="367" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Old Dirty Bastard and Black Ke: Thirsty</text>
+	</background_f10_t11>
+	
+	<background_f10_t12 x="180" y="388" width="100" height="20" stretch="1">
+		<text font="letterica16"  r="162" g="181" b="205" a="255" >Theory of a Dead Man: Say Goodbye</text>
+	</background_f10_t12>
+	
+	<background_36 x="456" y="326" width="50" height="35">
+		<text font="letterica18"  r="238" g="154" b="0" a="255" align="l">от Архары</text>
+	</background_36>

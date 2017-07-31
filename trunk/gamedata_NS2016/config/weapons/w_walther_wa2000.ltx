@@ -1,0 +1,207 @@
+;аномальный walther_wa2000 с компьютерным прицелом. Автор Death
+
+[wpn_walther_wa2000]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn                  = "weapons\walther_wa2000"		
+$npc			 		= on				
+$prefetch 		 	= 8
+scheduled               = off              	
+cform                   = skeleton
+class                   = WP_BINOC
+min_radius              = 0
+max_radius              = 50
+description			= enc_weapons_walther-wa2000
+
+script_binding  = bind_wpn.init
+
+ef_main_weapon_type		 = 3
+ef_weapon_type			 = 8
+
+holder_range_modifier	= 2.15                
+holder_fov_modifier		= 0.3              
+
+cost					= 20000
+weapon_class			= sniper_rifle
+
+ammo_limit			= 60
+ammo_current			= 10
+ammo_elapsed			= 0
+
+f_mode				= 1
+
+ammo_mag_size			= 10
+ammo_class			= ammo_7.62x54_7h14, ammo_7.62x54_ap, ammo_7.62x54_7h1, ammo_7.62x54_izomorf  
+
+sprint_allowed			= true
+
+;базовая дисперсия
+fire_dispersion_base		= 0.021  
+control_inertion_factor		= 2.2f
+disp_rate = 1.85
+
+;отдача
+cam_relax_speed         	= 2.5	
+cam_dispersion          	= 0.22	
+cam_dispersion_inc			= 0.15	
+cam_dispertion_frac			= 0.6	
+cam_max_angle				= 18.0	
+cam_max_angle_horz			= 20.0	
+cam_step_angle_horz			= 1.5	
+
+fire_dispersion_condition_factor = 3	 
+misfire_probability 		= 0.002  
+misfire_condition_k			= 0.1
+condition_shot_dec 			= 0.0001 
+
+hand_dependence 		= 1
+single_handed			= 0
+
+slot 				= 2		
+animation_slot			= 2		
+
+inv_name				= wpn-walther-wa2000
+inv_name_short			= wpn-walther-wa2000
+inv_weight			= 4.1
+
+inv_grid_width     = 5
+inv_grid_height    = 2
+inv_grid_x         = 22
+inv_grid_y         = 28
+
+kill_msg_x			= 0
+kill_msg_y			= 0
+kill_msg_width		     = 98
+kill_msg_height		= 23
+
+direction               = 0, 0, 1
+
+fire_point              = 0.0, 0.193, 0.77
+
+flame_particles		    = weapons\generic_weapon06
+smoke_particles		   	= weapons\generic_shoot_00
+rpm_empty_click 		     = 200
+
+shell_point		 		= 0.0, 0.129, 0.192	
+shell_dir		 		     = 0.0, 0.0, 0.4
+shell_particles	 		= weapons\shells_l_ns_338
+
+PDM_disp_base 			     = 4.0
+PDM_disp_vel_factor 		= 1.8
+PDM_disp_accel_factor 		= 1.0
+PDM_crouch	 		     = 1.8
+PDM_crouch_no_acc 		     = 1.0
+
+;;;;;;  Для Народной солянки 2009
+hit_power              = 2.8
+hit_impulse	        = 7
+hit_type 	             = fire_wound
+hit_rate	             = 2.0
+fire_distance          = 350
+bullet_speed		    = 450
+rpm                    = 100
+
+use_aim_bullet				= true 		
+time_to_aim				= 1.0	
+
+hud                     = wpn_walther_wa_2000_hud
+normal                  = 0, 1, 0
+position                = -0.026, -0.12, 0.00
+orientation             = 0, 6, 0
+
+;под мишкой
+strap_position         		     = -0.15,-0.15,0.45	
+strap_orientation      		     = -25,-189,65		
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo            = 10
+visual                  = weapons\walther_wa2000\wpn_walther_wa_2000.ogf
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 4.0
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.2
+
+ph_mass			 		= 3
+
+;addons
+scope_status				= 1
+silencer_status			= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+
+snd_gyro			= weapons\binoculars_gyro
+snd_zoomin			= weapons\binoculars_zoomin
+snd_zoomout			= weapons\binoculars_zoomout
+snd_close			= weapons\generic_close
+
+scope_zoom_factor		= 10
+
+scope_texture			= wpn\crosshairs\1p21
+
+;звуки
+snd_draw		     = weapons\svd_draw
+snd_holster		= weapons\generic_holster
+snd_shoot		     = weapons\wa2000\shoot
+snd_empty		     = weapons\gen_empty, 0.5
+snd_reload		= weapons\wa2000\reload
+
+vision_present			= true
+vis_frame_speed		= 4
+vis_frame_color		= 0.7,0.7,0.7,1.0
+found_snd			     = detectors\DA-2_beep1
+ 
+[wpn_walther_wa_2000_hud]
+shell_point			= 0.0, 0.0, -0.02
+shell_dir		 		= 0.0, 1.0, 0.0
+
+fire_point			= 0.1, 0.0, -0.054
+fire_bone               = wpn_body
+orientation             = 0, 0, 0
+position                = 0, 0, 0
+visual                  = weapons\walther_wa2000\wpn_walther_wa_2000_hud.ogf
+
+anim_holster	= holster
+anim_idle		= idle
+anim_idle_aim	= idle
+anim_reload	= reload
+anim_draw		= draw
+anim_holster	= holster
+anim_shoot		= shoot
+
+;смещения HUD для режима приближения
+zoom_offset			= -0.101, 0.02, -0.14
+zoom_rotate_x			= 0.000000
+zoom_rotate_y			= 0.000000
+
+;время поворота HUD (сек)
+zoom_rotate_time		= 0.2
+rotate_time			= 0.2
+
+[wpn_walther_son]:wpn_walther_wa2000
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn                  = "weapons\wpn_walther_son"	
+
+description			= "Снайперская винтовка для стрельбы спец. патронами со снотворным"
+cost					= 15000
+ammo_mag_size			= 3
+ammo_class			= ammo_7.62x54_son 
+
+condition_shot_dec 		= 0.00001 
+
+inv_name				= "Снайперская винтовка"
+inv_name_short			= "Снайперская винтовка"
+
+inv_grid_width     = 5
+inv_grid_height    = 2
+inv_grid_x         = 22
+inv_grid_y         = 28
+
+hit_power           = 30.8
+hit_impulse	      = 1
+hit_rate	        = 3.0
+bullet_speed		= 950 
