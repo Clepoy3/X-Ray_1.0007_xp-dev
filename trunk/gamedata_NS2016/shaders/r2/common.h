@@ -4,6 +4,7 @@
 // #define USE_SUPER_SPECULAR
 
 #include "shared\common.h"
+#include "_shaders_config.h"
 //////////////////////////////////////////////////////////////////////////////////////////
 // *** options
 
@@ -130,44 +131,30 @@ struct         p_bumped        {
         float2            tcdh        : TEXCOORD0;        // Texture coordinates
 #endif
         float4      position        : TEXCOORD1;        // position + hemi
-        half3       M1                : TEXCOORD2;        // nmap 2 eye - 1
-        half3       M2                : TEXCOORD3;        // nmap 2 eye - 2
-        half3       M3                : TEXCOORD4;        // nmap 2 eye - 3
-#ifdef USE_PARALLAX
-        half3       eye                : TEXCOORD5;        // vector to point in tangent space
-  #ifdef USE_TDETAIL
-        float2      tcdbump     : TEXCOORD6;        // d-bump
-    #ifdef USE_LM_HEMI
-        float2      lmh                    : TEXCOORD7;        // lm-hemi
-    #endif
-  #else
-    #ifdef USE_LM_HEMI
-        float2      lmh                   : TEXCOORD6;        // lm-hemi
-    #endif
-  #endif
-#else
-  #ifdef USE_TDETAIL
+        float3       M1                : TEXCOORD2;        // nmap 2 eye - 1
+        float3       M2                : TEXCOORD3;        // nmap 2 eye - 2
+        float3       M3                : TEXCOORD4;        // nmap 2 eye - 3
+#ifdef USE_TDETAIL
         float2      tcdbump          : TEXCOORD5;        // d-bump
     #ifdef USE_LM_HEMI
         float2      lmh                    : TEXCOORD6;        // lm-hemi
     #endif
-  #else
+#else
     #ifdef USE_LM_HEMI
         float2      lmh                   : TEXCOORD5;        // lm-hemi
     #endif
-  #endif
 #endif
 };
 //////////////////////////////////////////////////////////////////////////////////////////
 struct         p_flat                  {
         float4                 hpos        : POSITION;
-#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
+#if ((defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)) || defined(USE_GRASS_WAVE))
     float4                    tcdh        : TEXCOORD0;        // Texture coordinates,         w=sun_occlusion
 #else
     float2                    tcdh        : TEXCOORD0;        // Texture coordinates
 #endif
         float4                position        : TEXCOORD1;        // position + hemi
-        half3                N                : TEXCOORD2;        // Eye-space normal        (for lighting)
+        float3                N                : TEXCOORD2;        // Eye-space normal        (for lighting)
   #ifdef USE_TDETAIL
         float2                tcdbump                : TEXCOORD3;        // d-bump
     #ifdef USE_LM_HEMI
@@ -268,6 +255,25 @@ half3   p_hemi          (float2 tc)                         {
         return  dot     (t_lmh,1.h/3.h);
 }
 
+//	contrast function
+float Contrast(float Input, float ContrastPower)
+{
+     //piecewise contrast function
+     bool IsAbovefloat = Input > 0.5 ;
+     float ToRaise = saturate(2*(IsAbovefloat ? 1-Input : Input));
+     float Output = 0.5*pow(ToRaise, ContrastPower);
+     Output = IsAbovefloat ? 1-Output : Output;
+     return Output;
+}
+
+float4 proj_to_screen(float4 proj)
+{
+	float4 screen = proj;
+	screen.x = (proj.x + proj.w);
+	screen.y = (proj.w - proj.y);
+	screen.xy *= 0.5;
+	return screen;
+}
 #define FXPS technique _render{pass _code{PixelShader=compile ps_3_0 main();}}
 #define FXVS technique _render{pass _code{VertexShader=compile vs_3_0 main();}}
 

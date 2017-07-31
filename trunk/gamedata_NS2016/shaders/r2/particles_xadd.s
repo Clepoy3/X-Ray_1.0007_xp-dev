@@ -7,6 +7,7 @@ function normal		(shader, t_base, t_second, t_detail)
 			: fog		(false)
 			: distort 	(true)
 	shader:sampler	("s_base")      :texture	(t_base)
+	shader:sampler        ("s_position")   :texture  ("$user$position")
 end
 
 function l_special	(shader, t_base, t_second, t_detail)
