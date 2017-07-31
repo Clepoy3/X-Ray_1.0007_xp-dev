@@ -37,8 +37,6 @@ void FlushLog			()
 	FlushLog		(logFName);
 }
 
-#pragma optimize("gyt", off)
-
 void __cdecl InitVerbosity (const char *filters)
 {
 	string4096 tmp;
@@ -143,6 +141,7 @@ void __cdecl Msg		( const char *format, ...)
 
 void __cdecl	MsgCB (LPCSTR format, ...) // alpet: вывод сообщений только в колбек (для отладки и передачи данных в перехватчик)
 {
+#ifdef LUAICP_COMPAT
 	static string4096 ctx_ring[16];   // кольцевой буфер для сохранения данных контекста выполнения (выводится при сбое, или по необходимости)
 	static u32 ctx_index = 0;
 
@@ -172,6 +171,7 @@ void __cdecl	MsgCB (LPCSTR format, ...) // alpet: вывод сообщений только в колбе
 	}
 
 	if (NULL != LogCB && sz)		LogCB(buf);
+#endif
 }
 
 

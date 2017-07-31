@@ -53,7 +53,7 @@
                 OutputDebugString("\n");                                    \
                 if(alListDebugAssertsEnabled)                               \
                 {                                                           \
-                    DebugBreak();                                           \
+                    __debugbreak();                                           \
                 }                                                           \
             }                                                               \
         }

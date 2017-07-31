@@ -4,8 +4,6 @@
 #include "ResourceManager.h"
 #include "R_DStreams.h"
 
-XRCORE_API LPCSTR  BuildStackTrace();
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -47,7 +45,7 @@ void* _VertexStream::Lock(u32 vl_Count, u32 Stride, u32& vOffset)
 	if (bytes_need > mSize)
 	{
 		Msg("! FATAL: _VertexStream::Lock, bytes_need = %d, mSize = %d, vl_Count = %d", bytes_need, mSize, vl_Count);
-		BuildStackTrace();
+		//BuildStackTrace();
 	}
 		
 

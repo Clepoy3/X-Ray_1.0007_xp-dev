@@ -13,9 +13,6 @@
 #include "script_engine.h"
 #include "../lua_tools.h"
 #include "../../xrNetServer/NET_utils.h"
-
-#pragma todo("alpet: после отладки включить оптимизацию")
-#pragma optimize("gyts", off)  
  
 CScriptVarsStorage g_ScriptVars;
 

@@ -23,8 +23,6 @@
 #include "UIGameSP.h"
 #include "ui\UIInventoryWnd.h"
 
-#pragma optimize("gyt", off)
-
 using namespace InventoryUtilities;
 
 #if defined(INV_NO_ACTIVATE_APPARATUS_SLOT) //red_virus

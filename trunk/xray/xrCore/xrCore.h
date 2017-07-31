@@ -2,6 +2,8 @@
 
 #pragma warning(disable:4996)
 
+#define XR_USE_BLACKBOX 0
+
 #if (defined(_DEBUG) || defined(MIXED) || defined(DEBUG)) && !defined(FORCE_NO_EXCEPTIONS)
 #if !defined(_CPPUNWIND)
 #	error Please enable exceptions...

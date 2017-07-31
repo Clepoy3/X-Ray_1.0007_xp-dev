@@ -169,7 +169,7 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 	Shader				S;
 
 	//.
-	// if (strstr(s_shader,"transparent")) DebugBreak();
+	// if (strstr(s_shader,"transparent")) __debugbreak();
 
 	// Access to template
 	C.BT				= B;

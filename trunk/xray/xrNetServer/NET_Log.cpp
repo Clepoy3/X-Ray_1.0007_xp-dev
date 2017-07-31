@@ -158,6 +158,6 @@ DLL_API void LogPacketError(LPCSTR format, ...)
 	LogStackTrace("[LogPacketError]: problem here:");
 	Msg("----------------------------------------------");
 	if (IsDebuggerPresent())
-		DebugBreak ();
+		__debugbreak();
 */
 }

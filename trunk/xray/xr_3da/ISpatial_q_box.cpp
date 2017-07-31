@@ -3,8 +3,6 @@
 
 extern Fvector	c_spatial_offset[8];
 
-#pragma optimize("gyt", on)
-
 template <bool b_first>
 class	walker
 {

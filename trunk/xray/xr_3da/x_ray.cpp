@@ -536,8 +536,6 @@ void foo	()
 
 ENGINE_API	bool g_dedicated_server	= false;
 
-#pragma optimize("gyt", off)  // for watches in debugger
-
 int APIENTRY WinMain_impl(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      char *    lpCmdLine,

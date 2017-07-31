@@ -23,8 +23,6 @@
 
 #define PLAYING_ANIM_TIME 10000
 
-#pragma optimize("gyt", off)
-
 #include "ui/UIProgressShape.h"
 #include "ui/UIXmlInit.h"
 #include "../../build_config_defines.h"

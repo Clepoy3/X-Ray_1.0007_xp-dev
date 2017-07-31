@@ -376,8 +376,6 @@ void remove_calls_for_object(const luabind::object &lua_object)
 	Level().ph_commander_scripts().remove_calls(&c);
 }
 
-#pragma optimize("gyts", off)
-
 void level_on_frame()
 {
 	Level().OnFrame();

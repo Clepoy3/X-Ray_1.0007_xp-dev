@@ -4,6 +4,8 @@
 #include "xrdebug.h"
 
 #include "dxerr.h"
+#pragma comment(lib,"dxerr.lib")
+/*XRCORE_API*/ int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf; //KRodin: исправление проблемы : http://stackoverflow.com/questions/31053670/unresolved-external-symbol-vsnprintf-in-dxerr-lib
 
 #include <malloc.h>
 #include <direct.h>
@@ -61,22 +63,14 @@ extern bool force_flush_log;
     #	include "d3dx9.h"
     #	include "D3DX_Wrapper.h"
     #	pragma comment(lib,"EToolsB.lib")
-    #	define DEBUG_INVOKE	DebugBreak()
-        static BOOL			bException	= TRUE;
+       static BOOL			bException	= TRUE;
 //    #   define USE_BUG_TRAP
 #else
 //#	define USE_BUG_TRAP
-#	define DEBUG_INVOKE DebugBreak()
 	static BOOL bException = FALSE;
 #endif
 
-#ifndef _M_AMD64
-#	ifndef __BORLANDC__
-#		pragma comment(lib,"dxerr.lib")
-#	endif
-#endif
-
-#include <dbghelp.h>						// MiniDump flags
+#define DEBUG_INVOKE __debugbreak()
 
 #ifdef USE_BUG_TRAP
 #ifdef _WIN64
@@ -155,65 +149,77 @@ void update_clipboard	(const char *string)
 #endif // DEBUG
 }
 
-extern LPCSTR BuildStackTrace();
-extern char g_stackTrace[100][4096];
-extern int	g_stackTraceCount;
-
+#if XR_USE_BLACKBOX
+#	include "blackbox\build_stacktrace.h"
+#else
+#	include "stacktrace_collector.h"
+#endif
+static thread_local StackTraceInfo stackTrace;
 
 void LogStackTrace(LPCSTR header)
 {
 	bool ss_init = shared_str_initialized; // alpet: при некоторых сбоях это все-равно дает исключение в shared_str::doc
 	shared_str_initialized = false;
+#if XR_USE_BLACKBOX
 	__try
 	{
+#endif
+		Msg("*********************************************************************************");
 		Msg("%s", header);
-		BuildStackTrace();
-
-		for (int i = 1; i < g_stackTraceCount; ++i)
-			Msg(" %s", g_stackTrace[i]);
-
+		BuildStackTrace(stackTrace);
+		for (size_t i = 1; i < stackTrace.count; ++i)
+			Msg("%s", stackTrace[i]);
+		Msg("*********************************************************************************");
 		FlushLog();
+#if XR_USE_BLACKBOX
 	}
 	__finally
 	{
+#endif
 		shared_str_initialized = ss_init;
+#if XR_USE_BLACKBOX
 	}
-	
+#endif
 }
-
-extern void BuildStackTrace(struct _EXCEPTION_POINTERS *g_BlackBoxUIExPtrs);
 
 XRCORE_API void LogStackTraceEx(struct _EXCEPTION_POINTERS *pExPtrs)
 {	
 	// функция для внешнего вызова (!)
 	bool ss_init = shared_str_initialized; // alpet: при некоторых сбоях это все-равно дает исключение в shared_str::doc
 	
-
 	if (pExPtrs->ContextRecord)
+#if XR_USE_BLACKBOX
 	__try	
+#endif
 	{		
 		force_flush_log = true;
 		shared_str_initialized = false;
 		CONTEXT rec = *pExPtrs->ContextRecord; // сохранить перед изменением
  		//  Msg("##DEBUG: sizeof(CONTEXT) = %d bytes ", sizeof(rec));
 		// pExPtrs->ExceptionRecord = NULL;
-		BuildStackTrace(pExPtrs); // данная функция модифицирует  ContextRecord.EIP
-		if (g_stackTraceCount > 0)
+		Msg("*********************************************************************************");
+		BuildStackTrace(pExPtrs, stackTrace); // данная функция модифицирует  ContextRecord.EIP
+		if (stackTrace.count > 0)
 			Msg("!Exception stack trace %d lines, EIP = 0x%08x, ESP = 0x%08x: \n* 0 %s",
-					g_stackTraceCount, rec.Eip, rec.Esp, g_stackTrace[0]);
+				stackTrace.count, rec.Eip, rec.Esp, stackTrace[0]);
 		else
 			Msg("!BuildStackTrace produced %d lines. Exception EIP = 0x%08x, ESP = 0x%08x:\n* %s", 
-					g_stackTraceCount, rec.Eip, rec.Esp, g_stackTrace[0]);
+				stackTrace.count, rec.Eip, rec.Esp, stackTrace[0]);
 
-		for (int line = 1; line < g_stackTraceCount; line ++)
-			 Msg("# %d %s", line, g_stackTrace[line]);
+		for (size_t line = 1; line < stackTrace.count; line ++)
+			 Msg("%s", stackTrace[line]);
+		Msg("*********************************************************************************");
 
-		Sleep(500);
+		Sleep(500); //?
 	}
+#if XR_USE_BLACKBOX
 	__finally
 	{
+#endif
 		shared_str_initialized = ss_init;
+#if XR_USE_BLACKBOX
 	}
+#endif
 }
 
 u32 SimpleExceptionFilter (PEXCEPTION_POINTERS pExPtrs)
@@ -291,22 +297,30 @@ void gather_info		(const char *expression, const char *description, const char *
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 		bool ss_init = shared_str_initialized;
 		shared_str_initialized = false;
+#if XR_USE_BLACKBOX
 		__try
 		{
-			BuildStackTrace();
-			Msg("!stack trace:\n");
-			for (int i = 2; i < g_stackTraceCount; ++i)
-				Msg("!\t %s", g_stackTrace[i]);
+#endif
+			Msg("*********************************************************************************");
+			BuildStackTrace(stackTrace);
+			Msg("stack trace:\n");
+			for (size_t i = 2; i < stackTrace.count; ++i)
+				Msg("%s", stackTrace[i]);
+			Msg("*********************************************************************************");
+#if XR_USE_BLACKBOX
 		}
 		__finally
 		{
+#endif
 			shared_str_initialized = ss_init;
+#if XR_USE_BLACKBOX
 		}
+#endif
 
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-//			buffer		+= sprintf(buffer,"%s%s",g_stackTrace[i],endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
+/*#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
+		buffer += sprintf(buffer,"%s%s", stackTrace[i],endline);
+#endif*/
 				
 
 		if (!IsDebuggerPresent())
@@ -399,11 +413,10 @@ LPCSTR xrDebug::error2string	(long code)
 	LPCSTR				result	= 0;
 	static	string1024	desc_storage;
 
-#ifdef _M_AMD64
-#else
+#ifndef _M_AMD64
 	result				= DXGetErrorDescription	(code);
 #endif
-	if (0==result) 
+	if (!result)
 	{
 		FormatMessage	(FORMAT_MESSAGE_FROM_SYSTEM,0,code,0,desc_storage,sizeof(desc_storage)-1,0);
 		result			= desc_storage;
@@ -567,14 +580,11 @@ please Submit Bug or save report and email it manually (button More...).\
 #endif // USE_BUG_TRAP
 
 #if 1
-extern void BuildStackTrace(struct _EXCEPTION_POINTERS *pExceptionInfo);
 typedef LONG WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pExceptionInfo);
-typedef LONG ( __stdcall *PFNCHFILTFN ) ( EXCEPTION_POINTERS * pExPtrs ) ;
-extern "C" BOOL __stdcall SetCrashHandlerFilter ( PFNCHFILTFN pFn );
-
 static UnhandledExceptionFilterType	*previous_filter = 0;
 
 #ifdef USE_OWN_MINI_DUMP
+#include <dbghelp.h>						// MiniDump flags
 typedef BOOL (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
 										 CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
 										 CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
@@ -756,10 +766,13 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	force_flush_log = true;
 
 	if (!error_after_dialog && !strstr(GetCommandLine(),"-no_call_stack_assert"))
+#if XR_USE_BLACKBOX
 	__try
+#endif
 	{
+		Msg("*********************************************************************************");
 		CONTEXT				save = *pExceptionInfo->ContextRecord;
-		BuildStackTrace		(pExceptionInfo);
+		BuildStackTrace(pExceptionInfo, stackTrace);
 		*pExceptionInfo->ContextRecord = save;
 				
 		MsgCB			("$#DUMP_CONTEXT");
@@ -767,12 +780,13 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		copy_to_clipboard	("stack trace:\r\n\r\n");
 
 		string4096			buffer;
-		for (int i=0; i<g_stackTraceCount; ++i) 
+		for (size_t i=0; i<stackTrace.count; ++i)
 		{			
-			Msg			("%s",g_stackTrace[i]);
-			sprintf			(buffer,"%s\r\n",g_stackTrace[i]);
+			Msg			("%s", stackTrace[i]);
+			sprintf			(buffer,"%s\r\n", stackTrace[i]);
 			update_clipboard(buffer);
 		}
+		Msg("*********************************************************************************");
 
 		if (*error_message) 
 		{			
@@ -781,10 +795,14 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 			update_clipboard(error_message);
 		}
 	}
+#if XR_USE_BLACKBOX
 	__finally
 	{
+#endif
 		FlushLog();
+#if XR_USE_BLACKBOX
 	}
+#endif
 
 #ifdef USE_OWN_MINI_DUMP
 		save_mini_dump		(pExceptionInfo);

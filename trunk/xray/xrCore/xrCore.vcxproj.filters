@@ -31,9 +31,6 @@
     <Filter Include="Debug core">
       <UniqueIdentifier>{23456ced-e7e1-452a-8440-c938427340a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Debug core\BlackBox">
-      <UniqueIdentifier>{af0208e2-493f-40df-b334-fbc09c6fc455}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shared memory/string library">
       <UniqueIdentifier>{0e8d13db-9b0d-48f5-b89d-80442a752244}</UniqueIdentifier>
     </Filter>
@@ -69,6 +66,9 @@
     </Filter>
     <Filter Include="Compression\lzo">
       <UniqueIdentifier>{dda72662-18b0-4e41-b8f8-9084e81f3fc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debug core\blackbox">
+      <UniqueIdentifier>{65441058-c8a1-41ae-8de4-6497620388fe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -162,33 +162,6 @@
     <ClCompile Include="xrDebugNew.cpp">
       <Filter>Debug core</Filter>
     </ClCompile>
-    <ClCompile Include="blackbox\BlackBoxUI.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\BSUFunctions.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\CrashHandler.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\DiagAssert.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\GetLoadedModules.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\IsNT.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\NT4ProcessInfo.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\stdafx_.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
-    <ClCompile Include="blackbox\TLHELPProcessInfo.cpp">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClCompile>
     <ClCompile Include="crc32.cpp">
       <Filter>shared memory/string library</Filter>
     </ClCompile>
@@ -236,6 +209,12 @@
     </ClCompile>
     <ClCompile Include="rt_lzo_init.cpp">
       <Filter>Compression\lzo</Filter>
+    </ClCompile>
+    <ClCompile Include="stacktrace_collector.cpp">
+      <Filter>Debug core</Filter>
+    </ClCompile>
+    <ClCompile Include="blackbox\stacktrace.cpp">
+      <Filter>Debug core\blackbox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -401,30 +380,6 @@
     <ClInclude Include="xrDebug_macros.h">
       <Filter>Debug core</Filter>
     </ClInclude>
-    <ClInclude Include="blackbox\BugslayerUtil.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\CrashHandler.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\DiagAssert.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\Internal.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\stdafx_.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\SymbolEngine.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\WarningsOff.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
-    <ClInclude Include="blackbox\WarningsOn.h">
-      <Filter>Debug core\BlackBox</Filter>
-    </ClInclude>
     <ClInclude Include="xr_resource.h">
       <Filter>shared memory/string library</Filter>
     </ClInclude>
@@ -496,6 +451,18 @@
     </ClInclude>
     <ClInclude Include="rt_miniacc.h">
       <Filter>Compression\lzo</Filter>
+    </ClInclude>
+    <ClInclude Include="stacktrace_collector.h">
+      <Filter>Debug core</Filter>
+    </ClInclude>
+    <ClInclude Include="blackbox\build_stacktrace.h">
+      <Filter>Debug core\blackbox</Filter>
+    </ClInclude>
+    <ClInclude Include="blackbox\stacktrace.h">
+      <Filter>Debug core\blackbox</Filter>
+    </ClInclude>
+    <ClInclude Include="blackbox\sym_engine.h">
+      <Filter>Debug core\blackbox</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -279,8 +279,6 @@ void CSheduler::Pop					()
 	Items.pop_back	();
 }
 
-// #pragma optimize("gyt", on) // для отладки следующей секции кода, закомментировать эту прагму
-
 void CSheduler::ProcessStep			()
 {
 	// Normal priority

@@ -150,7 +150,7 @@ void CTexture::Preload	()
 	// Material
 /*
 	if (Device.Resources->m_description->line_exist("specification",*cName))	{
-//		if (strstr(*cName,"ston_stena")) DebugBreak();
+//		if (strstr(*cName,"ston_stena")) __debugbreak();
 		LPCSTR		descr			=	Device.Resources->m_description->r_string("specification",*cName);
 		string256	bmode;
 		sscanf		(descr,"bump_mode[%[^]]], material[%f]",bmode,&m_material);

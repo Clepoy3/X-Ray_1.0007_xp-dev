@@ -18,8 +18,6 @@ public:
 	IC bool operator() (CObject* O) { return cls==O->CLS_ID; }
 };
 
-#pragma optimize("gyts", off)
-
 xr_vector<CObject*>		deleted_objects;
 
 bool chk_already_deleted(CObject *O, str_c context)
@@ -76,8 +74,6 @@ CObject*	CObjectList::FindObjectByCLS_ID	( CLASS_ID cls )
 
 	return	NULL;
 }
-
-#pragma optimize("gyt", off)
 
 void	CObjectList::o_remove		( xr_vector<CObject*>&	v,  CObject* O)
 {
