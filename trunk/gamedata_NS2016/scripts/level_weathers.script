@@ -12,6 +12,7 @@ local is_indoor = {
 	["warlab"] = true,
 	["jupiter_underground"] = true,
 	["labx8"] = true,
+	["marsh"] = true,
 	["mine"] = true
 }
 
@@ -33,7 +34,8 @@ end
 
 class "WeatherManager"
 function WeatherManager:__init()
-	self.ini = g_ini_file("weathers\\environment.ltx")
+	--self.ini = g_ini_file("weathers\\environment.ltx")
+	self.ini = g_ini_file("weathers\\weather_dynamic.ltx")
 	self.time = 0
 	self.lvl_suffix  = ""    -- suffix used for this level's weather cycle variation (if any)
 	self.lvl_weather = ""    -- weather for the level as set in game_maps_single.ltx
@@ -248,7 +250,15 @@ function WeatherManager:select_weather(force)
 
 	-- if blowout is not in progress then apply the current weather
 	if (blow < 0 or blow > 5) and (horr < 0 or horr > 6) then
-		level.set_weather(self.cur_weather,true)
+		--Из за того, что в game_cl_GameState::net_import_GameTime установка погоды была выключена (для фикса пропадающего солнца),
+		--здесь погоду необходимо устанавливать принудительно! Причём, на первом апдейте.
+		-- http://www.amk-team.ru/forum/topic/10538-x-ray-extensions/?do=findComment&comment=976375
+		level.add_call(
+			function() return true end,
+			function()
+				level.set_weather(self.cur_weather, true)
+			end
+		)
 	end
 end
 

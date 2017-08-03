@@ -509,3 +509,317 @@ env_ambient    = ambient_env_monolith
 [mono_weather_22]:indoor_weather_22
 env_ambient    = ambient_env_monolith
 
+[sect_boloto]
+01:00:00 = boloto_weather_01
+02:00:00 = boloto_weather_02
+03:00:00 = boloto_weather_03
+04:00:00 = boloto_weather_04
+04:30:00 = boloto_weather_05
+05:00:00 = boloto_weather_05_01
+06:00:00 = boloto_weather_06
+07:00:00 = boloto_weather_07
+08:00:00 = boloto_weather_08
+09:00:00 = boloto_weather_09
+10:00:00 = boloto_weather_10
+11:00:00 = boloto_weather_11
+12:00:00 = boloto_weather_12
+13:00:00 = boloto_weather_13
+14:00:00 = boloto_weather_14
+15:00:00 = boloto_weather_15
+16:00:00 = boloto_weather_16
+17:00:00 = boloto_weather_17
+18:00:00 = boloto_weather_18
+19:00:00 = boloto_weather_19
+20:00:00 = boloto_weather_20
+21:15:00 = boloto_weather_21
+22:00:00 = boloto_weather_22
+23:00:00 = boloto_weather_23
+00:00:00 = boloto_weather_00
+
+
+[boloto_weather_01]
+flares         = 
+sky_texture    = sky\sky_13_1_cube_night 
+sky_rotation		= 0	
+sky_color		=	0.35, 0.35, 0.35
+clouds_texture	=	sky\sky_oblaka
+clouds_color	= 0.1362, 0.1423, 0.1392, 0.000, 1.700
+far_plane      = 400
+fog_distance   = 150
+fog_color		= 0.00182, 0.00194, 0.0122
+fog_density		=	1.11
+rain_density	=	0.0
+rain_color		= 0.2392, 0.2503, 0.2695
+thunderbolt		=
+bolt_period		=	3.5f
+bolt_duration	=	0.35f
+wind_velocity	=	0.0
+wind_direction	=	260
+ambient		= 0.0069, 0.0062, 0.0096
+lmap_color		=	1.0,	1.0,	1.0
+hemi_color		= 0.069, 0.069, 0.07, 1
+sun_color		=	0.050,	0.050,	0.050
+sun_dir        = -33, -190
+env_ambient    =  night
+
+
+[boloto_weather_02]:boloto_weather_01
+sun_dir        = -32, -215
+ 
+
+[boloto_weather_03]:boloto_weather_01
+sun_dir        = -25, -240
+ 
+
+[boloto_weather_04]:boloto_weather_01
+sky_texture    = sky\sky_night_cube
+clouds_color   = 0.1505, 0.1573, 0.1538, 0.000, 1.700
+sun_dir        = 0, 105
+env_ambient    = tuman
+
+[boloto_weather_05]
+flares         = flares_sun_rise_bo
+sky_texture    = sky\foggy_2 
+sky_rotation   = 0 
+sky_color      = 0.7, 0.65, 0.6
+clouds_texture = sky\sky_oblaka
+clouds_color   = 0.8819, 0.9215, 0.9013, 0.000, 1.700
+far_plane      = 300
+fog_distance   = 100
+fog_color      = 0.02729, 0.02765, 0.02818
+fog_density    = 1.1 
+rain_density   = 0.0
+rain_color     = 0.3390, 0.3390, 0.3390
+thunderbolt    =
+bolt_period    = 3.f
+bolt_duration  = 0.25f
+wind_velocity  = 10.0
+wind_direction = 0.0
+ambient        = 0.0387, 0.0385, 0.0377
+lmap_color     = 1.0, 1.0, 1.0
+hemi_color     = 0.3647, 0.3547, 0.3547, 1
+sun_color      = 0.025, 0.03, 0.025
+sun_dir			= -3, 105	
+env_ambient    =  storm
+
+
+[boloto_weather_05_01]:boloto_weather_05
+sun_dir        = -4, 100
+env_ambient    =  storm
+
+[boloto_weather_06]
+flares         = flares_sun_rise_bo
+sky_texture    = sky\foggy_3 
+sky_rotation   = 0 
+sky_color      = 0.6, 0.6, 0.65
+clouds_texture = sky\sky_oblaka
+clouds_color   = 0.15, 0.15, 0.15, 0.0100, 1.0300
+far_plane      = 300
+fog_distance   = 70
+fog_color		=  0.1437, 0.1500, 0.1583        
+fog_density		=	1.15
+rain_density	=	0.003
+rain_color		= 0.5934, 0.5890, 0.5845
+thunderbolt		=
+bolt_period		=	3.5f
+bolt_duration	=	0.35f
+wind_velocity	=	0.0
+wind_direction	=	0.0
+ambient		= 0.05845, 0.05845, 0.05479
+lmap_color		=	1.0, 	1.0, 	1.0
+hemi_color		= 0.54569, 0.64529, 0.74790, 0.7
+sun_color      = 0.01228, 0.01226, 0.01228
+sun_dir	       = -12, 96
+env_ambient    = tuman
+
+[boloto_weather_07]:boloto_weather_06
+sky_texture    = sky\foggy_4
+sky_color      = 0.6, 0.6, 0.6 
+fog_density		=	0.95
+rain_density	=	0.001
+rain_color		= 0.5934, 0.5890, 0.5845 
+sun_dir 		= -18, 90 
+ambient		= 0.056, 0.053, 0.0556
+hemi_color		= 0.53, 0.53, 0.73	
+env_ambient    =  storm
+
+[boloto_weather_08]:boloto_weather_06
+sky_texture    = sky\midday_2a
+sky_color      = 0.6, 0.6, 0.6 
+fog_density		=	1.1 
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845 
+sun_dir        = -25, 85
+ambient		= 0.0553, 0.0553, 0.0556
+hemi_color		= 0.53, 0.53, 0.73, 1	
+
+env_ambient    = ambient_env_boloto
+
+[boloto_weather_09]:boloto_weather_06
+sky_texture    = sky\midday_2a
+sky_color      = 0.6, 0.6, 0.6 
+fog_density		=	0.88
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845
+ambient		= 0.053, 0.0535, 0.0538
+lmap_color		=	1.0, 	1.0, 	1.0
+hemi_color		= 0.5 , 0.58, 0.75, 1
+sun_dir        = -35, 78
+env_ambient    =  ambient_env_boloto 
+
+ 
+
+[boloto_weather_10]:boloto_weather_06
+sky_texture    = sky\foggy_2
+sky_color      = 0.7, 0.7, 0.78554
+ambient		= 0.0545, 0.0545, 0.05479
+lmap_color		=	1.0, 	1.0, 	1.0
+hemi_color		= 0. 569, 0. 529, 0.55  
+fog_density		=	1.0
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845 
+sun_dir        = -45, 66
+env_ambient    =  ambient_env_boloto
+
+
+[boloto_weather_11]:boloto_weather_06
+sky_texture    = sky\foggy_4
+sky_color      = 0.56, 0.56, 0.587554 
+fog_distance   = 175
+fog_density		=	1.0
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845
+sun_dir        = -55, 54
+ambient		= 0.055, 0.0525, 0.05279
+lmap_color		=	1.0, 	1.0, 	1.0
+hemi_color		= 0.32569, 0.32529, 0.52790, 1
+
+
+[boloto_weather_12]:boloto_weather_06
+sky_texture    = sky\af3_rainy\sky_13_cube
+sky_color      = 0.54, 0.54, 0.57554 
+fog_distance   = 100
+rain_density   = 0.07
+rain_color     = 0.0590, 0.0590, 0.0790
+sun_dir        = -60, 42
+env_ambient    =  ambient_env_boloto
+ambient		= 0.06545, 0.06545, 0.065479
+lmap_color		=	1.0, 	1.0, 	1.0
+hemi_color		= 0. 369, 0. 329, 0.590, 1
+
+[boloto_weather_13]:boloto_weather_06
+sky_texture    = sky\foggy_4  
+fog_distance   = 100
+rain_density   = 0.03
+rain_color     = 0.0490, 0.0490, 0.0690
+sun_dir        = -65, 30
+ambient		= 0.056, 0.056, 0.056
+lmap_color		=	1.0, 	1.0, 	1.0
+hemi_color		= 0.356, 0.356, 0.45, 1
+env_ambient    = ambient_env_0
+
+[boloto_weather_14]:boloto_weather_06
+fog_density		=	0.95
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845
+sun_dir        = -65, 330
+ambient		= 0.05, 0.05, 0.05
+lmap_color		=	1.0, 	1.0, 	1.0
+hemi_color		= 0.45, 0.45, 0.5, 1
+env_ambient    =  ambient_env_boloto
+
+[boloto_weather_15]:boloto_weather_06
+sky_texture    = sky\af3_rainy\sky_13_cube
+fog_distance   = 175
+fog_density		=	1.0
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845
+sun_dir        = -60, 318
+ambient		= 0.05, 0.05, 0.0533
+lmap_color		=	1.0, 	1.0, 	1.0
+hemi_color		= 0.435, 0.435, 0.535, 1
+env_ambient    =  ambient_env_boloto
+
+[boloto_weather_16]:boloto_weather_06
+sky_texture    = sky\midday_2a
+sky_color      = 0.5, 0.5, 0.55
+fog_color      = 0.001437, 0.001520, 0.001480
+fog_density		=	0.85
+rain_density	=	0.001
+rain_color		= 0.5934, 0.5890, 0.5845
+ambient		= 0.0534, 0.0534, 0.0534
+lmap_color		=	1.0, 	1.0, 	1.0
+hemi_color     = 0. 469, 0. 4529, 0. 490, 1
+sun_dir        = -55, 306
+env_ambient    =  ambient_env_boloto
+
+[boloto_weather_17]:boloto_weather_06
+sky_color      = 0.46, 0.46, 0.465
+fog_color      = 0.001437, 0.001520, 0.002580
+fog_density		=	0.8
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845
+hemi_color     = 0.3469, 0.3529, 0.3490, 1
+sun_dir        = -45, 294
+env_ambient    = ambient_env_0
+
+[boloto_weather_18]:boloto_weather_06
+fog_color		=  0.03437, 0.03500, 0.03583
+fog_density		=	0.95
+rain_density	=	0.0 
+fog_density		=	1.0
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845
+sun_color      = 0.1215, 0.125, 0.1216
+sun_dir			=	-35, 282
+env_ambient    =  ambient_env_boloto
+
+[boloto_weather_19]:boloto_weather_06
+sky_texture    = sky\sunrise_sky_2
+sky_color      = 0.57, 0.53, 0.5
+fog_distance   = 220
+fog_color		=  0.01137, 0.01100, 0.01183
+fog_density		=	0.95
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845
+ambient		= 0.0534, 0.0534, 0.0534
+sun_color      = 0.3281, 0.238, 0.161   
+sun_dir	       = -25, 273
+env_ambient    =  ambient_env_boloto
+
+[boloto_weather_20]:boloto_weather_05
+sky_texture    = sky\sunset_sky_20
+sky_color      = 0.47, 0.4 , 0.4
+fog_distance   = 120
+fog_density		=	1.05
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845
+sun_color		=	0.145, 0.123, 0.069
+sun_dir			=	-15, 268
+env_ambient    =  ambient_env_boloto	
+
+[boloto_weather_21]:boloto_weather_05
+sky_texture    = sky\21-00
+sky_color      = 0.35 , 0.34 , 0.34
+fog_distance   = 150
+fog_density		=	1.0
+rain_density	=	0.0 
+rain_color		= 0.5934, 0.5890, 0.5845
+sun_color		=	0.003,	0.001,	0.001
+sun_dir		=	0.0, 260
+env_ambient    =  night
+
+[boloto_weather_22]:boloto_weather_01
+sky_texture    = sky\sky_night_cube
+clouds_color   = 0.1505, 0.1573, 0.1538, 0.000, 0.200
+sun_color      = 0.025, 0.025, 0.025
+sun_dir        = -25, -115
+env_ambient    =  night 
+
+[boloto_weather_23]:boloto_weather_01
+sun_dir        = -30, -140
+env_ambient    =  night
+
+[boloto_weather_00]:boloto_weather_01
+sun_dir        = -34, -165
+env_ambient    = night 

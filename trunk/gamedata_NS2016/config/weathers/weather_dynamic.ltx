@@ -1,28 +1,28 @@
 ;*
 ;* weather_dynamic.ltx:
 ;*     7 cycles loaded
-;*   285 transitions generated
+;*   383 transitions generated
 ;*
 
 
-#include "weather_beta.ltx"
-#include "weather_dry.ltx"
-#include "weather_foggy.ltx"
-#include "weather_rainy.ltx"
-#include "weather_grey.ltx"
-#include "weather_stormy.ltx"
-#include "weather_thunder.ltx"
+#include "weather_storm.ltx"
+#include "weather_clear.ltx"
+#include "weather_clear_alt.ltx"
+#include "weather_cloudy_dark.ltx"
+#include "weather_cloudy_dark_rain.ltx"
+#include "weather_cloudy_light.ltx"
+#include "weather_cloudy_light_rain.ltx"
 
 
 [weather_cycles]
 ;id = name, # to, # from, weight to, weight from
-1 = beta, 49, 48, 83, 85
-2 = dry, 35, 42, 116, 97
-3 = foggy, 36, 28, 113, 145
-4 = rainy, 45, 45, 90, 90
-5 = grey, 48, 43, 85, 95
-6 = stormy, 35, 23, 116, 177
-7 = thunder, 37, 56, 110, 73
+1 = storm, 20, 41, 274, 133
+2 = clear, 48, 46, 114, 119
+3 = clear_alt, 41, 40, 133, 137
+4 = cloudy_dark, 79, 81, 69, 68
+5 = cloudy_dark_rain, 57, 56, 96, 98
+6 = cloudy_light, 65, 65, 84, 84
+7 = cloudy_light_rain, 73, 54, 75, 101
 
 
 [weather_transition_times]
@@ -30,11 +30,9 @@
 60   = weather_transition_list0100    ; 01:00
 120  = weather_transition_list0200    ; 02:00
 180  = weather_transition_list0300    ; 03:00
-240  = weather_transition_list0400    ; 04:00
-300  = weather_transition_list0500    ; 05:00
-301  = weather_transition_list0501    ; 05:01
+270  = weather_transition_list0430    ; 04:30
+330  = weather_transition_list0530    ; 05:30
 360  = weather_transition_list0600    ; 06:00
-420  = weather_transition_list0700    ; 07:00
 480  = weather_transition_list0800    ; 08:00
 540  = weather_transition_list0900    ; 09:00
 600  = weather_transition_list1000    ; 10:00
@@ -43,523 +41,444 @@
 780  = weather_transition_list1300    ; 13:00
 840  = weather_transition_list1400    ; 14:00
 900  = weather_transition_list1500    ; 15:00
+930  = weather_transition_list1530    ; 15:30
 960  = weather_transition_list1600    ; 16:00
 1020 = weather_transition_list1700    ; 17:00
 1080 = weather_transition_list1800    ; 18:00
-1140 = weather_transition_list1900    ; 19:00
-1200 = weather_transition_list2000    ; 20:00
-1260 = weather_transition_list2100    ; 21:00
+1110 = weather_transition_list1830    ; 18:30
+1170 = weather_transition_list1930    ; 19:30
+1240 = weather_transition_list2040    ; 20:40
 1320 = weather_transition_list2200    ; 22:00
 1380 = weather_transition_list2300    ; 23:00
 
 
 [weather_transition_list0000]
-transition230000 = dry
-transition230001 = beta
-transition230002 = thunder
-transition230003 = rainy
-transition230004 = stormy
-transition230005 = stormy
-foggy = transition000000:7
-rainy = transition000001:5
-stormy = transition000002:4, transition000003:5
-thunder = transition000004:3
+transition230000 = cloudy_light
+transition230001 = cloudy_dark
+transition230002 = clear_alt
+transition230003 = cloudy_light
+transition230004 = cloudy_dark
+transition230005 = clear
+transition230006 = cloudy_light
+transition230007 = cloudy_light_rain
+transition230008 = clear_alt
+transition230009 = clear
+transition23000E = clear_alt
+transition23000F = clear
+transition230010 = cloudy_dark
+transition230011 = cloudy_light_rain
+transition230015 = cloudy_light_rain
+clear = transition000000:6, transition000001:4, transition000002:3
+clear_alt = transition000003:4, transition000004:6, transition000005:2
+cloudy_dark = transition000007:6, transition000008:2, transition000009:3, transition00000A:7
+cloudy_light = transition00000E:3, transition00000F:4, transition000010:2, transition000011:7
+cloudy_light_rain = transition000012:4, transition000013:6
+storm = transition000016:7
 
 
 [weather_transition_list0100]
-transition000000 = thunder
-transition000001 = grey
-transition000002 = rainy
-transition000003 = grey
-transition000004 = foggy
-foggy = transition010000:7
-stormy = transition010001:4, transition010002:5
-thunder = transition010003:3
+transition000000 = cloudy_light
+transition000001 = cloudy_dark
+transition000002 = clear_alt
+transition000003 = cloudy_dark
+transition000004 = cloudy_light
+transition000005 = clear
+transition000007 = cloudy_light
+transition000008 = clear
+transition000009 = clear_alt
+transition00000A = cloudy_light_rain
+transition00000E = clear_alt
+transition00000F = cloudy_dark
+transition000010 = clear
+transition000011 = cloudy_light_rain
+transition000012 = cloudy_dark
+transition000013 = cloudy_light
+transition000016 = cloudy_light_rain
+clear = transition010000:4, transition010001:6, transition010002:3
+clear_alt = transition010003:4, transition010004:6, transition010005:2
+cloudy_dark = transition010008:3, transition010009:6, transition01000A:2
+cloudy_light = transition01000E:4, transition01000F:3, transition010010:2 
+cloudy_light_rain = transition010012:4, transition010013:6
 
 
 [weather_transition_list0200]
-transition010000 = thunder
-transition010001 = rainy
-transition010002 = grey
-transition010003 = foggy
-beta = transition020000:7, transition020001:2
-dry = transition020002:1
-foggy = transition020003:7
-grey = transition020004:6
-rainy = transition020005:6
-thunder = transition020006:6, transition020007:3, transition020008:1
+transition010000 = cloudy_dark
+transition010001 = cloudy_light
+transition010002 = clear_alt
+transition010003 = cloudy_dark
+transition010004 = cloudy_light
+transition010005 = clear
+transition010008 = clear_alt
+transition010009 = cloudy_light
+transition01000A = clear
+transition01000E = cloudy_dark
+transition01000F = clear_alt
+transition010010 = clear
+transition010012 = cloudy_dark
+transition010013 = cloudy_light
+clear = transition020000:6, transition020001:4, transition020002:3
+clear_alt = transition020003:6, transition020004:4, transition020005:2
+cloudy_dark = transition020006:2, transition020009:3, transition02000A:6
+cloudy_light = transition02000E:3, transition02000F:2, transition020010:4
 
 
 [weather_transition_list0300]
-transition020000 = thunder
-transition020001 = dry
-transition020002 = beta
-transition020003 = thunder
-transition020004 = stormy
-transition020005 = stormy
-transition020006 = stormy
-transition020007 = foggy
-transition020008 = beta
-beta = transition030000:2, transition030001:7
-dry = transition030002:1, transition030003:7
-grey = transition030004:7, transition030005:6, transition030006:4
-rainy = transition030007:6
-thunder = transition030008:5, transition030009:4, transition03000A:1, transition03000B:3
+transition020000 = cloudy_light
+transition020001 = cloudy_dark
+transition020002 = clear_alt
+transition020003 = cloudy_light
+transition020004 = cloudy_dark
+transition020005 = clear
+transition020006 = clear
+transition020009 = clear_alt
+transition02000A = cloudy_light
+transition02000E = clear_alt
+transition02000F = clear
+transition020010 = cloudy_dark
 
 
-[weather_transition_list0400]
-transition030000 = dry
-transition030001 = thunder
-transition030002 = beta
-transition030003 = thunder
-transition030004 = thunder
-transition030005 = stormy
-transition030006 = rainy
-transition030007 = stormy
-transition030008 = grey
-transition030009 = rainy
-transition03000A = beta
-transition03000B = foggy
-beta = transition040000:2, transition040001:4, transition040002:7
-dry = transition040003:5, transition040004:4, transition040005:1, transition040006:6
-grey = transition040007:1, transition040008:2, transition040009:4, transition04000A:7, transition04000B:3
-rainy = transition04000C:1, transition04000D:6, transition04000E:3
-thunder = transition04000F:2, transition040010:3, transition040011:1, transition040012:4, transition040013:5, transition040014:6
+[weather_transition_list0430]
+cloudy_dark = transition043000:1
+cloudy_dark = transition043012:6
+storm = transition043016:6
 
 
-[weather_transition_list0500]
-transition040000 = dry
-transition040001 = rainy
-transition040002 = thunder
-transition040003 = grey
-transition040004 = rainy
-transition040005 = beta
-transition040006 = stormy
-transition040007 = beta
-transition040008 = dry
-transition040009 = rainy
-transition04000A = thunder
-transition04000B = foggy
-transition04000C = beta
-transition04000D = stormy
-transition04000E = foggy
-transition04000F = dry
-transition040010 = foggy
-transition040011 = beta
-transition040012 = rainy
-transition040013 = grey
-transition040014 = stormy
-
-
-[weather_transition_list0501]
-beta = transition050100:5, transition050101:7, transition050102:3, transition050103:2, transition050104:4
-dry = transition050105:3, transition050106:5, transition050107:7, transition050108:1, transition050109:4, transition05010A:6
-foggy = transition05010B:5
-rainy = transition05010C:6, transition05010D:1, transition05010E:5, transition05010F:3
-thunder = transition050110:2
-beta = transition050111:6
-foggy = transition050112:4
-grey = transition050113:3, transition050114:4
-stormy = transition050115:5, transition050116:3, transition050117:4
-thunder = transition050118:6, transition050119:1, transition05011A:4
+[weather_transition_list0530]
+transition043000 = storm
 
 
 [weather_transition_list0600]
-transition050100 = grey
-transition050101 = thunder
-transition050102 = foggy
-transition050103 = dry
-transition050104 = rainy
-transition050105 = foggy
-transition050106 = grey
-transition050107 = thunder
-transition050108 = beta
-transition050109 = rainy
-transition05010A = stormy
-transition05010B = grey
-transition05010C = stormy
-transition05010D = beta
-transition05010E = grey
-transition05010F = foggy
-transition050110 = dry
-beta = transition060000:3, transition060001:4, transition060002:5
-dry = transition060003:6, transition060004:1, transition060005:7, transition060006:4
-foggy = transition060007:4, transition060008:1, transition060009:5
-grey = transition06000A:4
-rainy = transition06000B:1, transition06000C:3
-stormy = transition06000D:5, transition06000E:1
-thunder = transition06000F:1
-
-
-[weather_transition_list0700]
-transition050111 = stormy
-transition050112 = rainy
-transition050113 = foggy
-transition050114 = rainy
-transition050115 = grey
-transition050116 = foggy
-transition050117 = rainy
-transition050118 = stormy
-transition050119 = beta
-transition05011A = rainy
-transition060000 = foggy
-transition060001 = rainy
-transition060002 = grey
-transition060003 = stormy
-transition060004 = beta
-transition060005 = thunder
-transition060006 = rainy
-transition060007 = rainy
-transition060008 = beta
-transition060009 = grey
-transition06000A = rainy
-transition06000B = beta
-transition06000C = foggy
-transition06000D = grey
-transition06000E = beta
-transition06000F = beta
-beta = transition070000:4, transition070001:5, transition070002:3
-foggy = transition070003:6, transition070004:4
-grey = transition070005:3, transition070006:6
-rainy = transition070007:3, transition070008:5, transition070009:6, transition07000A:1
-stormy = transition07000B:4, transition07000C:5
-thunder = transition07000D:5, transition07000E:4
+transition043012 = cloudy_light
+transition043016 = cloudy_light
 
 
 [weather_transition_list0800]
-transition070000 = rainy
-transition070001 = grey
-transition070002 = foggy
-transition070003 = stormy
-transition070004 = rainy
-transition070005 = foggy
-transition070006 = stormy
-transition070007 = foggy
-transition070008 = grey
-transition070009 = stormy
-transition07000A = beta
-transition07000B = rainy
-transition07000C = grey
-transition07000D = grey
-transition07000E = rainy
-beta = transition080000:6, transition080001:5, transition080002:4
-dry = transition080003:5, transition080004:7, transition080005:4
-foggy = transition080006:6
-grey = transition080007:6, transition080008:3
-rainy = transition080009:7, transition08000A:1, transition08000B:5, transition08000C:3, transition08000D:6, transition08000E:2
-thunder = transition08000F:5, transition080010:2, transition080011:6, transition080012:4
+clear = transition080000:6, transition080001:4, transition080002:3
+clear_alt = transition080003:6, transition080004:2, transition080005:4
+cloudy_dark = transition080006:6, transition080007:7, transition080008:5, transition080009:2, transition08000A:3
+cloudy_dark_rain = transition08000B:7, transition08000C:4, transition08000D:1
+cloudy_light = transition08000E:4, transition08000F:3, transition080010:2, transition080011:7
+storm = transition080015:5, transition080016:7
 
 
 [weather_transition_list0900]
-transition080000 = stormy
-transition080001 = grey
-transition080002 = rainy
-transition080003 = grey
-transition080004 = thunder
-transition080005 = rainy
-transition080006 = stormy
-transition080007 = stormy
-transition080008 = foggy
-transition080009 = thunder
-transition08000A = beta
-transition08000B = grey
-transition08000C = foggy
-transition08000D = stormy
-transition08000E = dry
-transition08000F = grey
-transition080010 = dry
-transition080011 = stormy
-transition080012 = rainy
-beta = transition090000:4
-dry = transition090001:5, transition090002:4
-foggy = transition090003:6
-grey = transition090004:7, transition090005:2
-rainy = transition090006:7
-thunder = transition090007:2, transition090008:4, transition090009:5
+transition080000 = cloudy_light
+transition080001 = cloudy_dark
+transition080002 = clear_alt
+transition080003 = cloudy_light
+transition080004 = clear
+transition080005 = cloudy_dark
+transition080006 = cloudy_light
+transition080007 = cloudy_light_rain
+transition080008 = cloudy_dark_rain
+transition080009 = clear
+transition08000A = clear_alt
+transition08000B = cloudy_light_rain
+transition08000C = cloudy_dark
+transition08000D = storm
+transition08000E = cloudy_dark
+transition08000F = clear_alt
+transition080010 = clear
+transition080011 = cloudy_light_rain
+transition080015 = cloudy_dark_rain
+transition080016 = cloudy_light_rain
+clear = transition090000:6, transition090001:3, transition090002:4
+clear_alt = transition090003:6, transition090004:4, transition090005:2
+cloudy_dark = transition090006:2, transition090007:3, transition090008:6, transition09000A:7
+cloudy_dark_rain = transition09000B:4, transition09000C:7, transition09000D:1
+cloudy_light = transition09000E:3, transition09000F:2, transition090010:4, transition090011:7
+cloudy_light_rain = transition090012:4, transition090013:6
+storm = transition090015:7
 
 
 [weather_transition_list1000]
-transition090000 = rainy
-transition090001 = grey
-transition090002 = rainy
-transition090003 = stormy
-transition090004 = thunder
-transition090005 = dry
-transition090006 = thunder
-transition090007 = dry
-transition090008 = rainy
-transition090009 = grey
-beta = transition100000:5
-dry = transition100001:5, transition100002:1
-foggy = transition100003:5, transition100004:1
-grey = transition100005:1, transition100006:2
-rainy = transition100007:1, transition100008:7, transition100009:3, transition10000A:2, transition10000B:5
-stormy = transition10000C:4
+transition090000 = cloudy_light
+transition090001 = clear_alt
+transition090002 = cloudy_dark
+transition090003 = cloudy_light
+transition090004 = cloudy_dark
+transition090005 = clear
+transition090006 = clear
+transition090007 = clear_alt
+transition090008 = cloudy_light
+transition09000A = cloudy_light_rain
+transition09000B = cloudy_dark
+transition09000C = cloudy_light_rain
+transition09000D = storm
+transition09000E = clear_alt
+transition09000F = clear
+transition090010 = cloudy_dark
+transition090011 = cloudy_light_rain
+transition090012 = cloudy_dark
+transition090013 = cloudy_light
+transition090015 = cloudy_light_rain
+clear = transition100000:6, transition100001:3, transition100002:4
+clear_alt = transition100003:2, transition100004:6, transition100005:4
+cloudy_dark = transition100006:7, transition100008:2, transition100009:3, transition10000A:6
+cloudy_light = transition10000E:4, transition10000F:3, transition100010:2, transition100011:7
+cloudy_light_rain = transition100012:6, transition100013:4
+storm = transition100016:7
 
 
 [weather_transition_list1100]
-transition100000 = grey
-transition100001 = grey
-transition100002 = beta
-transition100003 = grey
-transition100004 = beta
-transition100005 = beta
-transition100006 = dry
-transition100007 = beta
-transition100008 = thunder
-transition100009 = foggy
-transition10000A = dry
-transition10000B = grey
-transition10000C = rainy
-beta = transition110000:4, transition110001:5, transition110002:2
-dry = transition110003:5
-foggy = transition110004:4
-grey = transition110005:2, transition110006:4, transition110007:1
-rainy = transition110008:1
-thunder = transition110009:2, transition11000A:1, transition11000B:5
+transition100000 = cloudy_light
+transition100001 = clear_alt
+transition100002 = cloudy_dark
+transition100003 = clear
+transition100004 = cloudy_light
+transition100005 = cloudy_dark
+transition100006 = cloudy_light_rain
+transition100008 = clear
+transition100009 = clear_alt
+transition10000A = cloudy_light
+transition10000E = cloudy_dark
+transition10000F = clear_alt
+transition100010 = clear
+transition100011 = cloudy_light_rain
+transition100012 = cloudy_light
+transition100013 = cloudy_dark
+transition100016 = cloudy_light_rain
+clear = transition110000:4, transition110001:6, transition110002:3
+clear_alt = transition110003:6, transition110004:2, transition110005:4
+cloudy_dark = transition110006:7, transition110007:3, transition110008:6, transition11000A:2
+cloudy_light = transition11000E:4, transition11000F:2, transition110010:3, transition110011:7
+cloudy_light_rain = transition110013:4, transition110014:6
+storm = transition110016:7
 
 
 [weather_transition_list1200]
-transition110000 = rainy
-transition110001 = grey
-transition110002 = dry
-transition110003 = grey
-transition110004 = rainy
-transition110005 = dry
-transition110006 = rainy
-transition110007 = beta
-transition110008 = beta
-transition110009 = dry
-transition11000A = beta
-transition11000B = grey
-beta = transition120000:6
-dry = transition120001:5
-foggy = transition120002:4
-grey = transition120003:7, transition120004:2
-rainy = transition120005:3
-thunder = transition120006:6, transition120007:5, transition120008:1
+transition110000 = cloudy_dark
+transition110001 = cloudy_light
+transition110002 = clear_alt
+transition110003 = cloudy_light
+transition110004 = clear
+transition110005 = cloudy_dark
+transition110006 = cloudy_light_rain
+transition110007 = clear_alt
+transition110008 = cloudy_light
+transition11000A = clear
+transition11000E = cloudy_dark
+transition11000F = clear
+transition110010 = clear_alt
+transition110011 = cloudy_light_rain
+transition110013 = cloudy_dark
+transition110014 = cloudy_light
+transition110016 = cloudy_light_rain
+clear = transition120000:6, transition120001:3, transition120002:4
+clear_alt = transition120003:2, transition120004:6, transition120005:4
+cloudy_dark = transition120006:6, transition120007:3, transition120008:2, transition120009:7
+cloudy_light = transition12000F:4, transition120011:3, transition120012:2, transition120013:7
+cloudy_light_rain = transition120014:4, transition120016:2, transition120017:6
+storm = transition120018:7
 
 
 [weather_transition_list1300]
-transition120000 = stormy
-transition120001 = grey
-transition120002 = rainy
-transition120003 = thunder
-transition120004 = dry
-transition120005 = foggy
-transition120006 = stormy
-transition120007 = grey
-transition120008 = beta
-beta = transition130000:4, transition130001:7
-dry = transition130002:1
-foggy = transition130003:4
-grey = transition130004:1, transition130005:4, transition130006:7
-rainy = transition130007:3, transition130008:1
-stormy = transition130009:1
-thunder = transition13000A:5, transition13000B:1
+transition120000 = cloudy_light
+transition120001 = clear_alt
+transition120002 = cloudy_dark
+transition120003 = clear
+transition120004 = cloudy_light
+transition120005 = cloudy_dark
+transition120006 = cloudy_light
+transition120007 = clear_alt
+transition120008 = clear
+transition120009 = cloudy_light_rain
+transition12000F = cloudy_dark
+transition120011 = clear_alt
+transition120012 = clear
+transition120013 = cloudy_light_rain
+transition120014 = cloudy_dark
+transition120016 = clear
+transition120017 = cloudy_light
+transition120018 = cloudy_light_rain
+clear = transition130000:6, transition130001:4
+clear_alt = transition130002:6, transition130003:4, transition130004:2
+cloudy_dark = transition130005:2, transition130006:6, transition130008:7
+cloudy_light = transition13000D:2, transition13000E:7, transition130010:4
+cloudy_light_rain = transition130011:6, transition130012:2, transition130013:4
+storm = transition130015:7
 
 
 [weather_transition_list1400]
-transition130000 = rainy
-transition130001 = thunder
-transition130002 = beta
-transition130003 = rainy
-transition130004 = beta
-transition130005 = rainy
-transition130006 = thunder
-transition130007 = foggy
-transition130008 = beta
-transition130009 = beta
-transition13000A = grey
-transition13000B = beta
-beta = transition140000:2, transition140001:4
-dry = transition140002:1
-foggy = transition140003:4
-rainy = transition140004:6, transition140005:3, transition140006:7
+transition130000 = cloudy_light
+transition130001 = cloudy_dark
+transition130002 = cloudy_light
+transition130003 = cloudy_dark
+transition130004 = clear
+transition130005 = clear
+transition130006 = cloudy_light
+transition130008 = cloudy_light_rain
+transition13000D = clear
+transition13000E = cloudy_light_rain
+transition130010 = cloudy_dark
+transition130011 = cloudy_light
+transition130012 = clear
+transition130013 = cloudy_dark
+transition130015 = cloudy_light_rain
+clear = transition140000:4, transition140001:6, transition140002:7
+cloudy_dark = transition140003:2, transition140005:7, transition140006:6
+cloudy_light = transition14000C:2, transition14000D:4, transition14000E:7, transition14000F:1
+cloudy_light_rain = transition140010:4, transition140012:2, transition140013:6
+storm = transition140014:7, transition140015:6, transition140016:7
 
 
 [weather_transition_list1500]
-transition140000 = dry
-transition140001 = rainy
-transition140002 = beta
-transition140003 = rainy
-transition140004 = stormy
-transition140005 = foggy
-transition140006 = thunder
-beta = transition150000:7, transition150001:2
-dry = transition150002:1, transition150003:7
-foggy = transition150004:7, transition150005:5, transition150006:4
-grey = transition150007:7, transition150008:1, transition150009:2
-rainy = transition15000A:3, transition15000B:7, transition15000C:5
-stormy = transition15000D:5
-thunder = transition15000E:5, transition15000F:4, transition150010:3, transition150011:1, transition150012:2
+transition140000 = cloudy_dark
+transition140001 = cloudy_light
+transition140002 = cloudy_light_rain
+transition140003 = clear
+transition140005 = cloudy_light_rain
+transition140006 = cloudy_light
+transition14000C = clear
+transition14000D = cloudy_dark
+transition14000E = cloudy_light_rain
+transition14000F = storm
+transition140010 = cloudy_dark
+transition140012 = clear
+transition140013 = cloudy_light
+transition140014 = cloudy_light_rain
+transition140015 = cloudy_light
+transition140016 = cloudy_light_rain
+clear = transition150004:4, transition150005:6, transition150006:3, transition150007:7
+cloudy_dark = transition150008:6, transition150009:2, transition15000A:3, transition15000B:7
+cloudy_light = transition150010:2, transition150011:4, transition150012:7, transition150013:3, transition150014:1
+cloudy_light_rain = transition150015:4, transition150016:6, transition150017:3
+storm = transition150018:7, transition150019:6, transition15001A:7
+
+
+[weather_transition_list1530]
 
 
 [weather_transition_list1600]
-transition150000 = thunder
-transition150001 = dry
-transition150002 = beta
-transition150003 = thunder
-transition150004 = thunder
-transition150005 = grey
-transition150006 = rainy
-transition150007 = thunder
-transition150008 = beta
-transition150009 = dry
-transition15000A = foggy
-transition15000B = thunder
-transition15000C = grey
-transition15000D = grey
-transition15000E = grey
-transition15000F = rainy
-transition150010 = foggy
-transition150011 = beta
-transition150012 = dry
-beta = transition160000:3, transition160001:7, transition160002:4, transition160003:5, transition160004:2
-dry = transition160005:1, transition160006:5
-foggy = transition160007:4, transition160008:7
-grey = transition160009:6
-rainy = transition16000A:7
-thunder = transition16000B:4, transition16000C:6
+transition150004 = cloudy_dark
+transition150005 = cloudy_light
+transition150006 = clear_alt
+transition150007 = cloudy_light_rain
+transition150008 = cloudy_light
+transition150009 = clear
+transition15000A = clear_alt
+transition15000B = cloudy_light_rain
+transition150010 = clear
+transition150011 = cloudy_dark
+transition150012 = cloudy_light_rain
+transition150013 = clear_alt
+transition150014 = storm
+transition150015 = cloudy_dark
+transition150016 = cloudy_light
+transition150017 = clear_alt
+transition150018 = cloudy_light_rain
+transition150019 = cloudy_light
+transition15001A = cloudy_light_rain
+clear = transition160000:4, transition160001:3, transition160002:6
+clear_alt = transition160004:4, transition160005:6, transition160006:2
+cloudy_dark = transition160007:2, transition160009:6, transition16000B:3
+cloudy_light = transition16000F:3, transition160010:4, transition160013:2
+cloudy_light_rain = transition160014:6, transition160015:3, transition160017:4
 
 
 [weather_transition_list1700]
-transition160000 = foggy
-transition160001 = thunder
-transition160002 = rainy
-transition160003 = grey
-transition160004 = dry
-transition160005 = beta
-transition160006 = grey
-transition160007 = rainy
-transition160008 = thunder
-transition160009 = stormy
-transition16000A = thunder
-transition16000B = rainy
-transition16000C = stormy
-beta = transition170000:2, transition170001:3
-dry = transition170002:1
-foggy = transition170003:2
-rainy = transition170004:2, transition170005:7, transition170006:1
-stormy = transition170007:7
-thunder = transition170008:1, transition170009:3, transition17000A:2
+transition160000 = cloudy_dark
+transition160001 = clear_alt
+transition160002 = cloudy_light
+transition160004 = cloudy_dark
+transition160005 = cloudy_light
+transition160006 = clear
+transition160007 = clear
+transition160009 = cloudy_light
+transition16000B = clear_alt
+transition16000F = clear_alt
+transition160010 = cloudy_dark
+transition160013 = clear
+transition160014 = cloudy_light
+transition160015 = clear_alt
+transition160017 = cloudy_dark
+clear = transition170000:3
+clear_alt = transition170002:2
+cloudy_dark = transition170006:2, transition170007:3  
 
 
 [weather_transition_list1800]
-transition170000 = dry
-transition170001 = foggy
-transition170002 = beta
-transition170003 = dry
-transition170004 = dry
-transition170005 = thunder
-transition170006 = beta
-transition170007 = thunder
-transition170008 = beta
-transition170009 = foggy
-transition17000A = dry
-beta = transition180000:6, transition180001:5
-dry = transition180002:5, transition180003:1, transition180004:3
-foggy = transition180005:2
-grey = transition180006:2, transition180007:6, transition180008:3, transition180009:7
-rainy = transition18000A:5
-thunder = transition18000B:5, transition18000C:1, transition18000D:6
+transition170000 = clear_alt
+transition170002 = clear
+transition170006 = clear
+transition170007 = clear_alt
 
 
-[weather_transition_list1900]
-transition180000 = stormy
-transition180001 = grey
-transition180002 = grey
-transition180003 = beta
-transition180004 = foggy
-transition180005 = dry
-transition180006 = dry
-transition180007 = stormy
-transition180008 = foggy
-transition180009 = thunder
-transition18000A = grey
-transition18000B = grey
-transition18000C = beta
-transition18000D = stormy
-beta = transition190000:7, transition190001:3, transition190002:2
-dry = transition190003:3
-grey = transition190004:3, transition190005:2, transition190006:7
-stormy = transition190007:3, transition190008:2, transition190009:1, transition19000A:7, transition19000B:5
-thunder = transition19000C:3, transition19000D:5, transition19000E:2, transition19000F:1
+[weather_transition_list1830]
 
 
-[weather_transition_list2000]
-transition190000 = thunder
-transition190001 = foggy
-transition190002 = dry
-transition190003 = foggy
-transition190004 = foggy
-transition190005 = dry
-transition190006 = thunder
-transition190007 = foggy
-transition190008 = dry
-transition190009 = beta
-transition19000A = thunder
-transition19000B = grey
-transition19000C = foggy
-transition19000D = grey
-transition19000E = dry
-transition19000F = beta
-dry = transition200000:6, transition200001:5, transition200002:1
-grey = transition200003:2, transition200004:1
+[weather_transition_list1930]
 
 
-[weather_transition_list2100]
-transition200000 = stormy
-transition200001 = grey
-transition200002 = beta
-transition200003 = dry
-transition200004 = beta
-foggy = transition210000:1, transition210001:7
-thunder = transition210002:1, transition210003:6
+[weather_transition_list2040]
+clear = transition204000:6, transition204001:4, transition204002:3
+clear_alt = transition204003:6, transition204004:4, transition204005:2
+cloudy_dark = transition204006:6, transition204007:3, transition204008:2
+cloudy_light = transition20400E:3, transition20400F:2, transition204010:4
 
 
 [weather_transition_list2200]
-transition210000 = beta
-transition210001 = thunder
-transition210002 = beta
-transition210003 = stormy
-beta = transition220000:2
-dry = transition220001:1
-rainy = transition220002:6
-stormy = transition220003:4, transition220004:3, transition220005:5
+transition204000 = cloudy_light
+transition204001 = cloudy_dark
+transition204002 = clear_alt
+transition204003 = cloudy_light
+transition204004 = cloudy_dark
+transition204005 = clear
+transition204006 = cloudy_light
+transition204007 = clear_alt
+transition204008 = clear
+transition20400E = clear_alt
+transition20400F = clear
+transition204010 = cloudy_dark
 
 
 [weather_transition_list2300]
-transition220000 = dry
-transition220001 = beta
-transition220002 = stormy
-transition220003 = rainy
-transition220004 = foggy
-transition220005 = grey
-beta = transition230000:2
-dry = transition230001:1
-foggy = transition230002:7
-grey = transition230003:4, transition230004:6
-rainy = transition230005:6
+clear = transition230000:6, transition230001:4, transition230002:3
+clear_alt = transition230003:6, transition230004:4, transition230005:2
+cloudy_dark = transition230006:6, transition230007:7, transition230008:3, transition230009:2
+cloudy_light = transition23000E:3, transition23000F:2, transition230010:4, transition230011:7
+storm = transition230015:7
 
 
 [weather_dynamic]
-beta = sect_beta_weather
-dry = sect_dry_weather
-foggy = sect_foggy_weather
-rainy = sect_rainy_weather
-grey = sect_grey_weather
-stormy = sect_stormy_weather
-thunder = sect_thunder_weather
+storm = sect_storm_weather
+clear = sect_clear_weather
+clear_alt = sect_clear_alt_weather
+cloudy_dark = sect_cloudy_dark_weather
+cloudy_dark_rain = sect_cloudy_dark_rain_weather
+cloudy_light = sect_cloudy_light_weather
+cloudy_light_rain = sect_cloudy_light_rain_weather
 transition000000 = sect_transition000000
 transition000001 = sect_transition000001
 transition000002 = sect_transition000002
 transition000003 = sect_transition000003
 transition000004 = sect_transition000004
+transition000005 = sect_transition000005
+transition000007 = sect_transition000007
+transition000008 = sect_transition000008
+transition000009 = sect_transition000009
+transition00000A = sect_transition00000A
+transition00000E = sect_transition00000E
+transition00000F = sect_transition00000F
+transition000010 = sect_transition000010
+transition000011 = sect_transition000011
+transition000012 = sect_transition000012
+transition000013 = sect_transition000013
+transition000016 = sect_transition000016
 transition010000 = sect_transition010000
 transition010001 = sect_transition010001
 transition010002 = sect_transition010002
 transition010003 = sect_transition010003
+transition010004 = sect_transition010004
+transition010005 = sect_transition010005
+transition010008 = sect_transition010008
+transition010009 = sect_transition010009
+transition01000A = sect_transition01000A
+transition01000E = sect_transition01000E
+transition01000F = sect_transition01000F
+transition010010 = sect_transition010010
+transition010012 = sect_transition010012
+transition010013 = sect_transition010013
 transition020000 = sect_transition020000
 transition020001 = sect_transition020001
 transition020002 = sect_transition020002
@@ -567,99 +486,14 @@ transition020003 = sect_transition020003
 transition020004 = sect_transition020004
 transition020005 = sect_transition020005
 transition020006 = sect_transition020006
-transition020007 = sect_transition020007
-transition020008 = sect_transition020008
-transition030000 = sect_transition030000
-transition030001 = sect_transition030001
-transition030002 = sect_transition030002
-transition030003 = sect_transition030003
-transition030004 = sect_transition030004
-transition030005 = sect_transition030005
-transition030006 = sect_transition030006
-transition030007 = sect_transition030007
-transition030008 = sect_transition030008
-transition030009 = sect_transition030009
-transition03000A = sect_transition03000A
-transition03000B = sect_transition03000B
-transition040000 = sect_transition040000
-transition040001 = sect_transition040001
-transition040002 = sect_transition040002
-transition040003 = sect_transition040003
-transition040004 = sect_transition040004
-transition040005 = sect_transition040005
-transition040006 = sect_transition040006
-transition040007 = sect_transition040007
-transition040008 = sect_transition040008
-transition040009 = sect_transition040009
-transition04000A = sect_transition04000A
-transition04000B = sect_transition04000B
-transition04000C = sect_transition04000C
-transition04000D = sect_transition04000D
-transition04000E = sect_transition04000E
-transition04000F = sect_transition04000F
-transition040010 = sect_transition040010
-transition040011 = sect_transition040011
-transition040012 = sect_transition040012
-transition040013 = sect_transition040013
-transition040014 = sect_transition040014
-transition050100 = sect_transition050100
-transition050101 = sect_transition050101
-transition050102 = sect_transition050102
-transition050103 = sect_transition050103
-transition050104 = sect_transition050104
-transition050105 = sect_transition050105
-transition050106 = sect_transition050106
-transition050107 = sect_transition050107
-transition050108 = sect_transition050108
-transition050109 = sect_transition050109
-transition05010A = sect_transition05010A
-transition05010B = sect_transition05010B
-transition05010C = sect_transition05010C
-transition05010D = sect_transition05010D
-transition05010E = sect_transition05010E
-transition05010F = sect_transition05010F
-transition050110 = sect_transition050110
-transition050111 = sect_transition050111
-transition050112 = sect_transition050112
-transition050113 = sect_transition050113
-transition050114 = sect_transition050114
-transition050115 = sect_transition050115
-transition050116 = sect_transition050116
-transition050117 = sect_transition050117
-transition050118 = sect_transition050118
-transition050119 = sect_transition050119
-transition05011A = sect_transition05011A
-transition060000 = sect_transition060000
-transition060001 = sect_transition060001
-transition060002 = sect_transition060002
-transition060003 = sect_transition060003
-transition060004 = sect_transition060004
-transition060005 = sect_transition060005
-transition060006 = sect_transition060006
-transition060007 = sect_transition060007
-transition060008 = sect_transition060008
-transition060009 = sect_transition060009
-transition06000A = sect_transition06000A
-transition06000B = sect_transition06000B
-transition06000C = sect_transition06000C
-transition06000D = sect_transition06000D
-transition06000E = sect_transition06000E
-transition06000F = sect_transition06000F
-transition070000 = sect_transition070000
-transition070001 = sect_transition070001
-transition070002 = sect_transition070002
-transition070003 = sect_transition070003
-transition070004 = sect_transition070004
-transition070005 = sect_transition070005
-transition070006 = sect_transition070006
-transition070007 = sect_transition070007
-transition070008 = sect_transition070008
-transition070009 = sect_transition070009
-transition07000A = sect_transition07000A
-transition07000B = sect_transition07000B
-transition07000C = sect_transition07000C
-transition07000D = sect_transition07000D
-transition07000E = sect_transition07000E
+transition020009 = sect_transition020009
+transition02000A = sect_transition02000A
+transition02000E = sect_transition02000E
+transition02000F = sect_transition02000F
+transition020010 = sect_transition020010
+transition043000 = sect_transition043000
+transition043012 = sect_transition043012
+transition043016 = sect_transition043016
 transition080000 = sect_transition080000
 transition080001 = sect_transition080001
 transition080002 = sect_transition080002
@@ -678,7 +512,8 @@ transition08000E = sect_transition08000E
 transition08000F = sect_transition08000F
 transition080010 = sect_transition080010
 transition080011 = sect_transition080011
-transition080012 = sect_transition080012
+transition080015 = sect_transition080015
+transition080016 = sect_transition080016
 transition090000 = sect_transition090000
 transition090001 = sect_transition090001
 transition090002 = sect_transition090002
@@ -688,7 +523,17 @@ transition090005 = sect_transition090005
 transition090006 = sect_transition090006
 transition090007 = sect_transition090007
 transition090008 = sect_transition090008
-transition090009 = sect_transition090009
+transition09000A = sect_transition09000A
+transition09000B = sect_transition09000B
+transition09000C = sect_transition09000C
+transition09000D = sect_transition09000D
+transition09000E = sect_transition09000E
+transition09000F = sect_transition09000F
+transition090010 = sect_transition090010
+transition090011 = sect_transition090011
+transition090012 = sect_transition090012
+transition090013 = sect_transition090013
+transition090015 = sect_transition090015
 transition100000 = sect_transition100000
 transition100001 = sect_transition100001
 transition100002 = sect_transition100002
@@ -696,12 +541,16 @@ transition100003 = sect_transition100003
 transition100004 = sect_transition100004
 transition100005 = sect_transition100005
 transition100006 = sect_transition100006
-transition100007 = sect_transition100007
 transition100008 = sect_transition100008
 transition100009 = sect_transition100009
 transition10000A = sect_transition10000A
-transition10000B = sect_transition10000B
-transition10000C = sect_transition10000C
+transition10000E = sect_transition10000E
+transition10000F = sect_transition10000F
+transition100010 = sect_transition100010
+transition100011 = sect_transition100011
+transition100012 = sect_transition100012
+transition100013 = sect_transition100013
+transition100016 = sect_transition100016
 transition110000 = sect_transition110000
 transition110001 = sect_transition110001
 transition110002 = sect_transition110002
@@ -711,9 +560,14 @@ transition110005 = sect_transition110005
 transition110006 = sect_transition110006
 transition110007 = sect_transition110007
 transition110008 = sect_transition110008
-transition110009 = sect_transition110009
 transition11000A = sect_transition11000A
-transition11000B = sect_transition11000B
+transition11000E = sect_transition11000E
+transition11000F = sect_transition11000F
+transition110010 = sect_transition110010
+transition110011 = sect_transition110011
+transition110013 = sect_transition110013
+transition110014 = sect_transition110014
+transition110016 = sect_transition110016
 transition120000 = sect_transition120000
 transition120001 = sect_transition120001
 transition120002 = sect_transition120002
@@ -723,6 +577,15 @@ transition120005 = sect_transition120005
 transition120006 = sect_transition120006
 transition120007 = sect_transition120007
 transition120008 = sect_transition120008
+transition120009 = sect_transition120009
+transition12000F = sect_transition12000F
+transition120011 = sect_transition120011
+transition120012 = sect_transition120012
+transition120013 = sect_transition120013
+transition120014 = sect_transition120014
+transition120016 = sect_transition120016
+transition120017 = sect_transition120017
+transition120018 = sect_transition120018
 transition130000 = sect_transition130000
 transition130001 = sect_transition130001
 transition130002 = sect_transition130002
@@ -730,22 +593,30 @@ transition130003 = sect_transition130003
 transition130004 = sect_transition130004
 transition130005 = sect_transition130005
 transition130006 = sect_transition130006
-transition130007 = sect_transition130007
 transition130008 = sect_transition130008
-transition130009 = sect_transition130009
-transition13000A = sect_transition13000A
-transition13000B = sect_transition13000B
+transition13000D = sect_transition13000D
+transition13000E = sect_transition13000E
+transition130010 = sect_transition130010
+transition130011 = sect_transition130011
+transition130012 = sect_transition130012
+transition130013 = sect_transition130013
+transition130015 = sect_transition130015
 transition140000 = sect_transition140000
 transition140001 = sect_transition140001
 transition140002 = sect_transition140002
 transition140003 = sect_transition140003
-transition140004 = sect_transition140004
 transition140005 = sect_transition140005
 transition140006 = sect_transition140006
-transition150000 = sect_transition150000
-transition150001 = sect_transition150001
-transition150002 = sect_transition150002
-transition150003 = sect_transition150003
+transition14000C = sect_transition14000C
+transition14000D = sect_transition14000D
+transition14000E = sect_transition14000E
+transition14000F = sect_transition14000F
+transition140010 = sect_transition140010
+transition140012 = sect_transition140012
+transition140013 = sect_transition140013
+transition140014 = sect_transition140014
+transition140015 = sect_transition140015
+transition140016 = sect_transition140016
 transition150004 = sect_transition150004
 transition150005 = sect_transition150005
 transition150006 = sect_transition150006
@@ -754,1510 +625,1231 @@ transition150008 = sect_transition150008
 transition150009 = sect_transition150009
 transition15000A = sect_transition15000A
 transition15000B = sect_transition15000B
-transition15000C = sect_transition15000C
-transition15000D = sect_transition15000D
-transition15000E = sect_transition15000E
-transition15000F = sect_transition15000F
 transition150010 = sect_transition150010
 transition150011 = sect_transition150011
 transition150012 = sect_transition150012
+transition150013 = sect_transition150013
+transition150014 = sect_transition150014
+transition150015 = sect_transition150015
+transition150016 = sect_transition150016
+transition150017 = sect_transition150017
+transition150018 = sect_transition150018
+transition150019 = sect_transition150019
+transition15001A = sect_transition15001A
 transition160000 = sect_transition160000
 transition160001 = sect_transition160001
 transition160002 = sect_transition160002
-transition160003 = sect_transition160003
 transition160004 = sect_transition160004
 transition160005 = sect_transition160005
 transition160006 = sect_transition160006
 transition160007 = sect_transition160007
-transition160008 = sect_transition160008
 transition160009 = sect_transition160009
-transition16000A = sect_transition16000A
 transition16000B = sect_transition16000B
-transition16000C = sect_transition16000C
+transition16000F = sect_transition16000F
+transition160010 = sect_transition160010
+transition160013 = sect_transition160013
+transition160014 = sect_transition160014
+transition160015 = sect_transition160015
+transition160017 = sect_transition160017
 transition170000 = sect_transition170000
-transition170001 = sect_transition170001
 transition170002 = sect_transition170002
-transition170003 = sect_transition170003
-transition170004 = sect_transition170004
-transition170005 = sect_transition170005
 transition170006 = sect_transition170006
 transition170007 = sect_transition170007
-transition170008 = sect_transition170008
-transition170009 = sect_transition170009
-transition17000A = sect_transition17000A
-transition180000 = sect_transition180000
-transition180001 = sect_transition180001
-transition180002 = sect_transition180002
-transition180003 = sect_transition180003
-transition180004 = sect_transition180004
-transition180005 = sect_transition180005
-transition180006 = sect_transition180006
-transition180007 = sect_transition180007
-transition180008 = sect_transition180008
-transition180009 = sect_transition180009
-transition18000A = sect_transition18000A
-transition18000B = sect_transition18000B
-transition18000C = sect_transition18000C
-transition18000D = sect_transition18000D
-transition190000 = sect_transition190000
-transition190001 = sect_transition190001
-transition190002 = sect_transition190002
-transition190003 = sect_transition190003
-transition190004 = sect_transition190004
-transition190005 = sect_transition190005
-transition190006 = sect_transition190006
-transition190007 = sect_transition190007
-transition190008 = sect_transition190008
-transition190009 = sect_transition190009
-transition19000A = sect_transition19000A
-transition19000B = sect_transition19000B
-transition19000C = sect_transition19000C
-transition19000D = sect_transition19000D
-transition19000E = sect_transition19000E
-transition19000F = sect_transition19000F
-transition200000 = sect_transition200000
-transition200001 = sect_transition200001
-transition200002 = sect_transition200002
-transition200003 = sect_transition200003
-transition200004 = sect_transition200004
-transition210000 = sect_transition210000
-transition210001 = sect_transition210001
-transition210002 = sect_transition210002
-transition210003 = sect_transition210003
-transition220000 = sect_transition220000
-transition220001 = sect_transition220001
-transition220002 = sect_transition220002
-transition220003 = sect_transition220003
-transition220004 = sect_transition220004
-transition220005 = sect_transition220005
+transition204000 = sect_transition204000
+transition204001 = sect_transition204001
+transition204002 = sect_transition204002
+transition204003 = sect_transition204003
+transition204004 = sect_transition204004
+transition204005 = sect_transition204005
+transition204006 = sect_transition204006
+transition204007 = sect_transition204007
+transition204008 = sect_transition204008
+transition20400E = sect_transition20400E
+transition20400F = sect_transition20400F
+transition204010 = sect_transition204010
 transition230000 = sect_transition230000
 transition230001 = sect_transition230001
 transition230002 = sect_transition230002
 transition230003 = sect_transition230003
 transition230004 = sect_transition230004
 transition230005 = sect_transition230005
+transition230006 = sect_transition230006
+transition230007 = sect_transition230007
+transition230008 = sect_transition230008
+transition230009 = sect_transition230009
+transition23000E = sect_transition23000E
+transition23000F = sect_transition23000F
+transition230010 = sect_transition230010
+transition230011 = sect_transition230011
+transition230015 = sect_transition230015
 
 
 [sect_transition000000]
-00:00:00 = foggy_weather_00
-01:00:00 = thunder_weather_01
+00:00:00 = clear_weather_00
+01:00:00 = cloudy_light_weather_01
 
 
 [sect_transition000001]
-00:00:00 = rainy_weather_00
-01:00:00 = grey_weather_01
+00:00:00 = clear_weather_00
+01:00:00 = cloudy_dark_weather_01
 
 
 [sect_transition000002]
-00:00:00 = stormy_weather_00
-01:00:00 = rainy_weather_01
+00:00:00 = clear_weather_00
+01:00:00 = clear_alt_weather_01
 
 
 [sect_transition000003]
-00:00:00 = stormy_weather_00
-01:00:00 = grey_weather_01
+00:00:00 = clear_alt_weather_00
+01:00:00 = cloudy_dark_weather_01
 
 
 [sect_transition000004]
-00:00:00 = thunder_weather_00
-01:00:00 = foggy_weather_01
+00:00:00 = clear_alt_weather_00
+01:00:00 = cloudy_light_weather_01
+
+
+[sect_transition000005]
+00:00:00 = clear_alt_weather_00
+01:00:00 = clear_weather_01
+
+
+[sect_transition000007]
+00:00:00 = cloudy_dark_weather_00
+01:00:00 = cloudy_light_weather_01
+
+
+[sect_transition000008]
+00:00:00 = cloudy_dark_weather_00
+01:00:00 = clear_weather_01
+
+
+[sect_transition000009]
+00:00:00 = cloudy_dark_weather_00
+01:00:00 = clear_alt_weather_01
+
+
+[sect_transition00000A]
+00:00:00 = cloudy_dark_weather_00
+01:00:00 = cloudy_light_rain_weather_01
+
+
+[sect_transition00000E]
+00:00:00 = cloudy_light_weather_00
+01:00:00 = clear_alt_weather_01
+
+
+[sect_transition00000F]
+00:00:00 = cloudy_light_weather_00
+01:00:00 = cloudy_dark_weather_01
+
+
+[sect_transition000010]
+00:00:00 = cloudy_light_weather_00
+01:00:00 = clear_weather_01
+
+
+[sect_transition000011]
+00:00:00 = cloudy_light_weather_00
+01:00:00 = cloudy_light_rain_weather_01
+
+
+[sect_transition000012]
+00:00:00 = cloudy_light_rain_weather_00
+01:00:00 = cloudy_dark_weather_01
+
+
+[sect_transition000013]
+00:00:00 = cloudy_light_rain_weather_00
+01:00:00 = cloudy_light_weather_01
+
+
+[sect_transition000016]
+00:00:00 = storm_weather_00
+01:00:00 = cloudy_light_rain_weather_01
 
 
 [sect_transition010000]
-01:00:00 = foggy_weather_01
-02:00:00 = thunder_weather_02
+01:00:00 = clear_weather_01
+02:00:00 = cloudy_dark_weather_02
 
 
 [sect_transition010001]
-01:00:00 = stormy_weather_01
-02:00:00 = rainy_weather_02
+01:00:00 = clear_weather_01
+02:00:00 = cloudy_light_weather_02
 
 
 [sect_transition010002]
-01:00:00 = stormy_weather_01
-02:00:00 = grey_weather_02
+01:00:00 = clear_weather_01
+02:00:00 = clear_alt_weather_02
 
 
 [sect_transition010003]
-01:00:00 = thunder_weather_01
-02:00:00 = foggy_weather_02
+01:00:00 = clear_alt_weather_01
+02:00:00 = cloudy_dark_weather_02
+
+
+[sect_transition010004]
+01:00:00 = clear_alt_weather_01
+02:00:00 = cloudy_light_weather_02
+
+
+[sect_transition010005]
+01:00:00 = clear_alt_weather_01
+02:00:00 = clear_weather_02
+
+
+[sect_transition010008]
+01:00:00 = cloudy_dark_weather_01
+02:00:00 = clear_alt_weather_02
+
+
+[sect_transition010009]
+01:00:00 = cloudy_dark_weather_01
+02:00:00 = cloudy_light_weather_02
+
+
+[sect_transition01000A]
+01:00:00 = cloudy_dark_weather_01
+02:00:00 = clear_weather_02
+
+
+[sect_transition01000E]
+01:00:00 = cloudy_light_weather_01
+02:00:00 = cloudy_dark_weather_02
+
+
+[sect_transition01000F]
+01:00:00 = cloudy_light_weather_01
+02:00:00 = clear_alt_weather_02
+
+
+[sect_transition010010]
+01:00:00 = cloudy_light_weather_01
+02:00:00 = clear_weather_02
+
+
+[sect_transition010012]
+01:00:00 = cloudy_light_rain_weather_01
+02:00:00 = cloudy_dark_weather_02
+
+
+[sect_transition010013]
+01:00:00 = cloudy_light_rain_weather_01
+02:00:00 = cloudy_light_weather_02
 
 
 [sect_transition020000]
-02:00:00 = beta_weather_02
-03:00:00 = thunder_weather_03
+02:00:00 = clear_weather_02
+03:00:00 = cloudy_light_weather_03_00
 
 
 [sect_transition020001]
-02:00:00 = beta_weather_02
-03:00:00 = dry_weather_03
+02:00:00 = clear_weather_02
+03:00:00 = cloudy_dark_weather_03_00
 
 
 [sect_transition020002]
-02:00:00 = dry_weather_02
-03:00:00 = beta_weather_03
+02:00:00 = clear_weather_02
+03:00:00 = clear_alt_weather_03_00
 
 
 [sect_transition020003]
-02:00:00 = foggy_weather_02
-03:00:00 = thunder_weather_03
+02:00:00 = clear_alt_weather_02
+03:00:00 = cloudy_light_weather_03_00
 
 
 [sect_transition020004]
-02:00:00 = grey_weather_02
-03:00:00 = stormy_weather_03
+02:00:00 = clear_alt_weather_02
+03:00:00 = cloudy_dark_weather_03_00
 
 
 [sect_transition020005]
-02:00:00 = rainy_weather_02
-03:00:00 = stormy_weather_03
+02:00:00 = clear_alt_weather_02
+03:00:00 = clear_weather_03_00
 
 
 [sect_transition020006]
-02:00:00 = thunder_weather_02
-03:00:00 = stormy_weather_03
+02:00:00 = cloudy_dark_weather_02
+03:00:00 = clear_weather_03_00
 
 
-[sect_transition020007]
-02:00:00 = thunder_weather_02
-03:00:00 = foggy_weather_03
+[sect_transition020009]
+02:00:00 = cloudy_dark_weather_02
+03:00:00 = clear_alt_weather_03_00
 
 
-[sect_transition020008]
-02:00:00 = thunder_weather_02
-03:00:00 = beta_weather_03
+[sect_transition02000A]
+02:00:00 = cloudy_dark_weather_02
+03:00:00 = cloudy_light_weather_03_00
 
 
-[sect_transition030000]
-03:00:00 = beta_weather_03
-04:00:00 = dry_weather_04
+[sect_transition02000E]
+02:00:00 = cloudy_light_weather_02
+03:00:00 = clear_alt_weather_03_00
 
 
-[sect_transition030001]
-03:00:00 = beta_weather_03
-04:00:00 = thunder_weather_04
+[sect_transition02000F]
+02:00:00 = cloudy_light_weather_02
+03:00:00 = clear_weather_03_00
 
 
-[sect_transition030002]
-03:00:00 = dry_weather_03
-04:00:00 = beta_weather_04
+[sect_transition020010]
+02:00:00 = cloudy_light_weather_02
+03:00:00 = cloudy_dark_weather_03_00
 
 
-[sect_transition030003]
-03:00:00 = dry_weather_03
-04:00:00 = thunder_weather_04
+[sect_transition043000]
+04:30:00 = cloudy_dark_weather_06
+05:30:00 = storm_weather_06_01
 
 
-[sect_transition030004]
-03:00:00 = grey_weather_03
-04:00:00 = thunder_weather_04
+[sect_transition043012]
+04:30:00 = cloudy_dark_weather_06
+06:00:00 = cloudy_light_weather_06_01
 
 
-[sect_transition030005]
-03:00:00 = grey_weather_03
-04:00:00 = stormy_weather_04
-
-
-[sect_transition030006]
-03:00:00 = grey_weather_03
-04:00:00 = rainy_weather_04
-
-
-[sect_transition030007]
-03:00:00 = rainy_weather_03
-04:00:00 = stormy_weather_04
-
-
-[sect_transition030008]
-03:00:00 = thunder_weather_03
-04:00:00 = grey_weather_04
-
-
-[sect_transition030009]
-03:00:00 = thunder_weather_03
-04:00:00 = rainy_weather_04
-
-
-[sect_transition03000A]
-03:00:00 = thunder_weather_03
-04:00:00 = beta_weather_04
-
-
-[sect_transition03000B]
-03:00:00 = thunder_weather_03
-04:00:00 = foggy_weather_04
-
-
-[sect_transition040000]
-04:00:00 = beta_weather_04
-05:00:00 = dry_weather_05
-
-
-[sect_transition040001]
-04:00:00 = beta_weather_04
-05:00:00 = rainy_weather_05
-
-
-[sect_transition040002]
-04:00:00 = beta_weather_04
-05:00:00 = thunder_weather_05
-
-
-[sect_transition040003]
-04:00:00 = dry_weather_04
-05:00:00 = grey_weather_05
-
-
-[sect_transition040004]
-04:00:00 = dry_weather_04
-05:00:00 = rainy_weather_05
-
-
-[sect_transition040005]
-04:00:00 = dry_weather_04
-05:00:00 = beta_weather_05
-
-
-[sect_transition040006]
-04:00:00 = dry_weather_04
-05:00:00 = stormy_weather_05
-
-
-[sect_transition040007]
-04:00:00 = grey_weather_04
-05:00:00 = beta_weather_05
-
-
-[sect_transition040008]
-04:00:00 = grey_weather_04
-05:00:00 = dry_weather_05
-
-
-[sect_transition040009]
-04:00:00 = grey_weather_04
-05:00:00 = rainy_weather_05
-
-
-[sect_transition04000A]
-04:00:00 = grey_weather_04
-05:00:00 = thunder_weather_05
-
-
-[sect_transition04000B]
-04:00:00 = grey_weather_04
-05:00:00 = foggy_weather_05
-
-
-[sect_transition04000C]
-04:00:00 = rainy_weather_04
-05:00:00 = beta_weather_05
-
-
-[sect_transition04000D]
-04:00:00 = rainy_weather_04
-05:00:00 = stormy_weather_05
-
-
-[sect_transition04000E]
-04:00:00 = rainy_weather_04
-05:00:00 = foggy_weather_05
-
-
-[sect_transition04000F]
-04:00:00 = thunder_weather_04
-05:00:00 = dry_weather_05
-
-
-[sect_transition040010]
-04:00:00 = thunder_weather_04
-05:00:00 = foggy_weather_05
-
-
-[sect_transition040011]
-04:00:00 = thunder_weather_04
-05:00:00 = beta_weather_05
-
-
-[sect_transition040012]
-04:00:00 = thunder_weather_04
-05:00:00 = rainy_weather_05
-
-
-[sect_transition040013]
-04:00:00 = thunder_weather_04
-05:00:00 = grey_weather_05
-
-
-[sect_transition040014]
-04:00:00 = thunder_weather_04
-05:00:00 = stormy_weather_05
-
-
-[sect_transition050100]
-05:01:00 = beta_weather_05_01
-06:00:00 = grey_weather_06
-
-
-[sect_transition050101]
-05:01:00 = beta_weather_05_01
-06:00:00 = thunder_weather_06
-
-
-[sect_transition050102]
-05:01:00 = beta_weather_05_01
-06:00:00 = foggy_weather_06
-
-
-[sect_transition050103]
-05:01:00 = beta_weather_05_01
-06:00:00 = dry_weather_06
-
-
-[sect_transition050104]
-05:01:00 = beta_weather_05_01
-06:00:00 = rainy_weather_06
-
-
-[sect_transition050105]
-05:01:00 = dry_weather_05_01
-06:00:00 = foggy_weather_06
-
-
-[sect_transition050106]
-05:01:00 = dry_weather_05_01
-06:00:00 = grey_weather_06
-
-
-[sect_transition050107]
-05:01:00 = dry_weather_05_01
-06:00:00 = thunder_weather_06
-
-
-[sect_transition050108]
-05:01:00 = dry_weather_05_01
-06:00:00 = beta_weather_06
-
-
-[sect_transition050109]
-05:01:00 = dry_weather_05_01
-06:00:00 = rainy_weather_06
-
-
-[sect_transition05010A]
-05:01:00 = dry_weather_05_01
-06:00:00 = stormy_weather_06
-
-
-[sect_transition05010B]
-05:01:00 = foggy_weather_05_01
-06:00:00 = grey_weather_06
-
-
-[sect_transition05010C]
-05:01:00 = rainy_weather_05_01
-06:00:00 = stormy_weather_06
-
-
-[sect_transition05010D]
-05:01:00 = rainy_weather_05_01
-06:00:00 = beta_weather_06
-
-
-[sect_transition05010E]
-05:01:00 = rainy_weather_05_01
-06:00:00 = grey_weather_06
-
-
-[sect_transition05010F]
-05:01:00 = rainy_weather_05_01
-06:00:00 = foggy_weather_06
-
-
-[sect_transition050110]
-05:01:00 = thunder_weather_05_01
-06:00:00 = dry_weather_06
-
-
-[sect_transition050111]
-05:01:00 = beta_weather_05_01
-07:00:00 = stormy_weather_07
-
-
-[sect_transition050112]
-05:01:00 = foggy_weather_05_01
-07:00:00 = rainy_weather_07
-
-
-[sect_transition050113]
-05:01:00 = grey_weather_05_01
-07:00:00 = foggy_weather_07
-
-
-[sect_transition050114]
-05:01:00 = grey_weather_05_01
-07:00:00 = rainy_weather_07
-
-
-[sect_transition050115]
-05:01:00 = stormy_weather_05_01
-07:00:00 = grey_weather_07
-
-
-[sect_transition050116]
-05:01:00 = stormy_weather_05_01
-07:00:00 = foggy_weather_07
-
-
-[sect_transition050117]
-05:01:00 = stormy_weather_05_01
-07:00:00 = rainy_weather_07
-
-
-[sect_transition050118]
-05:01:00 = thunder_weather_05_01
-07:00:00 = stormy_weather_07
-
-
-[sect_transition050119]
-05:01:00 = thunder_weather_05_01
-07:00:00 = beta_weather_07
-
-
-[sect_transition05011A]
-05:01:00 = thunder_weather_05_01
-07:00:00 = rainy_weather_07
-
-
-[sect_transition060000]
-06:00:00 = beta_weather_06
-07:00:00 = foggy_weather_07
-
-
-[sect_transition060001]
-06:00:00 = beta_weather_06
-07:00:00 = rainy_weather_07
-
-
-[sect_transition060002]
-06:00:00 = beta_weather_06
-07:00:00 = grey_weather_07
-
-
-[sect_transition060003]
-06:00:00 = dry_weather_06
-07:00:00 = stormy_weather_07
-
-
-[sect_transition060004]
-06:00:00 = dry_weather_06
-07:00:00 = beta_weather_07
-
-
-[sect_transition060005]
-06:00:00 = dry_weather_06
-07:00:00 = thunder_weather_07
-
-
-[sect_transition060006]
-06:00:00 = dry_weather_06
-07:00:00 = rainy_weather_07
-
-
-[sect_transition060007]
-06:00:00 = foggy_weather_06
-07:00:00 = rainy_weather_07
-
-
-[sect_transition060008]
-06:00:00 = foggy_weather_06
-07:00:00 = beta_weather_07
-
-
-[sect_transition060009]
-06:00:00 = foggy_weather_06
-07:00:00 = grey_weather_07
-
-
-[sect_transition06000A]
-06:00:00 = grey_weather_06
-07:00:00 = rainy_weather_07
-
-
-[sect_transition06000B]
-06:00:00 = rainy_weather_06
-07:00:00 = beta_weather_07
-
-
-[sect_transition06000C]
-06:00:00 = rainy_weather_06
-07:00:00 = foggy_weather_07
-
-
-[sect_transition06000D]
-06:00:00 = stormy_weather_06
-07:00:00 = grey_weather_07
-
-
-[sect_transition06000E]
-06:00:00 = stormy_weather_06
-07:00:00 = beta_weather_07
-
-
-[sect_transition06000F]
-06:00:00 = thunder_weather_06
-07:00:00 = beta_weather_07
-
-
-[sect_transition070000]
-07:00:00 = beta_weather_07
-08:00:00 = rainy_weather_08
-
-
-[sect_transition070001]
-07:00:00 = beta_weather_07
-08:00:00 = grey_weather_08
-
-
-[sect_transition070002]
-07:00:00 = beta_weather_07
-08:00:00 = foggy_weather_08
-
-
-[sect_transition070003]
-07:00:00 = foggy_weather_07
-08:00:00 = stormy_weather_08
-
-
-[sect_transition070004]
-07:00:00 = foggy_weather_07
-08:00:00 = rainy_weather_08
-
-
-[sect_transition070005]
-07:00:00 = grey_weather_07
-08:00:00 = foggy_weather_08
-
-
-[sect_transition070006]
-07:00:00 = grey_weather_07
-08:00:00 = stormy_weather_08
-
-
-[sect_transition070007]
-07:00:00 = rainy_weather_07
-08:00:00 = foggy_weather_08
-
-
-[sect_transition070008]
-07:00:00 = rainy_weather_07
-08:00:00 = grey_weather_08
-
-
-[sect_transition070009]
-07:00:00 = rainy_weather_07
-08:00:00 = stormy_weather_08
-
-
-[sect_transition07000A]
-07:00:00 = rainy_weather_07
-08:00:00 = beta_weather_08
-
-
-[sect_transition07000B]
-07:00:00 = stormy_weather_07
-08:00:00 = rainy_weather_08
-
-
-[sect_transition07000C]
-07:00:00 = stormy_weather_07
-08:00:00 = grey_weather_08
-
-
-[sect_transition07000D]
-07:00:00 = thunder_weather_07
-08:00:00 = grey_weather_08
-
-
-[sect_transition07000E]
-07:00:00 = thunder_weather_07
-08:00:00 = rainy_weather_08
+[sect_transition043016]
+04:30:00 = storm_weather_06
+06:00:00 = cloudy_light_weather_06_01
 
 
 [sect_transition080000]
-08:00:00 = beta_weather_08
-09:00:00 = stormy_weather_09
+08:00:00 = clear_weather_08
+09:00:00 = cloudy_light_weather_09
 
 
 [sect_transition080001]
-08:00:00 = beta_weather_08
-09:00:00 = grey_weather_09
+08:00:00 = clear_weather_08
+09:00:00 = cloudy_dark_weather_09
 
 
 [sect_transition080002]
-08:00:00 = beta_weather_08
-09:00:00 = rainy_weather_09
+08:00:00 = clear_weather_08
+09:00:00 = clear_alt_weather_09
 
 
 [sect_transition080003]
-08:00:00 = dry_weather_08
-09:00:00 = grey_weather_09
+08:00:00 = clear_alt_weather_08
+09:00:00 = cloudy_light_weather_09
 
 
 [sect_transition080004]
-08:00:00 = dry_weather_08
-09:00:00 = thunder_weather_09
+08:00:00 = clear_alt_weather_08
+09:00:00 = clear_weather_09
 
 
 [sect_transition080005]
-08:00:00 = dry_weather_08
-09:00:00 = rainy_weather_09
+08:00:00 = clear_alt_weather_08
+09:00:00 = cloudy_dark_weather_09
 
 
 [sect_transition080006]
-08:00:00 = foggy_weather_08
-09:00:00 = stormy_weather_09
+08:00:00 = cloudy_dark_weather_08
+09:00:00 = cloudy_light_weather_09
 
 
 [sect_transition080007]
-08:00:00 = grey_weather_08
-09:00:00 = stormy_weather_09
+08:00:00 = cloudy_dark_weather_08
+09:00:00 = cloudy_light_rain_weather_09
 
 
 [sect_transition080008]
-08:00:00 = grey_weather_08
-09:00:00 = foggy_weather_09
+08:00:00 = cloudy_dark_weather_08
+09:00:00 = cloudy_dark_rain_weather_09
 
 
 [sect_transition080009]
-08:00:00 = rainy_weather_08
-09:00:00 = thunder_weather_09
+08:00:00 = cloudy_dark_weather_08
+09:00:00 = clear_weather_09
 
 
 [sect_transition08000A]
-08:00:00 = rainy_weather_08
-09:00:00 = beta_weather_09
+08:00:00 = cloudy_dark_weather_08
+09:00:00 = clear_alt_weather_09
 
 
 [sect_transition08000B]
-08:00:00 = rainy_weather_08
-09:00:00 = grey_weather_09
+08:00:00 = cloudy_dark_rain_weather_08
+09:00:00 = cloudy_light_rain_weather_09
 
 
 [sect_transition08000C]
-08:00:00 = rainy_weather_08
-09:00:00 = foggy_weather_09
+08:00:00 = cloudy_dark_rain_weather_08
+09:00:00 = cloudy_dark_weather_09
 
 
 [sect_transition08000D]
-08:00:00 = rainy_weather_08
-09:00:00 = stormy_weather_09
+08:00:00 = cloudy_dark_rain_weather_08
+09:00:00 = storm_weather_09
 
 
 [sect_transition08000E]
-08:00:00 = rainy_weather_08
-09:00:00 = dry_weather_09
+08:00:00 = cloudy_light_weather_08
+09:00:00 = cloudy_dark_weather_09
 
 
 [sect_transition08000F]
-08:00:00 = thunder_weather_08
-09:00:00 = grey_weather_09
+08:00:00 = cloudy_light_weather_08
+09:00:00 = clear_alt_weather_09
 
 
 [sect_transition080010]
-08:00:00 = thunder_weather_08
-09:00:00 = dry_weather_09
+08:00:00 = cloudy_light_weather_08
+09:00:00 = clear_weather_09
 
 
 [sect_transition080011]
-08:00:00 = thunder_weather_08
-09:00:00 = stormy_weather_09
+08:00:00 = cloudy_light_weather_08
+09:00:00 = cloudy_light_rain_weather_09
 
 
-[sect_transition080012]
-08:00:00 = thunder_weather_08
-09:00:00 = rainy_weather_09
+[sect_transition080015]
+08:00:00 = storm_weather_08
+09:00:00 = cloudy_dark_rain_weather_09
+
+
+[sect_transition080016]
+08:00:00 = storm_weather_08
+09:00:00 = cloudy_light_rain_weather_09
 
 
 [sect_transition090000]
-09:00:00 = beta_weather_09
-10:00:00 = rainy_weather_10
+09:00:00 = clear_weather_09
+10:00:00 = cloudy_light_weather_10
 
 
 [sect_transition090001]
-09:00:00 = dry_weather_09
-10:00:00 = grey_weather_10
+09:00:00 = clear_weather_09
+10:00:00 = clear_alt_weather_10
 
 
 [sect_transition090002]
-09:00:00 = dry_weather_09
-10:00:00 = rainy_weather_10
+09:00:00 = clear_weather_09
+10:00:00 = cloudy_dark_weather_10
 
 
 [sect_transition090003]
-09:00:00 = foggy_weather_09
-10:00:00 = stormy_weather_10
+09:00:00 = clear_alt_weather_09
+10:00:00 = cloudy_light_weather_10
 
 
 [sect_transition090004]
-09:00:00 = grey_weather_09
-10:00:00 = thunder_weather_10
+09:00:00 = clear_alt_weather_09
+10:00:00 = cloudy_dark_weather_10
 
 
 [sect_transition090005]
-09:00:00 = grey_weather_09
-10:00:00 = dry_weather_10
+09:00:00 = clear_alt_weather_09
+10:00:00 = clear_weather_10
 
 
 [sect_transition090006]
-09:00:00 = rainy_weather_09
-10:00:00 = thunder_weather_10
+09:00:00 = cloudy_dark_weather_09
+10:00:00 = clear_weather_10
 
 
 [sect_transition090007]
-09:00:00 = thunder_weather_09
-10:00:00 = dry_weather_10
+09:00:00 = cloudy_dark_weather_09
+10:00:00 = clear_alt_weather_10
 
 
 [sect_transition090008]
-09:00:00 = thunder_weather_09
-10:00:00 = rainy_weather_10
+09:00:00 = cloudy_dark_weather_09
+10:00:00 = cloudy_light_weather_10
 
 
-[sect_transition090009]
-09:00:00 = thunder_weather_09
-10:00:00 = grey_weather_10
+[sect_transition09000A]
+09:00:00 = cloudy_dark_weather_09
+10:00:00 = cloudy_light_rain_weather_10
+
+
+[sect_transition09000B]
+09:00:00 = cloudy_dark_rain_weather_09
+10:00:00 = cloudy_dark_weather_10
+
+
+[sect_transition09000C]
+09:00:00 = cloudy_dark_rain_weather_09
+10:00:00 = cloudy_light_rain_weather_10
+
+
+[sect_transition09000D]
+09:00:00 = cloudy_dark_rain_weather_09
+10:00:00 = storm_weather_10
+
+
+[sect_transition09000E]
+09:00:00 = cloudy_light_weather_09
+10:00:00 = clear_alt_weather_10
+
+
+[sect_transition09000F]
+09:00:00 = cloudy_light_weather_09
+10:00:00 = clear_weather_10
+
+
+[sect_transition090010]
+09:00:00 = cloudy_light_weather_09
+10:00:00 = cloudy_dark_weather_10
+
+
+[sect_transition090011]
+09:00:00 = cloudy_light_weather_09
+10:00:00 = cloudy_light_rain_weather_10
+
+
+[sect_transition090012]
+09:00:00 = cloudy_light_rain_weather_09
+10:00:00 = cloudy_dark_weather_10
+
+
+[sect_transition090013]
+09:00:00 = cloudy_light_rain_weather_09
+10:00:00 = cloudy_light_weather_10
+
+
+[sect_transition090015]
+09:00:00 = storm_weather_09
+10:00:00 = cloudy_light_rain_weather_10
 
 
 [sect_transition100000]
-10:00:00 = beta_weather_10
-11:00:00 = grey_weather_11
+10:00:00 = clear_weather_10
+11:00:00 = cloudy_light_weather_11
 
 
 [sect_transition100001]
-10:00:00 = dry_weather_10
-11:00:00 = grey_weather_11
+10:00:00 = clear_weather_10
+11:00:00 = clear_alt_weather_11
 
 
 [sect_transition100002]
-10:00:00 = dry_weather_10
-11:00:00 = beta_weather_11
+10:00:00 = clear_weather_10
+11:00:00 = cloudy_dark_weather_11
 
 
 [sect_transition100003]
-10:00:00 = foggy_weather_10
-11:00:00 = grey_weather_11
+10:00:00 = clear_alt_weather_10
+11:00:00 = clear_weather_11
 
 
 [sect_transition100004]
-10:00:00 = foggy_weather_10
-11:00:00 = beta_weather_11
+10:00:00 = clear_alt_weather_10
+11:00:00 = cloudy_light_weather_11
 
 
 [sect_transition100005]
-10:00:00 = grey_weather_10
-11:00:00 = beta_weather_11
+10:00:00 = clear_alt_weather_10
+11:00:00 = cloudy_dark_weather_11
 
 
 [sect_transition100006]
-10:00:00 = grey_weather_10
-11:00:00 = dry_weather_11
-
-
-[sect_transition100007]
-10:00:00 = rainy_weather_10
-11:00:00 = beta_weather_11
+10:00:00 = cloudy_dark_weather_10
+11:00:00 = cloudy_light_rain_weather_11
 
 
 [sect_transition100008]
-10:00:00 = rainy_weather_10
-11:00:00 = thunder_weather_11
+10:00:00 = cloudy_dark_weather_10
+11:00:00 = clear_weather_11
 
 
 [sect_transition100009]
-10:00:00 = rainy_weather_10
-11:00:00 = foggy_weather_11
+10:00:00 = cloudy_dark_weather_10
+11:00:00 = clear_alt_weather_11
 
 
 [sect_transition10000A]
-10:00:00 = rainy_weather_10
-11:00:00 = dry_weather_11
+10:00:00 = cloudy_dark_weather_10
+11:00:00 = cloudy_light_weather_11
 
 
-[sect_transition10000B]
-10:00:00 = rainy_weather_10
-11:00:00 = grey_weather_11
+[sect_transition10000E]
+10:00:00 = cloudy_light_weather_10
+11:00:00 = cloudy_dark_weather_11
 
 
-[sect_transition10000C]
-10:00:00 = stormy_weather_10
-11:00:00 = rainy_weather_11
+[sect_transition10000F]
+10:00:00 = cloudy_light_weather_10
+11:00:00 = clear_alt_weather_11
+
+
+[sect_transition100010]
+10:00:00 = cloudy_light_weather_10
+11:00:00 = clear_weather_11
+
+
+[sect_transition100011]
+10:00:00 = cloudy_light_weather_10
+11:00:00 = cloudy_light_rain_weather_11
+
+
+[sect_transition100012]
+10:00:00 = cloudy_light_rain_weather_10
+11:00:00 = cloudy_light_weather_11
+
+
+[sect_transition100013]
+10:00:00 = cloudy_light_rain_weather_10
+11:00:00 = cloudy_dark_weather_11
+
+
+[sect_transition100016]
+10:00:00 = storm_weather_10
+11:00:00 = cloudy_light_rain_weather_11
 
 
 [sect_transition110000]
-11:00:00 = beta_weather_11
-12:00:00 = rainy_weather_12
+11:00:00 = clear_weather_11
+12:00:00 = cloudy_dark_weather_12
 
 
 [sect_transition110001]
-11:00:00 = beta_weather_11
-12:00:00 = grey_weather_12
+11:00:00 = clear_weather_11
+12:00:00 = cloudy_light_weather_12
 
 
 [sect_transition110002]
-11:00:00 = beta_weather_11
-12:00:00 = dry_weather_12
+11:00:00 = clear_weather_11
+12:00:00 = clear_alt_weather_12
 
 
 [sect_transition110003]
-11:00:00 = dry_weather_11
-12:00:00 = grey_weather_12
+11:00:00 = clear_alt_weather_11
+12:00:00 = cloudy_light_weather_12
 
 
 [sect_transition110004]
-11:00:00 = foggy_weather_11
-12:00:00 = rainy_weather_12
+11:00:00 = clear_alt_weather_11
+12:00:00 = clear_weather_12
 
 
 [sect_transition110005]
-11:00:00 = grey_weather_11
-12:00:00 = dry_weather_12
+11:00:00 = clear_alt_weather_11
+12:00:00 = cloudy_dark_weather_12
 
 
 [sect_transition110006]
-11:00:00 = grey_weather_11
-12:00:00 = rainy_weather_12
+11:00:00 = cloudy_dark_weather_11
+12:00:00 = cloudy_light_rain_weather_12
 
 
 [sect_transition110007]
-11:00:00 = grey_weather_11
-12:00:00 = beta_weather_12
+11:00:00 = cloudy_dark_weather_11
+12:00:00 = clear_alt_weather_12
 
 
 [sect_transition110008]
-11:00:00 = rainy_weather_11
-12:00:00 = beta_weather_12
-
-
-[sect_transition110009]
-11:00:00 = thunder_weather_11
-12:00:00 = dry_weather_12
+11:00:00 = cloudy_dark_weather_11
+12:00:00 = cloudy_light_weather_12
 
 
 [sect_transition11000A]
-11:00:00 = thunder_weather_11
-12:00:00 = beta_weather_12
+11:00:00 = cloudy_dark_weather_11
+12:00:00 = clear_weather_12
 
 
-[sect_transition11000B]
-11:00:00 = thunder_weather_11
-12:00:00 = grey_weather_12
+[sect_transition11000E]
+11:00:00 = cloudy_light_weather_11
+12:00:00 = cloudy_dark_weather_12
+
+
+[sect_transition11000F]
+11:00:00 = cloudy_light_weather_11
+12:00:00 = clear_weather_12
+
+
+[sect_transition110010]
+11:00:00 = cloudy_light_weather_11
+12:00:00 = clear_alt_weather_12
+
+
+[sect_transition110011]
+11:00:00 = cloudy_light_weather_11
+12:00:00 = cloudy_light_rain_weather_12
+
+
+[sect_transition110013]
+11:00:00 = cloudy_light_rain_weather_11
+12:00:00 = cloudy_dark_weather_12
+
+
+[sect_transition110014]
+11:00:00 = cloudy_light_rain_weather_11
+12:00:00 = cloudy_light_weather_12
+
+
+[sect_transition110016]
+11:00:00 = storm_weather_11
+12:00:00 = cloudy_light_rain_weather_12
 
 
 [sect_transition120000]
-12:00:00 = beta_weather_12
-13:00:00 = stormy_weather_13
+12:00:00 = clear_weather_12
+13:00:00 = cloudy_light_weather_13
 
 
 [sect_transition120001]
-12:00:00 = dry_weather_12
-13:00:00 = grey_weather_13
+12:00:00 = clear_weather_12
+13:00:00 = clear_alt_weather_13
 
 
 [sect_transition120002]
-12:00:00 = foggy_weather_12
-13:00:00 = rainy_weather_13
+12:00:00 = clear_weather_12
+13:00:00 = cloudy_dark_weather_13
 
 
 [sect_transition120003]
-12:00:00 = grey_weather_12
-13:00:00 = thunder_weather_13
+12:00:00 = clear_alt_weather_12
+13:00:00 = clear_weather_13
 
 
 [sect_transition120004]
-12:00:00 = grey_weather_12
-13:00:00 = dry_weather_13
+12:00:00 = clear_alt_weather_12
+13:00:00 = cloudy_light_weather_13
 
 
 [sect_transition120005]
-12:00:00 = rainy_weather_12
-13:00:00 = foggy_weather_13
+12:00:00 = clear_alt_weather_12
+13:00:00 = cloudy_dark_weather_13
 
 
 [sect_transition120006]
-12:00:00 = thunder_weather_12
-13:00:00 = stormy_weather_13
+12:00:00 = cloudy_dark_weather_12
+13:00:00 = cloudy_light_weather_13
 
 
 [sect_transition120007]
-12:00:00 = thunder_weather_12
-13:00:00 = grey_weather_13
+12:00:00 = cloudy_dark_weather_12
+13:00:00 = clear_alt_weather_13
 
 
 [sect_transition120008]
-12:00:00 = thunder_weather_12
-13:00:00 = beta_weather_13
+12:00:00 = cloudy_dark_weather_12
+13:00:00 = clear_weather_13
+
+
+[sect_transition120009]
+12:00:00 = cloudy_dark_weather_12
+13:00:00 = cloudy_light_rain_weather_13
+
+
+[sect_transition12000F]
+12:00:00 = cloudy_light_weather_12
+13:00:00 = cloudy_dark_weather_13
+
+
+[sect_transition120011]
+12:00:00 = cloudy_light_weather_12
+13:00:00 = clear_alt_weather_13
+
+
+[sect_transition120012]
+12:00:00 = cloudy_light_weather_12
+13:00:00 = clear_weather_13
+
+
+[sect_transition120013]
+12:00:00 = cloudy_light_weather_12
+13:00:00 = cloudy_light_rain_weather_13
+
+
+[sect_transition120014]
+12:00:00 = cloudy_light_rain_weather_12
+13:00:00 = cloudy_dark_weather_13
+
+
+[sect_transition120016]
+12:00:00 = cloudy_light_rain_weather_12
+13:00:00 = clear_weather_13
+
+
+[sect_transition120017]
+12:00:00 = cloudy_light_rain_weather_12
+13:00:00 = cloudy_light_weather_13
+
+
+[sect_transition120018]
+12:00:00 = storm_weather_12
+13:00:00 = cloudy_light_rain_weather_13
 
 
 [sect_transition130000]
-13:00:00 = beta_weather_13
-14:00:00 = rainy_weather_14
+13:00:00 = clear_weather_13
+14:00:00 = cloudy_light_weather_14
 
 
 [sect_transition130001]
-13:00:00 = beta_weather_13
-14:00:00 = thunder_weather_14
+13:00:00 = clear_weather_13
+14:00:00 = cloudy_dark_weather_14
 
 
 [sect_transition130002]
-13:00:00 = dry_weather_13
-14:00:00 = beta_weather_14
+13:00:00 = clear_alt_weather_13
+14:00:00 = cloudy_light_weather_14
 
 
 [sect_transition130003]
-13:00:00 = foggy_weather_13
-14:00:00 = rainy_weather_14
+13:00:00 = clear_alt_weather_13
+14:00:00 = cloudy_dark_weather_14
 
 
 [sect_transition130004]
-13:00:00 = grey_weather_13
-14:00:00 = beta_weather_14
+13:00:00 = clear_alt_weather_13
+14:00:00 = clear_weather_14
 
 
 [sect_transition130005]
-13:00:00 = grey_weather_13
-14:00:00 = rainy_weather_14
+13:00:00 = cloudy_dark_weather_13
+14:00:00 = clear_weather_14
 
 
 [sect_transition130006]
-13:00:00 = grey_weather_13
-14:00:00 = thunder_weather_14
-
-
-[sect_transition130007]
-13:00:00 = rainy_weather_13
-14:00:00 = foggy_weather_14
+13:00:00 = cloudy_dark_weather_13
+14:00:00 = cloudy_light_weather_14
 
 
 [sect_transition130008]
-13:00:00 = rainy_weather_13
-14:00:00 = beta_weather_14
+13:00:00 = cloudy_dark_weather_13
+14:00:00 = cloudy_light_rain_weather_14
 
 
-[sect_transition130009]
-13:00:00 = stormy_weather_13
-14:00:00 = beta_weather_14
+[sect_transition13000D]
+13:00:00 = cloudy_light_weather_13
+14:00:00 = clear_weather_14
 
 
-[sect_transition13000A]
-13:00:00 = thunder_weather_13
-14:00:00 = grey_weather_14
+[sect_transition13000E]
+13:00:00 = cloudy_light_weather_13
+14:00:00 = cloudy_light_rain_weather_14
 
 
-[sect_transition13000B]
-13:00:00 = thunder_weather_13
-14:00:00 = beta_weather_14
+[sect_transition130010]
+13:00:00 = cloudy_light_weather_13
+14:00:00 = cloudy_dark_weather_14
+
+
+[sect_transition130011]
+13:00:00 = cloudy_light_rain_weather_13
+14:00:00 = cloudy_light_weather_14
+
+
+[sect_transition130012]
+13:00:00 = cloudy_light_rain_weather_13
+14:00:00 = clear_weather_14
+
+
+[sect_transition130013]
+13:00:00 = cloudy_light_rain_weather_13
+14:00:00 = cloudy_dark_weather_14
+
+
+[sect_transition130015]
+13:00:00 = storm_weather_13
+14:00:00 = cloudy_light_rain_weather_14
 
 
 [sect_transition140000]
-14:00:00 = beta_weather_14
-15:00:00 = dry_weather_15
+14:00:00 = clear_weather_14
+15:00:00 = cloudy_dark_weather_15
 
 
 [sect_transition140001]
-14:00:00 = beta_weather_14
-15:00:00 = rainy_weather_15
+14:00:00 = clear_weather_14
+15:00:00 = cloudy_light_weather_15
 
 
 [sect_transition140002]
-14:00:00 = dry_weather_14
-15:00:00 = beta_weather_15
+14:00:00 = clear_weather_14
+15:00:00 = cloudy_light_rain_weather_15
 
 
 [sect_transition140003]
-14:00:00 = foggy_weather_14
-15:00:00 = rainy_weather_15
-
-
-[sect_transition140004]
-14:00:00 = rainy_weather_14
-15:00:00 = stormy_weather_15
+14:00:00 = cloudy_dark_weather_14
+15:00:00 = clear_weather_15
 
 
 [sect_transition140005]
-14:00:00 = rainy_weather_14
-15:00:00 = foggy_weather_15
+14:00:00 = cloudy_dark_weather_14
+15:00:00 = cloudy_light_rain_weather_15
 
 
 [sect_transition140006]
-14:00:00 = rainy_weather_14
-15:00:00 = thunder_weather_15
+14:00:00 = cloudy_dark_weather_14
+15:00:00 = cloudy_light_weather_15
 
 
-[sect_transition150000]
-15:00:00 = beta_weather_15
-16:00:00 = thunder_weather_16
+[sect_transition14000C]
+14:00:00 = cloudy_light_weather_14
+15:00:00 = clear_weather_15
 
 
-[sect_transition150001]
-15:00:00 = beta_weather_15
-16:00:00 = dry_weather_16
+[sect_transition14000D]
+14:00:00 = cloudy_light_weather_14
+15:00:00 = cloudy_dark_weather_15
 
 
-[sect_transition150002]
-15:00:00 = dry_weather_15
-16:00:00 = beta_weather_16
+[sect_transition14000E]
+14:00:00 = cloudy_light_weather_14
+15:00:00 = cloudy_light_rain_weather_15
 
 
-[sect_transition150003]
-15:00:00 = dry_weather_15
-16:00:00 = thunder_weather_16
+[sect_transition14000F]
+14:00:00 = cloudy_light_weather_14
+15:00:00 = storm_weather_15
+
+
+[sect_transition140010]
+14:00:00 = cloudy_light_rain_weather_14
+15:00:00 = cloudy_dark_weather_15
+
+
+[sect_transition140012]
+14:00:00 = cloudy_light_rain_weather_14
+15:00:00 = clear_weather_15
+
+
+[sect_transition140013]
+14:00:00 = cloudy_light_rain_weather_14
+15:00:00 = cloudy_light_weather_15
+
+
+[sect_transition140014]
+14:00:00 = storm_weather_14
+15:00:00 = cloudy_light_rain_weather_15
+
+
+[sect_transition140015]
+14:00:00 = storm_weather_14
+15:00:00 = cloudy_light_weather_15
+
+
+[sect_transition140016]
+14:00:00 = storm_weather_14
+15:00:00 = cloudy_light_rain_weather_15
 
 
 [sect_transition150004]
-15:00:00 = foggy_weather_15
-16:00:00 = thunder_weather_16
+15:00:00 = clear_weather_15
+16:00:00 = cloudy_dark_weather_16
 
 
 [sect_transition150005]
-15:00:00 = foggy_weather_15
-16:00:00 = grey_weather_16
+15:00:00 = clear_weather_15
+16:00:00 = cloudy_light_weather_16
 
 
 [sect_transition150006]
-15:00:00 = foggy_weather_15
-16:00:00 = rainy_weather_16
+15:00:00 = clear_weather_15
+16:00:00 = clear_alt_weather_16
 
 
 [sect_transition150007]
-15:00:00 = grey_weather_15
-16:00:00 = thunder_weather_16
+15:00:00 = clear_weather_15
+16:00:00 = cloudy_light_rain_weather_16
 
 
 [sect_transition150008]
-15:00:00 = grey_weather_15
-16:00:00 = beta_weather_16
+15:00:00 = cloudy_dark_weather_15
+16:00:00 = cloudy_light_weather_16
 
 
 [sect_transition150009]
-15:00:00 = grey_weather_15
-16:00:00 = dry_weather_16
+15:00:00 = cloudy_dark_weather_15
+16:00:00 = clear_weather_16
 
 
 [sect_transition15000A]
-15:00:00 = rainy_weather_15
-16:00:00 = foggy_weather_16
+15:00:00 = cloudy_dark_weather_15
+16:00:00 = clear_alt_weather_16
 
 
 [sect_transition15000B]
-15:00:00 = rainy_weather_15
-16:00:00 = thunder_weather_16
-
-
-[sect_transition15000C]
-15:00:00 = rainy_weather_15
-16:00:00 = grey_weather_16
-
-
-[sect_transition15000D]
-15:00:00 = stormy_weather_15
-16:00:00 = grey_weather_16
-
-
-[sect_transition15000E]
-15:00:00 = thunder_weather_15
-16:00:00 = grey_weather_16
-
-
-[sect_transition15000F]
-15:00:00 = thunder_weather_15
-16:00:00 = rainy_weather_16
+15:00:00 = cloudy_dark_weather_15
+16:00:00 = cloudy_light_rain_weather_16
 
 
 [sect_transition150010]
-15:00:00 = thunder_weather_15
-16:00:00 = foggy_weather_16
+15:00:00 = cloudy_light_weather_15
+16:00:00 = clear_weather_16
 
 
 [sect_transition150011]
-15:00:00 = thunder_weather_15
-16:00:00 = beta_weather_16
+15:00:00 = cloudy_light_weather_15
+16:00:00 = cloudy_dark_weather_16
 
 
 [sect_transition150012]
-15:00:00 = thunder_weather_15
-16:00:00 = dry_weather_16
+15:00:00 = cloudy_light_weather_15
+16:00:00 = cloudy_light_rain_weather_16
+
+
+[sect_transition150013]
+15:00:00 = cloudy_light_weather_15
+16:00:00 = clear_alt_weather_16
+
+
+[sect_transition150014]
+15:00:00 = cloudy_light_weather_15
+16:00:00 = storm_weather_16
+
+
+[sect_transition150015]
+15:00:00 = cloudy_light_rain_weather_15
+16:00:00 = cloudy_dark_weather_16
+
+
+[sect_transition150016]
+15:00:00 = cloudy_light_rain_weather_15
+16:00:00 = cloudy_light_weather_16
+
+
+[sect_transition150017]
+15:00:00 = cloudy_light_rain_weather_15
+16:00:00 = clear_alt_weather_16
+
+
+[sect_transition150018]
+15:00:00 = storm_weather_15
+16:00:00 = cloudy_light_rain_weather_16
+
+
+[sect_transition150019]
+15:00:00 = storm_weather_15
+16:00:00 = cloudy_light_weather_16
+
+
+[sect_transition15001A]
+15:00:00 = storm_weather_15
+16:00:00 = cloudy_light_rain_weather_16
 
 
 [sect_transition160000]
-16:00:00 = beta_weather_16
-17:00:00 = foggy_weather_17
+16:00:00 = clear_weather_16
+17:00:00 = cloudy_dark_weather_17
 
 
 [sect_transition160001]
-16:00:00 = beta_weather_16
-17:00:00 = thunder_weather_17
+16:00:00 = clear_weather_16
+17:00:00 = clear_alt_weather_17
 
 
 [sect_transition160002]
-16:00:00 = beta_weather_16
-17:00:00 = rainy_weather_17
-
-
-[sect_transition160003]
-16:00:00 = beta_weather_16
-17:00:00 = grey_weather_17
+16:00:00 = clear_weather_16
+17:00:00 = cloudy_light_weather_17
 
 
 [sect_transition160004]
-16:00:00 = beta_weather_16
-17:00:00 = dry_weather_17
+16:00:00 = clear_alt_weather_16
+17:00:00 = cloudy_dark_weather_17
 
 
 [sect_transition160005]
-16:00:00 = dry_weather_16
-17:00:00 = beta_weather_17
+16:00:00 = clear_alt_weather_16
+17:00:00 = cloudy_light_weather_17
 
 
 [sect_transition160006]
-16:00:00 = dry_weather_16
-17:00:00 = grey_weather_17
+16:00:00 = clear_alt_weather_16
+17:00:00 = clear_weather_17
 
 
 [sect_transition160007]
-16:00:00 = foggy_weather_16
-17:00:00 = rainy_weather_17
-
-
-[sect_transition160008]
-16:00:00 = foggy_weather_16
-17:00:00 = thunder_weather_17
+16:00:00 = cloudy_dark_weather_16
+17:00:00 = clear_weather_17
 
 
 [sect_transition160009]
-16:00:00 = grey_weather_16
-17:00:00 = stormy_weather_17
-
-
-[sect_transition16000A]
-16:00:00 = rainy_weather_16
-17:00:00 = thunder_weather_17
+16:00:00 = cloudy_dark_weather_16
+17:00:00 = cloudy_light_weather_17
 
 
 [sect_transition16000B]
-16:00:00 = thunder_weather_16
-17:00:00 = rainy_weather_17
+16:00:00 = cloudy_dark_weather_16
+17:00:00 = clear_alt_weather_17
 
 
-[sect_transition16000C]
-16:00:00 = thunder_weather_16
-17:00:00 = stormy_weather_17
+[sect_transition16000F]
+16:00:00 = cloudy_light_weather_16
+17:00:00 = clear_alt_weather_17
+
+
+[sect_transition160010]
+16:00:00 = cloudy_light_weather_16
+17:00:00 = cloudy_dark_weather_17
+
+
+[sect_transition160013]
+16:00:00 = cloudy_light_weather_16
+17:00:00 = clear_weather_17
+
+
+[sect_transition160014]
+16:00:00 = cloudy_light_rain_weather_16
+17:00:00 = cloudy_light_weather_17
+
+
+[sect_transition160015]
+16:00:00 = cloudy_light_rain_weather_16
+17:00:00 = clear_alt_weather_17
+
+
+[sect_transition160017]
+16:00:00 = cloudy_light_rain_weather_16
+17:00:00 = cloudy_dark_weather_17
 
 
 [sect_transition170000]
-17:00:00 = beta_weather_17
-18:00:00 = dry_weather_18
-
-
-[sect_transition170001]
-17:00:00 = beta_weather_17
-18:00:00 = foggy_weather_18
+17:00:00 = clear_weather_17
+18:00:00 = clear_alt_weather_18
 
 
 [sect_transition170002]
-17:00:00 = dry_weather_17
-18:00:00 = beta_weather_18
-
-
-[sect_transition170003]
-17:00:00 = foggy_weather_17
-18:00:00 = dry_weather_18
-
-
-[sect_transition170004]
-17:00:00 = rainy_weather_17
-18:00:00 = dry_weather_18
-
-
-[sect_transition170005]
-17:00:00 = rainy_weather_17
-18:00:00 = thunder_weather_18
+17:00:00 = clear_alt_weather_17
+18:00:00 = clear_weather_18
 
 
 [sect_transition170006]
-17:00:00 = rainy_weather_17
-18:00:00 = beta_weather_18
+17:00:00 = cloudy_dark_weather_17
+18:00:00 = clear_weather_18
 
 
 [sect_transition170007]
-17:00:00 = stormy_weather_17
-18:00:00 = thunder_weather_18
+17:00:00 = cloudy_dark_weather_17
+18:00:00 = clear_alt_weather_18
 
 
-[sect_transition170008]
-17:00:00 = thunder_weather_17
-18:00:00 = beta_weather_18
+[sect_transition204000]
+20:40:00 = clear_weather_20_01
+22:00:00 = cloudy_light_weather_21
 
 
-[sect_transition170009]
-17:00:00 = thunder_weather_17
-18:00:00 = foggy_weather_18
+[sect_transition204001]
+20:40:00 = clear_weather_20_01
+22:00:00 = cloudy_dark_weather_21
 
 
-[sect_transition17000A]
-17:00:00 = thunder_weather_17
-18:00:00 = dry_weather_18
+[sect_transition204002]
+20:40:00 = clear_weather_20_01
+22:00:00 = clear_alt_weather_21
 
 
-[sect_transition180000]
-18:00:00 = beta_weather_18
-19:00:00 = stormy_weather_19
+[sect_transition204003]
+20:40:00 = clear_alt_weather_20_01
+22:00:00 = cloudy_light_weather_21
 
 
-[sect_transition180001]
-18:00:00 = beta_weather_18
-19:00:00 = grey_weather_19
+[sect_transition204004]
+20:40:00 = clear_alt_weather_20_01
+22:00:00 = cloudy_dark_weather_21
 
 
-[sect_transition180002]
-18:00:00 = dry_weather_18
-19:00:00 = grey_weather_19
+[sect_transition204005]
+20:40:00 = clear_alt_weather_20_01
+22:00:00 = clear_weather_21
 
 
-[sect_transition180003]
-18:00:00 = dry_weather_18
-19:00:00 = beta_weather_19
+[sect_transition204006]
+20:40:00 = cloudy_dark_weather_20_01
+22:00:00 = cloudy_light_weather_21
 
 
-[sect_transition180004]
-18:00:00 = dry_weather_18
-19:00:00 = foggy_weather_19
+[sect_transition204007]
+20:40:00 = cloudy_dark_weather_20_01
+22:00:00 = clear_alt_weather_21
 
 
-[sect_transition180005]
-18:00:00 = foggy_weather_18
-19:00:00 = dry_weather_19
+[sect_transition204008]
+20:40:00 = cloudy_dark_weather_20_01
+22:00:00 = clear_weather_21
 
 
-[sect_transition180006]
-18:00:00 = grey_weather_18
-19:00:00 = dry_weather_19
+[sect_transition20400E]
+20:40:00 = cloudy_light_weather_20_01
+22:00:00 = clear_alt_weather_21
 
 
-[sect_transition180007]
-18:00:00 = grey_weather_18
-19:00:00 = stormy_weather_19
+[sect_transition20400F]
+20:40:00 = cloudy_light_weather_20_01
+22:00:00 = clear_weather_21
 
 
-[sect_transition180008]
-18:00:00 = grey_weather_18
-19:00:00 = foggy_weather_19
-
-
-[sect_transition180009]
-18:00:00 = grey_weather_18
-19:00:00 = thunder_weather_19
-
-
-[sect_transition18000A]
-18:00:00 = rainy_weather_18
-19:00:00 = grey_weather_19
-
-
-[sect_transition18000B]
-18:00:00 = thunder_weather_18
-19:00:00 = grey_weather_19
-
-
-[sect_transition18000C]
-18:00:00 = thunder_weather_18
-19:00:00 = beta_weather_19
-
-
-[sect_transition18000D]
-18:00:00 = thunder_weather_18
-19:00:00 = stormy_weather_19
-
-
-[sect_transition190000]
-19:00:00 = beta_weather_19
-20:00:00 = thunder_weather_20
-
-
-[sect_transition190001]
-19:00:00 = beta_weather_19
-20:00:00 = foggy_weather_20
-
-
-[sect_transition190002]
-19:00:00 = beta_weather_19
-20:00:00 = dry_weather_20
-
-
-[sect_transition190003]
-19:00:00 = dry_weather_19
-20:00:00 = foggy_weather_20
-
-
-[sect_transition190004]
-19:00:00 = grey_weather_19
-20:00:00 = foggy_weather_20
-
-
-[sect_transition190005]
-19:00:00 = grey_weather_19
-20:00:00 = dry_weather_20
-
-
-[sect_transition190006]
-19:00:00 = grey_weather_19
-20:00:00 = thunder_weather_20
-
-
-[sect_transition190007]
-19:00:00 = stormy_weather_19
-20:00:00 = foggy_weather_20
-
-
-[sect_transition190008]
-19:00:00 = stormy_weather_19
-20:00:00 = dry_weather_20
-
-
-[sect_transition190009]
-19:00:00 = stormy_weather_19
-20:00:00 = beta_weather_20
-
-
-[sect_transition19000A]
-19:00:00 = stormy_weather_19
-20:00:00 = thunder_weather_20
-
-
-[sect_transition19000B]
-19:00:00 = stormy_weather_19
-20:00:00 = grey_weather_20
-
-
-[sect_transition19000C]
-19:00:00 = thunder_weather_19
-20:00:00 = foggy_weather_20
-
-
-[sect_transition19000D]
-19:00:00 = thunder_weather_19
-20:00:00 = grey_weather_20
-
-
-[sect_transition19000E]
-19:00:00 = thunder_weather_19
-20:00:00 = dry_weather_20
-
-
-[sect_transition19000F]
-19:00:00 = thunder_weather_19
-20:00:00 = beta_weather_20
-
-
-[sect_transition200000]
-20:00:00 = dry_weather_20
-21:00:00 = stormy_weather_21
-
-
-[sect_transition200001]
-20:00:00 = dry_weather_20
-21:00:00 = grey_weather_21
-
-
-[sect_transition200002]
-20:00:00 = dry_weather_20
-21:00:00 = beta_weather_21
-
-
-[sect_transition200003]
-20:00:00 = grey_weather_20
-21:00:00 = dry_weather_21
-
-
-[sect_transition200004]
-20:00:00 = grey_weather_20
-21:00:00 = beta_weather_21
-
-
-[sect_transition210000]
-21:00:00 = foggy_weather_21
-22:00:00 = beta_weather_22
-
-
-[sect_transition210001]
-21:00:00 = foggy_weather_21
-22:00:00 = thunder_weather_22
-
-
-[sect_transition210002]
-21:00:00 = thunder_weather_21
-22:00:00 = beta_weather_22
-
-
-[sect_transition210003]
-21:00:00 = thunder_weather_21
-22:00:00 = stormy_weather_22
-
-
-[sect_transition220000]
-22:00:00 = beta_weather_22
-23:00:00 = dry_weather_23
-
-
-[sect_transition220001]
-22:00:00 = dry_weather_22
-23:00:00 = beta_weather_23
-
-
-[sect_transition220002]
-22:00:00 = rainy_weather_22
-23:00:00 = stormy_weather_23
-
-
-[sect_transition220003]
-22:00:00 = stormy_weather_22
-23:00:00 = rainy_weather_23
-
-
-[sect_transition220004]
-22:00:00 = stormy_weather_22
-23:00:00 = foggy_weather_23
-
-
-[sect_transition220005]
-22:00:00 = stormy_weather_22
-23:00:00 = grey_weather_23
+[sect_transition204010]
+20:40:00 = cloudy_light_weather_20_01
+22:00:00 = cloudy_dark_weather_21
 
 
 [sect_transition230000]
-23:00:00 = beta_weather_23
-00:00:00 = dry_weather_00
+23:00:00 = clear_weather_23
+00:00:00 = cloudy_light_weather_00
 
 
 [sect_transition230001]
-23:00:00 = dry_weather_23
-00:00:00 = beta_weather_00
+23:00:00 = clear_weather_23
+00:00:00 = cloudy_dark_weather_00
 
 
 [sect_transition230002]
-23:00:00 = foggy_weather_23
-00:00:00 = thunder_weather_00
+23:00:00 = clear_weather_23
+00:00:00 = clear_alt_weather_00
 
 
 [sect_transition230003]
-23:00:00 = grey_weather_23
-00:00:00 = rainy_weather_00
+23:00:00 = clear_alt_weather_23
+00:00:00 = cloudy_light_weather_00
 
 
 [sect_transition230004]
-23:00:00 = grey_weather_23
-00:00:00 = stormy_weather_00
+23:00:00 = clear_alt_weather_23
+00:00:00 = cloudy_dark_weather_00
 
 
 [sect_transition230005]
-23:00:00 = rainy_weather_23
-00:00:00 = stormy_weather_00
+23:00:00 = clear_alt_weather_23
+00:00:00 = clear_weather_00
+
+
+[sect_transition230006]
+23:00:00 = cloudy_dark_weather_23
+00:00:00 = cloudy_light_weather_00
+
+
+[sect_transition230007]
+23:00:00 = cloudy_dark_weather_23
+00:00:00 = cloudy_light_rain_weather_00
+
+
+[sect_transition230008]
+23:00:00 = cloudy_dark_weather_23
+00:00:00 = clear_alt_weather_00
+
+
+[sect_transition230009]
+23:00:00 = cloudy_dark_weather_23
+00:00:00 = clear_weather_00
+
+
+[sect_transition23000E]
+23:00:00 = cloudy_light_weather_23
+00:00:00 = clear_alt_weather_00
+
+
+[sect_transition23000F]
+23:00:00 = cloudy_light_weather_23
+00:00:00 = clear_weather_00
+
+
+[sect_transition230010]
+23:00:00 = cloudy_light_weather_23
+00:00:00 = cloudy_dark_weather_00
+
+
+[sect_transition230011]
+23:00:00 = cloudy_light_weather_23
+00:00:00 = cloudy_light_rain_weather_00
+
+
+[sect_transition230015]
+23:00:00 = storm_weather_23
+00:00:00 = cloudy_light_rain_weather_00
+

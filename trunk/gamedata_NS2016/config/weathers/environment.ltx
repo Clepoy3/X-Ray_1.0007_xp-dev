@@ -17,7 +17,7 @@
 #include "ambients\stancia2_env_ambient.ltx"
 
 #include "weather_dynamic.ltx"
-#include "weather_dynamic_ext.ltx"
+ 
 
 #include "weather_default.ltx"
 #include "weather_default1.ltx"
@@ -33,8 +33,9 @@
 #include "weather_indoor.ltx"
 #include "weather_blowout.ltx"
 #include "weather_horror.ltx"
+#include "weather_ini.ltx"  
 
-[weathers]:weather_dynamic,weather_dynamic_ext
+[weathers]:weather_dynamic 
 map             = sect_map
 test            = sect_test
 default         = sect_default_weather
@@ -48,6 +49,7 @@ stancia         = sect_stancia
 stancia2        = sect_stancia2
 yantar          = sect_yantar
 yantar_indoor   = sect_yantar_indoor
+ini_weather = sect_weather_ini 
 
 amk_for_blow    = amk_sect_for_sun
 pre_blow        = sect_stancia
@@ -63,7 +65,8 @@ x16_ugrnd	= sect_ugrnd_x16
 x19_ugrnd	= sect_ugrnd_x19
 NPP_ugrnd	= sect_sarcophagus
 mono_ugrnd	= sect_monolith
-boloto	= sect_default_weather
+boloto	= sect_boloto
+ 
 
 [weather_effects]
 surge_aes_m  = sect_blow_aes_m

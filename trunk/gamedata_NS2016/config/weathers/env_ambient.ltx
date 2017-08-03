@@ -1,53 +1,100 @@
-;AMBIENT SECTION FORMAT
-;[ambient_sect_name] (environment ambient section header)
-;sound_period  = 5, 10             ; <from, to>        (seconds)
-;sound_dist    = 30, 60            ; <from, to>        (distance in M)
-;sounds        = ambient\file_name ; <snd0,snd1..sndN> (sound file names)
-;effect_period = 30, 60            ; <from, to>        (seconds)
-;effects       = effect_name       ; <eff0,eff1..effN> (effect section header names)
-
-
-[ambient_env_day]
-sound_period = 15, 45 
-sound_dist   = 40, 50
-sounds       = ambient\rnd_outdoor\ambient_bird_1,ambient\rnd_outdoor\ambient_bird_2,ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\ambient_drone_3,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\rnd_bird_1,ambient\rnd_outdoor\rnd_bird_2,ambient\rnd_outdoor\rnd_bird_3,ambient\rnd_outdoor\rnd_bird_4,ambient\rnd_outdoor\rnd_bird_5,ambient\rnd_outdoor\rnd_bird_6,ambient\rnd_outdoor\rnd_bird_7,ambient\rnd_outdoor\rnd_bird_8,ambient\rnd_outdoor\rnd_bird_9,ambient\rnd_outdoor\rnd_bird_10,ambient\rnd_outdoor\rnd_bird_11,ambient\rnd_outdoor\rnd_boar_1,ambient\rnd_outdoor\rnd_boar_2,ambient\rnd_outdoor\rnd_boar_3,ambient\rnd_outdoor\rnd_boar_4,ambient\rnd_outdoor\rnd_crow_4,ambient\rnd_outdoor\rnd_crow_5,ambient\rnd_outdoor\rnd_crow_7,ambient\rnd_outdoor\rnd_crow_13,ambient\rnd_outdoor\rnd_crow_14,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_6,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_dog4,ambient\rnd_outdoor\rnd_dog5,ambient\rnd_outdoor\rnd_dog6,ambient\rnd_outdoor\rnd_dog7,ambient\rnd_outdoor\rnd_dog8,ambient\rnd_outdoor\rnd_dog9,ambient\rnd_outdoor\rnd_dog10,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_growl_2,ambient\rnd_outdoor\rnd_helicopter_2,ambient\rnd_outdoor\rnd_insect_1,ambient\rnd_outdoor\rnd_insect_2,ambient\rnd_outdoor\rnd_insect_3,ambient\rnd_outdoor\rnd_insect_4,ambient\rnd_outdoor\rnd_insect_5,ambient\rnd_outdoor\rnd_insect_6,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree
-effect_period = 25, 50
-effects       = ae0_effect_1,ae0_effect_2,ae0_effect_3,ae0_effect_7,ae0_effect_8,ae0_effect_9
+[ambient_env_0]
+sound_period		= 5, 10 ;						; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				= ambient\rnd_outdoor\rnd_boar,ambient\rnd_outdoor\rnd_dark5,ambient\rnd_outdoor\rnd_dark6,ambient\rnd_outdoor\rnd_dark10,ambient\rnd_outdoor\rnd_dark9,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\crow1,ambient\rnd_outdoor\crow2,ambient\rnd_outdoor\crow3,ambient\rnd_outdoor\rnd_bird1,ambient\rnd_outdoor\rnd_bird2,ambient\rnd_outdoor\rnd_boar,ambient\rnd_outdoor\rnd_boar2,ambient\rnd_outdoor\rnd_boar3,ambient\rnd_outdoor\rnd_darkwind3,ambient\rnd_outdoor\rnd_darkwind4,ambient\rnd_outdoor\rnd_darkwind5,ambient\rnd_outdoor\rnd_dog,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_fly,ambient\rnd_outdoor\rnd_fly1,ambient\rnd_outdoor\rnd_krik1,ambient\rnd_outdoor\rnd_krik2,ambient\rnd_outdoor\rnd_krik3,ambient\rnd_outdoor\rnd_moan,ambient\rnd_outdoor\rnd_moan1,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_2,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_5,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_8,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_shooting_10,ambient\rnd_outdoor\rnd_swamp,ambient\rnd_outdoor\rnd_wind_tree		; <snd0,snd1..sndN>		sounds name
+effect_period		= 30, 60					; <from,to>				(sec)
+effects				= ae0_effect_0,ae0_effect_1 	; <eff0,eff1..effN>		effects sect name
 
 [ambient_env_stancia1]
-sound_period = 5, 10
-sound_dist   = 30, 60
-sounds       = ambient\rnd_outdoor\rnd_boar2,ambient\rnd_outdoor\rnd_shooting_3,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_2,ambient\rnd_outdoor\rnd_shooting_3,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_10,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_10
-effect_period = 10, 20
-effects       = ae0_effect_1,ae0_effect_2,ae0_effect_3,ae0_effect_4,ae0_effect_5,ae0_effect_6,ae0_effect_7,ae0_effect_8,ae0_effect_9
+sound_period		= 5, 10 ;						; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				= ambient\rnd_outdoor\rnd_boar2,ambient\rnd_outdoor\rnd_shooting_3,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_2,ambient\rnd_outdoor\rnd_shooting_3,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_10,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_10 		; <snd0,snd1..sndN>		sounds name
+effect_period		= 10, 20					; <from,to>				(sec)
+effects				= ae0_effect_1,ae0_effect_2, ae0_effect_3,ae0_effect_4,ae0_effect_5,ae0_effect_6,ae0_effect_7,ae0_effect_8,ae0_effect_9	; <eff0,eff1..effN>	
+
+[ambient_env_day]
+sound_period		= 5, 10 ;						; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				= ambient\rnd_outdoor\rnd_boar3,ambient\rnd_outdoor\rnd_dark10,ambient\rnd_outdoor\rnd_dark6,ambient\rnd_outdoor\rnd_dark2,ambient\rnd_outdoor\rnd_dark5,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\crow1,ambient\rnd_outdoor\crow2,ambient\rnd_outdoor\crow3,ambient\rnd_outdoor\rnd_bird2,ambient\rnd_outdoor\rnd_boar,ambient\rnd_outdoor\rnd_boar2,ambient\rnd_outdoor\rnd_boar3,ambient\rnd_outdoor\rnd_darkwind3,ambient\rnd_outdoor\rnd_darkwind4,ambient\rnd_outdoor\rnd_darkwind5,ambient\rnd_outdoor\rnd_dog,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_fly,ambient\rnd_outdoor\rnd_fly1,ambient\rnd_outdoor\rnd_fly2,ambient\rnd_outdoor\rnd_fly3,ambient\rnd_outdoor\rnd_krik3,ambient\rnd_outdoor\rnd_krik2,ambient\rnd_outdoor\rnd_krik1,ambient\rnd_outdoor\rnd_krik4,ambient\rnd_outdoor\rnd_krik5,ambient\rnd_outdoor\rnd_krik6,ambient\rnd_outdoor\rnd_moan2,ambient\rnd_outdoor\rnd_moan3,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_2,ambient\rnd_outdoor\rnd_shooting_3,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_5,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_8,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_shooting_10,ambient\rnd_outdoor\rnd_swamp,ambient\rnd_outdoor\rnd_wind_tree
+effect_period		= 40, 90					; <from,to>				(sec)
+effects				= ae0_effect_1,ae0_effect_2, ae0_effect_3 	; <eff0,eff1..effN>		effects sect name
+
+ 
 
 [ambient_env_evening]
-sound_period = 25, 55
-sound_dist   = 35, 45, 50
-sounds       = ambient\rnd_outdoor\ambient_bird_1,ambient\rnd_outdoor\ambient_bird_2,ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\ambient_drone_3,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\rnd_bird_2,ambient\rnd_outdoor\rnd_bird_3,ambient\rnd_outdoor\rnd_bird_6,ambient\rnd_outdoor\rnd_bird_8,ambient\rnd_outdoor\rnd_bird_11,ambient\rnd_outdoor\rnd_boar_1,ambient\rnd_outdoor\rnd_boar_4,ambient\rnd_outdoor\rnd_crow_4,ambient\rnd_outdoor\rnd_crow_13,ambient\rnd_outdoor\rnd_crow_14,ambient\rnd_outdoor\rnd_dark_1,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_6,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_dog4,ambient\rnd_outdoor\rnd_dog5,ambient\rnd_outdoor\rnd_dog6,ambient\rnd_outdoor\rnd_dog7,ambient\rnd_outdoor\rnd_dog8,ambient\rnd_outdoor\rnd_dog9,ambient\rnd_outdoor\rnd_dog10,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_growl_2,ambient\rnd_outdoor\rnd_helicopter_2,ambient\rnd_outdoor\rnd_insect_1,ambient\rnd_outdoor\rnd_insect_4,ambient\rnd_outdoor\rnd_insect_6,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\ambient_night_12,ambient\rnd_outdoor\ambient_night_13,ambient\rnd_outdoor\rnd_cricket_1,ambient\rnd_outdoor\rnd_cricket_2,ambient\rnd_outdoor\night_scream_3
-effect_period = 35, 60
-effects       = ae0_effect_1,ae0_effect_2,ae0_effect_5,ae0_effect_8,ae0_effect_9
+sound_period		= 5, 10					; <from,to>				(sec)
+sound_dist			= 150, 300
+sounds				= ambient\rnd_outdoor\rnd_boar,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\rnd_horror,ambient\rnd_outdoor\rnd_pdog1,ambient\rnd_outdoor\rnd_pdog2,ambient\rnd_outdoor\rnd_cat1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\rnd_dark9,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\rnd_dark10,ambient\rnd_outdoor\rnd_horror1,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\rnd_krik9,ambient\rnd_outdoor\rnd_krik8,ambient\rnd_outdoor\rnd_krik7,ambient\rnd_outdoor\rnd_moan5,ambient\rnd_outdoor\rnd_moan6,ambient\rnd_outdoor\owl_1,ambient\rnd_outdoor\owl_2,ambient\rnd_outdoor\owl_3,ambient\rnd_outdoor\owl_2,ambient\rnd_outdoor\owl_1,ambient\rnd_outdoor\rnd_dark,ambient\rnd_outdoor\rnd_dark1,ambient\rnd_outdoor\rnd_howling_1,ambient\rnd_outdoor\rnd_howling_2
+effect_period		= 150, 180					; <from,to>				(sec)
+effects				= ae0_effect_1,ae0_effect_2, ae0_effect_3,ae0_effect_11,ae0_effect_10,ae0_effect_12 	; <eff0,eff1..effN>		effects sect name
 
 [ambient_env_night]
-sound_period = 35, 85
-sound_dist   = 30, 40
-sounds       = ambient\rnd_outdoor\ambient_cricket_1,ambient\rnd_outdoor\ambient_cricket_2,ambient\rnd_outdoor\ambient_cricket_3,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_4,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_morn_1,ambient\rnd_outdoor\ambient_night_10,ambient\rnd_outdoor\ambient_night_11,ambient\rnd_outdoor\ambient_night_12,ambient\rnd_outdoor\ambient_night_13,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\night_scream_3,ambient\rnd_outdoor\rnd_cricket_1,ambient\rnd_outdoor\rnd_cricket_2,ambient\rnd_outdoor\rnd_dark_1,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_5,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_night_amb_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree
-effect_period = 50, 90
-effects       = ae0_effect_1,ae0_effect_3
+sound_period		= 5, 10					; <from,to>				(sec)
+sound_dist			=  150, 300
+sounds				= ambient\rnd_outdoor\rnd_boar,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\rnd_horror,ambient\rnd_outdoor\rnd_pdog1,ambient\rnd_outdoor\rnd_pdog2,ambient\rnd_outdoor\rnd_cat1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\rnd_dark9,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\rnd_dark10,ambient\rnd_outdoor\rnd_horror1,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\rnd_krik9,ambient\rnd_outdoor\rnd_krik8,ambient\rnd_outdoor\rnd_krik7,ambient\rnd_outdoor\rnd_moan5,ambient\rnd_outdoor\rnd_moan6,ambient\rnd_outdoor\owl_1,ambient\rnd_outdoor\owl_2,ambient\rnd_outdoor\owl_3,ambient\rnd_outdoor\owl_2,ambient\rnd_outdoor\owl_1,ambient\rnd_outdoor\rnd_dark,ambient\rnd_outdoor\rnd_dark1,ambient\rnd_outdoor\rnd_howling_1,ambient\rnd_outdoor\rnd_howling_2
+effect_period		= 130, 160					; <from,to>				(sec)
+effects				=  	; <eff0,eff1..effN>		effects sect name
 
 [ambient_env_morning]
-sound_period = 30, 65
-sound_dist   = 35, 40, 45
-sounds       = ambient\rnd_outdoor\ambient_bird_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_cricket_1,ambient\rnd_outdoor\ambient_cricket_2,ambient\rnd_outdoor\ambient_cricket_3,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_4,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_night_10,ambient\rnd_outdoor\ambient_night_12,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\rnd_cricket_1,ambient\rnd_outdoor\rnd_cricket_2,ambient\rnd_outdoor\rnd_dark_1,ambient\rnd_outdoor\rnd_dark_5,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_night_amb_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\rnd_bird_7,ambient\rnd_outdoor\rnd_bird_8,ambient\rnd_outdoor\rnd_bird_9,ambient\rnd_outdoor\rnd_boar_1,ambient\rnd_outdoor\rnd_crow_4,ambient\rnd_outdoor\rnd_crow_14,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog4,ambient\rnd_outdoor\rnd_dog6,ambient\rnd_outdoor\rnd_dog9,ambient\rnd_outdoor\rnd_dog10,ambient\rnd_outdoor\rnd_insect_1,ambient\rnd_outdoor\rnd_insect_6,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_9
-effect_period = 45, 75	
-effects       = ae0_effect_1,ae0_effect_2,ae0_effect_4,ae0_effect_5,ae0_effect_8,ae0_effect_9
+sound_period		= 5, 10 ;						; <from,to>				(sec)
+sound_dist			=  150, 300
+sounds				= ambient\rnd_outdoor\rnd_boar1,ambient\rnd_outdoor\rnd_bird1,ambient\rnd_outdoor\rnd_bird2,ambient\rnd_outdoor\rnd_bird4,ambient\rnd_outdoor\rnd_bird1,ambient\rnd_outdoor\rnd_bird2,ambient\rnd_outdoor\rnd_boar,ambient\rnd_outdoor\rnd_boar2,ambient\rnd_outdoor\rnd_boar3,ambient\rnd_outdoor\rnd_darkwind5,ambient\rnd_outdoor\rnd_dog,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_fly,ambient\rnd_outdoor\rnd_fly1,ambient\rnd_outdoor\rnd_fly2,ambient\rnd_outdoor\rnd_fly3,ambient\rnd_outdoor\rnd_krik6,ambient\rnd_outdoor\rnd_krik8,ambient\rnd_outdoor\rnd_krik9,ambient\rnd_outdoor\rnd_moan,ambient\rnd_outdoor\rnd_moan3,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_krik3,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_shooting_3,ambient\rnd_outdoor\rnd_swamp,ambient\rnd_outdoor\rnd_wind_tree 		; <snd0,snd1..sndN>		sounds name
+effect_period		= 30, 60					; <from,to>				(sec)
+effects				=   ae0_effect_1,ae0_effect_2, ae0_effect_3,ae0_effect_4,ae0_effect_11,ae0_effect_10,ae0_effect_12  ; <eff0,eff1..effN>		effects sect name
 
-[ambient_env_0]
-sound_period = 20, 60
+
+[ambient_env_morning_aver]
+sound_period		= 5, 10 ;						; <from,to>				(sec)
+sound_dist			=  150, 300
+sounds				= ambient\rnd_outdoor\rnd_boar1,ambient\rnd_outdoor\rnd_bird1,ambient\rnd_outdoor\rnd_bird2,ambient\rnd_outdoor\rnd_bird4,ambient\rnd_outdoor\rnd_bird1,ambient\rnd_outdoor\rnd_bird2,ambient\rnd_outdoor\rnd_boar,ambient\rnd_outdoor\rnd_boar2,ambient\rnd_outdoor\rnd_boar3,ambient\rnd_outdoor\rnd_darkwind5,ambient\rnd_outdoor\rnd_dog,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_fly,ambient\rnd_outdoor\rnd_fly1,ambient\rnd_outdoor\rnd_fly2,ambient\rnd_outdoor\rnd_fly3,ambient\rnd_outdoor\rnd_krik6,ambient\rnd_outdoor\rnd_krik8,ambient\rnd_outdoor\rnd_krik9,ambient\rnd_outdoor\rnd_moan,ambient\rnd_outdoor\rnd_moan3,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_krik3,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_shooting_3,ambient\rnd_outdoor\rnd_swamp,ambient\rnd_outdoor\rnd_wind_tree 		; <snd0,snd1..sndN>		sounds name
+effect_period		= 30, 60					; <from,to>				(sec)
+effects				= ae0_effect_1,ae0_effect_2   ; <eff0,eff1..effN>		effects sect name
+ 
+[ambient_env_day_tuman]
+sound_period = 35, 65
+sound_dist   = 35, 45
+sounds       = ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\tuman\fog_drone_1,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_4,ambient\rnd_outdoor\rnd_dark_6,ambient\tuman\fog_ambient_dog_1,ambient\tuman\fog_ambient_dog_2,ambient\tuman\fog_ambient_dog_6,ambient\tuman\fog_bird_7,ambient\tuman\fog_bird_8,ambient\tuman\fog_bird_9,ambient\tuman\fog_crow_4,ambient\tuman\fog_crow_7,ambient\tuman\fog_crow_13,ambient\tuman\fog_dog4,ambient\tuman\fog_dog6,ambient\tuman\fog_dog8,ambient\tuman\fog_dog10,ambient\tuman\fog_boar_1,ambient\tuman\fog_shooting_1,ambient\tuman\fog_shooting_4,ambient\tuman\fog_shooting_7,ambient\tuman\fog_shooting_9
+effect_period = 35, 70
+effects       = ae0_effect_4
+
+[ambient_env_night_tuman]
+sound_period = 50, 90
+sound_dist   = 30, 40
+sounds       = ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\tuman\fog_drone_1,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_4,ambient\rnd_outdoor\rnd_dark_6,ambient\tuman\fog_ambient_cricket_1,ambient\tuman\fog_ambient_cricket_3,ambient\tuman\fog_ambient_night_10,ambient\tuman\fog_ambient_night_12,ambient\tuman\fog_ambient_night_13,ambient\tuman\fog_cricket_1,ambient\tuman\fog_cricket_2,ambient\tuman\fog_night_scream_3,ambient\tuman\fog_night_amb_3
+effect_period = 40, 85
+effects       = ae0_effect_4
+
+[ambient_env_day_windy]
+sound_period = 5, 15
+sound_dist   = 40, 60
+sounds       = ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\ambient_drone_3,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\rnd_outdoor\rnd_bird_1,ambient\rnd_outdoor\rnd_bird_2,ambient\rnd_outdoor\rnd_bird_3,ambient\rnd_outdoor\rnd_bird_4,ambient\rnd_outdoor\rnd_bird_5,ambient\rnd_outdoor\rnd_bird_6,ambient\rnd_outdoor\rnd_bird_7,ambient\rnd_outdoor\rnd_bird_8,ambient\rnd_outdoor\rnd_bird_9,ambient\rnd_outdoor\rnd_bird_10,ambient\rnd_outdoor\rnd_bird_11,ambient\rnd_outdoor\rnd_boar_1,ambient\rnd_outdoor\rnd_boar_2,ambient\rnd_outdoor\rnd_boar_3,ambient\rnd_outdoor\rnd_boar_4,ambient\rnd_outdoor\rnd_crow_4,ambient\rnd_outdoor\rnd_crow_5,ambient\rnd_outdoor\rnd_crow_7,ambient\rnd_outdoor\rnd_crow_13,ambient\rnd_outdoor\rnd_crow_14,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_6,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_dog4,ambient\rnd_outdoor\rnd_dog5,ambient\rnd_outdoor\rnd_dog6,ambient\rnd_outdoor\rnd_dog7,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_growl_2,ambient\rnd_outdoor\rnd_helicopter_2,ambient\rnd_outdoor\rnd_insect_1,ambient\rnd_outdoor\rnd_insect_2,ambient\rnd_outdoor\rnd_insect_3,ambient\rnd_outdoor\rnd_insect_4,ambient\rnd_outdoor\rnd_insect_5,ambient\rnd_outdoor\rnd_insect_6,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_wind_1,ambient\rnd_outdoor\rnd_wind_2,ambient\rnd_outdoor\rnd_wind_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\heavy_wind_1,ambient\rnd_outdoor\heavy_wind_2,ambient\rnd_outdoor\heavy_wind_3,ambient\rnd_outdoor\heavy_wind_4
+effect_period = 5, 10
+effects       = ae0_effect_0w,ae0_effect_1w,ae0_effect_2w,ae0_effect_3,ae0_effect_4w,ae0_effect_5w,ae0_effect_6w,ae0_effect_7w,ae0_effect_8w,ae0_effect_9w
+
+[ambient_env_evening_windy]
+sound_period = 15, 25
+sound_dist   = 35, 55
+sounds       = ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\ambient_drone_3,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\rnd_outdoor\rnd_bird_2,ambient\rnd_outdoor\rnd_bird_3,ambient\rnd_outdoor\rnd_bird_6,ambient\rnd_outdoor\rnd_bird_8,ambient\rnd_outdoor\rnd_bird_11,ambient\rnd_outdoor\rnd_boar_1,ambient\rnd_outdoor\rnd_boar_4,ambient\rnd_outdoor\rnd_crow_4,ambient\rnd_outdoor\rnd_crow_13,ambient\rnd_outdoor\rnd_crow_14,ambient\rnd_outdoor\rnd_dark_1,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_6,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_dog4,ambient\rnd_outdoor\rnd_dog5,ambient\rnd_outdoor\rnd_dog6,ambient\rnd_outdoor\rnd_dog7,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_growl_2,ambient\rnd_outdoor\rnd_helicopter_2,ambient\rnd_outdoor\rnd_insect_1,ambient\rnd_outdoor\rnd_insect_4,ambient\rnd_outdoor\rnd_insect_6,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_wind_1,ambient\rnd_outdoor\rnd_wind_2,ambient\rnd_outdoor\rnd_wind_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\ambient_night_12,ambient\rnd_outdoor\ambient_night_13,ambient\rnd_outdoor\rnd_cricket_1,ambient\rnd_outdoor\rnd_cricket_2,ambient\rnd_outdoor\night_scream_3,ambient\rnd_outdoor\heavy_wind_1,ambient\rnd_outdoor\heavy_wind_2,ambient\rnd_outdoor\heavy_wind_3,ambient\rnd_outdoor\heavy_wind_4
+effect_period = 5, 10
+effects       = ae0_effect_0w,ae0_effect_1w,ae0_effect_2w,ae0_effect_3,ae0_effect_4w,ae0_effect_5w,ae0_effect_6w,ae0_effect_7,ae0_effect_8w,ae0_effect_9w
+
+[ambient_env_night_windy]
+sound_period = 25, 45
 sound_dist   = 30, 45
-sounds       = ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\rnd_outdoor\rnd_wind_1,ambient\rnd_outdoor\rnd_wind_2,ambient\rnd_outdoor\rnd_wind_3,ambient\rnd_outdoor\rnd_wind_4
-effect_period = 60, 90
-effects       = ae0_effect_2,ae0_effect_3
+sounds       = ambient\rnd_outdoor\ambient_cricket_1,ambient\rnd_outdoor\ambient_cricket_2,ambient\rnd_outdoor\ambient_cricket_3,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_4,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_morn_1,ambient\rnd_outdoor\ambient_night_10,ambient\rnd_outdoor\ambient_night_11,ambient\rnd_outdoor\ambient_night_12,ambient\rnd_outdoor\ambient_night_13,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\rnd_outdoor\night_scream_3,ambient\rnd_outdoor\rnd_cricket_1,ambient\rnd_outdoor\rnd_cricket_2,ambient\rnd_outdoor\rnd_dark_1,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_5,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_night_amb_3,ambient\rnd_outdoor\rnd_wind_1,ambient\rnd_outdoor\rnd_wind_2,ambient\rnd_outdoor\rnd_wind_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\heavy_wind_1,ambient\rnd_outdoor\heavy_wind_2,ambient\rnd_outdoor\heavy_wind_3,ambient\rnd_outdoor\heavy_wind_4
+effect_period = 5, 10
+effects       = ae0_effect_0w,ae0_effect_1,ae0_effect_2w,ae0_effect_3w,ae0_effect_4w,ae0_effect_5w,ae0_effect_6w,ae0_effect_7w,ae0_effect_8,ae0_effect_9w
+
+[ambient_env_morning_windy]
+sound_period = 20, 30
+sound_dist   = 35, 45
+sounds       = ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_cricket_1,ambient\rnd_outdoor\ambient_cricket_2,ambient\rnd_outdoor\ambient_cricket_3,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_4,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_night_10,ambient\rnd_outdoor\ambient_night_12,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\rnd_outdoor\rnd_cricket_1,ambient\rnd_outdoor\rnd_cricket_2,ambient\rnd_outdoor\rnd_dark_1,ambient\rnd_outdoor\rnd_dark_5,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_night_amb_3,ambient\rnd_outdoor\rnd_wind_1,ambient\rnd_outdoor\rnd_wind_2,ambient\rnd_outdoor\rnd_wind_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\rnd_bird_7,ambient\rnd_outdoor\rnd_bird_8,ambient\rnd_outdoor\rnd_bird_9,ambient\rnd_outdoor\rnd_boar_1,ambient\rnd_outdoor\rnd_crow_4,ambient\rnd_outdoor\rnd_crow_14,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog4,ambient\rnd_outdoor\rnd_dog6,ambient\rnd_outdoor\rnd_insect_1,ambient\rnd_outdoor\rnd_insect_6,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\heavy_wind_1,ambient\rnd_outdoor\heavy_wind_2,ambient\rnd_outdoor\heavy_wind_3,ambient\rnd_outdoor\heavy_wind_4
+effect_period = 5, 10
+effects       = ae0_effect_0w,ae0_effect_1w,ae0_effect_2w,ae0_effect_3w,ae0_effect_4w,ae0_effect_5w,ae0_effect_6,ae0_effect_7w,ae0_effect_8w,ae0_effect_9
+
+
+
+
 
 [ambient_env_rain]
 sound_period = 25, 60
@@ -99,57 +146,135 @@ effect_period = 20, 40
 effects       = ae0_effect_0,ae0_effect_1,ae0_effect_4,ae0_effect_6,ae0_effect_7,ae0_effect_8,ae0_effect_9,ae0_effect_10,ae0_effect_11,ae0_effect_12,ae0_effect_13,ae0_effect_14
 
 [ambient_env_tuman]
-sound_period = 30, 55
-sound_dist   = 35, 40
-sounds       = ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\tuman\fog_drone_1,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_4,ambient\rnd_outdoor\rnd_dark_6
-effect_period = 35, 65
-effects       = ae0_effect_4
+sound_period		= 5, 10					; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				= ambient\rnd_outdoor\rnd_boar,ambient\rnd_outdoor\rnd_boar2,ambient\rnd_outdoor\rnd_boar3,ambient\rnd_outdoor\rnd_darkwind1,ambient\rnd_outdoor\rnd_darkwind2,ambient\rnd_outdoor\rnd_darkwind3,ambient\rnd_outdoor\rnd_darkwind4,ambient\rnd_outdoor\rnd_darkwind5,ambient\rnd_outdoor\rnd_dark,ambient\rnd_outdoor\rnd_dark1,ambient\rnd_outdoor\rnd_dark3,ambient\rnd_outdoor\rnd_dark4,ambient\rnd_outdoor\rnd_dark5,ambient\rnd_outdoor\rnd_krik7,ambient\rnd_outdoor\rnd_krik4,ambient\rnd_outdoor\rnd_krik2,ambient\rnd_outdoor\rnd_moan4,ambient\rnd_outdoor\rnd_moan1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_5,ambient\rnd_outdoor\rnd_shooting_6,ambient\rnd_outdoor\rnd_swamp,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\rnd_rock1,ambient\rnd_outdoor\rnd_rock2,ambient\rnd_outdoor\rnd_rock3,ambient\rnd_outdoor\rnd_rock4,ambient\rnd_outdoor\rnd_dog,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_cat2,ambient\rnd_outdoor\rnd_cat1 
+effect_period		= 5, 10					; <from,to>				(sec)
+effects				=    ae0_effect_6,ae0_effect_14,ae0_effect_11,ae0_effect_10,ae0_effect_12 	; <eff0,eff1..effN>		effects sect name
 
-[ambient_env_day_tuman]
-sound_period = 35, 65
-sound_dist   = 35, 45
-sounds       = ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\tuman\fog_drone_1,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_4,ambient\rnd_outdoor\rnd_dark_6,ambient\tuman\fog_ambient_dog_1,ambient\tuman\fog_ambient_dog_2,ambient\tuman\fog_ambient_dog_6,ambient\tuman\fog_bird_7,ambient\tuman\fog_bird_8,ambient\tuman\fog_bird_9,ambient\tuman\fog_crow_4,ambient\tuman\fog_crow_7,ambient\tuman\fog_crow_13,ambient\tuman\fog_dog4,ambient\tuman\fog_dog6,ambient\tuman\fog_dog8,ambient\tuman\fog_dog10,ambient\tuman\fog_boar_1,ambient\tuman\fog_shooting_1,ambient\tuman\fog_shooting_4,ambient\tuman\fog_shooting_7,ambient\tuman\fog_shooting_9
-effect_period = 35, 70
-effects       = ae0_effect_4
+[ambient_artistpavel_meteor]			;real meteor sound by NASA
+sound_period			= 15, 20 						
+sound_dist			= 30, 35
+sounds				= ambient\artistpavel_meteor
+effect_period		= 190, 220					; <from,to>				(sec)
+effects				= ae0_effect_1,ae0_effect_2, ae0_effect_3,ae0_effect_8
 
-[ambient_env_night_tuman]
-sound_period = 50, 90
-sound_dist   = 30, 40
-sounds       = ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\tuman\fog_drone_1,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_4,ambient\rnd_outdoor\rnd_dark_6,ambient\tuman\fog_ambient_cricket_1,ambient\tuman\fog_ambient_cricket_3,ambient\tuman\fog_ambient_night_10,ambient\tuman\fog_ambient_night_12,ambient\tuman\fog_ambient_night_13,ambient\tuman\fog_cricket_1,ambient\tuman\fog_cricket_2,ambient\tuman\fog_night_scream_3,ambient\tuman\fog_night_amb_3
-effect_period = 40, 85
-effects       = ae0_effect_4
 
-[ambient_env_day_windy]
-sound_period = 5, 15
-sound_dist   = 40, 60
-sounds       = ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\ambient_drone_3,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\rnd_outdoor\rnd_bird_1,ambient\rnd_outdoor\rnd_bird_2,ambient\rnd_outdoor\rnd_bird_3,ambient\rnd_outdoor\rnd_bird_4,ambient\rnd_outdoor\rnd_bird_5,ambient\rnd_outdoor\rnd_bird_6,ambient\rnd_outdoor\rnd_bird_7,ambient\rnd_outdoor\rnd_bird_8,ambient\rnd_outdoor\rnd_bird_9,ambient\rnd_outdoor\rnd_bird_10,ambient\rnd_outdoor\rnd_bird_11,ambient\rnd_outdoor\rnd_boar_1,ambient\rnd_outdoor\rnd_boar_2,ambient\rnd_outdoor\rnd_boar_3,ambient\rnd_outdoor\rnd_boar_4,ambient\rnd_outdoor\rnd_crow_4,ambient\rnd_outdoor\rnd_crow_5,ambient\rnd_outdoor\rnd_crow_7,ambient\rnd_outdoor\rnd_crow_13,ambient\rnd_outdoor\rnd_crow_14,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_6,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_dog4,ambient\rnd_outdoor\rnd_dog5,ambient\rnd_outdoor\rnd_dog6,ambient\rnd_outdoor\rnd_dog7,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_growl_2,ambient\rnd_outdoor\rnd_helicopter_2,ambient\rnd_outdoor\rnd_insect_1,ambient\rnd_outdoor\rnd_insect_2,ambient\rnd_outdoor\rnd_insect_3,ambient\rnd_outdoor\rnd_insect_4,ambient\rnd_outdoor\rnd_insect_5,ambient\rnd_outdoor\rnd_insect_6,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_wind_1,ambient\rnd_outdoor\rnd_wind_2,ambient\rnd_outdoor\rnd_wind_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\heavy_wind_1,ambient\rnd_outdoor\heavy_wind_2,ambient\rnd_outdoor\heavy_wind_3,ambient\rnd_outdoor\heavy_wind_4
-effect_period = 5, 10
-effects       = ae0_effect_0w,ae0_effect_1w,ae0_effect_2w,ae0_effect_3,ae0_effect_4w,ae0_effect_5w,ae0_effect_6w,ae0_effect_7w,ae0_effect_8w,ae0_effect_9w
+[ambient_predzona_day]			 
+sound_period			= 15, 20 						
+sound_dist			= 30, 35
+sounds				=  ambient\predzonday\z1,ambient\predzonday\z2,ambient\predzonday\z3,ambient\predzonday\z4,ambient\predzonday\z5,ambient\predzonday\z6,ambient\predzonday\z7,ambient\predzonday\z8,ambient\predzonday\z9,ambient\predzonday\z10,ambient\predzonday\z12,ambient\predzonday\z13,ambient\predzonday\z14,ambient\predzonday\z15,ambient\predzonday\z16,ambient\predzonday\z17,ambient\predzonday\z18,ambient\predzonday\z19, 
+effect_period		= 190, 220					; <from,to>				(sec)
+effects				=  ae0_effect_1,ae0_effect_2, ae0_effect_3,ae0_effect_8 
 
-[ambient_env_evening_windy]
-sound_period = 15, 25
-sound_dist   = 35, 55
-sounds       = ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\ambient_drone_3,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\rnd_outdoor\rnd_bird_2,ambient\rnd_outdoor\rnd_bird_3,ambient\rnd_outdoor\rnd_bird_6,ambient\rnd_outdoor\rnd_bird_8,ambient\rnd_outdoor\rnd_bird_11,ambient\rnd_outdoor\rnd_boar_1,ambient\rnd_outdoor\rnd_boar_4,ambient\rnd_outdoor\rnd_crow_4,ambient\rnd_outdoor\rnd_crow_13,ambient\rnd_outdoor\rnd_crow_14,ambient\rnd_outdoor\rnd_dark_1,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_6,ambient\rnd_outdoor\rnd_dog1,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog3,ambient\rnd_outdoor\rnd_dog4,ambient\rnd_outdoor\rnd_dog5,ambient\rnd_outdoor\rnd_dog6,ambient\rnd_outdoor\rnd_dog7,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_growl_2,ambient\rnd_outdoor\rnd_helicopter_2,ambient\rnd_outdoor\rnd_insect_1,ambient\rnd_outdoor\rnd_insect_4,ambient\rnd_outdoor\rnd_insect_6,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_7,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\rnd_wind_1,ambient\rnd_outdoor\rnd_wind_2,ambient\rnd_outdoor\rnd_wind_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\ambient_night_12,ambient\rnd_outdoor\ambient_night_13,ambient\rnd_outdoor\rnd_cricket_1,ambient\rnd_outdoor\rnd_cricket_2,ambient\rnd_outdoor\night_scream_3,ambient\rnd_outdoor\heavy_wind_1,ambient\rnd_outdoor\heavy_wind_2,ambient\rnd_outdoor\heavy_wind_3,ambient\rnd_outdoor\heavy_wind_4
-effect_period = 5, 10
-effects       = ae0_effect_0w,ae0_effect_1w,ae0_effect_2w,ae0_effect_3,ae0_effect_4w,ae0_effect_5w,ae0_effect_6w,ae0_effect_7,ae0_effect_8w,ae0_effect_9w
+[ambient_predzona_night]			 
+sound_period			= 20, 40 						
+sound_dist			= 30, 45
+sounds				=  ambient\predzonnight\pre1,ambient\predzonnight\pre2,ambient\predzonnight\pre3,ambient\predzonnight\pre4,ambient\predzonnight\pre5,ambient\predzonnight\pre6,ambient\predzonnight\pre7,ambient\predzonnight\pre8,ambient\predzonnight\pre9,ambient\predzonnight\pre10,ambient\predzonnight\pre11,ambient\predzonnight\pre12,ambient\predzonnight\pre13,ambient\predzonnight\pre14,ambient\predzonnight\pre15,ambient\predzonnight\pre16,ambient\predzonnight\pre17,ambient\predzonnight\pre18,ambient\predzonnight\pre19,ambient\predzonnight\pre20,ambient\predzonnight\pre21,ambient\predzonnight\pre22,ambient\predzonnight\pre23,ambient\predzonnight\pre24,ambient\predzonnight\pre25,ambient\predzonnight\pre26,ambient\predzonnight\pre27,
+effect_period		= 190, 220					; <from,to>				(sec)
+effects				=  ae0_effect_1,ae0_effect_2, ae0_effect_3,ae0_effect_8
 
-[ambient_env_night_windy]
-sound_period = 25, 45
-sound_dist   = 30, 45
-sounds       = ambient\rnd_outdoor\ambient_cricket_1,ambient\rnd_outdoor\ambient_cricket_2,ambient\rnd_outdoor\ambient_cricket_3,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_4,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_morn_1,ambient\rnd_outdoor\ambient_night_10,ambient\rnd_outdoor\ambient_night_11,ambient\rnd_outdoor\ambient_night_12,ambient\rnd_outdoor\ambient_night_13,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\rnd_outdoor\night_scream_3,ambient\rnd_outdoor\rnd_cricket_1,ambient\rnd_outdoor\rnd_cricket_2,ambient\rnd_outdoor\rnd_dark_1,ambient\rnd_outdoor\rnd_dark_2,ambient\rnd_outdoor\rnd_dark_5,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_night_amb_3,ambient\rnd_outdoor\rnd_wind_1,ambient\rnd_outdoor\rnd_wind_2,ambient\rnd_outdoor\rnd_wind_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\heavy_wind_1,ambient\rnd_outdoor\heavy_wind_2,ambient\rnd_outdoor\heavy_wind_3,ambient\rnd_outdoor\heavy_wind_4
-effect_period = 5, 10
-effects       = ae0_effect_0w,ae0_effect_1,ae0_effect_2w,ae0_effect_3w,ae0_effect_4w,ae0_effect_5w,ae0_effect_6w,ae0_effect_7w,ae0_effect_8,ae0_effect_9w
 
-[ambient_env_morning_windy]
-sound_period = 20, 30
-sound_dist   = 35, 45
-sounds       = ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_cricket_1,ambient\rnd_outdoor\ambient_cricket_2,ambient\rnd_outdoor\ambient_cricket_3,ambient\rnd_outdoor\ambient_drone_2,ambient\rnd_outdoor\ambient_drone_4,ambient\rnd_outdoor\ambient_drone_5,ambient\rnd_outdoor\ambient_night_10,ambient\rnd_outdoor\ambient_night_12,ambient\rnd_outdoor\ambient_wind_1,ambient\rnd_outdoor\ambient_wind_2,ambient\rnd_outdoor\ambient_wind_3,ambient\rnd_outdoor\ambient_wind_4,ambient\rnd_outdoor\rnd_cricket_1,ambient\rnd_outdoor\rnd_cricket_2,ambient\rnd_outdoor\rnd_dark_1,ambient\rnd_outdoor\rnd_dark_5,ambient\rnd_outdoor\rnd_drone_1,ambient\rnd_outdoor\rnd_night_amb_3,ambient\rnd_outdoor\rnd_wind_1,ambient\rnd_outdoor\rnd_wind_2,ambient\rnd_outdoor\rnd_wind_3,ambient\rnd_outdoor\rnd_wind_4,ambient\rnd_outdoor\rnd_wind_tree,ambient\rnd_outdoor\rnd_bird_7,ambient\rnd_outdoor\rnd_bird_8,ambient\rnd_outdoor\rnd_bird_9,ambient\rnd_outdoor\rnd_boar_1,ambient\rnd_outdoor\rnd_crow_4,ambient\rnd_outdoor\rnd_crow_14,ambient\rnd_outdoor\rnd_dog2,ambient\rnd_outdoor\rnd_dog4,ambient\rnd_outdoor\rnd_dog6,ambient\rnd_outdoor\rnd_insect_1,ambient\rnd_outdoor\rnd_insect_6,ambient\rnd_outdoor\rnd_shooting_1,ambient\rnd_outdoor\rnd_shooting_4,ambient\rnd_outdoor\rnd_shooting_9,ambient\rnd_outdoor\heavy_wind_1,ambient\rnd_outdoor\heavy_wind_2,ambient\rnd_outdoor\heavy_wind_3,ambient\rnd_outdoor\heavy_wind_4
-effect_period = 5, 10
-effects       = ae0_effect_0w,ae0_effect_1w,ae0_effect_2w,ae0_effect_3w,ae0_effect_4w,ae0_effect_5w,ae0_effect_6,ae0_effect_7w,ae0_effect_8w,ae0_effect_9
+
+
+[tuman]
+sound_period		= 5, 10					; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				=  ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\night_scream_1,ambient\rnd_outdoor\night_scream_2,ambient\rnd_outdoor\night_scream_3,ambient\rnd_outdoor\night_spooky01,ambient\rnd_outdoor\rnd_horror_1,ambient\rnd_outdoor\rnd_horror_2,ambient\rnd_outdoor\rnd_krik9,dark_wind\1,dark_wind\2,dark_wind\3,dark_wind\4,dark_wind\5,dark_wind\6,dark_wind\7,dark_wind\8,dark_wind\9,dark_wind\10,dark_wind\11,dark_wind\12,dark_wind\13,dark_wind\14,dark_wind\15,dark_wind\16,dark_wind\17                  
+effect_period		= 25, 60					; <from,to>				(sec)
+effects				=      ae0_effect_13, ae0_effect_11, ae0_effect_10, ae0_effect_12 	; <eff0,eff1..effN>		effects sect name
+
+
+[new_amb]
+sound_period		= 25, 60					; <from,to>				(sec)
+sound_dist			=  150, 300
+sounds				= darks\woi_1,darks\woi_2,darks\woi_3,darks\woi_4,darks\woi_5,darks\woi_6,darks\woi_7,darks\woi_8,darks\woi_9,darks\woi_10,darks\woi_11,darks\woi_12,darks\woi_13,darks\woi_14,darks\woi_15,darks\woi_16,darks\woi_17,darks\woi_18,darks\woi_19,darks\woi_20,darks\woi_21,darks\woi_22,darks\woi_23,darks\woi_24,darks\woi_25,darks\woi_26, ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\night_scream_1,ambient\rnd_outdoor\night_scream_2,ambient\rnd_outdoor\night_scream_3,ambient\rnd_outdoor\night_spooky01,ambient\rnd_outdoor\rnd_horror_1,ambient\rnd_outdoor\rnd_horror_2,ambient\rnd_outdoor\rnd_krik9                  
+effect_period		= 25, 70					; <from,to>				(sec)
+effects				=    ae0_effect_4,ae0_effect_6,ae0_effect_14,ae0_effect_13,ae0_effect_11,ae0_effect_10,ae0_effect_12  	; <eff0,eff1..effN>		effects sect name
+
+
+[storm]
+sound_period		= 25, 50					; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				=  ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,new\11,new\12,new\13,new\14,new\15,new\16,new\17,new\18,new\19,new\20,new\21,new\22,new\23,new\24,new\25,new\26,new\27,new\28,new\29,new\30,new\31,new\32,new\33 
+effect_period		= 25, 60					; <from,to>				(sec)
+effects				=    	; <eff0,eff1..effN>		effects sect name
+
+
+[night]
+sound_period		= 25, 60					; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				=   ambient\wizgi\w1,ambient\wizgi\w2,ambient\wizgi\w3,ambient\wizgi\w4,ambient\wizgi\w5,ambient\wizgi\w6,ambient\wizgi\w7,ambient\wizgi\w8,ambient\wizgi\w9,ambient\wizgi\w10,ambient\wizgi\w11,ambient\wizgi\w12,ambient\wizgi\w13,ambient\wizgi\w14,ambient\wizgi\w15,ambient\wizgi\w16,ambient\wizgi\w17,ambient\wizgi\w18,ambient\wizgi\w19
+effect_period		= 25, 60					; <from,to>				(sec)
+effects				=   	; <eff0,eff1..effN>		effects sect name
+
+[ambient_env_stancia1_1]
+sound_period		= 5, 10 ;						; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				=  ambient\panic\pan,ambient\panic\pan_1,ambient\panic\pan_2,ambient\panic\pan_3,ambient\panic\pan_4,ambient\panic\pan_5,ambient\panic\pan_6,ambient\panic\pan_7,ambient\panic\pan_8,ambient\panic\pan_9,ambient\panic\pan_10,ambient\panic\pan_11,ambient\panic\pan_12             		; <snd0,snd1..sndN>		sounds name
+effect_period		= 10, 15					; <from,to>				(sec)
+effects				= ae0_effect_1,ae0_effect_2, ae0_effect_3,ae0_effect_4,ae0_effect_5,ae0_effect_6,ae0_effect_7,ae0_effect_8,ae0_effect_9	; <eff0,eff1..effN>
+
+
 
 [ambient_env_stancia2]
-sound_period = 5, 10
-sound_dist   = 30, 60
-sounds       = ambient\rnd_outdoor\rnd_darkwind1,ambient\rnd_outdoor\rnd_darkwind2,ambient\rnd_outdoor\rnd_darkwind3,ambient\rnd_outdoor\rnd_darkwind4,ambient\rnd_outdoor\rnd_darkwind5,ambient\rnd_outdoor\rnd_dark,ambient\rnd_outdoor\rnd_dark1,ambient\rnd_outdoor\rnd_dark2,ambient\rnd_outdoor\rnd_dark3,ambient\rnd_outdoor\rnd_dark4,ambient\rnd_outdoor\rnd_dark5,ambient\rnd_outdoor\rnd_rock1,ambient\rnd_outdoor\rnd_rock2,ambient\rnd_outdoor\rnd_rock3,ambient\rnd_outdoor\rnd_rock4,ambient\rnd_outdoor\rnd_drone2,ambient\rnd_outdoor\rnd_drone1,ambient\rnd_outdoor\rnd_drone2
-effect_period = 10, 20
-effects       = ae0_effect_1,ae0_effect_2, ae0_effect_3,ae0_effect_4,ae0_effect_5,ae0_effect_6,ae0_effect_7,ae0_effect_8,ae0_effect_9
+sound_period		= 5, 10					; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				= ambient\rnd_outdoor\rnd_darkwind1,ambient\rnd_outdoor\rnd_darkwind2,ambient\rnd_outdoor\rnd_darkwind3,ambient\rnd_outdoor\rnd_darkwind4,ambient\rnd_outdoor\rnd_darkwind5,ambient\rnd_outdoor\rnd_dark,ambient\rnd_outdoor\rnd_dark1,ambient\rnd_outdoor\rnd_dark2,ambient\rnd_outdoor\rnd_dark3,ambient\rnd_outdoor\rnd_dark4,ambient\rnd_outdoor\rnd_dark5,ambient\rnd_outdoor\rnd_rock1,ambient\rnd_outdoor\rnd_rock2,ambient\rnd_outdoor\rnd_rock3,ambient\rnd_outdoor\rnd_rock4,ambient\rnd_outdoor\rnd_drone2,ambient\rnd_outdoor\rnd_drone1,ambient\rnd_outdoor\rnd_drone2
+effect_period		= 10, 20					; <from,to>				(sec)
+effects				= ae0_effect_1,ae0_effect_2, ae0_effect_3,ae0_effect_4,ae0_effect_5,ae0_effect_6,ae0_effect_7,ae0_effect_8,ae0_effect_9	; <eff0,eff1..effN>		effects sect name
+
+
+[ambient_env_boloto]		 
+sound_period			= 15, 45 
+sound_dist			= 20, 50
+sounds				=  ambient\bolota\bo1,ambient\bolota\bo2,ambient\bolota\bo3,ambient\bolota\bo4,ambient\bolota\bo5,ambient\bolota\bo6,ambient\bolota\bo7,ambient\bolota\bo8,ambient\bolota\bo9,ambient\bolota\bo10,ambient\bolota\bo11,ambient\bolota\bo12,ambient\bolota\bo13,ambient\bolota\bo14,ambient\bolota\bo15,ambient\bolota\bo16,ambient\bolota\bo17,ambient\bolota\bo18,ambient\bolota\bo19,ambient\bolota\bo20,ambient\bolota\bo21,ambient\bolota\bo22,ambient\bolota\bo23,ambient\bolota\bo24 
+effect_period		= 10, 15					; <from,to>				(sec)
+effects                =   ae0_effect_4 
+
+
+
+
+[tuman_aver]
+sound_period		= 5, 10					; <from,to>				(sec)
+sound_dist			= 30, 60
+sounds				=  ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\night_scream_1,ambient\rnd_outdoor\night_scream_2,ambient\rnd_outdoor\night_scream_3,ambient\rnd_outdoor\night_spooky01,ambient\rnd_outdoor\rnd_horror_1,ambient\rnd_outdoor\rnd_horror_2,ambient\rnd_outdoor\rnd_krik9,dark_wind\1,dark_wind\2,dark_wind\3,dark_wind\4,dark_wind\5,dark_wind\6,dark_wind\7,dark_wind\8,dark_wind\9,dark_wind\10,dark_wind\11,dark_wind\12,dark_wind\13,dark_wind\14,dark_wind\15,dark_wind\16,dark_wind\17                  
+effect_period		= 25, 60					; <from,to>				(sec)
+effects				=  ae0_effect_0, ae0_effect_1,ae0_effect_2,ae0_effect_3  	; <eff0,eff1..effN>		effects sect name
+
+
+[new_amb_aver]
+sound_period		= 25, 60					; <from,to>				(sec)
+sound_dist			=  150, 300
+sounds				= darks\woi_1,darks\woi_2,darks\woi_3,darks\woi_4,darks\woi_5,darks\woi_6,darks\woi_7,darks\woi_8,darks\woi_9,darks\woi_10,darks\woi_11,darks\woi_12,darks\woi_13,darks\woi_14,darks\woi_15,darks\woi_16,darks\woi_17,darks\woi_18,darks\woi_19,darks\woi_20,darks\woi_21,darks\woi_22,darks\woi_23,darks\woi_24,darks\woi_25,darks\woi_26, ambient\rnd_outdoor\ambient_dog_1,ambient\rnd_outdoor\ambient_dog_2,ambient\rnd_outdoor\ambient_dog_3,ambient\rnd_outdoor\ambient_dog_4,ambient\rnd_outdoor\ambient_dog_5,ambient\rnd_outdoor\ambient_dog_6,ambient\rnd_outdoor\crickets_1,ambient\rnd_outdoor\crickets_2,ambient\rnd_outdoor\crickets_3,ambient\rnd_outdoor\night_scream_1,ambient\rnd_outdoor\night_scream_2,ambient\rnd_outdoor\night_scream_3,ambient\rnd_outdoor\night_spooky01,ambient\rnd_outdoor\rnd_horror_1,ambient\rnd_outdoor\rnd_horror_2,ambient\rnd_outdoor\rnd_krik9                  
+effect_period		= 25, 70					; <from,to>				(sec)
+effects				=    ae0_effect_7 ,ae0_effect_6, ae0_effect_8, ae0_effect_9 	; <eff0,eff1..effN>		effects sect name
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+[ambient_env_limansk]		;day time ambient
+sound_period			= 15, 45 
+sound_dist			= 40, 50
+sounds				= ambient\liman\lim1,ambient\liman\lim2,ambient\liman\lim3,ambient\liman\lim4,ambient\liman\lim5,ambient\liman\lim6,ambient\liman\lim7,ambient\liman\lim8,ambient\liman\lim9,ambient\liman\lim10,ambient\liman\lim11,ambient\liman\lim12,ambient\liman\lim13,ambient\liman\lim14,ambient\liman\lim15,ambient\liman\lim16,ambient\liman\lim17,alt\l1,alt\l2,alt\l3,alt\l4,alt\l5,alt\l6,alt\l7,alt\l8,alt\l9,alt\l10,alt\l11,alt\l12,alt\l13,alt\l14,alt\l15   
+effect_period		= 10, 15					; <from,to>				(sec)
+effects		=   ae0_effect_11,ae0_effect_10,ae0_effect_12    
+
+
+
+[ambient_warlab]		;day time ambient
+sound_period			= 15, 45 
+sound_dist			= 40, 50
+sounds				=  ambient\warlaba\war,ambient\warlaba\war1,ambient\warlaba\war2,ambient\warlaba\war3,ambient\warlaba\war4,ambient\warlaba\war5,ambient\warlaba\war6,ambient\warlaba\war7,ambient\warlaba\war8,ambient\warlaba\war9,ambient\warlaba\war10,ambient\warlaba\war11,ambient\warlaba\war12,ambient\warlaba\war13,ambient\warlaba\war14
+effect_period		= 10, 15					; <from,to>				(sec)
+effects		=  ; 
