@@ -250,9 +250,6 @@ function choice_smart(npc)
 			end
 			npc:remove_all_restrictions()
 		end
-		--разрешим переход online - offline
-		sim:set_switch_online(id,true)
-		sim:set_switch_offline(id,true)
 		sol_utils.setCharacterCommunity(npc:id(), community)
 		-- зарегистрируем непися
 		new_smart = smart_go and sim:object(smart_go)
@@ -306,6 +303,8 @@ amk.send_tip(string.format("группа: %s, смарт: %s, лока: %s",community,new_smart
 		data.g_team = team
 		data.upd.g_team = team
 		pk:set( data )
+		--
+		_krodin_utils.switch_online_offline_online(sobj.id)
 		--
 amk.add_spot_on_map(sobj.id,"alife_presentation_stalker",tostring(npc:character_name()))
 

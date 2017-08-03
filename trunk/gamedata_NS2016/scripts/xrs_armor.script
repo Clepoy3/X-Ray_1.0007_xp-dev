@@ -146,8 +146,8 @@ function npc_update( binder )
 	--
 	r = ( r - 1 ) * 300 + math_random( 1, 50 )
 	sobj:set_rank( r )
+	_krodin_utils.switch_online_offline_online(sobj.id)
 	alife():release( alife():object( item:id() ) )
-
 end
 
 
@@ -179,6 +179,8 @@ function change_vis( id, vis, lvl )
 	local data = pk:get()
 	data.visual_name = vis
 	pk:set( data )
+	--
+	_krodin_utils.switch_online_offline_online(sobj.id)
 	--
 	sobj:set_rank( upgrade_exp * lvl + math_random( 1, 50 ) )
 end

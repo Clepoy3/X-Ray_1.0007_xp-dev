@@ -30,13 +30,6 @@ function get_gl_mode( obj )
 	return data.upd.grenade_mode ~= 0
 end
 
--- индекс типа патронов для неактивного типа зарядов
---function get_hidden_ammo_type( obj ) 
---	local pk = get_netpk( obj, 2 )
---	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
---	local data = pk:get()
---end
-
 -- индекс типа патронов для текущего типа зарядов
 function get_active_ammo_type( obj ) 
 	local pk = get_netpk( obj, 2 )
@@ -56,10 +49,21 @@ function get_ammo_size( obj )
 	return data.upd.ammo_left
 end
 
+function switch_online_offline_online(id)
+	alife():set_switch_online( id, false )
+	alife():set_switch_offline( id, true )
+	level.add_call(
+		function() return not level.object_by_id(id) end,
+		function()
+			alife():set_switch_online( id, true )
+			alife():set_switch_offline( id, false )
+		end
+	)
+end
+
 --dsh mod
 
 function clear_used_ai_locations( sobj )
-do return end --TODO: Исправить!
   local pk = get_netpk( sobj, 1 )
   ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
   local data = pk:get()
