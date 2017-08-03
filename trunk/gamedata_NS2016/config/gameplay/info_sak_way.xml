@@ -201,14 +201,9 @@
 	<info_portion id="docent_detector3_done">
 		<disable>docent_detector3_have</disable>
 	</info_portion>
-<info_portion id="havent_sak_treasure">
-<disable>have_sak_treasure</disable>
-  </info_portion>
-<info_portion id="have_sak_treasure">
-<disable>havent_sak_treasure</disable>
-  </info_portion>
-
-  <info_portion id="sherstuk_not_enemy"></info_portion>
+	<info_portion id="havent_sak_treasure"></info_portion>
+	<info_portion id="have_sak_treasure"></info_portion>
+	<info_portion id="sherstuk_not_enemy"></info_portion>
 
 <info_portion id="sherstuk_enemy">
 <disable>sherstuk_not_enemy</disable>
@@ -433,17 +428,10 @@
    <info_portion id="mil_volk_resiver_start">
         <task>mil_volk_resiver</task>
   </info_portion>
-  <info_portion id="info_electra_off">
-  </info_portion>
-  <info_portion id="mil_volk_resiver_1have">
-  <disable>mil_volk_resiver_start</disable>
-  </info_portion>
-   <info_portion id="mil_volk_resiver_have">
-  <disable>mil_volk_resiver_1have</disable>
-  </info_portion>
-   <info_portion id="mil_volk_resiver_done">
-		<disable>mil_volk_resiver_have</disable>
-   </info_portion>
+  <info_portion id="info_electra_off"></info_portion>
+  <info_portion id="mil_volk_resiver_1have"></info_portion>
+  <info_portion id="mil_volk_resiver_have"></info_portion>
+  <info_portion id="mil_volk_resiver_done"></info_portion>
  
    <info_portion id="escape_lager_volk_document_start">
         <task>escape_lager_volk_document</task>

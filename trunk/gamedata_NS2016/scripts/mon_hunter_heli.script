@@ -1,0 +1,180 @@
+------------------------------------
+-- Модуль "Охотник на Больших птиц".
+-- Created by Monnoroch.
+-- 2.08.09
+------------------------------------
+evid_mon_base = 18826
+actid_mon_base = evid_mon_base
+
+class "evaluator_hunter_heli" (property_evaluator)
+function evaluator_hunter_heli:__init(npc,name,storage) super (nil,name)
+	self.st = storage
+	self.st.attack_heli = 250*250
+	self.st.attack_mob = 25*25
+	self.st.camp = nil
+	--self.firepow = nil
+	self.heliTime = 0
+	self.delay = 0
+	self.st.heliId = nil
+end
+function evaluator_hunter_heli:evaluate()
+	local npc = self.object
+
+	if self.st.heli then
+		if self.heliTime > time_global() then
+			return true
+		end
+
+		local danger = npc:best_danger()
+		if danger then
+			local bd_obj = danger:object()
+			local bd_dep_obj = danger:dependent_object()
+			if bd_obj and bd_obj:id() ~= self.st.heli:id() and npc_by_clsid[bd_obj:clsid()] and bd_obj:alive() and (IAmAMonster[bd_obj:clsid()] or not xr_wounded.is_wounded(bd_obj)) and bd_obj:position():distance_to_sqr(npc:position()) < self.st.attack_mob
+				or
+				bd_dep_obj and bd_dep_obj:id() ~= self.st.heli:id() and npc_by_clsid[bd_dep_obj:clsid()] and bd_dep_obj:alive() and (IAmAMonster[bd_dep_obj:clsid()] or not xr_wounded.is_wounded(bd_dep_obj)) and bd_dep_obj:position():distance_to_sqr(npc:position()) < self.st.attack_mob
+			then
+				return false
+			end
+		end
+	elseif self.delay >= time_global() then
+		return false
+	end
+	
+	self.st.heli = mon_utils.get_nearest_heli(npc, self.st.attack_heli)
+	if self.st.heli then
+		self.heliTime = time_global() + math.random(5000, 15000)
+		return true
+	else
+		self.st.need_cov = nil
+		--self.st.need_hunt = nil
+		self.delay = time_global() + math.random(1000,5000)
+		return false
+	end
+end
+
+class "action_hunter_heli" (action_base)
+function action_hunter_heli:__init (npc,action_name,storage) super (nil,action_name)
+	self.st = storage
+end
+function action_hunter_heli:initialize()
+	action_base.initialize(self)
+	self.st.heliTimeLook = 0
+	local npc = self.object
+	npc:clear_animations()
+	npc:set_desired_position()
+	npc:set_desired_direction()
+	npc:set_detail_path_type(move.curve)
+	npc:set_path_type(game_object.level_path)
+	if math.random() < 0.1 then xr_sound.set_sound_play(npc, "fight_tolls") end
+	--self.firepow = mon_utils.get_target_priority(npc)
+	--if  self.firepow < 3 then
+		if not self.st.camp or self.st.heliId ~= self.st.heli:id() then
+			self.st.camp = mon_utils.get_camp(npc, true)
+			self.st.heliId = self.st.heli:id()
+		end
+	--	if self.st.camp then
+			self.st.need_cov = true
+			npc:set_dest_level_vertex_id(self.st.camp)
+			if state_mgr.get_state(npc) ~= "sprint" then
+				state_mgr.set_state(npc,"sprint",nil,nil,nil,{animation = true})
+			end
+	--	else
+	--		self.st.need_hunt = true
+	--	end
+	--end
+end
+
+function action_hunter_heli:execute()
+	action_base.execute(self)
+	local npc = self.object
+--	if npc:active_item() and ((not self.actit) or (self.actit and self.actit ~= npc:active_item():section())) then
+--		self.actit = npc:active_item():section()
+--		self.bs = mon_utils.get_bs(npc)
+--	end
+--	if self.bs then
+--		self.lookpos = mon_utils.look_pos(self.st.heli,npc,self.bs)
+--	end
+	local heliPosChanged = false
+	if self.st.heliTimeLook < time_global() and mon_utils.is_heli_alive(self.st.heli) then
+		self.st.heliPos = self.st.heli:position()
+		self.st.heliTimeLook = time_global() + math.random(5000, 10000)
+		heliPosChanged = true
+	end
+	--[[if self.st.need_hunt and self.lookpos then
+		if self.delay and self.delay >= time_global() then
+			return
+		end
+		state_mgr.set_state(npc, "raid_fire", nil, nil, {look_position = self.lookpos}, nil, nil, {yaw_delta=10})
+		self.delay = time_global() + 400
+	else]]if self.st.need_cov --[[or not self.lookpos]] then
+		--utils.send_to_nearest_accessible_vertex(npc,self.st.camp)
+		if self.st.camp == npc:level_vertex_id() or npc:position():distance_to_sqr(level.vertex_position(self.st.camp)) < 9 then
+			npc:set_sight(look.point,self.st.heliPos,true)
+			if heliPosChanged then
+				if math.random() < 0.3 then
+					if math.random() > 0.5 then
+						xr_sound.set_sound_play(npc, "help_see")
+						npc:set_body_state(move.standing)
+					else
+						xr_sound.set_sound_play(npc, "panic_human")
+						npc:set_body_state(move.crouch)
+					end
+				end
+			end
+		end
+	end		
+end
+
+function action_hunter_heli:finalize()
+	local npc = self.object
+	
+	npc:clear_animations()
+	npc:set_movement_type(move.walk)
+	npc:set_mental_state(anim.free)
+	npc:set_body_state(move.standing)
+	npc:movement_enabled(true)
+	npc:set_sight(look.cur_dir, nil, 0)
+	
+	self.st.heliTimeLook = 0
+	self.st.heli = nil
+	--self.delay = 0
+	self.st.need_cov = nil
+	--self.st.need_hunt = nil
+	--self.st.camp = nil
+	--self.lookpos = nil
+	action_base.finalize(self)
+end
+
+evid_hunter_heli = evid_mon_base + 3
+actid_hunter_heli = evid_hunter_heli
+
+function add_to_binder(npc,ini,scheme,section,storage)
+	local manager = npc:motivation_action_manager()
+	if true then
+		manager:add_evaluator(evid_hunter_heli, property_evaluator_const(false))
+	else
+		manager:add_evaluator(evid_hunter_heli,evaluator_hunter_heli(npc,"eva_hunter_heli",storage))
+		local action = action_hunter_heli(npc,"act_hunter_heli",storage)
+		action:add_precondition(world_property(stalker_ids.property_alive,true))
+		action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base,false))
+		if blowout_scheme then
+			action:add_precondition(world_property(blowout_scheme.evid_blowout,false))
+		end
+		action:add_precondition(world_property(evid_hunter_heli,true))
+		action:add_effect(world_property(evid_hunter_heli,false))
+		manager:add_action(actid_hunter_heli,action)
+		action = manager:action(xr_actions_id.alife)
+		action:add_precondition(world_property(evid_hunter_heli,false))
+	end
+end
+
+function set_scheme(npc,ini,scheme,section)
+	local st = xr_logic.assign_storage_and_bind(npc,ini,scheme,section)
+end
+
+function disable_scheme(npc, scheme)
+	local st = db.storage[npc:id()][scheme]
+	if st then
+		st.enabled = false
+	end
+end

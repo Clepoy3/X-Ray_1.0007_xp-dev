@@ -253,7 +253,6 @@ function enable_generic_schemes( ini, npc, stype, sect )
 	-- _G.watchdog = false
 end
 
-
 function issue_event( npc, st, event_fn, ... )	-- st - storage активной схемы
 	local t = st and st.actions
 	if t then
@@ -263,53 +262,60 @@ function issue_event( npc, st, event_fn, ... )	-- st - storage активной схемы
 	end	end	end
 end
 
-
 local t_gen_cfg = {}
 
-function configure_schemes( npc, ini, file, stype, sect, gname )
-	if ini and sect and ini:section_exist( sect ) then
-		local s = ini:line_exist( sect, "cfg" ) and ini:r_string( sect, "cfg" )
-		if s then	-- конфиг в файле, открываем, и вызываем себя еще раз с ЭТИМ конфигом
-			local v = t_gen_cfg[s]	-- больше это ни где не читается, и "кэшировать" не надо
-			if not v then		-- только ЗДЕСЬ !!!
-				v = ini_file( s )
-				t_gen_cfg[s] = v
-			end
-			return configure_schemes( npc, v, s, stype, sect, gname )
-		end
-	elseif gname then	-- в гулаге, но почему-то без работы
-		abort( "configure_schemes, invalid section: [%s] (no jobs in gulag [%s] for npc: %s)",
-			to_str( sect ), npc:name(), to_str( gname ) )
-	end	-- иначе может и без логики
-
-	local st = db.storage[npc:id()]
+function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_name)
+	local npc_id = npc:id()
+	local st     = db.storage[npc_id]
 
 	-- если какая-то схема была до этого активна, деактивировать её
 	if st.active_section then
-		-- issue_event( npc, st[st.active_scheme], "deactivate", npc )
-		local t = st[st.active_scheme]
-		if t and t.actions then
-			for ptr, a in pairs( t.actions ) do
-				a = a and ptr.deactivate
-				if a then a( ptr, npc ) end
-	end	end	end
+		issue_event(npc, st[st.active_scheme], "deactivate", npc)
+	end
 
-	disable_generic_schemes( npc, stype )
-	enable_generic_schemes( ini, npc, stype, sect )	-- Включаем все общие схемы (раненый, коллбеки и т.д.):
+	local actual_ini
+	local actual_ini_filename
+	if not ini:section_exist(section_logic) then
+		if not gulag_name then
+		-- Общие схемы должны работать и без logic:
+		actual_ini_filename = ini_filename
+		actual_ini = ini
+		else
+		-- Иначе это персонаж Gulag-а и ему не задали работу:
+		abort("ERROR: object '%s': unable to find section '%s'", npc:name(), section_logic)
+		end
+	else
+		local filename = utils.cfg_get_string(ini, section_logic, "cfg", npc, false, "")
+		if filename then
+			-- Рекурсивно обработать конфигурационный файл, на который ссылается поле cfg
+			actual_ini_filename = filename
+			actual_ini = ini_file(filename)
+			return configure_schemes(npc, actual_ini, actual_ini_filename, stype, section_logic, gulag_name)
+		else
+			actual_ini_filename = ini_filename
+			actual_ini = ini
+		end
+	end
 
-	-- if stype == modules.stype_stalker or npc:clsid() == clsid.script_trader then
-	--	trade_manager.trade_init( npc, ( ini:line_exist( sect, "trade" )
-	--		and ini:r_string( sect, "trade" ) ) or "misc\\trade_generic.ltx" )
-	-- end	-- у нас теперь "динамическая торговля", которую, впрочем, надо таки переделывать.
+	-- Поскольку в момент активации схемы могли работать ранее установленные общие схемы, нужно их все отключить:
+	disable_generic_schemes(npc, stype)
+	-- Включаем все общие схемы (раненный, коллбек на попадание и т.д.):
+	enable_generic_schemes(actual_ini, npc, stype, section_logic)
 
-	st.active_section, st.active_scheme = nil, nil
-	st.gulag_name = gname or ""
+	st.active_section = nil
+	st.active_scheme = nil
+	if gulag_name then
+		st.gulag_name = gulag_name
+	else
+		st.gulag_name = ""
+	end
 	st.stype = stype
-	st.ini, st.ini_filename = ini, file
-	st.section_logic = sect
-	return ini
-end
+	st.ini = actual_ini
+	st.ini_filename = actual_ini_filename
+	st.section_logic = section_logic
 
+	return st.ini
+end
 
 function pick_section_from_condlist( actor, npc, condlist )
 	local rnd, f, c
@@ -434,7 +440,13 @@ function parse_infop( t, s )
 			else t[n] = { ["func"] = v1, ["expected"] = false }
 			end
 
-		else abort( "parse_infop, invalid condlist [%s]", string_sub( s, 1, 180 ) )
+		else
+			-- Фикс на Фрица
+			if v1 == "u" and v2 == "hozu_na_bazu" then
+				t[n] = { ["name"] = v2, ["required"] = true }
+			else
+ 				abort( "parse_infop, invalid condlist [%s]", string_sub( s, 1, 180 ) )
+			end
 		end
 		n = n + 1
 	end
@@ -1220,11 +1232,19 @@ function create_dummy_ini()
 	return dummy_ini
 end
 
+-- можно и серверный и game object
+function get_customdata_or_ini_file( obj, ltx, gulag )
 
-function get_customdata_or_ini_file( obj, ltx )	-- можно и серверный и game object
-	if ltx == "<customdata>" then return obj:spawn_ini() or dummy_ini or create_dummy_ini() end
-
-	if string_sub( ltx, 1, 1 ) == "*" then	-- динамический ltx
+	if ltx == "<customdata>" then
+		if gulag then
+			return dummy_ini or create_dummy_ini()
+		else
+			return obj:spawn_ini() or dummy_ini or create_dummy_ini()
+		end
+	end
+	
+	-- динамический ltx
+	if string_sub( ltx, 1, 1 ) == "*" then
 		local p = string_find( ltx, "*", 2 )
 		return gulag_tasks.loadLtx( string_sub( ltx, 2, p - 1 ), string_sub( ltx, p + 1 ) )
 	end
@@ -1236,25 +1256,22 @@ function get_customdata_or_ini_file( obj, ltx )	-- можно и серверный и game obje
 	return i
 end
 
-
-function initialize_obj( npc, st, loaded, actor, stype, inifile )
-	if loaded then
-		local ltx = st.loaded_ini_filename
-		if ltx then
-			local ini = get_customdata_or_ini_file( npc, ltx )
-			ini = configure_schemes( npc, ini, ltx, stype,
-				st.loaded_section_logic, st.loaded_gulag_name )
-			activate_by_section( npc, ini, st.loaded_active_section, true )
+function initialize_obj(obj, st, loaded, actor, stype, inifile, gulag)
+	if not loaded then
+		local ini_filename = inifile or "<customdata>"
+		local ini = get_customdata_or_ini_file(obj, ini_filename, gulag)
+		ini = xr_logic.configure_schemes(obj, ini, ini_filename, stype, "logic", nil)
+		local sect = xr_logic.determine_section_to_activate(obj, ini, "logic", actor)
+		xr_logic.activate_by_section(obj, ini, sect, false)
+	else
+		local ini_filename = st.loaded_ini_filename
+		if ini_filename then
+			local ini = get_customdata_or_ini_file(obj, ini_filename, gulag)
+			ini = xr_logic.configure_schemes(obj, ini, ini_filename, stype, st.loaded_section_logic, st.loaded_gulag_name)
+			xr_logic.activate_by_section(obj, ini, st.loaded_active_section, true)
 		end
-		return
 	end
-
-	local ltx = inifile or "<customdata>"
-	local ini = get_customdata_or_ini_file( npc, ltx )
-	ini = configure_schemes( npc, ini, ltx, stype, "logic" )
-	activate_by_section( npc, ini, determine_section_to_activate( npc, ini, "logic", actor ), false )
 end
-
 
 function parse_data( s )	-- переехало из xr_meet, разгребает логику d|{cnd}st1,st2@{cnd}snd1,snd2
 	if s then

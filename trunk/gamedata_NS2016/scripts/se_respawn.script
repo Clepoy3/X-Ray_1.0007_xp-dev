@@ -62,7 +62,7 @@ function r_spawns(spawn_ini,section,line,sectSpawnProps)
 	local check = nil
 	local c_data,comm,count,ltx,num_even,prob,rank,spawn,tabl,tab_spawn
 	local def,num = 1,1
-	local respawn_ini = system_ini()
+	local respawn_ini = sys_ini
 	if spawn_ini:line_exist(section,line) then
 		-- Вычитываем шанс для каждой секции
 		tabl = parse_names(spawn_ini:r_string(section,line))

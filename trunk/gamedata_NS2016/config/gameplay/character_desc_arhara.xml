@@ -8342,7 +8342,7 @@
           <bio>sim_stalker_general_bio</bio>
 		
 		<class>marsh_udav</class>
-		<community>trader</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<community>stranger</community> <terrain_sect>stalker_terrain</terrain_sect>
 		
 		<rank>502</rank>
 		<reputation>100</reputation>
@@ -8373,7 +8373,7 @@
           <bio>sim_stalker_general_bio</bio>
 		
 		<class>generators_udav</class>
-		<community>trader</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<community>stranger</community> <terrain_sect>stalker_terrain</terrain_sect>
 		
 		<rank>502</rank>
 		<reputation>100</reputation>

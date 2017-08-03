@@ -425,10 +425,6 @@
 	<article>zone_locations_zaton</article>
  </info_portion>
 
-
-
-
-
    <info_portion id="encyclopedy_zone_locations_pripiat">
 	<article>zone_locations_pripiat</article>
  </info_portion>
@@ -436,14 +432,21 @@
    <info_portion id="encyclopedy_zone_locations_stancia">
 	<article>zone_locations_stancia</article>
  </info_portion>
- 
+
+
+
    <info_portion id="encyclopedy_mutant_crow_general">
 	<article>mutant_crow_general</article>
  </info_portion>
  
    <info_portion id="encyclopedy_mutant_rat_general">
+	<article>mutant_rat_general</article>
  </info_portion>
- 
+
+   <info_portion id="encyclopedy_mutant_ratlike_general">
+	<article>mutant_ratlike_general</article>
+ </info_portion>
+  
    <info_portion id="encyclopedy_mutant_flesh_general">
 	<article>mutant_flesh_general</article>
  </info_portion>
@@ -476,7 +479,6 @@
 	<article>mutant_chimera_general</article>
  </info_portion>
 
- 
    <info_portion id="encyclopedy_mutant_burer_general">
 	<article>mutant_burer_general</article>
  </info_portion>
@@ -504,7 +506,9 @@
    <info_portion id="encyclopedy_mutant_snork_general">
 	<article>mutant_snork_general</article>
  </info_portion>
- 
+
+
+
    <info_portion id="encyclopedy_social_military_army">
 	<article>social_military_army</article>
  </info_portion>

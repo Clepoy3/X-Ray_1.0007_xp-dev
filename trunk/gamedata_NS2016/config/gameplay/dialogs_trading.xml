@@ -334,6 +334,7 @@
 </dialog>
 
 <dialog id="bandit_treasure_1_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>bandit_treasure_1_dialog_0</text>
@@ -368,20 +369,20 @@
 		</phrase>
 		<phrase id="6">
             <text>bandit_treasure_1_dialog_6</text>
-			<action>sak.have_trasure</action>
-
+			<action>dialogs.check_treasure</action>
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>bandit_treasure_1_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>bandit_treasure_1_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -395,6 +396,7 @@
     </phrase_list>
 </dialog>
 <dialog id="bandit_treasure_2_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>bandit_treasure_2_dialog_0</text>
@@ -429,20 +431,21 @@
 		</phrase>
 		<phrase id="6">
             <text>bandit_treasure_2_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>bandit_treasure_2_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>bandit_treasure_2_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -456,6 +459,7 @@
     </phrase_list>
 </dialog>
 <dialog id="bandit_treasure_3_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>bandit_treasure_3_dialog_0</text>
@@ -490,20 +494,21 @@
 		</phrase>
 		<phrase id="6">
             <text>bandit_treasure_3_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>bandit_treasure_3_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>bandit_treasure_3_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -517,6 +522,7 @@
     </phrase_list>
 </dialog>
 <dialog id="bandit_treasure_4_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>bandit_treasure_4_dialog_0</text>
@@ -551,20 +557,21 @@
 		</phrase>
 		<phrase id="6">
             <text>bandit_treasure_4_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>bandit_treasure_4_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>bandit_treasure_4_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -578,6 +585,7 @@
     </phrase_list>
 </dialog>
 <dialog id="neitral_treasure_1_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>neitral_treasure_1_dialog_0</text>
@@ -612,19 +620,20 @@
 		</phrase>
 		<phrase id="6">
             <text>neitral_treasure_1_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>neitral_treasure_1_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>neitral_treasure_1_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -638,6 +647,7 @@
     </phrase_list>
 </dialog>
 <dialog id="neitral_treasure_2_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>neitral_treasure_2_dialog_0</text>
@@ -672,20 +682,21 @@
 		</phrase>
 		<phrase id="6">
             <text>neitral_treasure_2_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>neitral_treasure_2_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>neitral_treasure_2_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -699,6 +710,7 @@
     </phrase_list>
 </dialog>
 <dialog id="neitral_treasure_3_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>neitral_treasure_3_dialog_0</text>
@@ -733,20 +745,21 @@
 		</phrase>
 		<phrase id="6">
             <text>neitral_treasure_3_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>neitral_treasure_3_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>neitral_treasure_3_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -760,6 +773,7 @@
     </phrase_list>
 </dialog>
 <dialog id="neitral_treasure_4_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>neitral_treasure_4_dialog_0</text>
@@ -794,20 +808,21 @@
 		</phrase>
 		<phrase id="6">
             <text>neitral_treasure_4_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>neitral_treasure_4_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>neitral_treasure_4_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -821,6 +836,7 @@
     </phrase_list>
 </dialog>
 <dialog id="dolg_garb_treasure_1_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>dolg_garb_treasure_1_dialog_0</text>
@@ -855,19 +871,20 @@
 		</phrase>
 		<phrase id="6">
             <text>dolg_garb_treasure_1_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>dolg_garb_treasure_1_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>dolg_garb_treasure_1_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -881,6 +898,7 @@
     </phrase_list>
 </dialog>
 <dialog id="dolg_garb_treasure_2_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>dolg_garb_treasure_2_dialog_0</text>
@@ -915,20 +933,21 @@
 		</phrase>
 		<phrase id="6">
             <text>dolg_garb_treasure_2_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>dolg_garb_treasure_2_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>dolg_garb_treasure_2_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -942,6 +961,7 @@
     </phrase_list>
 </dialog>
 <dialog id="dolg_garb_treasure_3_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>dolg_garb_treasure_3_dialog_0</text>
@@ -976,20 +996,21 @@
 		</phrase>
 		<phrase id="6">
             <text>dolg_garb_treasure_3_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>dolg_garb_treasure_3_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>dolg_garb_treasure_3_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1003,6 +1024,7 @@
     </phrase_list>
 </dialog>
 <dialog id="dolg_garb_treasure_4_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>dolg_garb_treasure_4_dialog_0</text>
@@ -1037,20 +1059,21 @@
 		</phrase>
 		<phrase id="6">
             <text>dolg_garb_treasure_4_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>dolg_garb_treasure_4_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>dolg_garb_treasure_4_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1064,6 +1087,7 @@
     </phrase_list>
 </dialog>
 <dialog id="stalk_garb_treasure_1_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>stalk_garb_treasure_1_dialog_0</text>
@@ -1098,19 +1122,20 @@
 		</phrase>
 		<phrase id="6">
             <text>stalk_garb_treasure_1_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>stalk_garb_treasure_1_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>stalk_garb_treasure_1_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1124,6 +1149,7 @@
     </phrase_list>
 </dialog>
 <dialog id="stalk_garb_treasure_2_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>stalk_garb_treasure_2_dialog_0</text>
@@ -1158,20 +1184,21 @@
 		</phrase>
 		<phrase id="6">
             <text>stalk_garb_treasure_2_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>stalk_garb_treasure_2_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>stalk_garb_treasure_2_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1185,6 +1212,7 @@
     </phrase_list>
 </dialog>
 <dialog id="stalk_garb_treasure_3_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>stalk_garb_treasure_3_dialog_0</text>
@@ -1219,20 +1247,21 @@
 		</phrase>
 		<phrase id="6">
             <text>stalk_garb_treasure_3_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>stalk_garb_treasure_3_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>stalk_garb_treasure_3_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1246,6 +1275,7 @@
     </phrase_list>
 </dialog>
 <dialog id="stalk_garb_treasure_4_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>stalk_garb_treasure_4_dialog_0</text>
@@ -1280,20 +1310,21 @@
 		</phrase>
 		<phrase id="6">
             <text>stalk_garb_treasure_4_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>stalk_garb_treasure_4_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>stalk_garb_treasure_4_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1307,6 +1338,7 @@
     </phrase_list>
 </dialog>
 <dialog id="stalk_bar_treasure_1_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>stalk_bar_treasure_1_dialog_0</text>
@@ -1341,19 +1373,20 @@
 		</phrase>
 		<phrase id="6">
             <text>stalk_bar_treasure_1_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>stalk_bar_treasure_1_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>stalk_bar_treasure_1_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1367,6 +1400,7 @@
     </phrase_list>
 </dialog>
 <dialog id="stalk_bar_treasure_2_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>stalk_bar_treasure_2_dialog_0</text>
@@ -1401,20 +1435,21 @@
 		</phrase>
 		<phrase id="6">
             <text>stalk_bar_treasure_2_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>stalk_bar_treasure_2_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>stalk_bar_treasure_2_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1428,6 +1463,7 @@
     </phrase_list>
 </dialog>
 <dialog id="stalk_bar_treasure_3_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>stalk_bar_treasure_3_dialog_0</text>
@@ -1462,20 +1498,21 @@
 		</phrase>
 		<phrase id="6">
             <text>stalk_bar_treasure_3_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>stalk_bar_treasure_3_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>stalk_bar_treasure_3_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1489,6 +1526,7 @@
     </phrase_list>
 </dialog>
 <dialog id="stalk_bar_treasure_4_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>stalk_bar_treasure_4_dialog_0</text>
@@ -1523,20 +1561,21 @@
 		</phrase>
 		<phrase id="6">
             <text>stalk_bar_treasure_4_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>stalk_bar_treasure_4_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>stalk_bar_treasure_4_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1550,6 +1589,7 @@
     </phrase_list>
 </dialog>
 <dialog id="freedom_1_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>freedom_1_dialog_0</text>
@@ -1584,19 +1624,20 @@
 		</phrase>
 		<phrase id="6">
             <text>freedom_1_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>freedom_1_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>freedom_1_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1610,6 +1651,7 @@
     </phrase_list>
 </dialog>
 <dialog id="freedom_2_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>freedom_2_dialog_0</text>
@@ -1644,20 +1686,21 @@
 		</phrase>
 		<phrase id="6">
             <text>freedom_2_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>freedom_2_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>freedom_2_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1671,6 +1714,7 @@
     </phrase_list>
 </dialog>
 <dialog id="freedom_3_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>freedom_3_dialog_0</text>
@@ -1705,20 +1749,21 @@
 		</phrase>
 		<phrase id="6">
             <text>freedom_3_dialog_6</text>
-			<action>sak.have_trasure</action>
+			<action>dialogs.check_treasure</action>
 
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>freedom_3_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>freedom_3_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1732,6 +1777,7 @@
     </phrase_list>
 </dialog>
 <dialog id="freedom_4_dialog">
+	<precondition>dialogs.have_dialog_treasure</precondition>
 	<phrase_list>
         <phrase id="0">
             <text>freedom_4_dialog_0</text>
@@ -1766,20 +1812,20 @@
 		</phrase>
 		<phrase id="6">
             <text>freedom_4_dialog_6</text>
-			<action>sak.have_trasure</action>
-
+			<action>dialogs.check_treasure</action>
 			<next>71</next>
 			<next>73</next>
 		</phrase>
 		<phrase id="71">
-			<has_info>have_sak_treasure</has_info>
+			<precondition>dialogs.give_treasure</precondition>
             <text>freedom_4_dialog_71</text>
-			<action>sak.take_trasure</action>
+			<action>dialogs.give_dialog_treasure</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="73">
-		<dont_has_info>have_sak_treasure</dont_has_info>
+		<precondition>dialogs.no_give_treasure</precondition>
             <text>freedom_4_dialog_73</text>
+			<action>dialogs.clear_dialog_treasure</action>
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
@@ -1792,7 +1838,7 @@
 		</phrase>
     </phrase_list>
 </dialog>
-		
+
 <dialog id="bar_docent_dialog">
 <precondition>sak_dialog.docent_have_done</precondition>
 	<phrase_list>

@@ -94,21 +94,21 @@ local level_anoms = {
 	aver = {150,190,{mincer=12, mosquito_bald=12, electra=16, buzz=15, zharka_static=5, gravi=15, sakbuzz=4, sphere=5, fountain=1}},
 	dead_city = {100,140,{mincer=10, mosquito_bald=10, fountain=2, electra=10, zharka_static=8, gravi=10, buzz=10, sakbuzz=1, sphere=4}},
 	generators = {130,150,{mincer=15, mosquito_bald=11, fountain=1, electra=15, zharka_static=5, gravi=10, buzz=16, sakbuzz=6, sphere=4}},
-	hospital = {10,20,{mincer=8, mosquito_bald=8, fountain=1, electra=7, buzz=8, gravi=5, sakbuzz=2, zharka_static=5, sphere=2}},
+	hospital = {1,5,{mosquito_bald=8, fountain=1, electra=7, buzz=8, gravi=5, sakbuzz=2, zharka_static=5, sphere=2}},
 	jupiter = {150,160,{electra=15, fountain=1, gravi=15, mincer=10, buzz=15, sakbuzz=2, mosquito_bald=15, sphere=8}},
 	l01_escape = {80,120,{electra=12, fountain=2, gravi=5, mincer=10, buzz=10, sakbuzz=2, mosquito_bald=15, sphere=4}},
 	l02_garbage = {100,130,{mosquito_bald=12, mincer=12, electra=15, gravi=10, buzz=12, sakbuzz=3, sphere=3, fountain=2}},
 	l03_agroprom = {100,110,{mosquito_bald=12, mincer=8, fountain=2, electra=12, buzz=12, gravi=10, sakbuzz=3, sphere=3}},
 	l04_darkvalley = {100,110,{mincer=8, mosquito_bald=12, fountain=2, electra=12, buzz=10, zharka_static=8, gravi=8, sakbuzz=5, sphere=4}},
-	l05_bar = {60,80,{mosquito_bald=8, mincer=10, fountain=1, electra=10, buzz=5, gravi=8, sakbuzz=2, zharka_static=4, sphere=2}},
-	l06_rostok = {70,90,{mincer=7, mosquito_bald=7, electra=10, zharka_static=25, gravi=7, sakbuzz=3, buzz=10, sphere=2, fountain=1}},
+	l05_bar = {20,40,{mosquito_bald=8, mincer=10, fountain=1, electra=10, buzz=5, gravi=8, sakbuzz=2, zharka_static=4, sphere=2}},
+	l06_rostok = {50,70,{mincer=7, mosquito_bald=7, electra=10, zharka_static=25, gravi=7, sakbuzz=3, buzz=10, sphere=2, fountain=1}},
 	l07_military = {100,120,{mincer=12 , mosquito_bald=15, fountain=2, electra=12, zharka_static=8, gravi=10, sakbuzz=3, buzz=10, sphere=4}},
-	l08_yantar = {80,100,{mosquito_bald=8, mincer=8, fountain=1, electra=10, buzz=8, zharka_static=5, gravi=8, sakbuzz=3, sphere=3}},
+	l08_yantar = {60,80,{mosquito_bald=8, mincer=8, fountain=1, electra=10, buzz=8, zharka_static=5, gravi=8, sakbuzz=3, sphere=3}},
 	l10_radar = {100,130,{mincer=14, mosquito_bald=11, fountain=2, electra=15, buzz=10, zharka_static=12, gravi=10, sakbuzz=5, sphere=4}},
-	l11_pripyat = {100,120,{mincer=10, mosquito_bald=10, fountain=1, electra=10,  zharka_static=8, gravi=10, buzz=10, sakbuzz=2, sphere=3}},
+	l11_pripyat = {80,100,{mincer=10, mosquito_bald=10, fountain=1, electra=10,  zharka_static=8, gravi=10, buzz=10, sakbuzz=2, sphere=3}},
 	l12_stancia = {80,100,{mincer=12, mosquito_bald=10, electra=10, fountain=1, buzz=10, zharka_static=7, gravi=8, sakbuzz=4, sphere=4}},
 	limansk = {30,50,{mosquito_bald=10, mincer=10, fountain=1, electra=15, gravi=10, buzz=10, sakbuzz=2, zharka_static=8, sphere=3}},
-	lost_village = {80,100,{mincer=8, mosquito_bald=8, fountain=1, electra=10, zharka_static=5, gravi=5, buzz=5, sakbuzz=2, sphere=3}},
+	lost_village = {60,90,{mincer=8, mosquito_bald=8, fountain=1, electra=10, zharka_static=5, gravi=5, buzz=5, sakbuzz=2, sphere=3}},
 	marsh = {140,180,{mincer=13, mosquito_bald=11, electra=12, zharka_static=12, gravi=10, buzz=13, sakbuzz=5, sphere=5, fountain=2}},
 	pripyat = {100,140,{electra=15, fountain=1, gravi=15, mincer=10, buzz=15, sakbuzz=2, mosquito_bald=15, sphere=8}},
 	puzir = {120,140,{mincer=15, mosquito_bald=15, electra=14, buzz=12, zharka_static=5, gravi=14, sakbuzz=3, sphere=4, fountain=1}},
@@ -164,6 +164,10 @@ function pre_blow_off_single( sobj, map )
 					v[sobj.id] = nil
 					npc_restrictors_need_update[k] = true
 				end
+			end
+			local anom = level.object_by_id( sobj.id )
+			if anom then
+				anom:disable_anomaly()
 			end
 			alife():release( sobj, true )
 			return false
@@ -232,8 +236,12 @@ function anom_suffix( n )
 end
 
 function check_exclusion( sobj, map )
+	local sect = sobj:section_name() 
 	local spawn_id = string_find(sobj:name(),tostring(sobj.id))
-	if not level_vertexes[map] or not spawn_id then
+	if string_find( sect, "_mincer" ) and not string_find( sect, "caps_" ) and map == "hospital" then
+		return true
+	end
+	if ( not level_vertexes[map] or not spawn_id ) and not string_find( sect, "caps_" ) then
 		return true
 	end
 	return false 
@@ -574,4 +582,16 @@ function get_anomaly_list_for_pos( posn, radius )
 end
 
 
-function update() end	--нужно удалить из amk.script
+function anom_release(sobj)
+	local id = sobj.id
+	if anom_list and anom_list[id] then
+		anom_list[id] = nil
+		for k, v in pairs( anoms_for_npc ) do	
+			if v[id] then
+				v[id] = nil
+				npc_restrictors_need_update[k] = true
+			end
+		end
+	end
+	alife():release(sobj, true)
+end

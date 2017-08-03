@@ -24,8 +24,7 @@
 <info_portion id="info_artmod_probabka_burera">
     <article>enc_artmod_probabka_burera</article>
 </info_portion>
-  <info_portion id="go_hospital">
- <task>go_hospital_gg</task></info_portion> 
+  <info_portion id="go_hospital"></info_portion>
  <info_portion id="escape_shustryi_story_start"></info_portion>
  <info_portion id="val_pula_ammo_done1"></info_portion>
 <!-- <info_portion id="aes2_snork_attack"></info_portion>-->
@@ -689,7 +688,8 @@
   <info_portion id="marsh_pantera_say_start"></info_portion>
   <info_portion id="boloto_provodnik_say1_st"></info_portion>
   <info_portion id="controller_burer_spawn"></info_portion>
-  <info_portion id="oxrana_pantera_say_start"></info_portion>
+  <info_portion id="oxrana_pantera_say_start"> 
+    <task>na_warlab</task></info_portion>
   <info_portion id="village_after_razborka"></info_portion>
   <info_portion id="agr_sedoy_vert_letit"></info_portion>
   <info_portion id="agro_torgash_spawn"></info_portion>

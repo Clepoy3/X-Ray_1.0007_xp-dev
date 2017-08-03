@@ -84,6 +84,7 @@
     <texture id="ui_npc_u_stalker_neytral_hood_uzor" x="660" y="1080" width="165" height="108" />
     <texture id="ui_npc_u_stalker_neytral_balon_8" x="825" y="1080" width="165" height="108" />
     <texture id="ui_npc_u_stalker_neytral_exoskeleton" x="0" y="1188" width="165" height="108" />
+	<texture id="ui_npc_u_stalker_ne_exoskeleton" x="0" y="1188" width="165" height="108" />
     <texture id="ui_npc_u_stalker_neytral_hood_2" x="165" y="1188" width="165" height="108" />
     <texture id="ui_npc_u_stalker_neytral_hood_8" x="330" y="1188" width="165" height="108" />
     <texture id="ui_npc_u_stalker_neytral_hood_9" x="495" y="1188" width="165" height="108" />

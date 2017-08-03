@@ -67,6 +67,8 @@ function embr_binder:net_spawn(data)
 		alife():create(mutant_section,self.object:position(),self.object:level_vertex_id(),self.object:game_vertex_id())
 		particles_object("anomaly2\\body_tear_01"):play_at_pos(self.object:position())
 	end
+	self.object:disable_anomaly()
+	alife():release(self.object)
 	return object_binder.net_spawn(self, data)
 end
 

@@ -2348,8 +2348,8 @@ hud				= wpn_vodka_hud
 [bomba]:explosive_barrel
 $spawn 				= "weapons\explosive\bomba"
 visual			= weapons\trotil.ogf
-inv_name		= "Малая тротиловая шашака"
-inv_name_short	= "Малая тротиловая шашака"
+inv_name		= "Малая тротиловая шашка"
+inv_name_short	= "Малая тротиловая шашка"
 description		= enc_bomba-trotil
 inv_weight		= 0.5
 inv_grid_width	= 2
@@ -2945,6 +2945,32 @@ bullet_hit_power_k = 0.9
 bullet_speed_k	= 0.8
 fire_dispersion_base_k = 1.05
 cam_dispersion_k = 0.8
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[wpn_addon_sil_57]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn			= "weapons\addons\silencer57" 
+class			= W_SILENC
+cform			= skeleton
+visual			= weapons\upgrade\wpn_silencer.ogf
+description		= "Быстросъёмный глушитель под патрон калибра 5.7x28мм, разработанный бельгийской фирмой FN Herstal под новый патрон собственной разработки. Предназначен для установки на FN P90."
+$prefetch 		= 32
+cost			= 2500
+inv_name		= "Глушитель 5.7x28мм"
+inv_name_short	= "Глушитель 5.7мм"
+inv_weight		= .2
+
+inv_grid_width     = 1
+inv_grid_height    = 1
+inv_grid_x         = 28
+inv_grid_y         = 20
+
+bullet_hit_power_k = 0.9
+bullet_speed_k			= 0.8
+fire_dispersion_base_k	= 1.05
+cam_dispersion_k		= 0.8
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	Прицелы
 

@@ -840,9 +840,6 @@ function weapon_manager:return_items(id,death) counterAdd("rx_wmgr.weapon_manage
 			if parent:id() ~= boxid then
 				return
 			end
-			if death then
-				death_manager.set_weapon_drop_condition(obj)
-			end
 			parent:transfer_item(obj,self.npc)
 			item_parents[id] = self.npc_id
 		else

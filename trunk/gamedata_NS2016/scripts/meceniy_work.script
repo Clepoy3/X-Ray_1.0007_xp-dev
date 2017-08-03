@@ -1,13 +1,14 @@
 --Рабочий Скрипт Аддона Для Народной Солянки (Меченый(Стрелок). Используя наработки Из Another Story mod 0.2 (только сон и зомбирование), так же Наработки damirazo (но с изменениями)..)
 
 --нафиг все переписано кроме невидимости by Monnoroch
------------------------------------
---Спавн С Начала игы
------------------------------------
+
+local zombien = false
+local community_last = ""
+
+-- Спавн С Начала игы
 function main()
-	if db.actor:dont_has_info("new_game_start") then
-	--	local spawn_point1 = vector():set(-6.2312355041504, 13.544878005981, 21.583631515503)
-	--	local obj = alife():create("m_teleport_warlab1",spawn_point1,3094,3210)
+	local actor = db.actor
+	if actor:dont_has_info("new_game_start") then
 		local spawn_point1 = vector():set(-75.655746459961,27.487344741821,566.55230712891)
 		local obj = alife():create("m_teleport_2_hosp_verh2",spawn_point1,7003,3060)
 		local spawn_point1 = vector():set(-61.182849884033,19.134796142578,561.36962890625)
@@ -21,14 +22,15 @@ function main()
 		local spawn_point1 = vector():set(-152.27732849121,-1.6294522285461,44.664749145508)
 		local obj = alife():create("m_teleport_izkanalii_dcity",spawn_point1,219201,3615)
 		local obj = alife():create("m_inventory_box39", vector():set(-85.708,38.329,617.077),3905,3066)
-		db.actor:give_info_portion("new_game_start")
+		actor:give_info_portion("new_game_start")
+	end
+	-- на случай перезагрузки или перехода на другую локацию
+	if actor:has_info("zombien_already") then
+		zombien = true
 	end
 end
 
---Зомбирование -- переписано by Monnoroch
-
-local zombien = false
-local community_last = ""
+-- Зомбирование -- переписано by Monnoroch
 
 function mainw()
 	if meceniy_utils.zombie == 0 then return end
@@ -53,19 +55,16 @@ function zombie()
 end
 
 function mybrains()
-	if not zombien and db.actor.psy_health <= 0.4 then
-		community_last = db.actor:character_community()
-		amk.save_variable("zombied_community_last", community_last)
-		db.actor:give_info_portion("zombien_already")
-		sol_utils.setCharacterCommunity(db.actor:id(), "zombied")
+	local actor = db.actor
+	if not zombien and actor.psy_health <= 0.4 then
+		actor:give_info_portion("zombien_already")
+		sol_utils.setCharacterCommunity(actor:id(), "zombied")
 		zombien = true
 		return
 	end
-	if zombien and db.actor.psy_health > 0.9 then
-		community_last = amk.load_variable("zombied_community_last", "actor")
-		sol_utils.setCharacterCommunity(db.actor:id(), community_last)
-		amk.del_variable("zombied_community_last")
-		db.actor:disable_info_portion("zombien_already")
+	if zombien and actor.psy_health > 0.9 then
+		sol_utils.setCharacterCommunity(actor:id(), "actor")
+		actor:disable_info_portion("zombien_already")
 		zombien = false
 	end
 end

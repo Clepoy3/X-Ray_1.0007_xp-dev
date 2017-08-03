@@ -1575,12 +1575,17 @@
 </game_task>
 
 <game_task id="saharov_poisk2">
-                <title>Довести учёных до бункера.</title>
-        <objective>
-                <text>Довести учёных до бункера.</text>
-                <icon>ui_iconsTotal_bunker</icon>
-                <infoportion_complete>saharov_poisk_have</infoportion_complete>
-	    </objective>
+	<title>Довести учёных до бункера.</title>
+	<objective>
+		<text>Довести учёных до бункера.</text>
+		<icon>ui_iconsTotal_bunker</icon>
+		<infoportion_complete>saharov_poisk_have</infoportion_complete>
+	</objective>
+	<objective>
+		<text>Довести учёных</text>
+		<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+		<infoportion_complete>saharov_poisk_have</infoportion_complete>
+	</objective>
 </game_task>
 
 <game_task id="stalker_ranen">
@@ -1689,13 +1694,17 @@
 </game_task>
 
 <game_task id="poisk_taynik_voyak">
-                <title>Найти схрон военных.</title>
-        <objective>
-                <text>Найти схрон военных.</text>
-                <icon>ui_iconsTotal_found_thing</icon>
-                <infoportion_complete>poisk_taynik_voyak_finish</infoportion_complete>
-				<article>poisk_taynik_voyak</article>
-	    </objective>
+	<title>Найти схрон военных.</title>
+	<objective>
+		<text>Найти схрон военных.</text>			
+		<icon>ui_iconsTotal_found_thing</icon>
+		<infoportion_complete>poisk_taynik_voyak_finish</infoportion_complete>
+		<article>poisk_taynik_voyak</article>
+	</objective>
+	<objective>
+		<text>Найти схрон военных.</text>
+		<infoportion_complete>poisk_taynik_voyak_finish</infoportion_complete>
+	</objective>
 </game_task>
 
 <game_task id="krysyk_help">

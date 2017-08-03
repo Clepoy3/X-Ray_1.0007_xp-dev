@@ -172,4 +172,5 @@
      <texture id="ui_iconsTotal_chaes2_karta_kluk" x="581" y="705" width="1009" height="920" />
      <texture id="ui_iconsTotal_radist" x="581" y="141" width="83" height="47" />
      <texture id="ui_iconsTotal_lesnik" x="581" y="188" width="83" height="47" />
+	<texture id="ui_iconsTotal_norman" x="581" y="235" width="83" height="47" />
 </ui_texture>

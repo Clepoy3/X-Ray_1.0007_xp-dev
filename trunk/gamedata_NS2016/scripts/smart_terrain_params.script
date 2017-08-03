@@ -16,7 +16,6 @@ local presets = {}
 function load_params()	-- загрузка общих для всех смартов настроек
 	stay_times = {}
 	local r, id, v, t, n
-	local sys_ini = system_ini()
 	for i = 0, sys_ini:line_count( "smart_terrain_stay_time" ) - 1 do
 		r, id, v = sys_ini:r_line( "smart_terrain_stay_time", i, "", "" )
 		-- stay_times[id] = parse_nums( v )

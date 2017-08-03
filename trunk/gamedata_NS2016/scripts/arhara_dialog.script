@@ -2,9 +2,9 @@ local math_random = math.random
 local level_object_by_id = level.object_by_id
 local string_find = string.find
 
---' спавним рацию Волка на свалке (функция Сяка перестала работать)
+--' спавним рацию Волка на АТП (функция Сяка перестала работать)
 function spawn_add_resiver()
- alife():create("sak_resiver",vector():set(-186.264,-3.492,94.656),38921,338)
+	alife():create("sak_resiver",vector():set(168.70,-5.12,-13.61),618535,2835)
 end
 
 --' проверим наличие пушки для Лиса
@@ -494,44 +494,6 @@ dialogs.relocate_item_section(second_speaker, "arc_art_box_8basic","in")
 dialogs.relocate_item_section(second_speaker, "af_dummy_battery","in")
 end
 
---' 20 и 40 ПДА у информатора
---[[function inform_20_pda_have()
-     return new_dialog.item_much("device_pda_npc",20) ~= false 
-end
-
-function inform_40_pda_have()
-     return new_dialog.item_much("device_pda_npc",40) ~= false 
-end
-
-function inform_20_pda(first_speaker, second_speaker)
-    local item = ""
-    local count = math_random(2,3)
- local actor, trader
- if db.actor and db.actor:id() == first_speaker:id() then
-  actor = first_speaker
-  trader = second_speaker
- else
-  actor = second_speaker
-  trader = first_speaker
- end
- item = nagrad.level_7[math_random(#nagrad.level_7)]
- sol_utils.delete_item_count("device_pda_npc", 20)
- flamethrower.relocate_n_items_section(actor, item , "in", count)
-end
-
-function inform_40_pda(first_speaker, second_speaker)
-    local item = ""
-    local actor, trader
- if db.actor and db.actor:id() == first_speaker:id() then
-  actor = first_speaker
-  trader = second_speaker
- else
-  actor = second_speaker
-  trader = first_speaker
- end 
- sol_utils.delete_item_count("device_pda_npc", 40)
-end
-]]
 --' проверим наличие 10 рук зомби для Акима
 function have_a_hand() 
 return sak.have_item_namber("mutant_zombie_hand",10) ~= false
@@ -1135,9 +1097,7 @@ sol_sound.sms("characters_voice\\human_03\\stalker\\talk\\leave\\leave_22")
 end
 
 function adrenalin_sms1()
-sol_utils.send_tip( "%c[255,160,160,160]".."АДРЕНАЛИН:".."\\n".."%c[255,255,128,128]Стрелок, есть новости. Будет время - загляни, приходили люди за шкатулкой. Да, детектор не забудь.", nil, nil, 40000)
--- Звуковое сопровождение
-sol_sound.sms("characters_voice\\human_03\\stalker\\talk\\leave\\leave_9")
+sol_utils.send_tip( "%c[255,160,160,160]".."АДРЕНАЛИН:".."\\n".."%c[255,255,128,128]Стрелок, есть новости. Будет время - загляни. Да, детектор не забудь.", nil, nil, 40000)
 end
 
 function medik_sms1()
@@ -1648,7 +1608,7 @@ end
 
 --' убираем свободовцев с Радара
 function delete_svoboda_radars()
- del_obj_by_name("radar_vitamin")
+ del_obj_by_name("rad_vitamin")
  del_obj_by_name("radar_svoboda_reyd1")
  del_obj_by_name("radar_svoboda_reyd2")
  del_obj_by_name("radar_svoboda_reyd3")
@@ -1816,19 +1776,16 @@ sol_sound.sms("characters_voice\\human_03\\stalker\\talk\\leave\\leave_28")
 db.actor:give_info_portion("add_new_prypyat_to_village")
 end
 
-function vill_klenov_sms()
-if has_alife_info("derevny_zashita_done") and has_alife_info("black_doctor_finish_dialog") then
+function vill_klenov2_sms()
 sol_utils.send_tip( "%c[255,160,160,160]".."КЛЁНОВ:".."\\n".."%c[255,255,128,128]Стрелок, есть проблемка по вашему делу. Без помощи не обойтись. Если будете вблизи Варлаба - загляните.", nil, nil, 30000)
 sol_sound.sms("characters_voice\\human_03\\stalker\\talk\\leave\\leave_69")
-else
-if has_alife_info("derevny_zashita_done") and not has_alife_info("black_doctor_finish_dialog") then
-sol_utils.send_tip( "%c[255,160,160,160]".."Клык:".."\\n".."%c[255,255,128,128]Привет Стрелок. У меня тут в Баре странные события происходят. Кот, который уже неделю не просыхал у барной стойки, вдруг исчез. Пришлось мне с Барменом по душам поговорить. Тот поведал, что Кот нанял троих мастеров и они  ушли в неизвестном направлении. Вооружение и экипировка по высшему разряду. А тут и Лукаш по старой памяти скинул мне, что Борман засёк в Лиманске группу Кота идущей по направлению к Госпиталю. Что-то затевается нехорошее, срочно разведай обстановку в Госпитале.", nil, nil, 30000)
-db.actor:give_info_portion("go_hospital")
-del_obj_by_sid(14092)
-sol_sound.sms("characters_voice\\human_03\\stalker\\talk\\leave\\leave_200")
 end
+
+function vill_klenov_sms()
+ alife():create("zombie_babka_weak",vector():set(-127.703,43.418,-549.804),187271,3093)
+ alife():create("zombie_strong",vector():set(-127.703,43.418,-549.804),187271,3093)
 end
-end
+
 function warl_kolmogor_sms()
 sol_utils.send_tip( "%c[255,160,160,160]".."КОЛМОГОР:".."\\n".."%c[255,255,128,128]Стрелок, у нас поблемы - вернее у меня. Пропала Пантера, а вместе с ней и Пилигрим. Хрен знает, куда они подевались - в Деревне пока вроде всё спокойно. Ты не в курсе?", nil, nil, 30000)
 sol_sound.sms("characters_voice\\human_03\\stalker\\talk\\leave\\leave_70")
@@ -4309,10 +4266,8 @@ end
 
 --' заспавним живую капсулу у Мухи и 3 у дока
 function sp_live_kapsula()
- alife():create("caps_mincer_average",vector():set(-95.816,28.425,567.057),843,3038)
- alife():create("caps_mincer_average",vector():set(-95.578,32.454,614.056),868,3038)
- alife():create("caps_mincer_average",vector():set(-95.447,32.558,615.379),1026,3038)
- alife():create("caps_mincer_average",vector():set(-95.606,32.499,614.533),869,3038)
+ alife():create("zone_mincer_weak",vector():set(-93.39,32.35,614.526),1379,3038)
+ alife():create("zone_mincer_weak",vector():set(-95.99,28.40,566.44),842,3038)
 end
 
 --' варим Камень Удачи
@@ -4742,6 +4697,10 @@ function oruzhie_delet()
    end 
   end
  end
+	local pos = vector():set( -51.921474456787, -10.597856521606, -182.62138366699 )
+	local dpos = vector():set( -239.38876342773, -2.0321259498596, 300.58901977539 )
+	local ddir = vector():set( 0, 0, 0)
+	spawn_level_changer.create_level_changer(99998, pos, 2891, 2993, 100962, 3593, dpos, ddir, "dead_city", 1 )
 end
 ------------------------------------------------------------------------------------------------------------------
 local tabl_gavr_son = { 
@@ -5893,7 +5852,6 @@ function spawn_babki_d_city()
  alife():create("zombie_babka_normal",vector():set(59.981,15.624,44.041),416820,3644)
  alife():create("zombie_babka_strong",vector():set(52.225,10.889,46.796),409618,3644)
  alife():create("zombie_babka_weak",vector():set(52.225,10.889,46.796),409618,3644)
- alife():create("kontroller_yazva",vector():set(53.321,15.624,45.421),410925,3644)
 end
 
 --' проверим наличие финансов для Дуды

@@ -51,4 +51,8 @@ function remove_changer()
 	if sobj then
 		sim:release(sobj,true)
 	end
+	sobj = sim:story_object(99998)
+	if sobj then
+		sim:release(sobj,true)
+	end
 end

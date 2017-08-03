@@ -9,18 +9,15 @@ local math_random = math.random
 local math_floor = math.floor
 local math_abs = math.abs
 local math_ceil = math.ceil
-local string_find = string.find
-local string_format = string.format
 local string_sub = string.sub
 
 local sim
 
-off_npcs={}
-items={}
-relation_matrix={}
+off_npcs = {}
+items = {}
+relation_matrix = {}
 tables_ready = false
 local sell_table = {}
-local item_dependence = {}
 local always_keep_item = {}
 local wpn_ammo_w = {}	-- wpn_ammo_w[ствол][патроны]
 
@@ -33,11 +30,11 @@ local iCounter = 0
 local iTime = -1
 -- Как часто делать апдейты, игровые минуты
 local iFreq = 120
-local initialized = false
+local initialized = false   -- флаг инициализации
 
 local monster_params = {}
 
-local maps={
+local maps = {
 	"l01_escape",
 	"l02_garbage",
 	"l03_agroprom",
@@ -58,15 +55,17 @@ local maps={
 	--"l12u_sarcofag"
 }
 
+-- Таблица запрета по:
+-- уникальные имена, секции, иды и стори_иды объектов
 protected = {
-	names = {},		-- имена объектов (стоит добавлять только уникальные имена!)
-	sections = {		-- секции объектов
-		["rx_inventory_box"] = true,
-		["yad"] = true,
-		["rx_attach_bandage"] = true,
+	names = {},
+	sections = {
+	["rx_inventory_box"] = true,
+	["yad"] = true,
+	["rx_attach_bandage"] = true
 	},
-	ids = {},		-- ID объектов
-	story_ids = {	-- story ID объектов
+	ids = {},
+	story_ids = {
 	[5008] = true,
 	[5013] = true,
 	[5014] = true,
@@ -102,7 +101,7 @@ protected = {
 	[5473] = true,
 	[5474] = true,
 	[573] = true
-}
+	}
 }
 
 local smart_filters = {
@@ -121,13 +120,12 @@ local is_good_stalker = {
 	["freedom"] = true
 }
 
-local rel_enemy,rel_friend
+local rel_enemy, rel_friend
 
 --радиус "обзора"
-local look_radius=100
+local look_radius = 100
 --интенсивность поиска (количество отрабатываемых неписей)
---local search_intensivity=40
-local search_intensivity=60
+local search_intensivity = 30
 -- продолжительность боев
 local max_rounds = 8
 -- При каком уровне здоровья НПС считается раненым
@@ -160,34 +158,35 @@ wpn_priors_by_comms = {	-- community[section] == slot или 1
 		["wpn_walther"]	= 2,
 		["wpn_vintorez"]= 3,
 		["wpn_groza"]	= 3}
-	} -- end of wpn_priors_by_comms
+	}
 
 item_types = {
 --	["harmonica_a"]			= "music",
 --	["guitar_a"]			= "music",
 --	["sigaret"]			= "smoke",
 --	["cigara"]			= "smoke",
-	["mutant_flesh_eye"]		= "mpart",
-	["mutant_boar_leg"]		= "mpart",
-	["mutant_dog_tail"]		= "mpart",
-	["mutant_psevdodog_tail"]	= "mpart",
-	["mutant_krovosos_jaw"]		= "mpart",
-	["mutant_burer_hand"]		= "mpart",
-	["mutant_zombie_hand"]		= "mpart",
-	["mutant_snork_leg"]		= "mpart",
-	["mutant_spleen_rat"]		= "mpart",
-	["mutant_face_tushkano"]	= "mpart",
-	["mutant_fracture_hand"]	= "mpart",
-	["mutant_hand_kontroler"]	= "mpart",
-	["mutant_poltergeist_glas"]	= "mpart",
-	["mutant_psevdogigant_hand"]	= "mpart",
-	["mutant_tail_cat"]		= "mpart",
-	["mutant_chimera_kogot"]	= "mpart",
-	["mutant_zombie_teeth"]		= "mpart",
-	["mutant_tarakan_part"]		= "mpart",
-	["part_digitis_biblio"]		= "mpart"}
+	["mutant_flesh_eye"]         = "mpart",
+	["mutant_boar_leg"]          = "mpart",
+	["mutant_dog_tail"]          = "mpart",
+	["mutant_psevdodog_tail"]    = "mpart",
+	["mutant_krovosos_jaw"]      = "mpart",
+	["mutant_burer_hand"]        = "mpart",
+	["mutant_zombie_hand"]       = "mpart",
+	["mutant_snork_leg"]         = "mpart",
+	["mutant_spleen_rat"]        = "mpart",
+	["mutant_face_tushkano"]     = "mpart",
+	["mutant_fracture_hand"]     = "mpart",
+	["mutant_hand_kontroler"]    = "mpart",
+	["mutant_poltergeist_glas"]  = "mpart",
+	["mutant_psevdogigant_hand"] = "mpart",
+	["mutant_tail_cat"]          = "mpart",
+	["mutant_chimera_kogot"]     = "mpart",
+	["mutant_zombie_teeth"]      = "mpart",
+	["mutant_tarakan_part"]      = "mpart",
+	["part_digitis_biblio"]      = "mpart"
+	}
 
---- no freeplay ---
+
 function init()
 	if (initialized == false) then
 		build_tables()
@@ -195,7 +194,6 @@ function init()
 		initialized = true
 	end
 end
---- lsclon ---
 
 function update()
 	if (bFlag == false and iTime ~= -1) then
@@ -234,9 +232,12 @@ local ignored_sections = {
 function add_fresh_meat(obj)
 	if obj and obj.m_game_vertex_id and game_graph():valid_vertex_id(obj.m_game_vertex_id)
 		and db.actor and db.actor:id() ~= obj.id and not protected_items.doNotTouchItemEquipment(obj)
-		and not ignored_sections[obj:section_name()] then
-			local map=alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
-			if not off_npcs[map] then off_npcs[map]={monsters={},stalkers={},weapons={},artefacts={},inv_boxes={}} end
+		and not ignored_sections[obj:section_name()]
+	then
+		local map = alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
+		if not off_npcs[map] then
+			off_npcs[map] = {monsters={}, stalkers={}, weapons={}, artefacts={}, inv_boxes={}}
+		end
 		if IAmAMonster[obj:clsid()] and obj.alive and obj:alive() and obj.health and obj:health()>0 and obj.m_story_id == 4294967296 then
 				local flags = get_flags(obj.id)
 				if flags == 0 or flags == 2 then --Уберем тех, у кого on_hit есть.
@@ -245,7 +246,7 @@ function add_fresh_meat(obj)
 		elseif IAmAStalker[obj:clsid()] and obj.alive and obj:alive() and obj.health and obj:health()>0 and obj.m_story_id == 4294967296 then
 				local flags = get_flags(obj.id)
 				if flags == 0 or flags == 2 then --Уберем тех, у кого on_hit есть.
-					if obj:community()~="zombied" then
+					if obj:community() ~= "zombied" then
 						table_insert(off_npcs[map].stalkers, {id = obj.id, name = obj:name()})
 					else
 						table_insert(off_npcs[map].monsters, {id = obj.id, name = obj:name()})
@@ -257,15 +258,15 @@ function add_fresh_meat(obj)
 					local p_obj = alife():object(obj.parent_id)
 					if p_obj then
 						if p_obj.m_game_vertex_id and game_graph():valid_vertex_id(p_obj.m_game_vertex_id) then
-							--if p_obj:section_name()=="inventory_box" and box_is_protected(p_obj)==true then
-							--if p_obj:section_name()=="inventory_box" then
 							if p_obj:clsid() == clsid.inventory_box then
 								-- НПС "не видят" этого
 								map = ""
 							else
 								local p_map = alife():level_name(game_graph():vertex(p_obj.m_game_vertex_id):level_id())
 								if p_map ~= map then
-									if not off_npcs[p_map] then off_npcs[p_map]={monsters={},stalkers={},weapons={},artefacts={}, inv_boxes={}} end
+									if not off_npcs[p_map] then
+										off_npcs[p_map] = {monsters={}, stalkers={}, weapons={}, artefacts={}, inv_boxes={}}
+									end
 									map = p_map
 								end
 							end
@@ -274,42 +275,47 @@ function add_fresh_meat(obj)
 						end
 					end
 				end
-				if map ~= "" then table_insert(off_npcs[map].weapons, {id=obj.id, name = obj:name()}) end
+				if map ~= "" then
+					table_insert(off_npcs[map].weapons, {id=obj.id, name = obj:name()})
+				end
 			end
 		elseif string_sub(obj:section_name(), 1, 3) == "af_" then
 			if obj.parent_id then
 				local p_obj = alife():object(obj.parent_id)
 				if p_obj then
 					if p_obj.m_game_vertex_id and game_graph():valid_vertex_id(p_obj.m_game_vertex_id) then
-						--if p_obj:section_name()=="inventory_box" and box_is_protected(p_obj)==true then
-						--if p_obj:section_name()=="inventory_box" then
 						if p_obj:clsid() == clsid.inventory_box then
 							-- НПС "не видят" этого
 							map = ""
 						else
 							local p_map = alife():level_name(game_graph():vertex(p_obj.m_game_vertex_id):level_id())
 							if p_map ~= map then
-								if not off_npcs[p_map] then off_npcs[p_map]={monsters={},stalkers={},weapons={},artefacts={}, inv_boxes={}} end
+								if not off_npcs[p_map] then
+									off_npcs[p_map] = {monsters={}, stalkers={}, weapons={}, artefacts={}, inv_boxes={}}
+								end
 								map = p_map
-							end	
+							end
 						end
 					else
 						map = ""
 					end
 				end
 			end
-			if map ~= "" then table_insert(off_npcs[map].artefacts, {id = obj.id, name = obj:name()}) end
+			if map ~= "" then
+				table_insert(off_npcs[map].artefacts, {id = obj.id, name = obj:name()})
+			end
 			--elseif (obj:section_name()=="inventory_box" and box_is_protected(obj)==false) then
 		elseif obj:clsid() == clsid.inventory_box and not box_is_protected(obj) then
 			table_insert(off_npcs[map].inv_boxes, {id = obj.id, name = obj:name()})
 		end
-			
 		if obj.parent_id and obj.m_story_id == 4294967296 and not IAmAMonster[obj:clsid()] and not IAmAStalker[obj:clsid()] then
 			local zz = alife():object(obj.parent_id)
 			if zz and zz:section_name() ~= "rx_inventory_box" then
-				if not items[obj.parent_id] then items[obj.parent_id] = {} end
+				if not items[obj.parent_id] then
+					items[obj.parent_id] = {}
+				end
 				table_insert(items[obj.parent_id], {id = obj.id, name=obj:name()})
-gps_habar.insert_item(obj.parent_id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
+				gps_habar.insert_item(obj.parent_id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
 			end
 		end
 	end
@@ -319,7 +325,7 @@ end
 function build_tables()
 	-- Почистим таблицу
 
-	rel_enemy,rel_friend = getIniValueFloatSimple("game_relations", "goodwill_enemy", -1000), getIniValueFloatSimple("game_relations", "goodwill_friend", 1000)
+	rel_enemy, rel_friend = getIniValueFloatSimple("game_relations", "goodwill_enemy", -1000), getIniValueFloatSimple("game_relations", "goodwill_friend", 1000)
 	local s_comm_list = getIniValueStringSimple("game_relations", "communities", "")
 	local comm_list = {}
 	local s_value = Parse_StrToTbl(s_comm_list, ",")
@@ -352,21 +358,9 @@ function build_tables()
 			end
 		end
 	end
-	
+
 	iniFileName = "misc\\death_generic.ltx"
 	local death_ini = g_ini_file(iniFileName)
-    --' Заполняем таблицу зависимостей
-	item_dependence = {}
-	local n = death_ini:line_count("item_dependence")
-	local id, value = "", ""
-	for i=0,n-1 do
-		result, id, value	= death_ini:r_line("item_dependence",i,"","")
-		item_dependence[id] = {}
-		local vvv = parse_names(value)
-		for k,v in pairs(vvv) do
-			item_dependence[id][v] = true
-		end
-	end
  	--' Предметы, которые нельзя продавать (квестовые например)
 	always_keep_item = {}
     local n = death_ini:line_count("keep_items")
@@ -381,10 +375,10 @@ function build_tables()
 end
 
 function update_npc_tables()
-	off_npcs={}	
+	off_npcs = {}
 	local obj
 	local sim = alife()
-	for a=1,65534 do
+	for a = 1, 65534 do
 		obj = sim:object(a)
 		if obj then
 			add_fresh_meat(obj)
@@ -470,12 +464,11 @@ function offline_alife()
 					elseif #vdata.inv_boxes>0 then
 					--есть контейнеры. Надо обыскать.
 	amk.oau_reason="cn offline_alife chp18 "..tostring(victim and victim:name())
-						on_inv_boxes_found(victim, vdata)
+--						on_inv_boxes_found(victim, vdata)
 						break	--прерываем цикл - событие отработано
 					elseif items[victim.id] and #items[victim.id] > 0 then
 					--попробуем продать всякого
 	amk.oau_reason="cn offline_alife chp15 "..tostring(victim and victim:name())
-						process_trade(victim)
 						break
 					else
 					end
@@ -762,7 +755,6 @@ function on_enemies_found(victim, vdata, victim_map, victim_number)
 										end
 									end
 								end
-								-- process_trade(attacker.player)
 							end
 						end
 					end
@@ -823,7 +815,6 @@ function on_enemies_found(victim, vdata, victim_map, victim_number)
 											end
 										end
 									end
-									-- process_trade(attacker.player)
 								end
 							end
 						end
@@ -1014,7 +1005,6 @@ function on_monsters_found(victim, vdata, victim_map, victim_number)
 										end
 									end
 								end
-								-- process_trade(attacker.player)
 							end
 						end
 					end
@@ -1118,7 +1108,6 @@ function on_npc_corpses_found(victim, vdata)
 			end
 		end
 	end
-	-- process_trade(victim)
 end
 
 -- О, трупик монстра. Будем шмонать?
@@ -1149,7 +1138,6 @@ function on_monster_corpses_found(victim, vdata)
 			end
 		end
 	end
-	-- process_trade(victim)
 end
 
 -- Хорошая пушка - не помешает.
@@ -1167,7 +1155,6 @@ function on_weapons_found(victim, vdata)
 			end
 		end
 	end
-	-- process_trade(victim)
 end
 
 -- Моя прелесссть
@@ -1197,7 +1184,6 @@ function on_artifacts_found(victim, vdata)
 			end
 		end
 	end
-	-- process_trade(victim)
 end
 
 -- О, нычка - это гуд.
@@ -1270,7 +1256,6 @@ function on_inv_boxes_found(victim, vdata)
 			victim:set_rank(victim:rank() + rate_art_found)
 		end
 	end
-	-- process_trade(victim)
 end
 
 function pick_item(npc, obj)
@@ -1400,333 +1385,10 @@ function list_npc_items(obj)
 				if (IAmAWeapon[it:clsid()]) then
 					find = it.id
 				end
-			end			
+			end
 		end
 	end
 end
-
---[[
-	Уникальные предметы НЕ ПРОДАЕМ. Максимум - в новости.	
-	Отсортировали оружие по firepower (можем еще ef_weapon_type добавить.)
-	Оставили себе то, для которого есть патроны. (а) - wpn..ammo_class + item_dependence
-	Оставили одно, которое лучше (а), но патронов нет (б) (%)
-	Одно, которое лучше (а), но хуже (б) - в новости на продажу
-	Остальное на продажу
-	Патроны оставили только те, что подходят к (а), остальные на продажу
-	Для вояк - только родной калаш надо бы... Не продавать вобще?
-	Оставляем не более 2 аптечек и бинтов, антирада
-	Оставляем 1-2 гранаты (%)
-	Оставляем не более 1 шт: фонарик, рация, ПДА, бинокль, нож, детекторы
-	Еда, водка - не более 1-2 шт (%)	
-	Броники наверное продаем...
-	Части монстров? Тоже продаем наверное, максимум 1-2 оставим.
-]]
-function process_trade(npc)
-	local sell_list, duplicate = {}, {}
-	local m_comm, b_stalker
-	-- Имеет смысл проверять на наличие trade в секции [logic]...
-	local obj_list = npc and IAmAStalker[npc:clsid()] and npc:alive() and npc.m_story_id == 4294967296
-		and not npc.online and items[npc.id]
-	if obj_list and #obj_list > 0 then
-		m_comm = npc:community()
-		if m_comm == "zombied" then
-			return
-		elseif is_good_stalker[m_comm] and (npc.name and npc:name() ~= "agr_ratcatcher") then
-			b_stalker = true
-		else
-			b_stalker = false
-		end
-	else return
-	end
-	sim = alife()
-	amk.oau_reason="cn offline_alife chp17 1"
-	local i_list = {
-		["arts"]	= { ["type"] = "arts",		["cnt"] = 0, ["max"] = 4, ["items"] = {} },
-		["wpn"]		= { ["type"] = "wpn",		["cnt"] = 0, ["max"] = 4, ["items"] = {} },
-		["ammo"]	= { ["type"] = "ammo",		["cnt"] = 0, ["max"] = 4, ["items"] = {} },
-		["medkit"]	= { ["type"] = "medkit",	["cnt"] = 0, ["max"] = 3, ["items"] = {} },
-		["antirad"]	= { ["type"] = "antirad",	["cnt"] = 0, ["max"] = 3, ["items"] = {} },
-		["bandage"]	= { ["type"] = "bandage",	["cnt"] = 0, ["max"] = 3, ["items"] = {} },
-		["grenade"]	= { ["type"] = "grenade",	["cnt"] = 0, ["max"] = 3, ["items"] = {} },
-		["food"]	= { ["type"] = "food",		["cnt"] = 0, ["max"] = 3, ["items"] = {} },
-		["bottle"]	= { ["type"] = "bottle",	["cnt"] = 0, ["max"] = 3, ["items"] = {} },
-		["smoke"]	= { ["type"] = "smoke",		["cnt"] = 0, ["max"] = 3, ["items"] = {} },
-		["torch"]	= { ["type"] = "torch",		["cnt"] = 0, ["max"] = 2, ["items"] = {} },
-		["pda"]		= { ["type"] = "pda",		["cnt"] = 0, ["max"] = 2, ["items"] = {} },
-		["hand_radio"]	= { ["type"] = "hand_radio",	["cnt"] = 0, ["max"] = 2, ["items"] = {} },
-		["music"]	= { ["type"] = "music",		["cnt"] = 0, ["max"] = 2, ["items"] = {} },
-		["binoc"]	= { ["type"] = "binoc",		["cnt"] = 0, ["max"] = 2, ["items"] = {} },
-		["knife"]	= { ["type"] = "knife",		["cnt"] = 0, ["max"] = 2, ["items"] = {} },
-		["detector"]	= { ["type"] = "detector",	["cnt"] = 0, ["max"] = 2, ["items"] = {} },
-		["scope"]	= { ["type"] = "scope",		["cnt"] = 0, ["max"] = 4, ["items"] = {} },
-		["silencer"]	= { ["type"] = "silencer",	["cnt"] = 0, ["max"] = 4, ["items"] = {} },
-		["grenade_launcher"]	= { ["type"] = "grenade_launcher",	["cnt"] = 0, ["max"] = 4, ["items"] = {} },
-		["mutant_part"]	= { ["type"] = "mutant_part",		["cnt"] = 0, ["max"] = 4, ["items"] = {} },
-		["outfit"]	= { ["type"] = "outfit",	["cnt"] = 0, ["max"] = 2, ["items"] = {} },
-	}
-	for object_type, object_type_info in pairs(i_list) do
-		-- если это обвесы для стволов
-		if trade_generic.items_keep_count[object_type] == -1 then
-			object_type_info["max"] = trade_generic.items_keep_count["wpn"]+1
-		else-- если всё остальное
-			object_type_info["max"] = trade_generic.items_keep_count[object_type]+1
-		end
-	end
-	local sections_list = {}
-	local ammo_keep, ammo_max = {}, i_list["ammo"]["max"]
-	local items_t
-
-	amk.oau_reason="cn offline_alife chp17 1 1"
-	--Фильтруем квестовые items - always_keep_item, sell_table	
-	local obj, obj_id, obj_name, obj_section, obj_clsid, obj_class, obj_value, obj_t, ammo_t
-	local item, item_id
-	for i = 1, #obj_list do
-		item = obj_list[i]
-		if item then
-			obj_id = item["id"]
-			if duplicate[obj_id] then
-				obj, obj_name = nil, nil
-			else
-				duplicate[obj_id] = true
-				obj = sim:object(obj_id)
-				obj_name = obj and obj.online == false
-					and obj.parent_id and obj.parent_id == npc.id and obj:name()
-			end
-			if obj_name and obj_name == item["name"] then
-				-- если есть имя, и совпадает с тем, что было - есть и сам предмет
-				obj_section = obj:section_name()
-				amk.oau_reason="cn offline_alife chp17 1 7"
-				obj_value = sections_list[obj_section]
-				if not obj_value then
-					obj_value = getIniValueFloatSimple(obj_section, "cost", 0)
-					sections_list[obj_section] = obj_value
-				end
-			else	-- иначе вычеркиваем
-				obj_value = 0
-				obj_list[i] = false
-			end
-		end
-		-- в sections_list имеем секции того, что есть в наличии, и цены как бонус
-		-- сейчас попробуем разобрать по группам сами предметы
-		amk.oau_reason="cn offline_alife chp17 1 8"
-		if obj_value > 0 then 
-			obj_clsid = obj:clsid()
-			obj_class = object_type_i_sect[obj_section] or object_type_i[obj_clsid]
-
-			items_t = i_list[obj_class]
-				--or (item_types[obj_section] and i_list[item_types[obj_section]])
-				--or ((string_sub(obj_section,1,3) == "af_") and i_list["arts"])
-			if items_t then
-				table_insert(items_t["items"], { ["section"] = obj_section, ["obj"] = obj, ["key"] = i, ["value"] = obj_value })
-			elseif protected.sections[obj_section] then
-				--sim:release(obj, true)
-				obj_value = 0
-				obj_list[i] = false
-	end	end	end
-
-	-- Выберем, что за оружие оставит себе NPC.
-	local wpn_prior, weapons_types = {}, {}
-	local wpn_prior_comm = wpn_priors_by_comms[m_comm]
-	local modes = rx_wmgr.read_wm_modes(m_comm, ranks.get_obj_rank_name(npc), npc:section_name())
-
-	-- for i = 1, #modes.types do
-		-- weapons_types[modes.types[i]["t"]] = {}
-	-- end
-	amk.oau_reason="cn offline_alife chp17 2"
-	items_t = i_list["wpn"]["items"]
-	local priors_mem = {}
-	for i = 1, #items_t do
-		local obj_t = items_t[i]
-		obj_section = obj_t["section"]
-		amk.oau_reason="cn offline_alife chp17 2 1"
-		--local params = rx_wmgr.read_wpn_params(obj_section)
-		local prm = rx_wmgr.get_weapon_prior(obj_t["obj"], rx_utils.get_addon_flag(obj_t["obj"], true), priors_mem, modes, npc.name and npc:name() or "unnamed") --0
-
-		--[[if modes.mode1 == "1" then
-			prm = params.cst + modes.addcost
-		elseif modes.mode1 == "2" then
-			amk.oau_reason="cn offline_alife chp17 2 2"
-			local kf = rx_wmgr.wm_modes.koeffs[modes.koeffs]
-			prm = (params.dmg*kf.dmg)+(params.rpm*kf.rpm)+(params.dst*kf.dst)+((100/params.dsp)*kf.dsp)
-		elseif modes.mode1 == "3" then
-			prm = rx_wmgr.wm_modes.priors[modes.priors][obj_section]
-		end
-		amk.oau_reason="cn offline_alife chp17 2 3"
-		for j = 1, #modes.types do
-			if modes.types[j].t == params.typ then
-				prm = prm + prm*modes.types[j].p/100
-				break
-		end	end]]
-		--[[-- строим таблицу зависимостей стволов и патронов
-		ammo_t = wpn_ammo_w[obj_section]
-		if not ammo_t then
-			ammo_t = {}
-			wpn_ammo_w[obj_section] = ammo_t
-			--local ac = getIniValueStringSimple(obj_section, "ammo_class", "")
-			--if ac and ac ~= "" then
-				--local vvv = Parse_StrToTbl(ac, ",")
-				local vvv = repair_check.getAmmoForWeapon(obj_section)
-				for ak = 1, #vvv do
-					ammo_t[ vvv[ak] ] = true			-- wpn_ammo_w[ствол][патроны]
-				end
-			end
-		end]]
-		amk.oau_reason="cn offline_alife chp17 2 4"
-
-		-- есть ли патроны ?
-		-- а пофиг - пускай в офлайне их достают (если получится доспавнить) и используют оружие (sapsan)
-		
-		--local ammo_found = false
-		local ammo_not_found = {}
-		wpn_ammo_w[obj_section] = repair_check.getAmmoForWeapon(obj_section)
-		--for k,v in pairs(ammo_t) do
-		for j = 1, #wpn_ammo_w[obj_section] do
-			local ammo_sect = wpn_ammo_w[obj_section][j]
-			if sections_list[ammo_sect] then
-				ammo_keep[ammo_sect] = ammo_max
-				--ammo_found = true
-				ammo_not_found[ammo_sect] = true -- чтобы избежать дубликатов
-		end	end
-		amk.oau_reason="cn offline_alife chp17 2 5"
-		for ammo_sect, _ in pairs(ammo_not_found) do
-			local box_size = getIniValueU32Simple(ammo_sect,"box_size")
-			local new_ammo = alife():create_ammo(ammo_sect, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id, box_size)
-			table_insert(items[npc.id], {id = new_ammo.id, name = new_ammo:name()})
-		end
-		-- проверяем на "родные" стволы для коммьюнити
-		-- а пофиг - хороший ствол важнее понтов (sapsan)
-		
-		-- local wpn_prior_slot = wpn_prior_comm and wpn_prior_comm[obj_section]
-		-- if wpn_prior_slot and not wpn_prior[wpn_prior_slot] then
-			-- wpn_prior[wpn_prior_slot] = true
-			-- prm = prm + 10000
-		-- end
-		obj_t["prm"] = prm
-	end
-	amk.oau_reason="cn offline_alife chp17 10"
-	if #items_t >= 2 then	-- лишние стволы - в список на продажу
-		table_sort(items_t, function(a,b) return a["prm"] > b["prm"] end)
-		for i = i_list["wpn"]["max"]+1, #items_t do
-			table_insert(sell_list, items_t[i])
-		end
-	end
-	i_list["wpn"] = nil	-- оружейную таблицу больше не надо
-
-	amk.oau_reason="cn offline_alife chp17 101"
-	items_t = i_list["grenade_launcher"]["items"]
-	for i = 1, #items_t do
-		local obj_t = items_t[i]
-		obj_section = obj_t["section"]
-		amk.oau_reason="cn offline_alife chp17 102"
-		--local params = rx_wmgr.read_wpn_params(obj_section)
-		---local prm = rx_wmgr.get_weapon_prior(obj_t["obj"], true, priors_mem, modes, npc.name and npc:name() or "unnamed") --0
-
-		amk.oau_reason="cn offline_alife chp17 103"
-
-		-- есть ли патроны ?
-		-- а пофиг - пускай в офлайне их достают (если получится доспавнить) и используют оружие (sapsan)
-		
-		--local ammo_found = false
-		local ammo_not_found = {}
-		wpn_ammo_w[obj_section] = repair_check.getAmmoForWeapon(obj_section)
-		--for k,v in pairs(ammo_t) do
-		for j = 1, #wpn_ammo_w[obj_section] do
-			local ammo_sect = wpn_ammo_w[obj_section][j]
-			if sections_list[ammo_sect] then
-				ammo_keep[ammo_sect] = ammo_max
-				--ammo_found = true
-				ammo_not_found[ammo_sect] = true -- чтобы избежать дубликатов
-		end	end
-		amk.oau_reason="cn offline_alife chp17 104"
-		for ammo_sect, _ in pairs(ammo_not_found) do
-			local box_size = getIniValueU32Simple(ammo_sect,"box_size")
-			local new_ammo = alife():create_ammo(ammo_sect, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id, box_size)
-			table_insert(items[npc.id], {id = new_ammo.id, name = new_ammo:name()})
-		end
-	end
-	amk.oau_reason="cn offline_alife chp17 105"
-	if #items_t >= 2 then	-- лишние стволы - в список на продажу
-		table_sort(items_t, function(a,b) return a["value"] > b["value"] end)
-		for i = i_list["grenade_launcher"]["max"]+1, #items_t do
-			table_insert(sell_list, items_t[i])
-		end
-	end
-	i_list["grenade_launcher"] = nil	-- оружейную таблицу больше не надо
-
-	amk.oau_reason="cn offline_alife chp17 11"
-	local item_cnt
-	items_t = i_list["ammo"]["items"]	-- ненужные патроны - в продажу
-	for i = 1, #items_t do
-		obj_t = items_t[i]
-		item_cnt = ammo_keep[obj_t["section"]]
-		if item_cnt then
-			item_cnt = item_cnt - 1
-			if item_cnt < 1 then
-				item_cnt = nil
-			end
-			ammo_keep[obj_t["section"]] = item_cnt
-		else
-			table_insert(sell_list, obj_t)
-		end
-	end
-	i_list["ammo"] = nil	-- таблицу с патронами больше не надо
-
-	amk.oau_reason="cn offline_alife chp17 12"
-	for k,v in pairs(i_list) do	-- смотрим, что еще лишнее
-		items_t = v["items"]
-		if #items_t >= 2 then
-			table_sort(items_t, function(a,b) return a["value"] > b["value"] end)
-			for i = v["max"]+1, #items_t do
-				table_insert(sell_list, items_t[i])
-			end
-		end
-	end
-
-	amk.oau_reason="cn offline_alife chp17 13"
-	local trade_via_news = true
-	local money = 0
-	for i=1, #sell_list do
-		amk.oau_reason="cn offline_alife chp17 13 1"
-		obj_t = sell_list[i]
-		obj = obj_t["obj"]
-		if not (always_keep_item[obj_t["section"]] or protected_items.doNotTouchAnything(obj)) then
-			obj_value = obj_t["value"]
-			amk.oau_reason="cn offline_alife chp17 13 2"
-			if obj_value > sell_limit then	-- что-нибудь выставим на продажу через новости
-				amk.oau_reason="cn offline_alife chp17 13 3"
-				if trade_via_news then	-- но только что-нибудь одно
-					news_main.on_offline_trade( npc, obj )
-					trade_via_news = false
-				end
-			else
-				amk.oau_reason="cn offline_alife chp17 13 4"
-				obj_list[obj_t["key"]] = false
-				money = money + math_floor(obj_value * (0.3 + math_random()/3))
-				gps_habar.remove_item(npc.id, obj) -- Idler++-- корректируем хабар в помеченных тайниках
-				amk.oau_reason="cn offline_alife chp17 13 5"
-				sim:release(obj, true)
-	end	end	end
-	amk.oau_reason="cn offline_alife chp17 14"
-	items_t = {}	-- чистим таблицу шмота непися от мусора
-	for k,v in pairs(obj_list) do
-		if v then
-			table_insert(items_t,v)
-		end
-	end
-	items[npc.id]=items_t
-
-	amk.oau_reason="cn offline_alife chp17 15"
-	if (money > 0) then
-		--
-		local pk = get_netpk( npc, 1 )
-		ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", npc:name() )
-		local data = pk:get()
-		data.money = data.money + money
-		pk:set( data )
-		--
-	end
-end
-
 
 -- Строим таблицы, если надо.
 -- В них - макс. скорость, сила атаки, дистанция атаки.
@@ -1821,13 +1483,6 @@ function have_ammo(npc, weapon)
 		if ammo_str=="" then -- Болт или граната
 			return false
 		end
-		local ammo_list = parse_names(ammo_str)
-		-- и нафига этот цикл перебора инвентаря, а в результате - ничего??
---[[		for k, v in items[npc.id] do
-			if string_find(obj:section_name(),"^ammo_") then
-			end
-			--if v:section_name() == 
-		end]]
 	end
 	return result
 end

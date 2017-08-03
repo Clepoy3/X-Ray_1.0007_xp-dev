@@ -491,10 +491,7 @@
 
 
 <dialog id="arhara_doctor_doct">
-<precondition>sak_dialog.strelok_pda_have</precondition>
 <has_info>shax_kniga_naity_start</has_info>
-<has_info>doctor_teleport1</has_info>
-<has_info>oso_question</has_info>
 <dont_has_info>med_dok_start</dont_has_info>
 <phrase_list>
 <phrase id="0">
@@ -1847,82 +1844,88 @@
 
 
 <dialog id="informator_buy_pda">
-	            <dont_has_info>informator_buy_pda</dont_has_info>
-        <phrase_list>
-	    <phrase id="0">
-                <text>informator_buy_pda_0</text>
-				<next>1</next>
-                </phrase>
-        <phrase id="1">
-                <text>informator_buy_pda_1</text>
-				<next>2</next>
-                </phrase>
-        <phrase id="2">
-                <text>informator_buy_pda_2</text>
-                <next>3</next>
-                </phrase>
-        <phrase id="3">
-                <text>informator_buy_pda_3</text>
-                <next>4</next>
-				</phrase>
-        <phrase id="4">
-		        <text>informator_buy_pda_4</text>
-                <next>5</next>
-                </phrase>
-		<phrase id="5">
-		        <text>informator_buy_pda_5</text>
-				<next>6</next>
-                </phrase>
-        <phrase id="6">
-                <text>informator_buy_pda_6</text>
-			    <give_info>informator_buy_pda</give_info>
-				<action>dialogs.break_dialog</action>
-                </phrase>
-        </phrase_list>
-      </dialog>
+	<dont_has_info>informator_buy_pda</dont_has_info>
+	<phrase_list>
+	<phrase id="0">
+		<text>informator_buy_pda_0</text>
+		<next>1</next>
+	</phrase>
+	<phrase id="1">
+		<text>informator_buy_pda_1</text>
+		<next>2</next>
+	</phrase>
+	<phrase id="2">
+		<text>informator_buy_pda_2</text>
+		<next>3</next>
+	</phrase>
+	<phrase id="3">
+		<text>informator_buy_pda_3</text>
+		<next>4</next>
+	</phrase>
+	<phrase id="4">
+		<text>informator_buy_pda_4</text>
+		<next>5</next>
+	</phrase>
+	<phrase id="5">
+		<text>informator_buy_pda_5</text>
+		<next>6</next>
+	</phrase>
+	<phrase id="6">
+		<text>informator_buy_pda_6</text>
+		<give_info>informator_buy_pda</give_info>
+		<action>dialogs.break_dialog</action>
+	</phrase>
+	</phrase_list>
+</dialog>
 
 <dialog id="informator_beret_pda">
-	  <has_info>informator_buy_pda</has_info>          
-	    <phrase_list>
-	    <phrase id="0">
-                <text>informator_beret_pda_0</text>
-				<next>1</next>
-                </phrase>
-        <phrase id="1">
-                <text>informator_beret_pda_1</text>
-				<next>2</next>
-				<next>3</next>
-				<next>4</next>
-                </phrase>
-        <phrase id="2">
-		        <precondition>new_dialog.inform_20_pda_have</precondition>
-                <text>informator_beret_pda_2</text>
-				<next>5</next>
-                </phrase>
-       <phrase id="3">
-		        <precondition>new_dialog.inform_40_pda_have</precondition>
-                <text>informator_beret_pda_3</text>
-				<next>6</next>
-                </phrase>
-        <phrase id="4">
-		        <text>informator_beret_pda_4</text>
-				<next>7</next>
-                </phrase>
-        <phrase id="5">
-		        <text>informator_beret_pda_5</text>
-				<action>new_dialog.inform_20_pda</action>
-                </phrase>
-        <phrase id="6">
-		        <text>informator_beret_pda_6</text>
-				<action>table_treasure_l.treasure</action>
-				<action>new_dialog.inform_40_pda</action>
-                </phrase>
-        <phrase id="7">
-		        <text>informator_beret_pda_7</text>
-				<action>dialogs.break_dialog</action>
-                </phrase>
-       </phrase_list>
-      </dialog>
+	<has_info>informator_buy_pda</has_info>
+	<precondition>dialogs.info_treasure</precondition>          
+	<phrase_list>
+	<phrase id="0">
+		<text>informator_beret_pda_0</text>
+		<next>1</next>
+	</phrase>
+	<phrase id="1">
+		<text>informator_beret_pda_1</text>
+		<next>2</next>
+		<next>4</next>
+	</phrase>
+	<phrase id="2">
+		<precondition>new_dialog.inform_20_pda_have</precondition>
+		<text>informator_beret_pda_2</text>
+		<action>dialogs.check_info_treasure</action>
+		<next>5</next>
+		<next>6</next>
+	</phrase>
+	<phrase id="5">
+		<precondition>dialogs.give_treasure</precondition>
+		<text>informator_beret_pda_5</text>
+		<action>dialogs.give_info_treasure</action>
+		<action>new_dialog.inform_20_pda</action>
+		<next>3</next>
+	</phrase>
+	<phrase id="6">
+		<precondition>dialogs.no_give_treasure</precondition>
+		<text>informator_beret_pda_6</text>
+		<action>dialogs.clear_info_treasure</action>
+		<next>7</next>
+	</phrase>
+	<phrase id="3">
+		<text>informator_beret_pda_3</text>
+		<action>dialogs.break_dialog</action>
+	</phrase>
+	<phrase id="4">
+		<text>informator_beret_pda_4</text>
+		<action>dialogs.clear_info_treasure</action>
+		<action>dialogs.break_dialog</action>
+	</phrase>
+	<phrase id="7">
+		<text>informator_beret_pda_7</text>
+		<action>dialogs.break_dialog</action>
+	</phrase>
+	</phrase_list>
+</dialog>
 
 
 <dialog id="voronin_infa_gg">
@@ -5613,13 +5616,14 @@
 <phrase id="3">
 <text>oxrana_pantera_say_3</text>
 <give_info>oxrana_pantera_say_start</give_info>
+<action>arhara_dialog.vill_klenov2_sms</action>
 </phrase> 
 </phrase_list>
 </dialog>
 
 
 <dialog id="klenov_antena">
-<has_info>black_doctor_finish_dialog</has_info>
+<has_info>oxrana_pantera_say_start</has_info>
 <dont_has_info>klenov_antena_start</dont_has_info>
 <phrase_list>
 <phrase id="0">
@@ -5690,6 +5694,7 @@
 
 
 <dialog id="sey_after_pobeg">
+<has_info>village_after_razborka</has_info>
 <has_info>klenov_antena_done</has_info>
 <dont_has_info>sey_after_pobeg_start</dont_has_info>
 <phrase_list>

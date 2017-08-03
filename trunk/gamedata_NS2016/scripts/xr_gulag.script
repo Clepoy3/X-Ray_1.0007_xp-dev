@@ -21,7 +21,7 @@ local gulag_tasks_file_name  = "misc\\gulag_tasks.ltx"
 local gulag_tasks_ltx        = g_ini_file( gulag_tasks_file_name )
 
 local job_position_restr     = 10  -- расстояние до места работы при котором перезаписываются рестрикторы
-local job_position_threshold = 300  -- расстояние до места работы при котором персонаж в онлайне считается достигшим места работы
+local job_position_threshold = 199  -- расстояние до места работы при котором персонаж в онлайне считается достигшим места работы
 local job_idle_after_death   = 120 -- в течении такого периода времени после смерти персонажа его работа будет недоступна
 
 idle_nil  = nil
@@ -161,11 +161,16 @@ function gulag:prepare_jobs_for_new_state()
 	local Job_avail_in_state = {}
 
 	for i, job in ipairs( self.Job ) do
-		if self:availState(job.state, self.state) then table_insert( Job_avail_in_state, job )
-		elseif job.object then
-			self:free_obj_and_reinit(job.object)
+		if self:availState(job.state, self.state) then
+			table_insert( Job_avail_in_state, job )
+		else
+			if job.object then
+				self:free_obj_and_reinit(job.object)
+			end
 		end
-		if job.fill_idle == idle_none then job.fill_idle = idle_once end
+		if job.fill_idle == idle_none then
+			job.fill_idle = idle_once
+		end
 	end
 	self.Job_avail_in_state = Job_avail_in_state
 end
@@ -514,10 +519,9 @@ function gulag:can_obj_begin_restr( obj_id, obj, job )
 	return false
 end
 
--- проверка наличия свободных работ
+-- проверка наличия свободных работ для ex_wound_help.script
 function gulag:free_job()
 	if self.population_non_exclusive < self.capacity_non_exclusive then
---amk.dump_table(self.Job_avail_in_state,1,"self.Job_avail_in_state")
 		for i, job in ipairs( self.Job_avail_in_state ) do
 			if not job.object and not job.predicate then
 				return true
@@ -537,8 +541,6 @@ function gulag:changeState(state)
 	end
 end
 
---dc-- что-то мне в этой логике не нравится. посмотреть self:availJob и переписать соотвественно.
---dc-- мне вообще не нравится весь этот цикл рад одного флажка.
 -- есть ли в текущем состоянии для объекта хоть одна подходящая работа?
 -- если персонаж НЕ эксклюзивный, то ищет только свободные работы,
 -- если персонаж эксклюзивный - ищет свободные работы и работы, занятые не эксклюзивными персонажами.
@@ -566,15 +568,16 @@ function gulag:obj1_job_suits_obj2( obj_id, npc_info )
 	return not job.predicate or job.predicate( npc_info, self )
 end
 
--- существует ли указанное состояние в табличке?
+-- существует ли указанное состояние в работах?
 function gulag:availState(st, state)
 	for k,v in ipairs( st ) do
-		if v == state then return true end
+		if v == state then
+			return true
+		end
 	end
 	return false
 end
 
---dc-- выше я был таки прав. Эта вся связка - один сплошной ахтунг и тормозилово.
 -- доступна ли работа?
 -- работа доступна, когда время idle истекло (или не задано)
 -- и занята работа, от которой зависит данная работа.
@@ -582,40 +585,37 @@ function gulag:availJob(job)
 	if job.begin == nil or amk.game_milliseconds() - job.begin > job.idle then
 		if job.idle_after_death_end == nil or job.idle_after_death_end < amk.game_milliseconds() then
 			if job.fill_idle ~= nil then
-				if job.fill_idle == idle_none then return false
-				elseif job.fill_idle ~= idle_once
-				  and job.fill_idle < amk.game_milliseconds() - job.begin then
+				if job.fill_idle == idle_none then
 					return false
-			end	end
+				elseif job.fill_idle ~= idle_once and job.fill_idle < amk.game_milliseconds() - job.begin then
+					return false
+				end
+			end
 			return true
-	end	end
+		end
+	end
 	return false
 end
 
 -- Текущая работа доступна, если не истекло ее время и занята работа, от которой она зависит
 function gulag:availCurrent(job)
-	if job.timeout == nil or job.begin == nil
-	  or amk.game_milliseconds() - job.begin < job.timeout then return true
-	else return false
+	if job.timeout == nil or job.begin == nil or amk.game_milliseconds() - job.begin < job.timeout then
+		return true
+	else
+		return false
 	end
 end
 
 -- составить список доступных для распределения работ.
 -- освобождение npc с работ, ставших недоступными (например, вышел timeout).
 -- также освобождение недошедших до своих работ.
--- dc	-- Здесь вообще АХТУНГ !
-	-- Оно вызывается черт-знает откуда по малейшему чиху и без такового.
-	-- todo: Найти - и заткнуть
 function gulag:prepare_available_jobs()
 	local Job_avail = {}
-
 	for i, job in ipairs( self.Job_avail_in_state ) do
 		if self:availJob( job ) then
 			if job.object ~= nil then
 				if not self:availCurrent( job ) or not self.Object_begin_job[job.object] then
 					self:free_obj_and_reinit(job.object)
-					-- dc -- мне не нравится освобождение и реинит без объекта.
-					-- но оно ведь зачем-то было ?
 				end
 			end
 			table_insert( Job_avail, job )
@@ -1112,9 +1112,13 @@ function setup_gulag_and_logic_on_spawn( obj, st, sobj, stype, loaded )
 				strn:initialize_if_needed()
 				strn.gulag:object_setup_online( obj_id, obj, logic )
 				if not logic then
-				xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
+					if strn.gulag.Object_online[obj_id] == true then
+						xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
+					else
+						xr_logic.initialize_obj( obj, st, false, db.actor, stype, nil, true)
+					end
+				end
 			end
-		end
 		else
 			xr_logic.initialize_obj( obj, st, loaded, db.actor, stype)
 		end

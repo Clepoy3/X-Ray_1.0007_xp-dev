@@ -124,21 +124,14 @@ function wpn_binder:ignore_group(cls,parent)
 	end
 	if cls == clsid.script_stalker then
 		local npc = level.object_by_id(parent.id)
-		-- Проверим торговцев. Перевести на "stalker_trader"!
-		if npc then
-			local st = db.storage[npc:id()]
-			if st then
-				local ini = st.ini
-				local sect_logic = st.section_logic
-				if ini and sect_logic and ini:section_exist(sect_logic) and ini:line_exist(sect_logic, "trade") then
-					if self.object:name() ~= self.object:section() or not parent:alive() then
- 						cnd = self.object:condition() * 100
-					end
-					return cnd, cnd, true
-				end
-			end
-		end
 		local sect = npc and npc:section()
+		-- Проверим торговцев. Перевести на "stalker_trader"!
+		if sect and sect == "stalker_trader" then
+			if self.object:name() ~= self.object:section() or not parent:alive() then
+ 				cnd = self.object:condition() * 100
+			end
+			return cnd, cnd, true
+		end
 		-- Отсекаем квестовиков.
 		if sect and (sect == "stalker_personal" or sect == "stalker_sakharov" or sect == "m_barman") then
 			if not parent:alive() then

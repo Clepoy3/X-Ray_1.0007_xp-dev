@@ -36,7 +36,6 @@
 	
     <dialog id="strelok_pda3_dialog">
     <precondition>sak_dialog.strelok_pda_have</precondition>
-    <has_info>med_dok_start</has_info>
     <dont_has_info>strelok_pda_done</dont_has_info>
 		<phrase_list>
 			<phrase id="0">

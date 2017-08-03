@@ -538,7 +538,6 @@ end
 function object_priority_function( npc, obj )
 	local sect = obj:section()
 	local obj_type = getObjectType( obj )
-	local sys_ini = system_ini()
 	if obj_type == "wpn" then
 		local p
 		if rx_wmgr and rx_wmgr.wm_modes.enabled_ext and npc:alive() then

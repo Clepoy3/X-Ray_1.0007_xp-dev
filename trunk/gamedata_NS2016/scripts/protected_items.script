@@ -105,6 +105,9 @@ local items_protected = {
 	["foto_monolit"] = true,
 	["foto_mozg_x16"] = true,
 	["fraer_pda"] = true,
+	["fake_wpn_knife_hunter"] = true,
+	["fake_wpn_knif2"] = true,
+	["fake_wpn_knife_n"] = true,
 	["garbage_pda"] = true,
 	["glushitel"] = true,
 	["gonets_flash"] = true,
@@ -159,6 +162,7 @@ local items_protected = {
 	["mono_dead_doc"] = true,
 	["mono_note"] = true,
 	["mozg"] = true,
+	["mushroom"] = true,
 	["naem_bloknot"] = true,
 	["nauch_flash"] = true,
 	["netpacket_pda"] = true,
@@ -186,7 +190,6 @@ local items_protected = {
 	["ogg_flash_7"] = true,
 	["ogg_flash_8"] = true,
 	["ogg_flash_9"] = true,
-
 	["aes_document"] = true,
 	["doc_1"] = true,
 	["doc_8"] = true,
@@ -211,7 +214,6 @@ local items_protected = {
 	["old_doc_3_4"] = true,
 	["old_doc_4"] = true,
 	["pda_info"] = true,
-
 	["parcel"] = true,
 	["pda_art_mod"] = true,
 	["pda_francuz"] = true,
@@ -337,7 +339,33 @@ local items_protected = {
 	["shaxter_konteyner"] = true,
 	["case_wpn"] = true,
 	["remont_maslo"] = true,
-	["borov_listok"] = true
+	["borov_listok"] = true,
+	["fotoplaner"] = true,
+	["nabor_book"] = true,
+	["infa_flash1"] = true,
+	["infa_flash2"] = true,
+	["infa_flash3"] = true,
+	["infa_flash4"] = true,
+	["infa_flash5"] = true,
+	["infa_flash6"] = true,
+	["infa_flash7"] = true,
+	["infa_flash8"] = true,
+	["pda_voyak"] = true,
+	["kod_listok"] = true,
+	["doberman_pda"] = true,
+	["rukzak_zahar"] = true,
+	["karta_gavr"] = true,
+	["payk_pda"] = true,
+	["info_listok"] = true,
+	["unknown_pda"] = true,
+	["bolt_pda"] = true,
+	["kod_flash2"] = true,
+	["kod_flash"] = true,
+	["urt_flash"] = true,
+	["semenih_bloknot"] = true,
+	["kalugin_bloknot"] = true,
+	["book_elza"] = true,
+	["kit_antenna_full"] = true
 	}
 -- табличка исключений трупов сталкеров для уборщика - проверка по точному совпадению
 local tabl_corps_keep = {
@@ -615,6 +643,13 @@ local tabl_ignore_for_trade = {
 	["telefon"] = true,
 }
 
+-- таблица класс аттач - для уборщика
+local tabl_attach = {
+	["guitar_a"] = true,
+	["harmonica_a"] = true,
+	["af_base_attach"] = true
+}
+
 -- Получаем имя секции проверяемого объекта
 -- obj может быть как игровым, так и серверным объектом (см. news_main.get_object_name(obj))
 function get_obj_name(obj)
@@ -677,7 +712,12 @@ local table_by_name = {
 		["tbl"] = tabl_watcher_act_ignore,
 		["method"] = "exactly",
 		["use_names"] = false
-	}
+	},
+	["tabl_attach"] = {
+		["tbl"] = tabl_attach,
+		["method"] = "exactly",
+		["use_names"] = false
+	},
 }
 
 -- Здесь проверка по имени секции по таблицам выбранным методом
@@ -822,6 +862,14 @@ function cleanerDoNotTouchWeapon(sobj)
 	end
 end
 
+function outfit_to_npc(sobj)
+	return obj_is_protected(sobj, "tabl_outfit_keep")
+end
+
+function attach_to_npc(sobj)
+	return obj_is_protected(sobj, "tabl_attach")
+end
+
 function cleanerDoNotTouchOutfit(sobj)
 	if debug_level == 3 then
 		if sobj.m_story_id ~= 4294967296 then
@@ -835,7 +883,7 @@ function cleanerDoNotTouchOutfit(sobj)
 		end
 		return false
 	else
-		return sobj.m_story_id ~= 4294967296 or obj_is_protected(sobj, "tabl_outfit_keep")
+		return sobj.m_story_id ~= 4294967296 or not string_find(sobj:name(),tostring(sobj.id),1,true) or obj_is_protected(sobj, "tabl_outfit_keep")
 	end
 end
 
@@ -846,7 +894,7 @@ function cleanerDoNotTouchHlam(sobj)
 		end
 		return false
 	else
-		return sobj.m_story_id ~= 4294967296 or not string_find(sobj:name(),tostring(sobj.id),1,true)
+		return sobj.m_story_id ~= 4294967296 or not string_find(sobj:name(),tostring(sobj.id),1,true) or obj_is_protected(sobj, "items_protected")
 	end
 end
 

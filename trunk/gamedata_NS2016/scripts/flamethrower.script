@@ -178,7 +178,7 @@ end
 
 function have_a_vodko()
     local actor = db.actor
-    if actor ~= nil and actor:has_info("flamethrower_quest_start")
+    if actor and actor:has_info("flamethrower_quest_start") and actor:dont_has_info("flamethrower_quest_vodka")
     then
 		if amk_utils.inventory_search("vodka", 10) then
             actor:give_info_portion("flamethrower_quest_vodka")

@@ -108,7 +108,6 @@ function npc_update( binder )
 
 	binder.armor_check_update = time_global() + 7700 + math_random() * 10000
 	local item, sect, vis, i_vis
-	local sys_ini = system_ini()
 	for i, v in ipairs( tt ) do
 		v = v.item
 		sect = v:section()
@@ -158,7 +157,6 @@ function get_npc_current_visual_level( obj ) --Клиентский объект!
 
 	local lv = t_npc_vis_lv[ vis ]
 	if lv then return lv end
-	local sys_ini = system_ini()
 	if sect and sys_ini:section_exist( sect ) then
 		local v = string_match( ( sys_ini:r_string( sect, "visual" ) ), "[_.%-%w]*$" )
 		v = string_match( v, "[_%-%w]*" )
@@ -188,7 +186,6 @@ end
 
 function check_armor( npc, item, just_report )	-- не нужно
 	local sect = item:section()
-	local sys_ini = system_ini()
 	if sys_ini:section_exist( sect ) then
 		local vis = sys_ini:r_string( sect, "visual" )
 		vis = string_match( vis, "[_.%-%w]*$" )	-- удаляем путь

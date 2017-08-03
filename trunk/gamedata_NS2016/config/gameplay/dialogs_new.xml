@@ -664,9 +664,9 @@
                 </phrase>
         <phrase id="1">
                 <text>yakut_need_do_1</text>
-                <next>2_1</next>
+                <next>21</next>
 				</phrase>
-		<phrase id="2_1">
+		<phrase id="21">
 				<text>yakut_need_do_2_1</text>
 				<give_info>yakut_treasure_start</give_info>
 				<give_info>yakut_treasure_start2</give_info>
@@ -712,7 +712,7 @@
         <phrase id="1">
                 <text>dan_nauch_flash_1</text>
                 <next>2</next>
-				<next>2_1</next>
+				<next>21</next>
                 </phrase>
         <phrase id="2">
                 <dont_has_info>nauch_flash_have</dont_has_info>
@@ -722,19 +722,19 @@
                 <action>new_dialog.dan_flash_have</action>
                 <action>dialogs.break_dialog</action>
                 </phrase>
-		<phrase id="2_1">
+		<phrase id="21">
 				<has_info>nauch_flash_have</has_info>
                 <text>dan_nauch_flash_2_1</text>
-                <next>2_2</next>
+                <next>22</next>
 				</phrase>
-		<phrase id="2_2">
+		<phrase id="22">
                 <text>dan_nauch_flash_bring_1</text>
 				<give_info>dan_flash_done</give_info>
                 <give_info>dan_flash_start</give_info>
 				<action>new_dialog.dan_flash_done</action>
-                <next>2_3</next>
+                <next>23</next>
 				</phrase>
-		<phrase id="2_3">
+		<phrase id="23">
                 <text>dan_nauch_flash_2_3</text>
 				<action>dialogs.break_dialog</action>
 				</phrase>
@@ -3470,9 +3470,9 @@
         <phrase id="2">
                 <text>zahar_need_perehod_2</text>
                 <next>3</next>
-				<next>3_1</next>
+				<next>31</next>
                 </phrase>
-		<phrase id="3_1">
+		<phrase id="31">
 				<dont_has_info>prizrak_zver_done</dont_has_info>
                 <text>zahar_need_perehod_3_1</text>
 				</phrase>
@@ -4061,7 +4061,6 @@
         <phrase id="16">
                 <text>black_doctor_dialog_16</text>
                 <give_info>black_doctor_finish_dialog</give_info>
-				<action>arhara_dialog.vill_klenov_sms</action>
 				<action>dialogs.break_dialog</action>
                </phrase>			
         </phrase_list>

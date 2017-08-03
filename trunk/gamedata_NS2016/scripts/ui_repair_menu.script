@@ -10,7 +10,6 @@
 local print_logs = false
 
 local actor = db.actor
-local sys_ini = system_ini()
 
 local oScreen = { }
 
@@ -959,7 +958,7 @@ end
 function repair:SlotItemCreate( aItem, slot, handle )
 	play_sound( [[interface\inv_slot]] )
 	
-	local sInvNameSect = system_ini():r_string( aItem.sect, "inv_name_short" )
+	local sInvNameSect = sys_ini:r_string( aItem.sect, "inv_name_short" )
 	local oSlotItem = ammo_item( aAmmoSlots[ slot ].x, aAmmoSlots[ slot ].y, self.xml )
 	oSlotItem:SetWindowName( "oSlotItem"..aItem.id..slot )
 	oSlotItem.dsc:SetText( game.translate_string( sInvNameSect or "..." ) )
@@ -1050,7 +1049,7 @@ end
 
 --///////////////////////////
 function repair:AmmoListAddItem( aItem, index, list )
-	local sInvNameSect = system_ini():r_string( aItem.sect, "inv_name_short" )
+	local sInvNameSect = sys_ini:r_string( aItem.sect, "inv_name_short" )
 	local _itm = ammo_item( 0, 0, self.xml )
 	
 	_itm.dsc:SetText( game.translate_string( sInvNameSect or "..." ) )
@@ -1811,24 +1810,24 @@ function release_addons( sobj, wpn, obj )
 		local grl = bit_and( data.upd.addon_flags, 2 ) == 2
 		local sln = bit_and( data.upd.addon_flags, 4 ) >= 4
 			
-		local h_scope = read_if_exist(system_ini(),wpn,"scope_status",nil)
-		local h_sil = read_if_exist(system_ini(),wpn,"silencer_status",nil)
-		local h_gren = read_if_exist(system_ini(),wpn,"grenade_launcher_status",nil)
+		local h_scope = read_if_exist(sys_ini,wpn,"scope_status",nil)
+		local h_sil = read_if_exist(sys_ini,wpn,"silencer_status",nil)
+		local h_gren = read_if_exist(sys_ini,wpn,"grenade_launcher_status",nil)
 		
 		if h_scope == 2 then
-			h_scope = read_string_if_exist( system_ini(),wpn,"scope_name",nil )
+			h_scope = read_string_if_exist( sys_ini,wpn,"scope_name",nil )
 			if h_scope ~= nil and scp then
 				h_scope = alife():create(h_scope, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),db.actor:id())
 			end
 		end
 		if h_sil == 2 then
-			h_sil = read_string_if_exist(system_ini(),wpn,"silencer_name",nil)
+			h_sil = read_string_if_exist(sys_ini,wpn,"silencer_name",nil)
 			if h_sil ~= nil and sln then
 				h_sil = alife():create(h_sil, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),db.actor:id())
 			end
 		end
 		if h_gren == 2 then
-			h_gren = read_string_if_exist(system_ini(),wpn,"grenade_launcher_name",nil)
+			h_gren = read_string_if_exist(sys_ini,wpn,"grenade_launcher_name",nil)
 			if h_gren ~= nil and grl then
 				h_gren = alife():create(h_gren, db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(),db.actor:id())
 			end
@@ -1953,7 +1952,7 @@ function get_object_svalue( sect, param )
 	local value = ""
 	if sys_ini:section_exist( sect ) then
 		if sys_ini:line_exist( sect, param ) then
-			value = game.translate_string( system_ini():r_string( sect, param ) )
+			value = game.translate_string( sys_ini:r_string( sect, param ) )
 		end
 	end
 	return value
@@ -2011,7 +2010,7 @@ function spawner(text)
 	  type = string.sub(text,1,sf-1)
 	end
 
-	if not system_ini():section_exist(type) then
+	if not sys_ini:section_exist(type) then
 	  amk.send_tip("Секция "..type.." не существует!","Cheat: Spawner",0,10,"gen_info")
 	  return false
 	end

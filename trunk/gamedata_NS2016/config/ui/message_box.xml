@@ -655,21 +655,6 @@
 		</button_ok>
 	</message_box_invalid_death_stat_down_up>
 	
-	<message_box_invalid_blow_time_basis type="ok" x="0" y="0" width="1024" height="768">
-		<texture>mb_frame_error</texture>
-		
-		<picture x="435" y="458" width="96" height="108">
-			<texture>mb_frame_error_sign_alarm</texture>
-		</picture>
-		
-		<message_text x="235" y="475" width="165" height="95" complex_mode="1">
-			<text x="0" y="0" r="216" g="186" b="140" font="graffiti19">ui_st_invalid_blow_time_basis</text>
-		</message_text>
-		
-		<button_ok x="412" y="574" width="123" height="25" check_mode="0">
-			<text x="0" y="0" font="letterica16"  r="216" g="186" b="140">ui_st_btn_ok</text>
-			<texture>ui_button_s</texture>
-		</button_ok>
-	</message_box_invalid_blow_time_basis>
+
 	
 </window>

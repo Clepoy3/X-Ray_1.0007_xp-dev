@@ -165,19 +165,13 @@
 	</game_task>
 	
 	<game_task id="mil_volk_resiver">
-		<title>Принести радиостанцию</title>
+		<title>Найти и принести радиостанцию Волку</title>
 		<objective>
-			<text>Найти Толика с радиостанцией</text>
+			<text>Найти и принести радиостанцию Волку</text>
 			<icon>ui_iconsTotal_found_thing</icon>
 			<infoportion_complete>mil_volk_resiver_done</infoportion_complete>
 			<infoportion_fail>mil_volk_resiver_fail</infoportion_fail>
 			<article>tex_mil_volk_resiver</article>
-		</objective>
-		<objective>
-			<text>Найти Толика</text>
-			<map_location_type hint="Толик">blue_location</map_location_type>
-			<object_story_id>esc_tolik</object_story_id>
-			<infoportion_complete>mil_volk_resiver_1have</infoportion_complete>
 		</objective>
 		<objective>
 			<text>Найти радиостанцию</text>
@@ -995,8 +989,6 @@
 		</objective>
 		<objective>
             <text>Найти документы</text>		
-			<map_location_type hint="Предполагаемое место документов">crlc_big</map_location_type>
-			<object_story_id>val_door_to_x18</object_story_id>
 			<function_complete>sak_dialog.bar_dolg_leader_find_case_have</function_complete>
 			<infoportion_set_complete>bar_dolg_leader_find_case_have</infoportion_set_complete>
 		</objective>

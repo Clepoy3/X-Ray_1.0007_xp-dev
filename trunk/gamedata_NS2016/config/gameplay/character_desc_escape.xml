@@ -663,7 +663,6 @@
 	<start_dialog>hello_dialog</start_dialog>
 	<actor_dialog>artmod_111_dialog</actor_dialog>
 	<actor_dialog>artmod_112_dialog</actor_dialog>
-	<actor_dialog>artmod_873_dialog</actor_dialog>
 	<actor_dialog>escape_tutorial_wounded_story</actor_dialog>
 	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
 #include "gameplay\character_criticals_1.xml"
@@ -766,8 +765,6 @@
 
 	<start_dialog>escape_lager_volk_talk</start_dialog>
 	<start_dialog>hello_dialog</start_dialog>
-	<actor_dialog>tolik1_pomer_dialog</actor_dialog>
-	<actor_dialog>tolik2_pomer_dialog</actor_dialog>
 	<actor_dialog>artmod_861_dialog</actor_dialog>
 	<actor_dialog>artmod_862_dialog</actor_dialog>
 	<actor_dialog>artmod_871_dialog</actor_dialog>

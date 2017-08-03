@@ -37,7 +37,7 @@ nightvision_sect	= effector_nightvision_blackwhite
 
 cost				= 35000
 slot				= 6
-full_scale_icon	12,6			;иконка сталкера в костюме в полный рост
+full_scale_icon 	= 12,6			;иконка сталкера в костюме в полный рост
 
 bleeding_restore_speed			= 0.0001
 
@@ -1403,8 +1403,8 @@ fire_wound_protection  			= 0.30
 ;запрещение режима Sprint для Актера
 sprint_allowed					= true
 bones_koeff_protection			= exo_helmet_damage
-additional_inventory_weight		= 20
-additional_inventory_weight2	= 20 ; 40+
+additional_inventory_weight		= 80
+additional_inventory_weight2	= 80
 
 [sect_exo_outfit_immunities]
 burn_immunity				= 0.03			;коэффициенты иммунитета самого костюма
@@ -1994,10 +1994,8 @@ chemical_burn_protection 		= 0.1
 explosion_protection 			= 0.35
 fire_wound_protection  			= 0.35
 
-sprint_allowed					= true
 bones_koeff_protection			= exo_helmet_damage
-additional_inventory_weight		= 15
-additional_inventory_weight2	= 15 
+
 
 [sect_killer_blue_exoskeleton_immunities]
 ; From exo_outfit v.1.1
@@ -2108,10 +2106,8 @@ fire_wound_protection  			= 0.40
 
 power_restore_speed				= 0.005
 
-sprint_allowed					= true
 bones_koeff_protection			= exo_helmet_damage
-additional_inventory_weight		= 35
-additional_inventory_weight2	= 35
+
  
 [sect_dolg_black_exoskeleton_immunities]
 ; From exo_outfit v.1.1
@@ -2217,10 +2213,8 @@ explosion_protection 			= 0.40
 fire_wound_protection  			= 0.30
 
 immunities_sect			= sect_svoboda_exoskeleton_immunities
-sprint_allowed					= false
 bones_koeff_protection			= exo_helmet_damage
-additional_inventory_weight		= 25
-additional_inventory_weight2	= 25 
+
 
 [sect_svoboda_exoskeleton_immunities]
 ; From exo_outfit v.1.1
@@ -2329,10 +2323,7 @@ fire_wound_protection  			= 0.45
 
 health_restore_speed			= 0.0007
 immunities_sect			= sect_monolit_exoskeleton_immunities
-sprint_allowed					= true
 bones_koeff_protection			= exo_helmet_damage
-additional_inventory_weight		= 10
-additional_inventory_weight2	= 10
 
 [sect_monolit_exoskeleton_immunities]
 ; From exo_outfit v.1.1
@@ -2440,11 +2431,10 @@ chemical_burn_protection 		= 0.05
 explosion_protection 			= 0.0
 fire_wound_protection  			= 0.13
 
-
 sprint_allowed					= false
+additional_inventory_weight		= 0
+additional_inventory_weight2	= 0
 
-additional_inventory_weight		= 5
-additional_inventory_weight2	= 0 
 
 [sect_broken_exoskeleton_immunities]
 ; From exo_outfit v.1.1
@@ -3078,8 +3068,8 @@ full_icon_name		= npc_icon_specops_outfit
 full_scale_icon		= 4,6		;иконка сталкера в костюме в полный рост
 
 immunities_sect			= sect_soldier_outfit_immunities
-additional_inventory_weight		= 170
-additional_inventory_weight2	= 170 ; 40+
+additional_inventory_weight  = 170
+additional_inventory_weight2 = 170
 
 ; NO RESISTANCE
 burn_protection 				= -0.1
@@ -3212,8 +3202,8 @@ fire_wound_protection  			= 0.38
 ;запрещение режима Sprint для Актера
 sprint_allowed					= true
 bones_koeff_protection			= exo_helmet_damage
-additional_inventory_weight		= 80
-additional_inventory_weight2	= 80 ; 40+
+additional_inventory_weight  = 80
+additional_inventory_weight2 = 80
 
 [exo_bandit_outfit_bad]:exo_bandit_outfit
 $spawn 			= "outfit\exo_bandit_outfit_bad"
@@ -3322,8 +3312,8 @@ fire_wound_protection  			= 0.2
 power_loss = 0.87
 bones_koeff_protection = gilet_antigas_damage
 
-additional_inventory_weight		= 40
-additional_inventory_weight2	= 40 ; 40+
+additional_inventory_weight  = 40
+additional_inventory_weight2 = 40
 
 [sect_strelok_outfit_immunities]
 burn_immunity				= 0.02			;коэффициенты иммунитета самого костюма
@@ -3530,8 +3520,8 @@ fire_wound_protection  			= 0.40
 
 sprint_allowed					= true
 bones_koeff_protection			= exo_helmet_damage
-additional_inventory_weight		= 30
-additional_inventory_weight2	= 15 ; 60+
+additional_inventory_weight  = 80
+additional_inventory_weight2 = 80
 
 [sect_nebo_exo_immunities]
 burn_immunity				= 0.03
@@ -3935,7 +3925,7 @@ inv_name					= stalker_outfit_name_m2
 inv_name_short					= stalker_outfit_name_m2
 description					= stalker_outfit_description_m2
 additional_inventory_weight			= 10
-additional_inventory_weight2			= 20
+additional_inventory_weight2		= 10
 cost						= 15000
 inv_grid_width     = 2
 inv_grid_height    = 3

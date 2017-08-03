@@ -1405,7 +1405,7 @@
     <rank>602</rank>
     <reputation>100</reputation>
 
-    <visual>actors\hunters\hunter6</visual>
+    <visual>actors\hunters\hunter63</visual>
     <snd_config>characters_voice\human_03\freedom\</snd_config>
     <crouch_type>-1</crouch_type>
     <panic_treshold>0</panic_treshold>
@@ -1436,7 +1436,7 @@
     <rank>602</rank>
     <reputation>100</reputation>
 
-    <visual>actors\hunters\hunter6</visual>
+    <visual>actors\hunters\hunter63</visual>
     <snd_config>characters_voice\human_03\freedom\</snd_config>
     <crouch_type>-1</crouch_type>
     <panic_treshold>0</panic_treshold>

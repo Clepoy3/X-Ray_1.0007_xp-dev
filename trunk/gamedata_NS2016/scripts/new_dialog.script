@@ -46,7 +46,7 @@ local nagrad = {
   level_6 = {
   "ammo_7.62x54_7h14",
   "ammo_7.62x54_ap",
-  "ammo_minigun",
+  "ammo_7.62x54r",
   "ammo_gauss"
  },
 level_7 = {
@@ -667,35 +667,9 @@ end
 function inform_20_pda_have()
      return amk_utils.inventory_search("device_pda_npc",20)
 end
-function inform_40_pda_have()
-     return amk_utils.inventory_search("device_pda_npc",40)
-end
+
 function inform_20_pda(first_speaker, second_speaker)
-    local item = ""
-    local count = math.random(2,3)
- local actor, trader
- if db.actor and db.actor:id() == first_speaker:id() then
-  actor = first_speaker
-  trader = second_speaker
- else
-  actor = second_speaker
-  trader = first_speaker
- end
- item = nagrad.level_7[math.random(table.getn(nagrad.level_7))]
- sol_utils.delete_item_count("device_pda_npc", 20)
- flamethrower.relocate_n_items_section(actor, item , "in", count)
-end
-function inform_40_pda(first_speaker, second_speaker)
-    local item = ""
-    local actor, trader
- if db.actor and db.actor:id() == first_speaker:id() then
-  actor = first_speaker
-  trader = second_speaker
- else
-  actor = second_speaker
-  trader = first_speaker
- end 
- sol_utils.delete_item_count("device_pda_npc", 40)
+	sol_utils.delete_item_count("device_pda_npc", 20)
 end
 
 function dyak_dal(first_speaker, second_speaker)

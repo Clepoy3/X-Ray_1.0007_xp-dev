@@ -328,7 +328,6 @@
 	<text>tex_pantera_fone</text>
 </article>
 <article id="tex_pant_zadan" name="Забрать диск для Пантеры" article_type="task">
-<texture x="221" y="735" width="444" height="289">ui\ui_arhara</texture>
 	<text>tex_pant_zadan</text>
 </article>
 <article id="tex_p_z_tri" name="Забрать редкий костюм у Счастливчика" article_type="task">
@@ -368,7 +367,7 @@
 	<text>tex_derevny_zashita</text>
 </article>
 <article id="tex_klenov_antena" name="Достать пси-антенну" article_type="task">
-<texture x="500" y="800" width="100" height="100">ui\ui_icon_equipment</texture>
+<texture x="50" y="800" width="100" height="100">ui\ui_icon_equipment</texture>
 	<text>tex_klenov_antena</text>
 </article>
 <article id="tex_boloto_provod" name="Разведка на хуторе" article_type="task">

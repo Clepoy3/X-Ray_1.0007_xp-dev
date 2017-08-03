@@ -650,7 +650,7 @@
 <!--Карагёз-бармен диалог про вора все ОК, даёт ГГ 2 летучих мышей и отправляет к Скарабею-->
 
 <dialog id="bandos_barmen_four">
-<precondition>arhara_dialog.piligrim_have_money_70000</precondition>
+<precondition>arhara_dialog.bablo_razvod</precondition>
 <has_info>vor_one_dialog_start</has_info>
 <dont_has_info>bandos_barmen_tri_done</dont_has_info>
 <dont_has_info>bandos_barmen_vor_finish</dont_has_info>
@@ -677,7 +677,7 @@
 <give_info>bandos_barmen_tri_done</give_info>
 <give_info>spawn_skarabey</give_info>
 <give_info>skarabey_naiti</give_info>
-<action>arhara_dialog.piligrim_give_money_70000</action>
+<action>arhara_dialog.kidalovo</action>
 <action>arhara1_dialog1.dal_letumov</action>
 </phrase>
 </phrase_list>

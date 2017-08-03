@@ -2563,23 +2563,6 @@ function on_offline_corpse_found(who, object)
 	end
 end
 
-function on_offline_trade(npc, item)
-	local rnd = math.random
-	if (npc and item and rnd() < 0.25) then
-		local m_from = get_npc_name(npc)
-		local m_str = news_data.trade_templates[rnd(#news_data.trade_templates)]
-		local m_level = get_point_description(get_object_levelname(npc), get_object_position(npc))
-		if (m_level == "") then return end		
-		local m_title = get_object_name(item)
-		local t = {["level"] = m_level, ["item"] = m_title}
-		for key0, value in pairs(t) do
-			m_str = string_gsub(m_str, "%$"..key0, value)
-		end
-		if (m_str ~= "") then
-			do_news(m_str, m_from, rnd(timer_general, timer_general * 10), 15, "trade", npc.id, 1)
-		end
-	end
-end
 
 function on_miniquest_reward(trader)
 	local sim = alife()

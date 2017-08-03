@@ -439,7 +439,7 @@ end
 
 -- постпроцесс и влияние удара в морду
 function actor_punch(npc)
-  if db.actor:position():distance_to_sqr(npc:position()) > 4 then
+  if db.actor:position():distance_to_sqr(npc:position()) > 3.24 then
     return
   end
 
@@ -1127,62 +1127,32 @@ function mil_sniper_dead (actor, npc)
     end       
 end
 
-function mil_actor_enemy_set (actor, npc)
-    local sniper = level_object_by_sid (704)
-    if sniper ~= nil then
-      sol_utils.setRelation(sniper, game_object.enemy, db.actor)
-    end   
-    --xr_gulag.setGulagRelation ("mil_freedom", game_object.enemy, db.actor)    
+function mil_actor_enemy_set (actor, npc)   
 end
 
 
-function mil_actor_enemy_reset (actor, npc)
-    local sniper = level_object_by_sid (704)
-    if sniper ~= nil then
-      sol_utils.setRelation(sniper, game_object.neutral, db.actor)
-    end   
-    --xr_gulag.setGulagRelation ("mil_freedom", game_object.neutral, db.actor)    
+function mil_actor_enemy_reset (actor, npc)   
 end
 
-function mil_bomb_explode (actor, npc)
-    local source = nil
-    local sim = alife ()
-    if sim then
-       local se_obj = sim:story_object (723)  
-       if se_obj then
-          source = level.object_by_id(se_obj.id)
-       end
-    end
-
-    if source == nil then
-       --'abort ("Bomb with story id MIL_BOMB not found")
-       return
-    end
-
-    local h = hit ();
-    h.power = 1000000;
-    h.direction = vector():set( 1, 0, 0 );
-    h.impulse = 1;
-    h.draftsman = source;
-    h.type = hit.chemical_burn;
-    source:hit (h);
+function mil_bomb_explode(actor, npc)
+	local sobj = alife():story_object(723)
+	if sobj then
+          local obj = level.object_by_id(sobj.id)
+		if obj then
+			local h = hit()
+			h.power = 1000000
+			h.direction = vector():set( 1, 0, 0 )
+			h.impulse = 1
+			h.draftsman = obj
+			h.type = hit.chemical_burn
+			obj:hit(h)
     
-    source:explode(0)
+			obj:explode(0)
+		end
+	end
 end
 
 function mil_set_alarm (actor, npc)
-    actor:give_info_portion ("mil_freedom_under_attack")
-    
-    local skull = level_object_by_sid (708)
-    if skull == nil then 
-       return 
-    end
-
-    this.set_stalker_enemy (702, skull)     -- hit to Lukash
-    this.set_stalker_enemy (707, skull)     -- hit to Max
-    this.set_stalker_enemy (730, skull)     -- hit to Sniper1
-    this.set_stalker_enemy (731, skull)     -- hit to Sniper2
-    this.set_stalker_enemy (732, skull)     -- hit to Sniper3
 end
 
 function sar2_monolith_explode (actor, npc)
@@ -1620,6 +1590,12 @@ function heli_set_enemy(actor, npc, p)
   end
 end
 
+function heli_get_enemy(actor, npc, p)
+  if p[1] and p[2] then
+	p[2] = nil
+  end
+end
+
 function heli_clear_enemy(actor, npc)
     db.storage[npc:id()].combat:forget_enemy()
 end
@@ -2011,7 +1987,6 @@ end
 ------------------------------------------------------- ARENA_EXTENSION_MOD--------------------------------------------------------
 
 function aem_draw()
-	db.actor:set_character_community("trader",0,0)
 	aem_lights.draw()
 end
 

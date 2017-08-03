@@ -129,7 +129,7 @@ function checking_use_item(obj)
 	elseif sec=="karta_gavr" then actor:give_info_portion("karta_gavr_est")
 	elseif sec=="doberman_pda" then actor:give_info_portion("doberman_pda_est")
 	elseif sec=="pda_voyak" then actor:give_info_portion("pda_voyak_est")
-	elseif ln=="l08_yantar" and sec=="hand_teleporter"  then actor:give_info_portion("poisk_taynik_voyak_finish")
+	elseif ln=="l12_stancia_2" and sec=="aes_document" then actor:give_info_portion("poisk_taynik_voyak_finish")
 	elseif sec=="borov_listok" then actor:give_info_portion("borov_listok_est")
 	elseif sec=="pda_krysyka" then actor:give_info_portion("info_artmod_vyvert_buzz")
 	elseif sec == "af_caterpillar" and not actor:has_info("bezoar_nashel") then
@@ -259,15 +259,6 @@ function zombie_blow()
 	sim:create("cat_strong",v:set(-85.379,-19.090,-49.233),9988,1495)
 	sim:create("cat_strong",v:set(-86.602,-19.090,-171.465),9340,1455)
 	sim:create("cat_strong",v:set(-86.602,-19.090,-171.465),9340,1455)
-end
-
-function zasada_for()
-	local sim = alife()
-	local v = vector()
-	sim:create("chimera_grey",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
-	sim:create("chimera_grey",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
-	sim:create("chimera_grey",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
-	sim:create("chimera_xray",v:set(12.886095046997,-16.55083847,175.3548889),320050,1697)
 end
 
 function radar_man()
@@ -937,7 +928,6 @@ function kot_info()
 		end
 	end
     if has_alife_info("black_doctor_finish_dialog") and not has_alife_info("black_doctor_delete") then
-		amk.start_timer("delete_black_doctor",rnd(10,15))
 		actor:give_info_portion("black_doctor_delete")
 	end
 end
@@ -1029,10 +1019,7 @@ end
 
 
 function delete_black_doctor()
-  local se_obj = alife():object("black_doctor")
-  if se_obj then
-    alife():release(se_obj, true)
-  end
+	amk.release("black_doctor")
 end	
 
 function test_kolmogor()

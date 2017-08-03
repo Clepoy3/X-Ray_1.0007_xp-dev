@@ -25,7 +25,7 @@ end
 
 function bar_informator()
 	local sobj = alife():create("mil_trader_gavr",vector():set(25.325489,-8.35158157,-17.512226425),330707,1587)
-	alife():assign_story_id( sobj.id, story_ids.mil_trader_gavr ) --9623
+	alife():assign_story_id( sobj.id, 9623 )
 
 	alife():create("mil_gavr_bodyguard1",vector():set(25.325489,-8.35158157,-17.512226425),330707,1587)
 	alife():create("mil_gavr_bodyguard2",vector():set(25.325489,-8.35158157,-17.512226425),330707,1587)
@@ -41,7 +41,7 @@ function under_stalker()
 	data.upd.health = 0
 	pk:set( data )
 	--
-	alife():assign_story_id( sobj.id, story_ids.stalker_agro_und ) --9660
+	alife():assign_story_id( sobj.id, 9660 )
 end
 
 function under_kontr()
@@ -51,7 +51,7 @@ end
 
 function spawn_zver()
 	local sobj = alife():create("esc_zver",vector():set(-123.13681793213,-30.051919937134,-368.98876953125),130148,25)
-	alife():assign_story_id( sobj.id, story_ids.esc_zver ) --9731
+	alife():assign_story_id( sobj.id, 9731 )
 
 	alife():create("esc_bodyzver1",vector():set(-123.13681793213,-30.051919937134,-368.98876953125),130148,25)
 	alife():create("esc_bodyzver2",vector():set(-123.13681793213,-30.051919937134,-368.98876953125),130148,25)
@@ -76,15 +76,15 @@ function spawn_zver()
 end
 
 function add_zver()
- local obj=alife():create("esc_snip_atak",vector():set(-130.93258666992,-17.900747299194,-187.99856567383),120643,42)
- local obj=alife():create("esc_snip2_atak",vector():set(-130.93258666992,-17.900747299194,-187.9985656738),120643,42)
- local obj=alife():create("esc_snip3_atak",vector():set(-130.93258666992,-17.900747299194,-187.9985656738),120643,42)
- local obj=alife():create("esc_snip4_atak",vector():set(-130.4655456543,-10.02149772644,-126.00447845459),121547,44)
- local obj=alife():create("esc_snip5_atak",vector():set(-130.4655456543,-10.02149772644,-126.00447845459),121547,44)
- local obj=alife():create("esc_snip6_atak",vector():set(-130.4655456543,-10.02149772644,-126.00447845459),121547,44)
- local obj=alife():create("esc_snip7_atak",vector():set(-238.85079956055,-19.541189193726,-118.84622192383),16851,8)
- local obj=alife():create("esc_snip8_atak",vector():set(-238.85079956055,-19.541189193726,-118.84622192383),16851,8)
- local obj=alife():create("esc_snip9_atak",vector():set(-238.85079956055,-19.541189193726,-118.84622192383),16851,8)
+ alife():create("esc_snip_atak",vector():set(-130.93258666992,-17.900747299194,-187.99856567383),120643,42)
+ alife():create("esc_snip2_atak",vector():set(-130.93258666992,-17.900747299194,-187.9985656738),120643,42)
+ alife():create("esc_snip3_atak",vector():set(-130.93258666992,-17.900747299194,-187.9985656738),120643,42)
+ alife():create("esc_snip4_atak",vector():set(-130.4655456543,-10.02149772644,-126.00447845459),121547,44)
+ alife():create("esc_snip5_atak",vector():set(-130.4655456543,-10.02149772644,-126.00447845459),121547,44)
+ alife():create("esc_snip6_atak",vector():set(-130.4655456543,-10.02149772644,-126.00447845459),121547,44)
+ alife():create("esc_snip7_atak",vector():set(-238.85079956055,-19.541189193726,-118.84622192383),16851,8)
+ alife():create("esc_snip8_atak",vector():set(-238.85079956055,-19.541189193726,-118.84622192383),16851,8)
+ alife():create("esc_snip9_atak",vector():set(-238.85079956055,-19.541189193726,-118.84622192383),16851,8)
 end
 
 function spawn_art()

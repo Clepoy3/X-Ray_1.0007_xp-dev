@@ -81,49 +81,38 @@
 			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">gg_kick</text>
 		</check_gg_kick>
 		
-		<cap_blow_time_basis x="10" y="130" width="73" height="20">
-			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">blow_time_basis</text>
-		</cap_blow_time_basis>
 		
-		<blow_time_basis_now x="190" y="127" width="20" height="20">
-			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">blow_time_basis_now</text>
-		</blow_time_basis_now>
-		
-		<spin_blow_time_basis x="220" y="127" width="30" height="20">
-			<options_item entry="blow_time_basis" group="amk_opt_controls"/>
-		</spin_blow_time_basis>
-		
-		<check_death_stat x="10" y="155" width="143" height="20">
+		<check_death_stat x="10" y="130" width="143" height="20">
 			<options_item entry="death_stat" group="amk_opt_controls"/>
 			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">death_stat</text>
 		</check_death_stat>
 		
-		<check_zombie_team x="10" y="180" width="143" height="20">
+		<check_zombie_team x="10" y="155" width="143" height="20">
 			<options_item entry="zombie_team" group="amk_opt_controls"/>
 			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">zombie_team</text>
 		</check_zombie_team>
 		
-		<check_run_horror_effect x="10" y="205" width="143" height="20">
+		<check_run_horror_effect x="10" y="180" width="143" height="20">
 			<options_item entry="run_horror_effect" group="amk_opt_controls"/>
 			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">run_horror_effect</text>
 		</check_run_horror_effect>
 		
-		<check_del_horror_mops x="30" y="230" width="143" height="20">
+		<check_del_horror_mops x="30" y="205" width="143" height="20">
 			<options_item entry="del_horror_mops" group="amk_opt_controls"/>
 			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">del_horror_mops</text>
 		</check_del_horror_mops>
 
-		<check_no_anoms_respawn x="10" y="255" width="143" height="20">
+		<check_no_anoms_respawn x="10" y="230" width="143" height="20">
 			<options_item entry="no_anoms_respawn" group="amk_opt_controls"/>
 			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">no_anoms_respawn</text>
 		</check_no_anoms_respawn>
 
-		<check_amk_hud x="10" y="280" width="143" height="20">
+		<check_amk_hud x="10" y="255" width="143" height="20">
 			<options_item entry="amk_hud" group="amk_opt_controls"/>
 			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_hud_enabled</text>
 		</check_amk_hud>
 		
-		<check_amk_hud_blurs x="30" y="305" width="143" height="20">
+		<check_amk_hud_blurs x="30" y="280" width="143" height="20">
 			<options_item entry="amk_hud_blurs" group="amk_opt_controls"/>
 			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_hud_and_steam_enabled</text>
 		</check_amk_hud_blurs>
@@ -171,21 +160,6 @@
 			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">thirst_enable</text>
 		</check_thirst_enable>
 		
-		<cap_amk_treasure x="260" y="207" width="73" height="20">
-			<text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_treasure</text>
-		</cap_amk_treasure>
-		
-        <radio_amk_treasure x="280" y="231" width="400" height="80" radio="1">
-		    <button x="0" y="0" width="200">
-			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_treasure_old</text>
-			</button>
-		    <button x="0" y="25" width="200">
-			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_treasure_new</text>
-			</button>
-		    <button x="0" y="50" width="200">
-			    <text font="letterica16" r="115" g="114" b="112" complex_mode="0">amk_treasure_rare</text>
-			</button>
-		</radio_amk_treasure>
 	
 	</form_for_opt1>
 

@@ -76,7 +76,7 @@ function trup_to_zombie(s_param)
 	local trup_id = s_param[2]
 	local trup = level.object_by_id(trup_id)
 	local strup = alife():object(trup_id)
-	if trup and strup then
+	if trup and strup and IAmAStalker[strup:clsid()] then
 		local trup_pos = trup:position()
 		--≈сли обрабатываем в первый раз - партиклы и запуск второго таймера(1 минута готовности)
 		if s_param[1] == 'a' then

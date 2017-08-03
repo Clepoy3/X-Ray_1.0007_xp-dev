@@ -8,7 +8,7 @@ end
 --------------------------------------ini---------------------------------------
 --[[function read_from_ini(ini,sec,lin,def,typ)
 	if not ini then
-		ini = system_ini()
+		ini = sys_ini
 	end
 	if sec and lin and ini:section_exist(sec) and ini:line_exist(sec,lin) then
 		if typ == 0 then

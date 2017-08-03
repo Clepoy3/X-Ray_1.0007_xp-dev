@@ -366,9 +366,9 @@ barter_items["sak_military_stalker" ] =
 
 
 ----------------------------------------
------//Бартер у Доктора by RAY
+-----//Бартер у Вэла by RAY
 ----------------------------------------
-barter_menu["doktor"] = 
+barter_menu["for_vell"] = 
 { -- Список предложений ( Если после секции(1) таблица(2), то (1)-меню (2)-подменю, иначе секция
 	"ammo" , 	{ "ammo_12x70", { "ammo_12x70_buck", "ammo_12x76_dart", "ammo_12x76_zhekan" },
 			"grenade_rgd5",
@@ -380,7 +380,7 @@ barter_menu["doktor"] =
 	"remkit"  , 	{ "repair_item_weapon" }
 }
 
-barter_items["doktor"] =   
+barter_items["for_vell"] =   
 { 
 	-- Секция предмета из barter_menu конкретного торговца
 	[ "ammo_12x70_buck" ] 	= { af_rusty_thorn ={ g=1, t=5 } }, 

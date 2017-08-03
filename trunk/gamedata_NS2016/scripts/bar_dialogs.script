@@ -197,10 +197,10 @@ end
 
 --Фамильное ружье охотника
 function have_hunters_toz(first_speaker, second_speaker)
-	return sol_utils.check_item_count("hunters_toz", 1, 0.95)==1
+	return amk_utils.inventory_search("hunters_toz",1)
 end
 function give_hunters_toz(first_speaker, second_speaker)
-	sol_utils.delete_item_count("hunters_toz", 1, 0.95)
+	sol_utils.delete_item_count("hunters_toz", 1)
 end
 function have_hunter_reward(first_speaker, second_speaker)
 	dialogs.relocate_money(second_speaker, 4000, "in")

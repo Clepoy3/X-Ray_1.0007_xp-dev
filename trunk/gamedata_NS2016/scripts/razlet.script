@@ -53,7 +53,7 @@ function calc_inventory_weight(npc)
 	items = {}
 	items_dropped = {}
 	weight_rukzak = 0
-	ini = system_ini()
+	ini = sys_ini
 	
 	if npc and npc.inventory_for_each then
 		local item_active = npc:active_item()

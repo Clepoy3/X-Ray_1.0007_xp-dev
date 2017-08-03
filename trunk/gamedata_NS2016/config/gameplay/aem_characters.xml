@@ -1187,5 +1187,6 @@
 		<actor_dialog>bar_arena_man_job</actor_dialog>
 		<actor_dialog>bar_arena_man_fights</actor_dialog>
 		<actor_dialog>bar_arena_man_extra</actor_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
 	</specific_character>
 </xml>

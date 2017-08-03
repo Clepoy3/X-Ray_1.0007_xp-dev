@@ -10,8 +10,9 @@ local night_vision_fake = false
 local night_vision_snd, night_vision_snd_loop
 night_vision_outfit_id = nil
 outfit_restored = false
+local outfit_restored_first = nil
+local active_item_start = nil
 local night_vision_on_take_item = false
-
 
 local table_sort = table.sort
 local table_insert = table.insert
@@ -75,7 +76,7 @@ function actor_binder:net_spawn(data)
 		actor_stats.add_to_ranking(self.object:id())
 	end
 
-
+	treasure_manager:get_treasure_manager()
 	death_manager.init()	-- Загружаем настройки лута
 	monnoroch_utils.mon_callback:net_spawn()
 
@@ -854,6 +855,7 @@ function actor_binder:update(delta)
 			sleep_manager.stopper()
 		end
 	end
+
 	biodetector.update()
 	if t1000n == 0 then	-- ни чем не заняты ?
 		if time > t1000t then
@@ -1034,7 +1036,29 @@ function actor_binder:update(delta)
 			self.object:restore_weapon()
 			self.weapon_hide = false
 		end
-	end 
+	end
+
+	if not firstStartWithoutDelay then 
+		firstStartWithoutDelay = true
+		if game_options.new_game then
+			if string.find(command_line(), "-nointro") ~= nil then
+				game.start_tutorial("intro_game")
+			end
+		end
+		if db.actor:has_info("SergeT_talk_start") and not has_alife_info("bar_kpk_remont_done") and not task_exists("kpk_hide", 0) then
+			task_add("kpk_hide", arhara_dialog.disabl_karta, 0)
+		end
+	end
+
+	if outfit_restored_first and not active_item_start then 
+		if not active_item_saved then
+			local active_item = self.object:active_item()
+			if active_item then
+				self.object:activate_slot( 5 )
+			end
+		end
+		active_item_start = true
+	end
 
 	amk.oau_watchdog=191
 	amk.oau_reason="actor_binder:bind_restrictor"
@@ -1067,6 +1091,25 @@ function actor_binder:update(delta)
 		self.bCheckStart = false
 	end
 
+	-- востанавливаем броню
+	if not outfit_restored_first then
+		local outfit
+		local npc = self.object
+		local outfit_old = npc:item_in_slot(6)
+		if outfit_old then
+			local outfit_name = outfit_old:section()
+			local outfit_cond = outfit_old:condition()
+			outfit_restored = true 
+			alife():release(alife():object(outfit_old:id()), true)
+			outfit = alife():create(outfit_name, npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
+			if outfit then
+				bind_stalker.night_vision_outfit_id = outfit.id
+				amk.start_timer("set_condition", 1, {outfit.id, math.min(math_ceil(outfit_cond * 100), 100)})
+			end
+		end
+		outfit_restored_first = true
+	end
+
 	amk.on_actor_update_2()
 
 	if bind_art then bind_art.beep_art(delta) end
@@ -1085,30 +1128,6 @@ function actor_binder:update(delta)
 		amk_mod.doabcevents()	-- todo: убрать
 	end
 
-	if not firstStartWithoutDelay then 
-		firstStartWithoutDelay = true
-		if game_options.new_game then
-			if string.find(command_line(), "-nointro") ~= nil then
-				game.start_tutorial("intro_game")
-			end
-		end
-		
-		if db.actor:has_info("SergeT_talk_start") and not has_alife_info("bar_kpk_remont_done") and not task_exists("kpk_hide", 0) then
-			task_add("kpk_hide", arhara_dialog.disabl_karta, 0)
-		end
-		
-		--night_vision_outfit_id = db.actor:get_current_outfit()
-		--night_vision_outfit_id = night_vision_outfit_id and night_vision_outfit_id:id()
-		--amk.send_tip("firstStartWithoutDelay night_vision_outfit_id: "..tostring(night_vision_outfit_id))
-		if not active_item_saved then
-			--db.actor:hide_weapon()
-			local active_item = db.actor:active_item()
-			--amk.send_tip("firstStart active_item: "..tostring(active_item and active_item:name())..", active_slot: "..tostring(db.actor:active_slot())..", active_item_saved: "..tostring(active_item_saved))
-			if active_item then
-				db.actor:activate_slot(5)
-			end
-		end
-	end
 
 	if t200n == 0 then
 		if time > t200t then
@@ -1238,8 +1257,9 @@ function actor_binder:update(delta)
 			--t200test["n"] = t200test["n"] + 1
 			--t200test["entry"] = nil
 			--t200test["total"] = t200test["total"] + t_test
-	end	end
-	--if rx_ai then rx_ai.actor_update() end
+		end
+	end
+
 	if t0s > 0 then
 		for i = 1, t0s do
 			amk.oau_watchdog = t0[i]["name"]
@@ -1248,7 +1268,7 @@ function actor_binder:update(delta)
 	end
 
 	amk.oau_watchdog = 0
-	amk.oau_reason=""
+	amk.oau_reason = ""
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
@@ -1305,10 +1325,8 @@ function actor_binder:save_old(packet)
 				--local night_vision_outfit_current_id = outfit and outfit:id()
 				local outfitSection = outfit and outfit:section()
 				local nvSection = outfitSection and getIniValueStringSimple(outfitSection, "nightvision_sect", false) or false
-				--local pk = m_netpk.get(sobj,1) --/ запрос нет-пакета (only 'state')
-				--local data = pk:get() --/ читаем данные из нет-пакета
-				local data = m_netpk.net_cse_alife_item_torch(sobj)
-				data = data:get()
+				local pk = get_netpk(sobj)
+				local data = data:get()
 				night_vision_real = bit_and(data.upd.torch_flags, 2) ~= 0 and nvSection and nvSection ~= ""
 				--get_console():execute("load [bind_stalker]1473 night_vision_real "..tostring(night_vision_real).." outfitSection: "..tostring(outfitSection).." nvSection: "..tostring(nvSection))
 				--amk.send_tip("actor_binder:save_old night_vision_real="..tostring(night_vision_real))
@@ -1434,9 +1452,8 @@ end
 --/**/
 function actor_binder:on_use_object(obj)
 	sol_use_object.on_use_object(obj)
-	--medkit_use.lose_item(obj)
 	meceniy_outfit.on_item_drop(obj)
-    monnoroch_utils.mon_callback:on_use_object(obj)
+	monnoroch_utils.mon_callback:on_use_object(obj)
 end
 
 function nightvision_snd_start_hide()

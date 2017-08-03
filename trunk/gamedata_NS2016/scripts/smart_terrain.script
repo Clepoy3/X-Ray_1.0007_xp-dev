@@ -774,7 +774,9 @@ function se_smart_terrain:on_unregister()
 	if lvl_smarts then lvl_smarts[self.id] = nil end
 	smart_terrains_by_name[self.nm] = nil
 	if self.gparams and self.gparams.respawn then
-		db.strn_by_respawn[self.gparams.respawn] = nil
+		if db.strn_by_respawn[self.gparams.respawn] then
+			db.strn_by_respawn[self.gparams.respawn] = nil
+		end
 	end
 	db.actor_proxy:deinit()
 end

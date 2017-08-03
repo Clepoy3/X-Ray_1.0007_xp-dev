@@ -43,13 +43,11 @@ function fill_phrase_table()
 	local n = phrase_ini:line_count("list")
 	local id, value = "",""
 	local category = ""
-	
 	for i=0,n-1 do
 		result, id, value	= phrase_ini:r_line("list",i,"","")
-		
 		if not phrase_ini:section_exist(id) then
 			abort("There is no section [%s] in dialog_manager.ltx", id)
-		end		
+		end
 		--' 2. Необходимо сформировать набор предикатов  table[string_id] = predicate()
 		if not phrase_ini:line_exist(id, "category") then
 			abort("Dialog manager error: not categoried section [%s]", id)
@@ -77,16 +75,16 @@ function fill_phrase_table()
 		end
 		if phrase_ini:line_exist(id, "smart_terrain") then
 			tt.smart_terrain = phrase_ini:r_string(id, "smart_terrain")
-		end					
+		end
 		if phrase_ini:line_exist(id, "cost") then
 			tt.price = phrase_ini:r_u32(id, "cost")
-		end					
+		end
 		if phrase_ini:line_exist(id, "article_info") then
 			tt.article_info = parse_names(phrase_ini:r_string(id, "article_info"))
-		end					
+		end
 		if phrase_ini:line_exist(id, "treasure") then
 			tt.treasure = phrase_ini:r_string(id, "treasure")
-		end					
+		end
 		if phrase_ini:line_exist(id, "wounded") then
 			tt.wounded = phrase_ini:r_string(id, "wounded")
 		else
@@ -103,18 +101,16 @@ end
 function init_intro_dialog(dlg)
 	local phr = dlg:AddPhrase("",chk_ver(0),chk_ver(-1),-10000)
 		phr = dlg:AddPhrase("",chk_ver(1),chk_ver(0),-10000)
-
 	local k,v = 0,0
 	for k,v in pairs(phrase.intro) do
 		phr = dlg:AddPhrase(v.name, chk_ver(v.phr_id), chk_ver(1), -10000)
-		
 		if phr then
 			local phrase_script = phr:GetPhraseScript()
 			phrase_script:AddPrecondition("dialog_manager.precondition_intro")
 			--' Этот экшн запоминает последнюю фразу, чтобы персонаж говорил одно и то же.
 			--' Для фразы просьбы о помощи его добавлять не надо.
 			if v.wounded == "false" then
-				phrase_script:AddAction("dialog_manager.phrase_action_intro")		
+				phrase_script:AddAction("dialog_manager.phrase_action_intro")
 			end
 		end
 	end
@@ -124,11 +120,9 @@ end
 -- одну и ту же функцию в прекондишне.
 function init_cool_info_dialog(dlg)
 	local phr = dlg:AddPhrase("dm_general_cool_info",chk_ver(0),chk_ver(-1),-10000)
-	
 	local phr_def = dlg:AddPhrase("dm_general_cool_info_no_more",chk_ver(1),chk_ver(0),-10000)
 	local phrase_script = phr_def:GetPhraseScript()
 	phrase_script:AddPrecondition("dialog_manager.precondition_cool_info_no_more")
-
 	local k,v,kk,vv = 0,0,0,0
 	for k,v in pairs(phrase.cool_info) do
 		phr = dlg:AddPhrase(v.name,chk_ver(v.phr_id),chk_ver(0),-10000)
@@ -137,11 +131,9 @@ function init_cool_info_dialog(dlg)
 			phrase_script:AddPrecondition("dialog_manager.precondition_cool_info")
 			phrase_script:AddAction("dialog_manager.cool_info_treasure")
 			phrase_script:AddAction("dialog_manager.phrase_action_cool_info")
-			
 			if v.article_info ~= nil then
-				phr = dlg:AddPhrase("",chk_ver(v.phr_id2),chk_ver(v.phr_id),-10000)		
+				phr = dlg:AddPhrase("",chk_ver(v.phr_id2),chk_ver(v.phr_id),-10000)
 				phrase_script = phr:GetPhraseScript()
-								
 				for kk,vv in pairs(v.article_info) do
 					phrase_script:AddGiveInfo(vv)
 				end
@@ -155,10 +147,9 @@ function init_help_wounded_medkit_dialog(dlg)
 	local phr = dlg:AddPhrase("dm_general_help_medkit",chk_ver(0),chk_ver(-1),-10000)
 	local phrase_script = phr:GetPhraseScript()
 	phrase_script:AddAction("dialogs.transfer_medkit")
-	
-	local k,v = 0,0
-	for k,v in pairs(phrase.help_thanks) do
-		phr = dlg:AddPhrase(v.name,chk_ver(v.phr_id),chk_ver(0),-10000)		
+	local k, v = 0, 0
+	for k, v in pairs(phrase.help_thanks) do
+		phr = dlg:AddPhrase(v.name,chk_ver(v.phr_id),chk_ver(0),-10000)
 		if phr then
 			phrase_script = phr:GetPhraseScript()
 			phrase_script:AddPrecondition("dialog_manager.precondition_help_thanks")
@@ -180,9 +171,11 @@ selected_phrase_by_id = {
 function phrase_action_intro(npc, actor, p1, p2)
 	phrase_action(npc, actor, selected_phrase_by_id.intro, p2)
 end
+
 function phrase_action_cool_info(npc, actor, p1, p2)
 	phrase_action(npc, actor, selected_phrase_by_id.cool_info, p2, true)
 end
+
 function cool_info_treasure(npc, actor, p1, p2)
 	for k,v in pairs(phrase.cool_info) do
 		if v.phr_id == p2 then
@@ -198,22 +191,22 @@ function phrase_action(npc, actor, sel_tbl, p2, one_time)
 	local cc = 0
 	if one_time == true then
 		if sel_tbl[npc:id()] ~= nil then
-			cc = sel_tbl[npc:id()].count + 1	
+			cc = sel_tbl[npc:id()].count + 1
 		else
 			cc = 1
 		end
 	end
-
 	sel_tbl[npc:id()] = {phrase = p2, count = cc}
 end
-
 
 function precondition_intro(npc, actor, p1, p2, p3)
 	return precondition(npc, actor, phrase.intro, selected_phrase_by_id.intro, p1, p2, p3)
 end
+
 function precondition_cool_info(npc, actor, p1, p2, p3)
 	return precondition(npc, actor, phrase.cool_info, selected_phrase_by_id.cool_info, p1, p2, p3)
 end
+
 function precondition_cool_info_no_more(npc, actor, p1, p2, p3)
 	if selected_phrase_by_id.cool_info == nil or selected_phrase_by_id.cool_info[npc:id()] == nil then
 		return false
@@ -223,6 +216,7 @@ function precondition_cool_info_no_more(npc, actor, p1, p2, p3)
 	end 
 	return false
 end
+
 function precondition_help_thanks(npc, actor, p1, p2, p3)
 	return precondition(npc, actor, phrase.help_thanks, nil, p1, p2, p3)
 end
@@ -230,7 +224,6 @@ end
 function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
 	--' Получить фразу по номеру:
 	local phrase = tbl[p3]
-
 	--' Надо проверить доступна ли запомненная фраза
 	if sel_tbl ~= nil and sel_tbl[npc:id()] ~= nil then
 		local value, number = calculate_predicate(npc, tbl[sel_tbl[npc:id()].phrase])
@@ -238,8 +231,7 @@ function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
 		if value == false then
 			sel_tbl[npc:id()] = nil
 		end
-	end	
-
+	end
 	--' Проверка на повторяемость фраз.
 	if sel_tbl ~= nil and sel_tbl[npc:id()] ~= nil then
 		--' Если проверяется не запомненная фраза
@@ -249,125 +241,112 @@ function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
 		if sel_tbl[npc:id()].count >= 1 then
 			return false
 		end
-	end	
-
+	end
 	--' Определяем доступна ли эта фраза:
 	local value, number = calculate_predicate(npc, phrase)
 	return value
 end
 
-function calculate_predicate(npc, tbl, settings)
+function calculate_predicate( npc, tbl, settings )
+	local actor = db.actor
 	local property_num = 0
-	local k,v = 0,0
+	local k, v = 0, 0
 	if tbl.community ~= nil then
-		if tbl.community ~= db.actor:character_community() then return false,0 end
-		property_num = property_num + 1		
+		if tbl.community ~= actor:character_community() then
+			return false, 0
+		end
+		property_num = property_num + 1
 	end
 	if tbl.npc_community ~= nil then
-		if tbl.npc_community ~= npc:character_community() then return false,0 end
-		property_num = property_num + 1		
+		if tbl.npc_community ~= npc:character_community() then
+			return false, 0
+		end
+		property_num = property_num + 1
 	end
 	if tbl.relation ~= nil then
-		if (tbl.relation == "friend" and npc:relation(db.actor) ~= game_object.friend) or
-		   (tbl.relation == "neutral" and npc:relation(db.actor) ~= game_object.neutral) or
-		   (tbl.relation == "enemy" and npc:relation(db.actor) ~= game_object.enemy)
+		if (tbl.relation == "friend" and npc:relation(actor) ~= game_object.friend) or
+			(tbl.relation == "neutral" and npc:relation(actor) ~= game_object.neutral) or
+			(tbl.relation == "enemy" and npc:relation(actor) ~= game_object.enemy)
 		then 
-			return false,0 
+			return false, 0
 		end
-		property_num = property_num + 1		
+		property_num = property_num + 1
 	end
 	if tbl.npc_rank ~= nil then
-		if tbl.npc_rank > npc:character_rank() then return false,0 end
-		property_num = property_num + 1		
+		if tbl.npc_rank > npc:character_rank() then
+			return false, 0
+		end
+		property_num = property_num + 1
 	end
 	if tbl.level ~= nil then
-		if tbl.level ~= level.name() then return false,0 end
-		property_num = property_num + 1		
+		if tbl.level ~= level.name() then
+			return false, 0
+		end
+		property_num = property_num + 1
 	end
 	if tbl.condlist ~= nil then
-		if xr_logic.pick_section_from_condlist(db.actor, db.actor, tbl.condlist) ~= "true" then return false,0 end
+		if xr_logic.pick_section_from_condlist(actor, actor, tbl.condlist) ~= "true" then
+			return false, 0
+		end
 		property_num = property_num + #tbl.condlist.infop_check
 	end
 	if tbl.smart_terrain ~= nil then
-		if tbl.smart_terrain ~= xr_gulag.isUnderFraction(npc) then return false,0 end
-		property_num = property_num + 1		
+		if tbl.smart_terrain ~= xr_gulag.isUnderFraction(npc) then
+			return false, 0
+		end
+		property_num = property_num + 1
 	end
+	local id = npc:id()
 	if tbl.wounded ~= nil then
-		if tbl.wounded == "true" and not
-		   (xr_wounded.is_wounded(npc) or
-		    xr_wounded.is_heavy_wounded_by_id(npc:id()) or
-		    xr_wounded.is_psy_wounded_by_id(npc:id()))
-		then
-			return false,0
+		if tbl.wounded == "true" and not (xr_wounded.is_wounded(npc) or xr_wounded.is_heavy_wounded_by_id(id) or xr_wounded.is_psy_wounded_by_id(id)) then
+			return false, 0
 		end
-		if tbl.wounded == "false" and
-		   (xr_wounded.is_wounded(npc) or
-		    xr_wounded.is_heavy_wounded_by_id(npc:id()) or
-		    xr_wounded.is_psy_wounded_by_id(npc:id()))
-		then
-			return false,0
+		if tbl.wounded == "false" and (xr_wounded.is_wounded(npc) or xr_wounded.is_heavy_wounded_by_id(id) or xr_wounded.is_psy_wounded_by_id(id)) then
+			return false ,0
 		end
-		property_num = property_num + 1		
+		property_num = property_num + 1
 	end
 	if tbl.price ~= nil then
-		if (db.actor:money() < tbl.price) and
-		   (settings == nil or settings.no_price ~= true) 
-		then
-			return false,0 
+		if (actor:money() < tbl.price) and (settings == nil or settings.no_price ~= true) then
+			return false, 0
 		end
-		
 		if tbl.article_info ~= nil then
-			for k,v in pairs(tbl.article_info) do
+			for k, v in pairs(tbl.article_info) do
 				if has_alife_info(v) then
-					return false,0
+					return false, 0
 				end
-			end				
+			end
 		end
 	end
-	
 	return true, property_num
 end
 
-		
 --' Прекондишн, можно ли разрешать диалоги с болтовней ("расскажи мне о" например)
 function precondition_info_global(actor, npc)
-	if xr_wounded.is_wounded(npc) or
-	   xr_wounded.is_heavy_wounded_by_id(npc:id()) or
-	   xr_wounded.is_psy_wounded_by_id(npc:id())
-	then
+	if npc:story_id() ~= 4294967296 or string.sub( npc:section(), 1, 4 ) == "aem_" then
+		return false
+	end
+	if xr_wounded.is_wounded( npc ) or xr_wounded.is_heavy_wounded_by_id( npc:id() ) or xr_wounded.is_psy_wounded_by_id( npc:id() ) then
 		return false
 	end
 	return true
 end
 
-	
 --' Сохранение информации о выбранных фразах
 function save(npc, p)
-	--if db.ver >= 7 then
-		if selected_phrase_by_id.intro[npc:id()] == nil then
-			p:w_stringZ("-1")
-		else
-			p:w_stringZ(tostring(selected_phrase_by_id.intro[npc:id()].phrase))
-		end
-		if selected_phrase_by_id.cool_info[npc:id()] == nil then
-			p:w_stringZ("-1")
-		else
-			p:w_stringZ(tostring(selected_phrase_by_id.cool_info[npc:id()].phrase))
-		end
-	--[[else
-		if selected_phrase_by_id.intro[npc:id()] == nil then
-			p:w_s16(-1)
-		else
-			p:w_s16(selected_phrase_by_id.intro[npc:id()].phrase)
-		end
-		if selected_phrase_by_id.cool_info[npc:id()] == nil then
-			p:w_s16(-1)
-		else
-			p:w_s16(selected_phrase_by_id.cool_info[npc:id()].phrase)
-		end
-	end]]
+	if selected_phrase_by_id.intro[npc:id()] == nil then
+		p:w_stringZ("-1")
+	else
+		p:w_stringZ(tostring(selected_phrase_by_id.intro[npc:id()].phrase))
+	end
+	if selected_phrase_by_id.cool_info[npc:id()] == nil then
+		p:w_stringZ("-1")
+	else
+		p:w_stringZ(tostring(selected_phrase_by_id.cool_info[npc:id()].phrase))
+	end
 end
-function load(npc, reader--[[, ver]])
+
+function load(npc, reader)
 	if selected_phrase_by_id == nil then
 		selected_phrase_by_id = {
 			intro = {},
@@ -375,50 +354,25 @@ function load(npc, reader--[[, ver]])
 			action_info = {}
 		}
 	end
-	--if db.ver >= 7 then
-		local flag = nil
-		--if ver >= 7 then
-			flag = reader:r_stringZ()
-		--else
-			--flag = tostring(reader:r_s16())
-		--end
-		
-		if flag ~= "-1" then
-			if db.ver >= 7 then
-				selected_phrase_by_id.intro[npc:id()] = {phrase = flag, count = 0}
-			else
-				selected_phrase_by_id.intro[npc:id()] = {phrase = tonumber(flag), count = 0}
-			end
-		else
-			selected_phrase_by_id.intro[npc:id()] = nil
-		end
-
-		--if ver >= 7 then
-			flag = reader:r_stringZ()
-		--else
-			--flag = tostring(reader:r_s16())
-		--end
-		if flag ~= "-1" then
-			if db.ver >= 7 then
-				selected_phrase_by_id.cool_info[npc:id()] = {phrase = flag, count = 0}
-			else
-				selected_phrase_by_id.cool_info[npc:id()] = {phrase = tonumber(flag), count = 0}
-			end
-		else
-			selected_phrase_by_id.cool_info[npc:id()] = nil
-		end
-	--[[else
-		local flag = reader:r_s16()
-		if flag ~= -1 then
+	local flag = nil
+	flag = reader:r_stringZ()
+	if flag ~= "-1" then
+		if db.ver >= 7 then
 			selected_phrase_by_id.intro[npc:id()] = {phrase = flag, count = 0}
 		else
-			selected_phrase_by_id.intro[npc:id()] = nil
+			selected_phrase_by_id.intro[npc:id()] = {phrase = tonumber(flag), count = 0}
 		end
-		flag = reader:r_s16()
-		if flag ~= -1 then
+	else
+		selected_phrase_by_id.intro[npc:id()] = nil
+	end
+	flag = reader:r_stringZ()
+	if flag ~= "-1" then
+		if db.ver >= 7 then
 			selected_phrase_by_id.cool_info[npc:id()] = {phrase = flag, count = 0}
 		else
-			selected_phrase_by_id.cool_info[npc:id()] = nil
+			selected_phrase_by_id.cool_info[npc:id()] = {phrase = tonumber(flag), count = 0}
 		end
-	end]]
+	else
+		selected_phrase_by_id.cool_info[npc:id()] = nil
+	end
 end

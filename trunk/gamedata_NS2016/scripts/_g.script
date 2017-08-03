@@ -240,6 +240,7 @@ math_floor, math_ceil = math.floor, math.ceil
 math_mod, math_sqrt = math.mod, math.sqrt
 math_acos, math_cos, math_sin = math.acos, math.cos, math.sin
 
+sys_ini = system_ini()
 
 -- тоже на  всякий случай. Поиск по _G - долгий. Дублировать и инлайнить там, где нужны
 
@@ -306,7 +307,7 @@ function trim( s ) return string_match( s, "^%s*(.*%S)" ) or "" end	-- обрезаем 
 
 local cached_Parse_StrToTbl = {}
 local cached_hit_Parse_StrToTbl = 0
-local sysIni = system_ini()
+local sysIni = sys_ini
 function Parse_StrToTbl( sStr, sDiv, Mode, strong )
 	local s, s2
 	local typeOfTable = Mode == nil and "nil" or Mode == true and "true" or type( Mode ) == "number"

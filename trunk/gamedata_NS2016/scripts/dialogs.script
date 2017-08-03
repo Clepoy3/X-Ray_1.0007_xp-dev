@@ -3,7 +3,6 @@ function allow_break_dialog(first_speaker, second_speaker, id)
 	return true
 end
 
-
 function break_dialog(first_speaker, second_speaker, id)
 	first_speaker:stop_talk()
 	second_speaker:stop_talk()
@@ -77,7 +76,6 @@ function kill_yourself(npc, actor)
 	npc:kill(actor)
 end
 
-
 --' Obsolete, do not use!!!
 function relocate_item(victim, obj, type)
 	if db.actor and victim then
@@ -89,6 +87,7 @@ function relocate_item(victim, obj, type)
 		--'news_manager.relocate_item(db.actor, type, obj)
 	end
 end
+
 --' Use this function instead.
 function relocate_item_section(victim, section, type)
 	if db.actor and victim then
@@ -158,9 +157,7 @@ function allow_wounded_dialog(object, victim, id)
 end
 
 
------------------------------------------------------------------------------------
--- LEVELS
------------------------------------------------------------------------------------
+-- Levels functions
 function level_escape(first_speaker, second_speaker)
 	return level.name() == "l01_escape"
 end
@@ -173,42 +170,59 @@ function level_agroprom(first_speaker, second_speaker)
 	return level.name() == "l03_agroprom_ai2" or level.name() == "l03_agroprom"
 end
 
------------------------------------------------------------------------------------
 -- Relation functions
------------------------------------------------------------------------------------
-function is_friend(first_speaker, second_speaker)
-	return first_speaker:relation(second_speaker) == game_object.friend
+function is_friend( actor, npc )
+	return actor:relation( npc ) == game_object.friend
 end
 
-function is_not_friend(first_speaker, second_speaker)
-	return not is_friend(first_speaker, second_speaker)
+function is_neutral( actor, npc )
+	return actor:relation( npc ) == game_object.neutral
 end
 
-function become_friend(first_speaker, second_speaker)
-	sol_utils.setRelation(first_speaker, game_object.friend, second_speaker)
+function is_enemy( actor, npc )
+	return actor:relation( npc ) == game_object.enemy
 end
 
------------------------------------------------------------------------------------
+function is_not_friend( actor, npc )
+	return not is_friend( actor, npc )
+end
+
+function become_friend( actor, npc )
+	sol_utils.setRelation( actor, game_object.friend, npc )
+end
+
 -- Money functions
------------------------------------------------------------------------------------
-function has_2000_money(first_speaker, second_speaker)
-	return first_speaker:money() >= 2000
+function has_2000_money( actor, npc )
+	return actor:money() >= 2000
 end
 
------------------------------------------------------------------------------------
--- TRADE
------------------------------------------------------------------------------------
---' Инициализация торговли
+function has_15000_money( actor, npc )
+	return actor:money() >= 15000
+end
+
+function out_15000_money( actor, npc )
+	relocate_money( npc, 15000, "out" )
+end
+
+function has_30000_money( actor, npc )
+	return actor:money() >= 30000
+end
+
+function out_30000_money( actor, npc )
+	relocate_money( npc, 30000, "out" )
+end
+
+-- Trade functions
 function trade_init(seller, buyer)
-amk.send_tip("dialogs:trade_init")
+--amk.send_tip("dialogs:trade_init")
 	db.storage[seller:id()].meet.begin_wait_to_see.begin = time_global()/1000
 	xr_position.setPosition(db.storage[seller:id()].meet.Seller, 
-							db.storage[seller:id()].meet.Seller:level_vertex_id())
+	db.storage[seller:id()].meet.Seller:level_vertex_id())
 	db.storage[seller:id()].meet.Buyer = buyer
 end
 
 function want_trade(seller, buyer)
-amk.send_tip("dialogs:want_trade")
+--amk.send_tip("dialogs:want_trade")
 	if seller:relation(buyer) == game_object.friend or
 		seller:relation(buyer) == game_object.neutral
 	then
@@ -219,6 +233,74 @@ amk.send_tip("dialogs:want_trade")
 end
 
 function dont_want_trade(seller, buyer)
-amk.send_tip("dialogs:dont_want_trade")
+--amk.send_tip("dialogs:dont_want_trade")
 	return not want_trade(seller,buyer)
+end
+
+-- Treasure functions
+local treasure_check = false
+
+function check_treasure( actor, npc )
+	if math.random( 100 ) > 50 then
+		treasure_check = true
+	end
+end
+
+function check_info_treasure( actor, npc )
+	if treasure_manager.get_treasure_manager():have_info_treasure( npc ) then
+		treasure_check = true
+	end
+end
+
+function give_treasure( actor, npc )
+	return treasure_check
+end
+
+function no_give_treasure( actor, npc )
+	return not treasure_check
+end
+
+function info_treasure( actor, npc )
+	local npc_id = npc:id()
+	if is_enemy( npc, actor ) or xr_wounded.is_wounded( npc ) or xr_wounded.is_heavy_wounded_by_id( npc_id ) or xr_wounded.is_psy_wounded_by_id( npc_id ) then
+		return false
+	end
+	return true
+end
+
+function have_dialog_treasure( actor, npc )
+	return treasure_manager.get_treasure_manager():have_dialog_treasure( npc )
+end
+
+function give_dialog_treasure( actor, npc )
+	treasure_check = false
+	treasure_manager.get_treasure_manager():give_dialog_treasure( actor )
+end
+
+function give_info_treasure( actor, npc )
+	treasure_check = false
+	treasure_manager.get_treasure_manager():give_info_treasure( actor )
+end
+
+function give_friend_treasure( actor, npc )
+	treasure_manager.get_treasure_manager():give_dialog_treasure( actor, true )
+end
+
+function clear_info_treasure( actor, npc )
+	treasure_check = false
+	treasure_manager.get_treasure_manager():clear_friend_treasure()
+end
+
+function clear_dialog_treasure( actor, npc )
+	treasure_check = false
+	treasure_manager.get_treasure_manager():clear_dialog_treasure( actor )
+end
+
+function clear_friend_treasure( actor, npc )
+	treasure_check = false
+	if ( is_friend( npc, actor ) and has_15000_money( actor, npc ) ) or ( is_neutral( npc, actor ) and has_30000_money( actor, npc ) ) then
+		treasure_manager.get_treasure_manager():clear_dialog_treasure( npc )
+	else
+		treasure_manager.get_treasure_manager():clear_friend_treasure()
+	end
 end

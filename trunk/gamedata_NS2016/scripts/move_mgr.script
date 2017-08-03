@@ -230,13 +230,16 @@ function validate_accessibility(npc, ppname)
 	end
 	pp_validated[ppname] = true
 	if pp then
-		local anom
+		local anom, s_anom
 		for i = 0, pp:count()-1 do
 			local alist = amk_anoms.get_anomaly_list_for_pos(pp:point(i), 1)
 			for j, o in ipairs(alist) do
-				anom = alife():object(o.id)
+				anom = level.object_by_id(o.id)
 				if anom then
-					alife():release( anom, true )
+					s_anom = alife():object( anom:id() )
+					if s_anom then
+						amk_anoms.anom_release( s_anom )
+					end
 				end
 			end
 		end

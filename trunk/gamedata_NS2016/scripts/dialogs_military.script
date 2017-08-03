@@ -161,7 +161,7 @@ function set_actor_enemy_for (sid)
 end
 
 function transfer_scope (npc, actor)
-    dialogs.relocate_item_section(npc, "wpn_addon_scope", "in") 
+    dialogs.relocate_item_section(npc, "wpn_addon_grenade_launcher_m203", "in") 
 	sol_utils.delete_item_count("vodka", 1)
 end
 

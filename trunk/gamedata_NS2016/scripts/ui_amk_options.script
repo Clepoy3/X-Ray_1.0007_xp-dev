@@ -142,19 +142,19 @@ function amk_options:InitControls()
 	self.check_no_anoms_respawn = check_no_anoms_respawn
 	check_no_anoms_respawn:SetCheck(amk.load_variable("no_anoms_respawn", game_options.no_anoms_respawn))
 
-	xml:InitStatic("form_for_opt1:cap_blow_time_basis", self.form_dlg1)
+--[[	xml:InitStatic("form_for_opt1:cap_blow_time_basis", self.form_dlg1)
 	local deth_stat_up_now = xml:InitStatic("form_for_opt1:blow_time_basis_now", self.form_dlg1)
-	deth_stat_up_now:SetText("["..tostring(amk.load_variable("blow_time_basis", game_options.blow_time_basis)).."]")
+	deth_stat_up_now:SetText("["..tostring(amk.load_variable("blow_time_basis", game_options.blow_time_basis)).."]")]]
 	
-	local spin_blow_time_basis = xml:InitSpinNum("form_for_opt1:spin_blow_time_basis", self.form_dlg1)
+--[[	local spin_blow_time_basis = xml:InitSpinNum("form_for_opt1:spin_blow_time_basis", self.form_dlg1)
 	self:Register(spin_blow_time_basis, "spin_blow_time_basis")
-	self.spin_blow_time_basis = spin_blow_time_basis
+	self.spin_blow_time_basis = spin_blow_time_basis]]
 	
-	xml:InitStatic("form_for_opt1:cap_amk_treasure", self.form_dlg1)
+--[[	xml:InitStatic("form_for_opt1:cap_amk_treasure", self.form_dlg1)
 	local radio_treasure = xml:InitTab("form_for_opt1:radio_amk_treasure", self.form_dlg1)
 	self:Register(radio_treasure, "radio_amk_treasure")	
 	self.radio_treasure = radio_treasure
-	radio_treasure:SetNewActiveTab(amk.load_variable("option_treasure",0))
+	radio_treasure:SetNewActiveTab(amk.load_variable("option_treasure",0))]]
 	
 end
 
@@ -188,12 +188,12 @@ end
 
 function amk_options:on_okay()
 
-	local blow_time_basis = tonumber(self.spin_blow_time_basis:GetText())
+--[[	local blow_time_basis = tonumber(self.spin_blow_time_basis:GetText())
 	if blow_time_basis ~= 0 and (blow_time_basis < 30 or blow_time_basis > 120) then
 		self.message_box:Init("message_box_invalid_blow_time_basis")
 		self:GetHolder():start_stop_menu(self.message_box,true)
 		return
-	end
+	end]]
 	
 	game_options.interative_music = self.check_mus:GetCheck()
 	amk.save_variable("option_mus", game_options.interative_music)
@@ -255,10 +255,10 @@ function amk_options:on_okay()
 	game_options.no_anoms_respawn = self.check_no_anoms_respawn:GetCheck()
 	amk.save_variable("no_anoms_respawn", game_options.no_anoms_respawn)
 	
-	game_options.blow_time_basis = ((blow_time_basis >= 30 and blow_time_basis <= 120 and blow_time_basis) or game_options.blow_time_basis)
-	amk.save_variable("blow_time_basis", game_options.blow_time_basis)
+--[[	game_options.blow_time_basis = ((blow_time_basis >= 30 and blow_time_basis <= 120 and blow_time_basis) or game_options.blow_time_basis)
+	amk.save_variable("blow_time_basis", game_options.blow_time_basis)]]
 	
-	amk.save_variable("option_treasure", self.radio_treasure:GetActiveIndex() )
+	-- amk.save_variable("option_treasure", self.radio_treasure:GetActiveIndex() )
 	
 	self:on_quit()
 end

@@ -283,10 +283,10 @@
 <string id="mutant_ratlike_tail">
 	<text>Хвост крысоволка</text>
 	</string>
-<string id="mutant_rat_spleen_desc">
+<string id="mutant_ratlike_tail_desc">
 	<text>Хвост крысоволка мало изучен, поэтому его свойства пока не известны. Учёные охотно его покупают.</text>
 </string>
-<string id="enc_mutant_rat">
+<string id="enc_mutant_ratlike">
 	<text>Разновидность крысы, подвергшейся сильной мутации. Назван крысоволком из за мест обитания. В отличии от крысы, которая селится поблизости от людей или в подземельях, крысоволк предпочитает лесистые или степные участки.</text>
 </string>
 

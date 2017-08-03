@@ -86,6 +86,14 @@ function heli_binder:update( delta )
 	end
 
 	self:check_health()
+
+--[[-- смотрим логику
+	local tip = "use (" .. self.object:name() .. ", sect: ".. ( self.st.active_section or "nil" ) .. " )"
+	if tip ~= self.tip then
+		self.object:set_tip_text( tip )
+		self.tip = tip
+	end
+--]]
 end
 
 function heli_binder:net_spawn( data )
@@ -124,11 +132,15 @@ function heli_binder:save( packet )
 end
 
 function heli_binder:load( packet )
-	self.loaded = true
 
 	object_binder.load( self, packet )
 
 	xr_logic.load_obj( self.object, packet )
+
+	-- если потерялась логика -- lsclon --
+	if self.st.loaded_ini_filename then
+		self.loaded = true
+	end
 
 	self.st.combat:load( packet )
 end

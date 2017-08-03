@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <game_dialogs>
 	<dialog id="dm_lin_treasure">
+		<precondition>dialogs.have_dialog_treasure</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>Есть полезная информация?</text>
@@ -13,26 +14,40 @@
 			<phrase id="3">
 				<text>Ну и сколько ты хочешь?</text>
 				<next>32</next>
+				<next>33</next>
 			</phrase>
 			<phrase id="32">
-				<text>Мужик тот матерый сталкер, так что думаю и хабар у него там не хуже. В общем, думаю 30000 рублей будет достаточно.</text>
+				<precondition>dialogs.is_friend</precondition>
+				<text>Мужик тот матерый сталкер, так что думаю и хабар у него там не хуже. В общем, думаю 15000 рублей будет достаточно.</text>
 				<next>321</next>
 				<next>4</next>
 			</phrase>
 			<phrase id="321">
-				<precondition>linspiro.actor_has_money_2</precondition>
+				<precondition>dialogs.has_15000_money</precondition>
 				<text>Я согласен. Вот твои деньги.</text>
-				<action>linspiro.insert_custom_data</action>
-				<action>linspiro.give_money_2</action>
+				<action>dialogs.out_15000_money</action>
+				<next>5</next>
+			</phrase>
+			<phrase id="33">
+				<precondition>dialogs.is_neutral</precondition>
+				<text>Мужик тот матерый сталкер, так что думаю и хабар у него там не хуже. В общем, думаю 30000 рублей будет достаточно.</text>
+				<next>331</next>
+				<next>4</next>
+			</phrase>
+			<phrase id="331">
+				<precondition>dialogs.has_30000_money</precondition>
+				<text>Я согласен. Вот твои деньги.</text>
+				<action>dialogs.out_30000_money</action>
 				<next>5</next>
 			</phrase>
 			<phrase id="4">
 				<text>Хех... А не многовато ли? Нет, мужик, в другой раз.</text>
+				<action>dialogs.clear_friend_treasure</action>
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="5">
 				<text>Ну что же, как и договаривались, принимай информацию.</text>
-				<action>table_treasure_l.treasure</action>
+				<action>dialogs.give_friend_treasure</action>
 				<next>6</next>
 			</phrase>
 			<phrase id="6">
@@ -40,8 +55,6 @@
 				<action>dialogs.break_dialog</action>
 			</phrase>
 		</phrase_list>
-		<precondition>linspiro.npc_relacion</precondition>
-		<precondition>linspiro.precond</precondition>
     </dialog>
 
     <dialog id="dm_hello_dialog">

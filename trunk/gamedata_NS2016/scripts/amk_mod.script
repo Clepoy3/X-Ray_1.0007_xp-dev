@@ -62,6 +62,7 @@ function first_run()
 		amk.g_start_timer("gg_need_sleep",0,0,6)
 		amk.g_start_timer("show_news",0,0,10)
 		amk.save_variable("gg_need_sleep",80)
+		math.randomseed( time_global() + 172800 )
 		amk.save_variable("x_first_run",false)
 	end
 
@@ -76,14 +77,42 @@ function first_run()
 		spawn_unspawned_respawners_2()
 	end
 
-	if amk.load_variable("sol_fix", 0) < 1 then
-		amk.save_variable("sol_fix", 1)
-	--	local sobj = alife():object("agr_patrol_not_gulag_restr_2")
-	--	if sobj then
-	--		alife():release(sobj,true)
-	--	end
+	-- Фикс по бункеру монолита до правок от 18.05.2017 --
+	-- Фикс по Черному Доктору в Госпитале и Черномору до правок от 18.06.2017 --
+	if amk.load_variable("sol_fix_oso", 0) ~= 2 then
+		local sobj
+		amk.save_variable("sol_fix_oso", 2)
+		sobj = alife():story_object(1307)
+		if sobj then
+			alife():release(sobj)
+			alife():create(7227)
+		end
+		sobj = alife():object("black_doctor")
+		if sobj then
+			alife():release(sobj,true)
+			alife():create(9782)
+		end
+		sobj = alife():object("chernomor_zombi")
+		if sobj then
+			alife():release(sobj,true)
+			alife():create(3897)
+		end
+		sobj = alife():object("esc_spawn_restrictor")
+		if sobj then
+			alife():release(sobj,true)
+			alife():create(681)
+		end
 	end
-	
+
+	-- Фикс по смарту бандитов в ангаре --
+	if amk.load_variable("sol_fix_angar", 0) ~= 1 then
+		local sobj = alife():object("svalka_bandosu_angar")
+		if sobj and level.name() ~= "l02_garbage" then
+			sobj:remove_gulag()
+			alife():release(sobj,true)
+			amk.save_variable("sol_fix_angar", 1)
+		end
+	end
 end
 --'*******************************************************************************
 --'   **   **   **   **   **    **   **   **        CHECK_SPAWN          **   **   **   **   **    **   **   **  
@@ -153,7 +182,7 @@ meceniy_work.main()
 	for i = 1, 65534 do
 		sobj = sim:object(i)
 		if sobj then
-			--удаление кривых объектов(по game_vertex и level_vertex)
+		--удаление кривых объектов(по game_vertex и level_vertex)
 			sobj_deleted,lvl,lvl_name = ex_all.dell_bad_obj(sobj)
 			if not sobj_deleted then
 				-- собираем информацию по всем объектам для анализа статистики
@@ -161,7 +190,7 @@ meceniy_work.main()
 				--	sol_stat.collectInfoSingle(sobj, lvl, lvl_name)
 				--end
 				sect = sobj:section_name()
-				-- если брошенная граната - удаление(опять через три скрипта; тут - ручная граната, а там - для подствольника ;))			
+				-- если брошенная граната - удаление(опять через три скрипта; тут - ручная граната, а там - для подствольника ;))
 				if xrs_ai.actor_net_spawn_single(sobj, sect) then
 					-- предварительная работа уборщика(составляем таблицы всего всего
 					-- (а если что то удалится последующими скриптами, до срабатывания Уборщика?
@@ -216,7 +245,7 @@ meceniy_work.main()
 				end, db.actor)
 		end
 	end
-	game.start_tutorial("restore_sun")
+	restore_sun(lname)
 
 --- спавн удаление и т.д. ----------------------------------------------- end ----
 
@@ -226,35 +255,15 @@ meceniy_work.main()
 --zamok.test_str_explode()
 end
 
-function restore_sun()
-	local lname = level.name()
+function restore_sun(lname)
 	amk.save_variable("level_on_save",lname)
 	if amk.load_variable("blow_started", 0) == 0 then
 		start_blow_timer() amk.save_variable("blow_started", 1)
 	end
---- ex_all ----------------------------------------------------------------
+
 	if amk.load_variable("horror_started", 0) == 0 then
 		ex_horror.start_horror_timer() amk.save_variable("horror_started", 1)
-	end
---- ex_all -------------------------------------------------------- end ---
-	-- Вид ГГ после смерти в его собственной броне
-	local npc_SP = db.actor
-	local outfit = npc_SP:item_in_slot(6)
-	if outfit ~= nil then
-		local outfit_name = outfit:section()
-		local outfit_cond = outfit:condition()
-		bind_stalker.outfit_restored = true 
-		--get_console():execute("load [amk_mod]265 bind_stalker.outfit_restored = true")
-		alife():release(alife():object(outfit:id()), true)
-		outfit = alife():create(outfit_name, npc_SP:position(), npc_SP:level_vertex_id(), npc_SP:game_vertex_id(), npc_SP:id())
-		if outfit ~= nil then
-			--amk.send_tip("set_condition, outfit.id: "..tostring(outfit.id)..", night_vision_outfit_id: "..tostring(bind_stalker.night_vision_outfit_id))
-			bind_stalker.night_vision_outfit_id = outfit.id
-			--get_console():execute("load [amk_mod]271 bind_stalker.night_vision_outfit_id "..tostring(bind_stalker.night_vision_outfit_id))
-			amk.start_timer("set_condition", 1, {outfit.id, math.min(math_ceil(outfit_cond * 100), 100)})
-		end
-	end
-  
+	end  
 end
 
 --'*******************************************************************************
@@ -433,53 +442,6 @@ end
 --'*******************************************************************************
 --'   **   **   **   **   **    **   **   **      AF_TRANSFORM         **   **   **   **   **    **   **   **
 --'*******************************************************************************
-local cur_level=nil
-local havegoodart=false
-
--- список компонентов
--- желательно добавлять в алфавитном порядке
--- -- автоматическое заполнение таблицы afs ниже по коду - после таблицы anom_recept_komp
-local afs={}
-
--- проверка на упавший предмет/артефакт
-function check_for_af_drop(obj) counterAdd("amk_mod.check_for_af_drop")
-	local obj_sect = obj:section()
-	
-	-- проверка не один ли это из компонентов
-	if afs[obj_sect] == true then
-		local anom_id,anom_pos,anom_radius,dist = amk_anoms.get_nearest_anomaly(obj)
-		
-		if anom_id and anom_radius - dist > -5 then
-			--local anom_sect = level.object_by_id(anom_id):section()
-			--local obj_pos = obj:position()
-			local lv = level.object_by_id(anom_id):level_vertex_id()
-			local gv = level.object_by_id(anom_id):game_vertex_id()
-			if gv == 65535 then gv = obj:game_vertex_id() end
-			if gv == 65535 then gv = db.actor:game_vertex_id() end
-			if gv == 65535 then return end -- похоже, что рядом нету вертекса
-			
-			-- предмет подходит - отправляем его на экспертизу
-			-- узнаем не съели ли его или вvложили в нvчку
-			local tbl		= {}
-			tbl.obj_id		= obj:id()
-			tbl.anom_id		= anom_id
-			tbl.anom_radius	= anom_radius
-			tbl.lv			= lv
-			tbl.gv			= gv
-			amk.start_timer("timer_drop_obj_varka", 0.2, tbl)
-
-			-- перенесено в amk.script
-			--check_af_transform(obj, obj_sect, obj_pos, anom_id, anom_sect, anom_pos, anom_radius, lv, gv)
-		end
-	end
-end
-
--- проверка: является ли компонентом для варки
--- параметр - название секции
-function is_komponent(sec) counterAdd("amk_mod.is_komponent")
-     return (afs[sec] ~= nil)
-end
-
 -- аномалии "узнаются" по части названия!
 -- komp - компоненты
 -- удача v_udachi + вырождение в булыжник v_virogd <= 100 !!!
@@ -490,19 +452,17 @@ end
 -- vremya = {дни, часы, минуты} - время варки/мутации
 -- remove_anomaly - удалить ли аномалию (можно комбинировать вместе с варкой/мутацией)
 -- not_for_mutator - рецепт никогда не попадет в трансмутатор
--- ne_ugadat -  рецепт не угадывается в трансмутаторе, но будет в нем показан при наличии поршня
 -- ВНИМАНИЕ ! Если изменился любой набор компонентов, то такую правку нельзя ставить, если есть активная варка !
 local anom_recept_komp = {
 	-- умолчание, если нет данных ближе к рецепту
 	default = {
-		cel = {},
 		v_udachi = 100,
 		v_virogd = 0,
 		virogd = {["af_buliz"]=true},
 		vremya = {0,0,5},
 		remove_anomaly = false
 	},
-	
+
 	anomalii = {
 		["_zharka"] = {
 			-- умолчание, если нет данных ближе к рецепту,
@@ -513,12 +473,12 @@ local anom_recept_komp = {
 				v_virogd = 0,
 				vremya = {0,0,5}
 			},
-			
+
 			recepti = {
-				["info_izomorf_kompas"] = { -- артефакт удалит аномалию без результатов варки/мутации
+				["info_izomorf_kompas"] = {
 					komp = {["af_kompas_izomorf"]=true},
 					cel = {["af_kompas_izomorf"]=true},
-					vremya = {0,0,1},
+					vremya = {0,0,0.15},
 					remove_anomaly = true
 				},
 				["info_artmod_electra_flash_zharka"] = {
@@ -545,7 +505,6 @@ local anom_recept_komp = {
 					komp = {["af_electra_flash"]=true,["af_ameba_mica"]=true,["vodka"]=true,["mutant_dog_tail"]=true},
 					cel = {["af_dummy_battery"]=true}
 				},
-				-- ["info_amk_recipt_souls"] = {
 				["info_amk_recipt_soul_drops"] = {
 					komp = {["af_soul"]=true},
 					cel = {["af_spirit_1"]=true},
@@ -565,13 +524,11 @@ local anom_recept_komp = {
 					v_udachi = 75,
 					v_virogd = 25
 				},
-				-- ["info_amk_recipt_souls"] = {
 				["info_amk_recipt_soul_fire"] = {
 					komp = {["af_spirit_1"]=true},
 					cel = {["af_spirit_2"]=true},
 					vremya = {0,6,0}
 				},
-				-- ["info_amk_recipt_souls"] = {
 				["info_amk_recipt_soul_cristal"] = {
 					komp = {["af_spirit_2"]=true},
 					cel = {["af_spirit_3"]=true},
@@ -599,22 +556,20 @@ local anom_recept_komp = {
 				}
 			}
 		},
-		
+
 		["_galant"] = {
-			-- умолчание, если нет данных ближе к рецепту
 			name = "\"электра\"",
 			default = {
 				v_udachi = 100,
 				v_virogd = 0,
 				vremya = {0,0,5}
 			},
-			
+
 			recepti = {
-				["info_red_battery"] = { -- артефакт удалит аномалию без результатов варки/мутации
+				["info_red_battery"] = {
 					komp = {["af_dummy_battery_red"]=true},
 					remove_anomaly = true,
-					vremya = {0,0,1},
-					not_for_mutator = true
+					vremya = {0,0,0.15}
 				},
 				["info_artmod_fireball_galant"] = {
 					komp = {["af_blood"]=true,["af_medusa"]=true,["vodka"]=true,["mutant_dog_tail"]=true},
@@ -644,7 +599,6 @@ local anom_recept_komp = {
 					komp = {["mutant_face_tushkano"]=true,["bandage"]=true,["conserva"]=true,["mutant_dog_tail"]=true},
 					cel = {["af_medusa"]=true}
 				},
-				-- ["info_amk_recipt_souls"] = {
 				["info_amk_recipt_soul_bengal"] = {
 					komp = {["af_spirit_3"]=true},
 					cel = {["af_spirit_4"]=true},
@@ -685,21 +639,20 @@ local anom_recept_komp = {
 				}
 			}
 		},
-		
+
 		["_buzz"] = {
-			-- умолчание, если нет данных ближе к рецепту
 			name = "\"холодец\"",
 			default = {
 				v_udachi = 100,
 				v_virogd = 0,
 				vremya = {0,0,5}
 			},
-			
+
 			recepti = {
-				["info_izomorf_kompas"] = { -- артефакт удалит аномалию без результатов варки/мутации
+				["info_izomorf_kompas"] = {
 					komp = {["af_kompas_izomorf"]=true},
 					cel = {["af_kompas_izomorf"]=true},
-					vremya = {0,0,1},
+					vremya = {0,0,0.15},
 					remove_anomaly = true
 				},
 				["info_artmod_rusty_kristall_buzz"] = {
@@ -736,7 +689,6 @@ local anom_recept_komp = {
 					cel = {["af_babka_2"]=true},
 					vremya = {0,3,0}
 				},
-				-- ["info_amk_recipt_dummy"] = {
 				["info_amk_recipt_dummy_puding"] = {
 					komp = {["af_pudd_3"]=true},
 					cel = {["af_pudd_4"]=true},
@@ -762,8 +714,7 @@ local anom_recept_komp = {
 					cel = {["af_arhara_globus"]=true},
 					vremya = {0,0,10},
 					v_udachi = 75,
-					v_virogd = 25 --,
-					-- ne_ugadat = true
+					v_virogd = 25
 				},
 				["info_amk_recipt_simbion"] = {
 					komp = {["af_medusa"]=true,["af_drops"]=true,["af_blood"]=true,["af_rusty_thorn"]=true},
@@ -777,14 +728,14 @@ local anom_recept_komp = {
 				}
 			}
 		},
-		
+
 		["_fountain"] = {
 			name = "\"фонтан\"",
 			recepti = {
-				["info_izomorf_kompas"] = { -- артефакт удалит аномалию без результатов варки/мутации
+				["info_izomorf_kompas"] = {
 					komp = {["af_kompas_izomorf"]=true},
 					cel = {["af_kompas_izomorf"]=true},
-					vremya = {0,0,1},
+					vremya = {0,0,0.15},
 					remove_anomaly = true
 				},
 				["info_artmod_cristall_buzz"] = {
@@ -793,22 +744,20 @@ local anom_recept_komp = {
 				}
 			}
 		},
-		
+
 		["_mincer"] = {
-			-- умолчание, если нет данных ближе к рецепту
 			name = "\"карусель\"",
 			default = {
 				v_udachi = 100,
 				v_virogd = 0,
 				vremya = {0,0,5}
 			},
-			
+
 			recepti = {
-				["info_red_spring"] = { -- артефакт удалит аномалию без результатов варки/мутации
+				["info_red_spring"] = {
 					komp = {["af_dummy_spring_red"]=true},
 					remove_anomaly = true,
-					vremya = {0,0,1},
-					not_for_mutator = true
+					vremya = {0,0,0.15}
 				},
 				["info_artmod_cristall_flower_mincer"] = {
 					komp = {["af_blood"]=true,["af_medusa"]=true,["bandage"]=true,["conserva"]=true},
@@ -848,6 +797,7 @@ local anom_recept_komp = {
 					komp = {["af_kamen_udachy"]=true},
 					cel = {["af_kompas_izomorf"]=true},
 					vremya = {0,0,1},
+					remove_anomaly = true,
 					not_for_mutator = true,
 					info = "spawn_hospit_live"
 				},
@@ -855,6 +805,7 @@ local anom_recept_komp = {
 					komp = {["af_part_monolit2"]=true},
 					cel = {["af_kamen_udachy"]=true},
 					vremya = {0,0,1},
+					remove_anomaly = true,
 					not_for_mutator = true,
 					info = "spawn_kamen_udachy"
 				},
@@ -865,22 +816,20 @@ local anom_recept_komp = {
 				}
 			}
 		},
-		
+
 		["_mosquito_bald"] = {
-			-- умолчание, если нет данных ближе к рецепту
 			name = "\"Tрамплин\"",
 			default = {
 				v_udachi = 100,
 				v_virogd = 0,
 				vremya = {0,0,5}
 			},
-			
+
 			recepti = {
-				["info_red_pellicle"] = { -- артефакт удалит аномалиі без результатов варки/мутации
+				["info_red_pellicle"] = {
 					komp = {["af_dummy_pellicle_red"]=true},
 					remove_anomaly = true,
-					vremya = {0,0,1},
-					not_for_mutator = true
+					vremya = {0,0,0.15}
 				},
 				["info_artmod_mincer_meat_mosquito_bald"] = {
 					komp = {["af_vyvert"]=true,["af_blood"]=true,["vodka"]=true,["mutant_dog_tail"]=true},
@@ -923,22 +872,20 @@ local anom_recept_komp = {
 				}
 			}
 		},
-		
+
 		["_gravi_zone"] = {
-			-- умолчание, если нет даннvх ближе к рецепту
 			name = "\"воронка\"",
 			default = {
 				v_udachi = 100,
 				v_virogd = 0,
 				vremya = {0,0,5}
 			},
-			
+
 			recepti = {
-				["info_red_battery"] = { -- артефакт удалит аномалиі без результатов варки/мутации
+				["info_red_battery"] = {
 					komp = {["af_dummy_battery_red"]=true},
 					remove_anomaly = true,
-					vremya = {0,0,1},
-					not_for_mutator = true
+					vremya = {0,0,0.15}
 				},
 				["info_artmod_ameba_slug_gravi_zone"] = {
 					komp = {["af_vyvert"]=true,["af_medusa"]=true,["kolbasa"]=true,["mutant_dog_tail"]=true},
@@ -966,21 +913,20 @@ local anom_recept_komp = {
 				}
 			}
 		},
-		
+
 		["_ice"] = {
-			-- умолчание, если нет даннvх ближе к рецепту
 			name = "\"Снежная\"",
 			default = {
 				v_udachi = 100,
 				v_virogd = 0,
 				vremya = {0,0,5}
 			},
-			
+
 			recepti = {
-				["info_izomorf_kompas"] = { -- артефакт удалит аномалиі без результатов варки/мутации
+				["info_izomorf_kompas"] = {
 					komp = {["af_kompas_izomorf"]=true},
 					cel = {["af_kompas_izomorf"]=true},
-					vremya = {0,0,1},
+					vremya = {0,0,0.15},
 					remove_anomaly = true
 				},
 				["info_red_battery"] = {
@@ -1007,15 +953,15 @@ local anom_recept_komp = {
 				v_udachi = 100,
 				v_virogd = 0,
 				vremya = {0,0,5}
-			},			
+			},
 			recepti = {
-				["info_izomorf_kompas"] = { -- артефакт удалит аномалиі без результатов варки/мутации
+				["info_izomorf_kompas"] = {
 					komp = {["af_kompas_izomorf"]=true},
 					cel = {["af_kompas_izomorf"]=true},
-					vremya = {0,0,1},
+					vremya = {0,0,0.15},
 					remove_anomaly = true
 				}
-			}				
+			}
 		},
 
 		["_zavesa"] = {
@@ -1024,16 +970,15 @@ local anom_recept_komp = {
 				v_udachi = 100,
 				v_virogd = 0,
 				vremya = {0,0,5}
-			},			
+			},
 			recepti = {
-				["info_izomorf_kompas"] = { -- артефакт удалит аномалиі без результатов варки/мутации
+				["info_izomorf_kompas"] = {
 					komp = {["af_kompas_izomorf"]=true},
 					cel = {["af_kompas_izomorf"]=true},
-					vremya = {0,0,1},
+					vremya = {0,0,0.15},
 					remove_anomaly = true
-               		}	
-
-			}				
+				}
+			}
 		},
 
 		["_smallrain"] = {
@@ -1042,15 +987,15 @@ local anom_recept_komp = {
 				v_udachi = 100,
 				v_virogd = 0,
 				vremya = {0,0,5}
-			},			
+			},
 			recepti = {
-				["info_izomorf_kompas"] = { -- артефакт удалит аномалиі без результатов варки/мутации
+				["info_izomorf_kompas"] = {
 					komp = {["af_kompas_izomorf"]=true},
 					cel = {["af_kompas_izomorf"]=true},
-					vremya = {0,0,1},
+					vremya = {0,0,0.15},
 					remove_anomaly = true
 				}
-			}				
+			}
 		},
 
 		["_monolith"] = {
@@ -1062,123 +1007,151 @@ local anom_recept_komp = {
 	}
 }
 
-----------------------------------------
--- автоматическое заполнение таблицы afs
-----------------------------------------
-function collect(t) counterAdd("amk_mod.collect")
+-- список компонентов
+-- автоматическое заполнение таблицы
+local afs = {}
+
+function collect( t )
 	if t then
-		for sect, _ in pairs(t) do
+		for sect, _ in pairs( t ) do
 			afs[sect] = true
 		end
 	end
 end
 
-function collect_recept(recept) counterAdd("amk_mod.collect_recept")
+function collect_recept( recept )
 	if recept then
-		collect(recept.cel)
-		collect(recept.komp)
-		collect(recept.virogd)
+		collect( recept.cel )
+		collect( recept.komp )
+		collect( recept.virogd )
 	end
 end
 
-collect_recept(anom_recept_komp.default)
+collect_recept( anom_recept_komp.default )
 
-for anom_sect, anom_info in pairs(anom_recept_komp.anomalii) do
-	collect_recept(anom_info.default)
+for anom_sect, anom_info in pairs( anom_recept_komp.anomalii ) do
+	collect_recept( anom_info.default )
 	if anom_info.recepti then
-		for recept_name, recept_info in pairs(anom_info.recepti) do
-			collect_recept(recept_info)
+		for recept_name, recept_info in pairs( anom_info.recepti ) do
+			collect_recept( recept_info )
 		end
 	end
 end
 
 -- создание таблиц для компактной работы с таймерами - name_id, id_name
-
 local afs_name_id = {}
 local afs_id_name = {}
 
-for k,v in pairs(afs) do
-	table_insert(afs_id_name, k)
+for k,v in pairs( afs ) do
+	table_insert( afs_id_name, k )
 end
 
-table.sort(afs_id_name)
+table.sort( afs_id_name )
 
 for i = 1, #afs_id_name do
 	afs_name_id[afs_id_name[i]] = i
 end
-----------------------------------------
 
--- возвращает значение, возможно из умолчаний
-function get_af_transform_param(name, recept, recepti) counterAdd("amk_mod.get_af_transform_param")
-	local result
-	--get_console():execute("load ~#I#:"..string.format(name.." имя"))
-	if recept[name] ~= nil then
-		result = recept[name]
-	elseif recepti["default"] ~= nil and recepti["default"][name] ~= nil then
-		result = recepti["default"][name]
-	elseif anom_recept_komp["default"] ~= nil and anom_recept_komp["default"][name] ~= nil then
-		result = anom_recept_komp["default"][name]
-	else
-		-- нет информации!!!
-		amk.send_tip("нет информации для "..name.."!","варка артефактов",0,15,"gen_info")
-		result = nil
-	end
-	return result
+-- проверка: является ли компонентом для варки(для трансмутатора)
+function is_komponent( sec )
+	return ( afs[sec] ~= nil )
 end
 
--- получаем полный набор рецептов для аномалии anom_sect
-function fill_recepti_est(anom_sect) counterAdd("amk_mod.fill_recepti_est")
-	local recepti_est = {} -- рецепты для заданной аномалии
+-- получаем полный набор рецептов для аномалии(для трансмутатора)
+function fill_recepti_est( anom_sect )
+	local actor = db.actor
+	local recepti_est = {}
+	local aAa = {}
 	local anom_name = nil
-	for anom, recepti in pairs(anom_recept_komp["anomalii"]) do
-		if string_find(anom_sect, anom) ~= nil then --нашли в списке аномалию.
+	for anom, recepti in pairs( anom_recept_komp["anomalii"] ) do
+		--нашли в списке аномалию.
+		if string_find( anom_sect, anom ) ~= nil then
 			anom_name = anom_recept_komp["anomalii"][anom]["name"]
+			aAa = recepti
 			if anom_recept_komp["anomalii"][anom]["recepti"] then
 				for info, recept in pairs(recepti["recepti"]) do
-					if not recept["not_for_mutator"] and not recept["remove_anomaly"] and (db.actor:has_info(info) or not recept["ne_ugadat"]) then
-					-- if db.actor:has_info(info) then -- у ГГ есть такой рецепт: заносим в таблицу
+					-- у ГГ есть такой рецепт: заносим в таблицу
+					if not recept["not_for_mutator"] and actor:has_info(info) then
 						recepti_est[info] = {}
-						for k, v in pairs(recept) do
+						for k, v in pairs( recept ) do
 							if type(v) == "table" then
 								recepti_est[info][k] = {}
-								for i, j in pairs(v) do
+								for i, j in pairs( v ) do
 									recepti_est[info][k][i] = j
 								end
 							else
 								recepti_est[info][k] = v
 							end
 						end
-					-- end
 					end
 				end
 			end
 		end
 	end
-	return recepti_est,anom_name
+	return recepti_est, anom_name, aAa
+end
+
+-- проверка на упавший предмет/артефакт
+function check_for_af_drop(obj)
+	local obj_sect = obj:section()
+	local eff_radius = 0
+	-- проверка не один ли это из компонентов
+	if afs[obj_sect] == true then
+		local actor = db.actor
+		local anom_id, anom_pos, anom_radius, dist = amk_anoms.get_nearest_anomaly( obj )
+		if anom_radius then
+			eff_radius = anom_radius + 0.5
+		end
+		if anom_id and anom_radius - dist > - eff_radius then
+			local lv = actor:level_vertex_id()
+			local gv = actor:game_vertex_id()
+			local pos = actor:position()
+			local lAnom = level.object_by_id( anom_id )
+			if lAnom then
+				pos = vector():set(0,0,0)
+				pos.x = lAnom:position().x + math.random( -50, 50 ) / 100
+				pos.z = lAnom:position().z + math.random( -50, 50 ) / 100
+				pos.y = lAnom:position().y + math.random( 30, 50 ) / 100
+				lv = lAnom:level_vertex_id()
+				gv = lAnom:game_vertex_id()
+			end
+			-- предмет подходит - отправляем его на экспертизу
+			-- узнаем не съели ли его или вvложили в нvчку
+			local tbl       = {}
+			tbl.obj_id      = obj:id()
+			tbl.anom_id     = anom_id
+			tbl.anom_radius = anom_radius
+			tbl.lv          = lv
+			tbl.gv          = gv
+			amk.start_timer( "timer_drop_obj_varka", 0.2, tbl )
+		end
+	end
 end
 
 -- проверяет рецепты и компонеты
 -- если все в порядке - запускает варку/мутацию
-function check_af_transform(af, af_sect, obj_pos, anom_id, anom_sect, anom_pos, anom_radius, lv, gv) counterAdd("amk_mod.check_af_transform")
+function check_af_transform( af, af_sect, pos, anom_id, anom_sect, anom_pos, anom_radius, lv, gv )
 	local actor = db.actor
-	
-	--поиск по аномалиям
+	local recepti_est = {}
+	local recept_podhodit = false
+	local eff_radius = anom_radius
+	-- поиск по аномалиям
 	local finish = false -- флаг для вvхода из циклов
-	for anom, recepti in pairs(anom_recept_komp["anomalii"]) do
-		if string_find(anom_sect, anom) ~= nil then --нашли в списке аномалию, возле которой стоим
-			local recepti_est = {} -- рецепты в наличии у ГГ, в которых участвует данный компонент
-			local recept_podhodit = false
-			
+	for anom, recepti in pairs( anom_recept_komp["anomalii"] ) do
+		-- нашли в списке аномалию, возле которой стоим
+		if string_find( anom_sect, anom ) ~= nil then
+			recept_podhodit = false
 			-- собираем рецепты, в которых участвует данный компонент
-			for info, recept in pairs(recepti["recepti"]) do
-				if actor:has_info(info) and recept["komp"][af_sect] == true then --есть рецепт и этот компонент в нем участвует
+			for info, recept in pairs( recepti["recepti"] ) do
+				--есть рецепт и этот компонент в нем участвует
+				if recept["komp"][af_sect] == true then
 					recept_podhodit = true
 					-- копируем рецепт
 					recepti_est[info] = {}
-					for k, v in pairs(recept) do
+					for k, v in pairs( recept ) do
 						if type(v) == "table" then
 							recepti_est[info][k] = {}
-							for i, j in pairs(v) do
+							for i, j in pairs( v ) do
 								recepti_est[info][k][i] = j
 							end
 						else
@@ -1188,85 +1161,74 @@ function check_af_transform(af, af_sect, obj_pos, anom_id, anom_sect, anom_pos, 
 					-- так как table.getn() как и оператор # не работают с таблицами, у которых не целочисленные индексы,
 					-- то считаем количество в ручнуі
 					local count = 0
-					for k,v in pairs(recepti_est[info]["komp"]) do
+					for k,v in pairs( recepti_est[info]["komp"] ) do
 						count = count + 1
 					end
 					recepti_est[info]["count"] = count
-					--get_console():execute("load ~#I#:"..string.format("0 "..af_sect.." принят. Аном: "..anom.." рец. "..info.." "..recepti_est[info]["count"]))
+					if actor:has_info( info ) then
+						eff_radius = anom_radius + 1
+					end
 				end
 			end
-			
-			if recept_podhodit then -- если нашли хоть один имеющийся подходящий рецепт
-				--amk.send_tip("рецепт подошел. anom_radius "..anom_radius," варка",0,15,"gen_info")
+			-- если нашли хоть один имеющийся подходящий рецепт
+			if recept_podhodit then
 				--ищем рядом другие компоненты
 				--если находим их в выбраннvх рецептах, то удаляем их из рецептов
 				--как только какой-то рецепт остается без компонентов - рецепт сработал
-				local obj
-				for i=1,65534 do
-					obj = level.object_by_id(i)
-					if obj and alife():object(i) then
-						local dist = obj:position():distance_to(anom_pos)
-						if obj:parent() == nil and ((anom_radius - obj:position():distance_to(anom_pos)) > -5) then
-							local obj_sect = obj:section()
-							--get_console():execute("load ~#I#:"..string.format(" obj_sect: "..obj_sect.." dist: "..dist))
-							--проверяем отобраннvе рецептv
-							for info, recept in pairs(recepti_est) do
+				local obj, obj_sect
+				local dist = 0
+				local sim = alife()
+				for i = 1, 65534 do
+					obj = level.object_by_id( i )
+					if obj and sim:object( i ) then
+						dist = obj:position():distance_to( anom_pos )
+						if obj:parent() == nil and ( anom_radius - dist > - eff_radius ) then
+							obj_sect = obj:section()
+							--проверяем отобранные рецепты
+							for info, recept in pairs( recepti_est ) do
 								-- если компонент есть в рецепте
 								if recepti_est[info]["komp"][obj_sect] == true then
 									-- добавляем L- компонента для будущего удаления из игры
 									recepti_est[info]["komp"][obj_sect] = obj:id()
 									-- уменьшаем количество компонентов в рецепте
 									recepti_est[info]["count"] = recepti_est[info]["count"] - 1
-									--amk.send_tip(obj_sect.." найден. Lном: "..anom.." рец. "..info.." "..recepti_est[info]["count"],"варка",0,15,"gen_info")
-									--get_console():execute("load ~#I#:"..string.format(obj_sect.." найден. Lном: "..anom.." рец. "..info.." "..recepti_est[info]["count"]))
-									
 									-- если рецепт пуст, то он сработал
 									if recepti_est[info]["count"] == 0 then
-										--get_console():execute("load ~#I#:"..string.format(info.." сработал. Lном: "..anom))
-										
 										-- устанавливаем все параметрv для рецепта, возможно из умолчаний
-										local cel		= get_af_transform_param("cel", recepti_est[info], recepti)
-										local v_udachi		= get_af_transform_param("v_udachi", recepti_est[info], recepti)
-										local v_virogd		= get_af_transform_param("v_virogd", recepti_est[info], recepti)
-										local virogd		= get_af_transform_param("virogd", recepti_est[info], recepti)
-										local vremya		= get_af_transform_param("vremya", recepti_est[info], recepti)
-										local remove_anomaly	= get_af_transform_param("remove_anomaly", recepti_est[info], recepti)
-										local remove_anomaly_id = anom_id
-										local komp		= recepti_est[info]["komp"]
-										local result, udacha 	= af_select_result(v_udachi, v_virogd, virogd, cel, komp)
-										local info_portion	= recepti_est[info]["info"]
-										
-										if cel == nil or v_udachi == nil or v_virogd == nil
-											or virogd == nil or vremya == nil or remove_anomaly == nil 
-											or cel == nil and remove_anomaly == false
-											or v_udachi + v_virogd > 100 then
-											
+										local cel               = get_af_transform_param( "cel", recepti_est[info], recepti )
+										local v_udachi          = get_af_transform_param( "v_udachi", recepti_est[info], recepti )
+										local v_virogd          = get_af_transform_param( "v_virogd", recepti_est[info], recepti )
+										local virogd            = get_af_transform_param( "virogd", recepti_est[info], recepti )
+										local vremya            = get_af_transform_param( "vremya", recepti_est[info], recepti )
+										local anomaly           = get_af_transform_param( "remove_anomaly", recepti_est[info], recepti )
+										local anomaly_id        = anom_id
+										local komp              = recepti_est[info]["komp"]
+										if actor:dont_has_info( info ) then
+											v_udachi = math_random( v_udachi / 2, v_udachi )
+										end
+										local result, udacha = af_select_result( v_udachi, v_virogd, virogd, cel, komp )
+										local info_portion   = recepti_est[info]["info"]
+
+										if ( not cel and anomaly == false ) or anomaly == nil
+											or not v_udachi or not v_virogd or not virogd or not vremya
+											or v_udachi + v_virogd > 100
+										then
 											-- кривой рецепт  - выходим
 											finish = true
 											break
 										end
-										
 										-- неудача
 										if udacha == false then
 											remove_anomaly = false
 											info_portion = nil
 										end
-
-										level.add_pp_effector("teleport.ppe", 1524, false)
-										
+										level.add_pp_effector( "teleport.ppe", 1524, false )
 										-- запускаем варку/мутацию
-										--[[if info_portion then
-											get_console():execute("load ~#I#: info_portion: "..info_portion)
-										else
-											get_console():execute("load ~#I#: info_portion: nil")
-										end]]
-										as_start_universal_transform_timer(komp, result, obj_pos, vremya, gv, lv, info_portion, remove_anomaly, remove_anomaly_id)
-										
+										as_start_universal_transform_timer( komp, result, anom_pos, vremya, gv, lv, info_portion, anomaly, anomaly_id, info )
 										-- удаляем из игры компоненты рецепта
-										for k,v in pairs(komp) do
-											alife():release(alife():object(v))
+										for k, v in pairs( komp ) do
+											alife():release( alife():object( v ) )
 										end
-										
 										-- выходим
 										finish = true
 										break
@@ -1275,150 +1237,118 @@ function check_af_transform(af, af_sect, obj_pos, anom_id, anom_sect, anom_pos, 
 							end
 						end
 					end
-					
-					if finish then break end
+					if finish then 
+						break
+					end
 				end
 			end
-			
 			-- аномалия с рецептами найдена, все дела сделаны - выходим
 			break
 		end
 	end
-
 end
 
-function af_flash(af) counterAdd("amk_mod.af_flash")
-	level.add_pp_effector("teleport.ppe", 1524, false)
-	amk.remove_item(af)
+-- возвращает значение, возможно из умолчаний
+function get_af_transform_param( name, recept, recepti )
+	if recept[name] ~= nil then
+		return recept[name]
+	elseif recepti["default"] ~= nil and recepti["default"][name] ~= nil then
+		return recepti["default"][name]
+	elseif anom_recept_komp["default"] ~= nil and anom_recept_komp["default"][name] ~= nil then
+		return anom_recept_komp["default"][name]
+	else
+		-- нет информации!!!
+		amk.send_tip( "нет информации для "..name.."!","варка артефактов",0,15,"gen_info" )
+	end
+	return nil
 end
 
 -- случайно выбирает результат, возвращает таблицу с секциями результатов
-function af_select_result(v_udachi, v_virogd, virogd, cel, komp) counterAdd("amk_mod.af_select_result")
-	local rnd=math_random(0,100)
-	if rnd > v_udachi then --неудача
-		if rnd > v_virogd + v_udachi then return komp, false	-- отторжение
-		else return virogd, false	-- вырождение
+function af_select_result( v_udachi, v_virogd, virogd, cel, komp )
+	local rnd = math_random( 0, 100 )
+	--неудача
+	if rnd > v_udachi then
+		-- отторжение
+		if rnd > v_virogd + v_udachi then
+			return komp, false
+		-- вырождение
+		else
+			return virogd, false
 		end
-	else -- удача
-		-- get_console():execute("load ~#I#:"..string.format("удача "..amk.pack_array_to_string(cel)))
+	-- удача
+	else
 		return cel, true
 	end
 end
 
 -- запускаем трансофрмацию 
 -- результаты могут быть многочисленны (несколько целей, полное отторжение компонентов, несколько вырождений)
-function as_start_universal_transform_timer(komp, result, pos, vremya, gv, lv, info_portion, remove_anomaly, remove_anomaly_id) counterAdd("amk_mod.as_start_universal_transform_timer")
-
+function as_start_universal_transform_timer( komp, result, pos, vremya, gv, lv, give_info, anomaly, anomaly_id, info )
 	-- преобразовываем имена в ID
 	local resultIds = {}
 	if result then
-		for sect, _ in pairs(result) do
-			table_insert(resultIds, afs_name_id[sect])
+		for sect, _ in pairs( result ) do
+			table_insert( resultIds, afs_name_id[sect] )
 		end
 	end
-	local kompIds = {}
-	if komp then
-		for sect, _ in pairs(komp) do
-			table_insert(kompIds, afs_name_id[sect])
-		end
+	-- сохраняемые данные
+	local t = {}
+	table_insert(t, resultIds)
+	table_insert(t, pos.x)
+	table_insert(t, pos.y)
+	table_insert(t, pos.z)
+	table_insert(t, gv)
+	table_insert(t, lv)
+	table_insert(t, give_info or false)
+	table_insert(t, anomaly or false)
+	table_insert(t, anomaly_id or false)
+	table_insert(t, info or false)
+	if not vremya then
+		amk.g_start_timer( "af_transform_universal", 0, 0, 0.5, t )
+	else
+		amk.g_start_timer( "af_transform_universal", vremya[1], vremya[2], vremya[3], t )
 	end
-	
-	local t={} -- сохраняемые даннvе
-	
-	table_insert(t, resultIds) -- 1
-	table_insert(t, pos.x) -- 2
-	table_insert(t, pos.y) -- 3
-	table_insert(t, pos.z) -- 4
-	table_insert(t, gv) -- 5
-	table_insert(t, lv) -- 6
-	table_insert(t, info_portion or false) -- 7
-	table_insert(t, kompIds) -- 8
-	table_insert(t, remove_anomaly or false) -- 9
-	table_insert(t, remove_anomaly_id or false) -- 10
-	--get_console():execute("load ~#I#:"..string.format(" g_start_timer: "..vremya[1].." "..vremya[2].." "..vremya[3].." "..amk.pack_array_to_string(t)))
-	amk.g_start_timer("af_transform_universal", vremya[1], vremya[2], vremya[3], t)
-end
-
--- старая фунция
-function af_start_transform(v1,v2,af_from,af_target) counterAdd("amk_mod.af_start_transform")
-	local rnd=math_random(0,100)
-	if rnd>v1 then
-		if rnd>v2+v1 then return af_from
-		else return "af_buliz"
-		end
-	else return af_target
-	end
-end
-
--- старая фунция
-function af_start_transform_timer(af,pos,delay_d,delay_h,delay_m,af_sect) counterAdd("amk_mod.af_start_transform_timer")
-	local t={}
-	t.section=af
-	t.pos={}
-		t.pos.x=pos.x
-		t.pos.y=pos.y
-		t.pos.z=pos.z
-	t.gv=gv
-	t.lv=lv
-	t.from_sect=af_sect
-	amk.g_start_timer("af_transform",delay_d,delay_h,delay_m,t)
 end
 
 -- завершаем варку/мутацию
 -- может быть много результатов
-function af_transform_universal_end(params) counterAdd("amk_mod.af_transform_universal_end")
-	--get_console():execute("load ~#I#:"..string.format(" af_transform_universal_end "))
+function af_transform_universal_end( params )
 	-- если есть результаты
-	local count = 0
 	if #params[1] > 0 then
-		local anom_pos = vector():set(params[2], params[3], params[4])
-		if db.actor:position():distance_to(anom_pos) < 15 then
-			level.add_pp_effector("teleport.ppe", 1524, false)
-		end
-		-- формируем строку с названиями компонентов
+		local resultIds = params[1]
 		local from_komp = ""
-		local kompIds = params[8]
-		for i = 1, #kompIds do
-			if kompIds[i] then
-				from_komp = from_komp..game.translate_string(amk.get_inv_name(afs_id_name[kompIds[i]]))..", "
+		local anom_pos = vector():set( params[2], params[3], params[4] )
+		local sobj
+		for i = 1, #resultIds do
+			sobj = alife():create( afs_id_name[resultIds[i]], anom_pos, params[6], params[5] )
+			if sobj then
+				sobj.first_online = true
+				if not params[8] then
+					from_komp = game.translate_string( amk.get_inv_name( afs_id_name[resultIds[i]] ) )
+					from_komp = game.translate_string( "trans_finished_title" ).." %c[255,255,0,0]"..from_komp
+					amk.add_spot_on_map( sobj.id, "red_location", from_komp )
+					amk.send_tip( from_komp )
+				end
 			end
 		end
-		-- отсекаем ", " в хвосте
-		from_komp = string_sub(from_komp, 1, -2)
-		
-		-- спавним результат(ы)
-		local resultIds = params[1]
-		for i = 1, #resultIds do
-			local obj
-			obj = amk.spawn_item(afs_id_name[resultIds[i]], vector():set(params[2],params[3],params[4]), params[5], params[6])
-			obj.first_online = true
-			amk.add_spot_on_map(obj.id, "red_location", game.translate_string("trans_finished_title").." из %c[255,255,0,0]"..from_komp)
-		end
-	
-		amk.send_tip(game.translate_string("trans_finished_title").." из %c[255,255,0,0]"..from_komp)
 	end
-	
 	-- даем инфопорцию, если есть
-	if params[7] and db.actor:dont_has_info(params[7]) then
-		db.actor:give_info_portion(params[7])
+	local give_info = params[7]
+	if give_info and db.actor:dont_has_info( give_info ) then
+		db.actor:give_info_portion( give_info )
 	end
-	
 	-- удаляем аномалию
-	if params[9] then
-		local sobj = alife():object(params[10])
+	if params[8] then
+		local sobj = alife():object( params[9] )
 		if sobj and sobj.m_story_id == 4294967296 then
-			alife():release(sobj, true)
+			amk_anoms.anom_release( sobj )
 		end
 	end
-end
-
--- старая функция
-function af_transform_end(params) counterAdd("amk_mod.af_transform_end")
-	local from_sect="\""..params.from_sect.."\""
-	local obj
-	obj=amk.spawn_item(params.section,vector():set(params.pos.x,params.pos.y,params.pos.z),params.gv,params.lv)
-	amk.add_spot_on_map(obj.id,"red_location",game.translate_string("trans_finished_title").."%c[255,255,0,0]"..from_sect)
-	amk.send_tip(game.translate_string("trans_finished_title").."%c[255,255,0,0]"..from_sect)
+	-- даем инфопорцию, если есть
+	local info = params[10]
+	if info and db.actor:dont_has_info( info ) then
+		db.actor:give_info_portion( info )
+	end
 end
 
 --'*******************************************************************************
@@ -1850,7 +1780,7 @@ l03_agroprom = 0,
 l03u_agr_underground = 1,
 l04_darkvalley = 0,
 l04u_labx18 = 1,
-l05_bar = 0,
+l05_bar = 2,
 l06_rostok = 0,
 l07_military = 0,
 l08_yantar = 0,
@@ -1876,12 +1806,12 @@ lost_village = 0,
 marsh = 0,
 peshera = 1,
 pripyat = 0,
-puzir = 0,
+puzir = 2,
 red_forest = 0,
 warlab = 1,
 zaton = 0,
 mine = 1,
-la15_darkscape = 1
+la15_darkscape = 2
 }
 
 local snd_obj_right,snd_obj_left,snd_obj_eq

@@ -182,16 +182,10 @@ function action_facer:execute() counterAdd("rx_facer.action_facer:execute")
 			hi.impulse = math_random(power)*3
 			hi.draftsman = npc
 			hi.direction = target:bone_position(bone):sub(npc:bone_position("bip01_neck"))
-			if math_random()/(4 - level.get_game_difficulty()) < hi.power*2 then
+			if cls == clsid.actor and math_random()/(4 - level.get_game_difficulty()) < hi.power*2 then
 				local item,slot = target:active_item(),target:active_slot()
-				if item and (slot == 2 or slot == 1) then
-					if cls == clsid.actor then
-						target:drop_item(item)
-					else
-						if npc:relation(target) ~= game_object.enemy then
-							target:set_item(object.drop,item)
-						end
-					end
+				if item and IAmAWeaponFireOnly[item:clsid()] and (slot == 2 or slot == 1) then
+					target:drop_item(item)
 				end
 			end
 			if math_random() < 0.33 then

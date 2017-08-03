@@ -154,10 +154,10 @@
 		<text>На Затон</text>
 	</string>
 	<string id="to_x10">
-		<text>В Лабораторию Х10</text>
+		<text>В Лабораторию Х-10</text>
 	</string>
       <string id="to_labx8">
-		<text>В Лабораторию Х8</text>
+		<text>В Лабораторию Х-8</text>
 	</string>
       <string id="to_opr">
 		<text>В Восточную часть Припяти</text>

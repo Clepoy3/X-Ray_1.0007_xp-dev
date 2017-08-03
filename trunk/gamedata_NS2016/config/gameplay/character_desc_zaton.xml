@@ -1652,8 +1652,8 @@
 		ammo_5.56x45_ss190 \n
 	</supplies>
 
-	<start_dialog>hello_dialog</start_dialog>
 	<start_dialog>zaton_zlobnyi_one</start_dialog>
+	<start_dialog>hello_dialog</start_dialog>
 	<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
 
 </specific_character>

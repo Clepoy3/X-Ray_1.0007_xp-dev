@@ -260,8 +260,7 @@
 <info_portion id="doctor_black_end"></info_portion>
 <info_portion id="black_doctor_init_dialog"></info_portion>
 <info_portion id="black_doctor_finish_dialog"></info_portion>
-<info_portion id="black_doctor_delete">
-<task>na_warlab</task></info_portion>
+<info_portion id="black_doctor_delete"></info_portion>
 <info_portion id="kot_svoloch"></info_portion>
 
 <!--Shadowman-->
@@ -324,9 +323,7 @@
 </info_portion>	
 <info_portion id="voronin_about_flesh"></info_portion>
 <info_portion id="voronin_flesh_start"></info_portion>
-<info_portion id="voronin_flesh_have">
-<action>braad_test.zasada_for</action>
-</info_portion>
+<info_portion id="voronin_flesh_have"></info_portion>
 
 
 <info_portion id="voronin_flesh_done">
@@ -683,22 +680,6 @@
 <info_portion id="snip_esc12_dead"></info_portion>
 
 <info_portion id="stalker_green_zahar_dead"></info_portion>
-
-<info_portion id="green_treasure_reward_first">
-   <action>table_treasure_l.treasure</action>
-</info_portion>
-
-<info_portion id="green_treasure_reward_second">
-   <action>table_treasure_l.treasure</action>
-</info_portion>
-
-<info_portion id="green_treasure_reward_third">
-   <action>table_treasure_l.treasure</action>
-</info_portion>
-
-<info_portion id="green_treasure_reward_fourth">
-   <action>table_treasure_l.treasure</action>
-</info_portion>
 
 <info_portion id="zahar_vstrecha_start"></info_portion>
 

@@ -182,13 +182,13 @@
 			<phrase id="3">
                 <text>artmod_221_dialog_3</text>
 				<next>4</next>
-				<next>4_1</next>
+				<next>41</next>
 		</phrase>
 			<phrase id="4">
                 <text>artmod_221_dialog_4</text>
 				<give_info>gar_hellcar_outfit_start</give_info>
             </phrase>
-			<phrase id="4_1">
+			<phrase id="41">
                 <text>artmod_221_dialog_4_1</text>
 				<action>dialogs.break_dialog</action>
             </phrase>
@@ -235,14 +235,14 @@
 	    <phrase id="1">
                 <text>artmod_421_dialog_1</text>
 				<next>2</next>
-				<next>2_1</next>
+				<next>21</next>
             </phrase>
 	    <phrase id="2">
                 <text>artmod_421_dialog_2</text>
 				<give_info>val_pula_ammo_start</give_info>
 				<action>new_spawn.take_val_pula_ammo</action>
             </phrase>
-	    <phrase id="2_1">
+	    <phrase id="21">
                 <text>artmod_421_dialog_3</text>
 				<action>dialogs.break_dialog</action>
             </phrase>

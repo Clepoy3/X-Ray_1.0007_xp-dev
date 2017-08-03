@@ -1509,13 +1509,6 @@ end
 function on_npc_go_offline(npc) counterAdd("amk.on_npc_go_offline")
 	amk_anoms.unreg_in_anom_manager(npc)
 	if amk_target then amk_target.net_destroy(npc) end
-
---dc-- в потолке открылся люк - не пугайтесь, это глюк.
---	if amk_offline_alife then
---		if check_game()==true then
---			local sobj = alife():object(npc:id())
---			if sobj then amk_offline_alife.process_trade(sobj) end
---	end	end
 end
 
 function on_monster_go_offline(npc) counterAdd("amk.on_monster_go_offline")
@@ -1660,7 +1653,6 @@ end
 -- Эта функция вызывается самой первой. Онлайновые объекты недоступны! db.actor недоступен!
 function on_game_start() counterAdd("amk.on_game_start")
 	getStartTime()
-	treasure_manager:get_treasure_manager()
 end
 
 function getStartTime() counterAdd("amk.getStartTime")

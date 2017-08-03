@@ -77,12 +77,11 @@ end
 InventoryState = {}
 InventoryStateByCLSID = {}
 
+
 --Проверка на количество предметов в инвентаре гг
-function inventory_search(iItemSection, iNeededCount) counterAdd("amk_utils.inventory_search")
-	--get_console():execute("load ~~~ inventory_search: " .. iItemSection .. ", " .. iNeededCount .. ", " .. type(iItemSection))
+function inventory_search(iItemSection, iNeededCount)
 	--Взятие из кеша текущего состояния инвентаря:
 	local vCount = InventoryState[iItemSection]
-	--get_console():execute("load ~~~ inventory_search: cached vCount = " .. (vCount or "(null)"))
 	--Загрузка текущего состояния инвентаря в кеш:
 	if vCount == nil then
 		vCount = 0
@@ -92,61 +91,39 @@ function inventory_search(iItemSection, iNeededCount) counterAdd("amk_utils.inve
 				end 
 			end, nil)
 		InventoryState[iItemSection] = vCount
-		--get_console():execute("load ~~~ inventory_search: saved in cache: " .. vCount)
 	end
 	--Выдача результата проверки:
 	return vCount >= iNeededCount
 end
 
+
 --Обработчик появления или исчезновения предмета в инвентаре (нужно обновить кеш):
-function inventory_update(iObject, iCountDelta) counterAdd("amk_utils.inventory_update")
+function inventory_update(iObject, iCountDelta)
 	if iObject == nil then return end
 	local vItemSection = iObject:section()
-	--get_console():execute("load ~~~ inventory_update: " .. tostring(vItemSection) .. ", " .. tostring(iCountDelta) .. ", " .. type(vItemSection))
 	--Взятие из кеша текущего состояния инвентаря:
 	local vCount = InventoryState[vItemSection]
-	--get_console():execute("load ~~~ inventory_update: cached vCount = " .. tostring(vCount))
 	--Обновление текущего состояния инвентаря в кеше:
 	local object_type = trade_generic.getObjectType(iObject)
-	--get_console():execute("load ~~~ inventory_update: " .. tostring(vItemSection) .. ", " .. tostring(iCountDelta) .. ", " .. type(vItemSection)..", "..tostring(object_type))
-	
+
 	if InventoryStateByCLSID[object_type] == nil then
 		InventoryStateByCLSID[object_type] = {}
 	end
+
 	local priority = trade_generic.object_priority_function(db.actor, iObject)
 	if InventoryStateByCLSID[object_type][vItemSection] == nil then
-		InventoryStateByCLSID[object_type][vItemSection] = {
-			-- ["count"]		= 0,
-			-- ["priority"]	= priority
-		}
+		InventoryStateByCLSID[object_type][vItemSection] = {}
 	end
-	
-	InventoryState[vItemSection] = (vCount or 0) + iCountDelta
-	-- if vCount ~= nil then
-		-- vCount = vCount + iCountDelta
-		-- InventoryState[vItemSection] = vCount
-		-- -- InventoryStateByCLSID[object_type][vItemSection]["count"] = vCount
-		-- -- InventoryStateByCLSID[object_type][vItemSection]["priority"] = priority
-	-- elseif iCountDelta > 0 then
-		-- InventoryState[vItemSection] = iCountDelta
 
-		-- --if InventoryStateByCLSID[object_type][vItemSection] == nil then
-			-- -- InventoryStateByCLSID[object_type][vItemSection] = {
-				-- -- ["count"]		= iCountDelta,
-				-- -- ["priority"]	= priority
-			-- -- }
-		-- --end
-		
-	-- end
+	InventoryState[vItemSection] = (vCount or 0) + iCountDelta
+
 	InventoryStateByCLSID[object_type][vItemSection]["count"] = InventoryState[vItemSection]
 	InventoryStateByCLSID[object_type][vItemSection]["priority"] = priority
-	--get_console():execute("load ~~~ inventory_update: saved in cache: " .. InventoryState[vItemSection])
-	--amk.dump_table(InventoryState, 1, "InventoryState")
-	--amk.dump_table(InventoryStateByCLSID, 1, "InventoryStateByCLSID")
 end
 
+
 --Проверка на предмет в инвентаре гг
-function have_a_item(itemS) counterAdd("amk_utils.have_a_item")
+function have_a_item(itemS)
     local actor = db.actor
     if actor ~= nil and actor:object(itemS) ~= nil then
 		return true
@@ -155,16 +132,18 @@ function have_a_item(itemS) counterAdd("amk_utils.have_a_item")
 	end
 end
 
+
 --Проверка на предмет в инветаре и выдачу инфопоршена
-function have_a_item_info(itemS, info) counterAdd("amk_utils.have_a_item_info")
+function have_a_item_info(itemS, info)
     local actor = db.actor
     if actor ~= nil and actor:object(itemS) ~= nil and actor:dont_has_info(info) then
 		actor:give_info_portion(info)
 	end
 end
 
+
 --Проверка инфопоршенов
-function have_a_info(info_has, not_info_has) counterAdd("amk_utils.have_a_info")
+function have_a_info(info_has, not_info_has)
 	local actor = db.actor
 	if has_alife_info(info_has) and not has_alife_info(not_info_has) then
 		return true
@@ -173,8 +152,9 @@ function have_a_info(info_has, not_info_has) counterAdd("amk_utils.have_a_info")
 	end
 end
 
+
 --Проверка денег у гг
-function actor_has_money(money) counterAdd("amk_utils.actor_has_money")
+function actor_has_money(money)
 	local actor = db.actor
 	if actor:money() >= money then
 		return true
@@ -183,12 +163,9 @@ function actor_has_money(money) counterAdd("amk_utils.actor_has_money")
 	end
 end
 
---* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
--- *			                         Transfers					       *
---* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 --Трансфер денег между гг и нпс
-function actor_give_money(npcObj, actorObj, money, Type) counterAdd("amk_utils.actor_give_money")
+function actor_give_money(npcObj, actorObj, money, Type)
 	local actor, npc
 	if db.actor and db.actor:id() == npc:id() then
 		actor = npcObj
@@ -205,8 +182,9 @@ function actor_give_money(npcObj, actorObj, money, Type) counterAdd("amk_utils.a
 	end
 end
 
+
 --Трансфер предмета между гг и нпс
-function actor_give_item(npcObj, actorObj, itemS, Type) counterAdd("amk_utils.actor_give_item")
+function actor_give_item(npcObj, actorObj, itemS, Type)
 	local actor, npc
 	if db.actor and db.actor:id() == npc:id() then
 		actor = npcObj
@@ -223,8 +201,10 @@ function actor_give_item(npcObj, actorObj, itemS, Type) counterAdd("amk_utils.ac
 	end
 end
 
+
 --Трансфер предметов между гг и нпс
-function relocate_n_items_section(victim, section, Type, count) counterAdd("amk_utils.relocate_n_items_section")
+function relocate_n_items_section(victim, section, Type, count)
+
     if db.actor and victim then
 		if Type == "in" then
 			local sim = alife()

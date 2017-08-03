@@ -171,8 +171,8 @@
 	<texture x="1050" y="350" width="100" height="50">ui\ui_icon_equipment</texture>
 	<text>tex_mil_Svoboda_trader_ammo</text>
 </article>
-<article id="tex_mil_Svoboda_trader_plan" name="Поработать наркокурьером" article_type="task">
-	<texture x="200" y="500" width="100" height="100">ui\ui_icon_equipment</texture>
+<article id="tex_mil_Svoboda_trader_plan" name="Принести информацию Скряге от Дезертира" article_type="task">
+	<texture x="1000" y="450" width="100" height="50">ui\ui_icon_equipment</texture>
 	<text>tex_mil_Svoboda_trader_plan</text>
 </article>
 <article id="tex_agr_krot_PDA" name="Найти ПДА Крота" article_type="task">
@@ -339,7 +339,7 @@
 	<text>tex_gold_art</text>
 </article>
 <article id="tex_tri_tainik" name="Найти 3 дневника монолитовца на Чаэс-2." article_type="task">
-	<texture x="0" y="300" width="100" height="50">ui\ui_icon_equipment</texture>
+	<texture x="351" y="200" width="298" height="198">ui\ui_arhara_3</texture>
 	<text>tex_tri_tainik</text>
 </article>
 <article id="tex_kot_need_doc" name="Обыскать труп монолитовца и найти карту для Кота." article_type="task">

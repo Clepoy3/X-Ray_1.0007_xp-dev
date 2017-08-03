@@ -243,8 +243,6 @@
 		<dont_has_info>mil_volk_resiver_start</dont_has_info>
 		<dont_has_info>mil_volk_resiver_done</dont_has_info>
 		<dont_has_info>mil_volk_resiver_have</dont_has_info>
-		<dont_has_info>mil_volk_resiver_1have</dont_has_info>
-		<dont_has_info>tutorial_wounded_death</dont_has_info>		
 		<phrase_list>
 			<phrase id="0">
 				<text>artmod_871_dialog_0</text>
@@ -258,6 +256,7 @@
 			<phrase id="2">
 				<text>artmod_871_dialog_2</text>
 				<give_info>mil_volk_resiver_start</give_info>
+                     <action>arhara_dialog.spawn_add_resiver</action>
 			</phrase>
 			<phrase id="3">
 				<text>artmod_871_dialog_3</text>
@@ -269,7 +268,6 @@
 		<precondition>sak_dialog.mil_volk_resiver_have</precondition>
 		<dont_has_info>mil_volk_resiver_done</dont_has_info>
 		<has_info>mil_volk_resiver_have</has_info>
-		<dont_has_info>tutorial_wounded_death</dont_has_info>		
 		<phrase_list>
 			<phrase id="0">
 				<text>artmod_872_dialog_0</text>
@@ -1591,6 +1589,7 @@
 			</phrase>
 			<phrase id="1002">
 				<text>mil_dolg_skull_dialog_1002</text>
+				<next>702</next>
 			</phrase>
 			<phrase id="1041">
 				<text>mil_dolg_skull_dialog_1041</text>
@@ -1706,6 +1705,7 @@
 				<next>801</next>
 			</phrase>
 			<phrase id="801">
+				<has_info>mil_dolg_dialog_already</has_info>
 				<text>mil_dolg_skull_dialog_801</text>
 				<next>802</next>
 			</phrase>
@@ -1819,26 +1819,18 @@
 			</phrase>
 			<phrase id="1">
 				<text/>
-				<dont_has_info>mil_sniper_get_job</dont_has_info>
-				<dont_has_info>mil_sniper_dead</dont_has_info>
+				<dont_has_info>mil_dolg_dialog_already</dont_has_info>
 				<next>100</next>
 			</phrase>
 			<phrase id="100">
 				<text>mil_dolg_skull_dialog_100</text>
 				<give_info>mil_dolg_dialog_already</give_info>
-				<next>101</next>
 				<next>1001</next>
 			</phrase>
 			<phrase id="0">
 				<text/>
 				<next>1</next>
-				<next>2</next>
-				<next>3</next>
-				<next>4</next>
-				<next>500</next>
-				<next>600</next>
-				<next>700</next>
-				<next>800</next>
+				<next>801</next>
 			</phrase>
 		</phrase_list>
 	</dialog>
@@ -1850,6 +1842,7 @@
 			</phrase>
 			<phrase id="30">
 				<text>mil_dolg_soldier_dialog_30</text>
+				<give_info>mil_dolg_dialog_already</give_info>
 				<action>dialogs.break_dialog</action>
 				<action>dialogs_military.killactor</action>
 			</phrase>
@@ -1880,7 +1873,6 @@
 			<phrase id="7">
 				<text>mil_dolg_soldier_dialog_7</text>
 				<action>dialogs.break_dialog</action>
-				<give_info>mil_dolg_dialog_already</give_info>
 			</phrase>
 			<phrase id="20">
 				<text>mil_dolg_soldier_dialog_20</text>
@@ -1888,12 +1880,11 @@
 			</phrase>
 			<phrase id="21">
 				<text>mil_dolg_soldier_dialog_21</text>
-				<next>22</next>
 				<next>30</next>
 			</phrase>
 			<phrase id="0">
+				<dont_has_info>mil_dolg_dialog_already</dont_has_info>
 				<text>mil_dolg_soldier_dialog_0</text>
-				<next>1</next>
 				<next>20</next>
 			</phrase>
 		</phrase_list>
@@ -2471,14 +2462,16 @@
 				<give_info>mil_lukash_dolg_task</give_info>
 				<give_info>mil_bodyguard_talk</give_info>
 				<give_info>mil_freedom_attack</give_info>
-				<next>11012</next>
+				<action>dialogs.break_dialog</action>
+				<action>dialogs_military.killactor</action>
+				<action>xr_effects.mil_bomb_explode</action>
 			</phrase>
 			<phrase id="11012">
 				<text>mil_leader_start_dialog_11012</text>
 			</phrase>
 			<phrase id="10011">
 				<text>mil_leader_start_dialog_10011</text>
-				<next>10012</next>
+				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="10012">
 				<text>mil_leader_start_dialog_10012</text>
@@ -2634,6 +2627,11 @@
 			<phrase id="2">
 				<text>freedom_berill_have_2</text>
 				<give_info>mil_lukash_find_berill_done</give_info>
+				<give_info>info_amk_recipt_souls</give_info>
+				<give_info>info_amk_recipt_soul_drops</give_info>
+				<give_info>info_amk_recipt_soul_fire</give_info>
+				<give_info>info_amk_recipt_soul_cristal</give_info>
+				<give_info>info_amk_recipt_soul_bengal</give_info>
 				<action>arhara_dialog.berill_done</action>
 			</phrase>
 		</phrase_list>

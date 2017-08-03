@@ -223,12 +223,10 @@ end
 function se_stalker:on_unregister()
 	cse_alife_human_stalker.on_unregister(self)
 	-- разрегистрация в смарте
-	if self:alive() then
-		local strn_id = self:smart_terrain_id()
-		local strn = strn_id and strn_id ~= 65535 and alife():object(strn_id)
-		if strn then
-			strn:unregister_npc(self)
-		end
+	local strn_id = self:smart_terrain_id()
+	local strn = strn_id and strn_id ~= 65535 and alife():object(strn_id)
+	if strn then
+		strn:unregister_npc(self)
 	end
 	-- разрегистрация в таскменеджере
 	task_manager.get_random_task():unregister_target(self)

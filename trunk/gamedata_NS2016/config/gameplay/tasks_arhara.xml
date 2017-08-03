@@ -2014,7 +2014,7 @@
 <title>Найти и защитить, если потребуется, контролёра</title>
 <objective>
 <text>Найти контролёра</text>
-<icon>ui_iconsTotal_esc_defend_lager</icon>
+<icon>ui_iconsTotal_norman</icon>
 <infoportion_complete>dcity_kontrik_done</infoportion_complete>
 <article>tex_dci_kontrik</article>
 </objective>
@@ -2153,6 +2153,11 @@
 <icon>ui_iconsTotal_lesnik</icon>
 <infoportion_complete>lesnik_say_snip_start</infoportion_complete> 
 <article>tex_to_lesnik_vstrecha</article>
+</objective>
+<objective>
+<text>Найти Лесника</text>
+<icon height="50" width="50" x="100" y="50">ui\ui_icons_task</icon>
+<infoportion_complete>lesnik_say_snip_start</infoportion_complete>
 </objective>
 </game_task>
 

@@ -417,7 +417,7 @@ end
 local mesto = {
     {position={x=-108.34,y=-3.66,z=203.93},gv=3675,lv=758088},
     {position={x=-108.87,y=5.38,z=-213.23},gv=3681,lv=740290},
-    {position={x=84.05,y=40.97,z=-454.74},gv=3685,lv=1113593}
+    {position={x=84.05,y=40.97,z=-454.74},gv=3680,lv=1108692}
 }
 
 function drug_ryukzak_good(actor,npc)
@@ -428,7 +428,7 @@ end
 local mesto1 = {
     {position={x=-108.34,y=-3.66,z=203.93},gv=3675,lv=758088},
     {position={x=-108.87,y=5.38,z=-213.23},gv=3681,lv=740290},
-    {position={x=84.05,y=40.97,z=-454.74},gv=3685,lv=1113593}
+    {position={x=84.05,y=40.97,z=-454.74},gv=3680,lv=1108692}
 }
 function drug_ryukzak_xren(actor,npc)
     local a = mesto1[math.random(table.getn(mesto1))]

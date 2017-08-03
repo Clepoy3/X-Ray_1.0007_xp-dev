@@ -137,7 +137,6 @@
 	<info_portion id="mil_max_lukash_call"></info_portion>
 	
 	<info_portion id="mil_max_flash_get">
-	<action>braad_test.zasada_for</action>
 	<article>mil_crazy_flash_info</article>
     </info_portion>
 	
