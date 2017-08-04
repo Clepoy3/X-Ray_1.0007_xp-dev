@@ -58,7 +58,7 @@ void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 
 	u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
-	//if (OldTime > GameEnvironmentTime) //KRodin: фикс отсутствия солнца http://www.amk-team.ru/forum/topic/10538-x-ray-extensions/page-51#entry976375
+	//if (OldTime > GameEnvironmentTime) //KRodin: закомментировано для фикса отсутствия солнца http://www.amk-team.ru/forum/topic/10538-x-ray-extensions/page-51#entry976375
 	//	GamePersistent().Environment().Invalidate();
 }
 

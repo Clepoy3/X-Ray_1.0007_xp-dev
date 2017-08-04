@@ -173,7 +173,7 @@ LPCTSTR __stdcall InternalGetStackTraceString(DWORD dwOpts, EXCEPTION_POINTERS* 
         if (dwModBase == 0) {
             //szRet = nullptr;
 			//__leave;
-			sprintf_s(g_szBuff, 1023, " [no module info for 0x%p] ", g_stFrame.AddrPC.Offset);
+			sprintf_s(g_szBuff, 1023, " [no module info for 0x%d] ", g_stFrame.AddrPC.Offset);
 			szRet = g_szBuff;
         }
 

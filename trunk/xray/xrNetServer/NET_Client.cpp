@@ -6,6 +6,7 @@
 #include "NET_Log.h"
 
 #include <malloc.h>
+#include "dxerr.h"
 
 static	INetLog* pClNetLog = NULL; 
 

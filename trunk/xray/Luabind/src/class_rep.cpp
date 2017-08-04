@@ -648,21 +648,23 @@ int luabind::detail::class_rep::function_dispatcher(lua_State* L)
 	}
 
 #endif
-
+#ifdef NDEBUG
 	__try //KRodin: try-catch здесь пропускает многие ошибки
 	{
+#endif
 		const overload_rep& o = rep->overloads()[match_index];
 
 		if (force_static_call && !o.has_static())
 			lua_pushstring(L, "pure virtual function called");
 		else
 			return o.call(L, force_static_call != 0);
+#ifdef NDEBUG
 	}
 	__except(EXCEPTION_EXECUTE_HANDLER)
 	{
 		lua_pushstring(L, "[luabind::detail::class_rep::function_dispatcher] Caught a hardware exception!");
 	}
-
+#endif
 	lua_error(L);
 	return 0; // will never be reached
 }

@@ -1326,7 +1326,7 @@ function actor_binder:save_old(packet)
 				local outfitSection = outfit and outfit:section()
 				local nvSection = outfitSection and getIniValueStringSimple(outfitSection, "nightvision_sect", false) or false
 				local pk = get_netpk(sobj)
-				local data = data:get()
+				local data = pk:get()
 				night_vision_real = bit_and(data.upd.torch_flags, 2) ~= 0 and nvSection and nvSection ~= ""
 				--get_console():execute("load [bind_stalker]1473 night_vision_real "..tostring(night_vision_real).." outfitSection: "..tostring(outfitSection).." nvSection: "..tostring(nvSection))
 				--amk.send_tip("actor_binder:save_old night_vision_real="..tostring(night_vision_real))

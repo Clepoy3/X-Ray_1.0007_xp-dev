@@ -1,4 +1,5 @@
 #pragma once
+#include "include\DPlay\dplay8.h" //KRodin: добавил недостающий файл
 #pragma pack(push,1)
 
 #define	DPNSEND_IMMEDIATELLY				0x0100
