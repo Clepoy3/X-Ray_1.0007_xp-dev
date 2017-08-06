@@ -243,15 +243,15 @@
   </hud_save_warning>
     
   <hud_rad_back x="0" y="0" width="1" height="1" stretch="1" complex_mode="1" la_cyclic="1" la_texture="1" la_alpha="1">
-    <texture>ui_hud_shkala_rad</texture>
+    <texture></texture>
   </hud_rad_back>
 
   <hud_rad_level x="0" y="0" width="1" height="1" stretch="1" complex_mode="1" la_cyclic="1" la_texture="1" la_alpha="1">
-    <texture>ui_hud_shk_rad</texture>
+    <texture>ui_hud_shk_rad_min</texture>
   </hud_rad_level>
 
-  <hud_show_time  x="224" y="161" width="98" height="19" stretch="1">
-    <text x="22" y="1" font="letterica18" r="198" g="255" b="213" a="255"/>
+  <hud_show_time  x="1" y="725" width="60" height="20" stretch="1">
+    <text x="14" y="1" font="letterica16" r="198" g="255" b="213" a="255"/>
   </hud_show_time>
 
  <cs_demo_play  x="165" y="735" width="600" height="50" complex_mode="1" stretch="1" light_anim="" la_cyclic="1" la_texture="1" la_alpha="1">
