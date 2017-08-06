@@ -2351,9 +2351,6 @@ function on_news()
     local gtime = amk.game_minutes()
 	
 	if (gtime - timer_alife_showed > timer_alife_freq) then
-		amk.oau_reason="cn on_news offline_alife start"
-		amk_offline_alife.offline_alife()
-		amk.oau_reason="cn on_news offline_alife exit"
 		timer_alife_showed = amk.game_minutes()
 	end
 	if (gtime - timer_blow_showed > timer_blow_freq) then
@@ -2661,7 +2658,9 @@ function point_is_far(point, lv, gv, distance)
    return result
 end
 
-function get_nearest_stalker(level, point, dist_max, dist_min)
+function get_nearest_stalker(level, point, dist_max, dist_min) --KRodin: переделать эту хрень или удалить вообще
+do return nil end
+--[==[
 	local sim = alife()
 	local obj = nil
 	local map = level
@@ -2710,6 +2709,7 @@ function get_nearest_stalker(level, point, dist_max, dist_min)
 		end
 	end
 	return obj
+--]==]
 end
 
 function isAlive(story_id)

@@ -35,7 +35,6 @@ end]]
 function my_binder:net_spawn(data)
 --    get_console():execute("load netpacket_pda~: my_binder:net_spawn")
     db.add_obj(self.object)
-    gps_habar.on_game_load() --idler++--
     sak.out_teleport()
 	difficulty_manager.deathStatChangeDifficulty()
     return object_binder.net_spawn(self, data)

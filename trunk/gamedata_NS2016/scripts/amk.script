@@ -1363,7 +1363,6 @@ function on_item_take(obj) counterAdd("amk.on_item_take")
 			alife():release(sobj, true)
 		end
 	end
-	gps_habar.on_item_take(obj) -- Idler ++--
 --	escape_dialog.have_a_art()
 	flamethrower.have_a_fire_kolobok()
 	flamethrower.have_a_trubki()
@@ -1376,10 +1375,8 @@ end
 
 --колбэк на потерю предмета из инвентаря ГГ
 function on_item_drop(obj) counterAdd("amk.on_item_drop")
-gps_habar.on_item_drop(obj) --idler++--
 	amk_mod.check_for_af_drop(obj)
 	amk_mod.check_for_item_drop(obj)
-	amk_mod.check_beacon_drop(obj)
 	amk_alcohol.drink_vodka(obj)	--!!! alcohol modification by Terrapack
 	amkII_transmutator.amkUseTransmutator(obj)
 	teleport_menu.UseTeleport(obj)

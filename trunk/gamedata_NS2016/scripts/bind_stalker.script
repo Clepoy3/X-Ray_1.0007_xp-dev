@@ -201,11 +201,9 @@ function actor_binder:take_item_from_box(box, item)
 	if story_id == nil then return end
 	--get_console():execute("load ~~~ take_item_from_box: "..box:name().." story_id: "..story_id)
 	treasure_manager.take_item_from_box(box, story_id)
-	zamok.remove(box, item)	
 	if level.map_has_object_spot(box:id(), "crlc_big")~= 0 then
 		level.map_remove_object_spot(box:id(), "crlc_big")
 	end
-	gps_habar.on_item_take_from_box(box, item) --idler++--	
 end
 ----------------------------------------------------------------------------------------------------------------------
 local border_str = 0
@@ -427,6 +425,8 @@ function actor_binder:on_item_take (obj)
 	if rx_ai then rx_ai.actor_item_take(obj) end
 	if sol_utils then sol_utils.binoc_restore() end
 	monnoroch_utils.mon_callback:on_item_take(obj)
+	--
+	ogse_metka.on_item_take(obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_drop(obj)
@@ -442,6 +442,8 @@ function actor_binder:on_item_drop(obj)
 	braad_test.drop_actor(obj)
 	spawn_level_changer.checking_droped_obj(obj)
 	monnoroch_utils.mon_callback:on_item_drop(obj)
+	--
+	ogse_metka.on_item_drop(obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -751,52 +753,49 @@ function task_search(task_name)
 	return false
 end
 
+local tasks_list = {
+	-- 50 ms, не использовать ! Перегружено. Добавлять при крайней необходимости прямо в апдейт.
+	-- [] = { ["name"] = "",				["task"] = false,				["group"] = 50 },
+
+	-- 200 ms
+	{ ["name"] = "xr_sound.update_actor",		["task"] = xr_sound.update_actor,		["group"] = 200 },
+
+	-- переделать полностью, и вынести отсюда нахрен
+	{ ["name"] = "inventory.update",			["task"] = inventory.update,			["group"] = 200 },
+
+	{ ["name"] = "amk.on_actor_update",		["task"] = amk.on_actor_update,			["group"] = 200 },
+	{ ["name"] = "babah.update",			["task"] = babah.update,			["group"] = 200 },
+	{ ["name"] = "inv_npc.update",			["task"] = inv_npc.update,			["group"] = 200 },
+
+	-- todo: вынести ЭТО из апдейта нафиг !
+	{ ["name"] = "meceniy_work.set_invisible",	["task"] = meceniy_work.set_invisible,		["group"] = 200 },
+	-- Vergas ogg-player, см. выше
+	{ ["name"] = "player_ogg.used_item",		["task"] = player_ogg.used_item,		["group"] = 200 },
+
+	-- 1000 ms
+	{ ["name"] = "meceniy_utils.on_actor_update_callback",["task"] = meceniy_utils.on_actor_update_callback,["group"] = 1000 },
+	{ ["name"] = "arc_main.actor_update",		["task"] = arc_main.actor_update,		["group"] = 1000 },
+	{ ["name"] = "meceniy_work.mainw",		["task"] = meceniy_work.mainw,			["group"] = 1000 },
+	{ ["name"] = "doc_viewer.update",		["task"] = doc_viewer.update,			["group"] = 1000 },
+	{ ["name"] = "stco.update",			["task"] = stco.update,				["group"] = 1000 },
+	-- добавлять по колбэку
+	{ ["name"] = "bind_stalker.border_danger",	["task"] = bind_stalker.border_danger,		["group"] = 1000 },
+	{ ["name"] = "xr_kamp.update",			["task"] = xr_kamp.update,			["group"] = 1000 },
+	{ ["name"] = "amk_mod.check_armor",		["task"] = amk_mod.check_armor,			["group"] = 1000 },
+	{ ["name"] = "amk_mod.interactive_music",		["task"] = amk_mod.interactive_music,		["group"] = 1000 },
+	{ ["name"] = "amk_mod.firebat_ammo",		["task"] = amk_mod.firebat_ammo,		["group"] = 1000 },
+	{ ["name"] = "bind_stalker.hud_blood",		["task"] = bind_stalker.hud_blood,		["group"] = 1000 },
+	{ ["name"] = "bind_stalker.hud_low_health",	["task"] = bind_stalker.hud_low_health,		["group"] = 1000 },
+
+	-- 5000 ms
+	-- Добавлять только при изменениях в инвентаре.
+	{ ["name"] = "inv_manager.on_update",		["task"] = inv_manager.on_update,		["group"] = 5000 }
+}
 function task_ini()
 	for i = 1, #tasks_list do
 		task_add(tasks_list[i]["name"], tasks_list[i]["task"], tasks_list[i]["group"])
 	end
 end
-
-tasks_list = {
-	-- 50 ms, не использовать ! Перегружено. Добавлять при крайней необходимости прямо в апдейт.
-	-- [] = { ["name"] = "",				["task"] = false,				["group"] = 50 },
-
-	-- 200 ms
-	[1] = { ["name"] = "amk_mod.check_metka",		["task"] = amk_mod.check_metka,			["group"] = 200 },
-	[2] = { ["name"] = "xr_sound.update_actor",		["task"] = xr_sound.update_actor,		["group"] = 200 },
-
-	-- переделать полностью, и вынести отсюда нахрен
-	[3] = { ["name"] = "inventory.update",			["task"] = inventory.update,			["group"] = 200 },
-
-	[4] = { ["name"] = "amk.on_actor_update",		["task"] = amk.on_actor_update,			["group"] = 200 },
-	[5] = { ["name"] = "babah.update",			["task"] = babah.update,			["group"] = 200 },
-	[6] = { ["name"] = "inv_npc.update",			["task"] = inv_npc.update,			["group"] = 200 },
-
-	-- todo: вынести ЭТО из апдейта нафиг !
-	[7] = { ["name"] = "meceniy_work.set_invisible",	["task"] = meceniy_work.set_invisible,		["group"] = 200 },
-	-- Vergas ogg-player, см. выше
-	[8] = { ["name"] = "player_ogg.used_item",		["task"] = player_ogg.used_item,		["group"] = 200 },
-
-	-- 1000 ms
-	[9] = { ["name"] = "meceniy_utils.on_actor_update_callback",["task"] = meceniy_utils.on_actor_update_callback,["group"] = 1000 },
-	[10] = { ["name"] = "arc_main.actor_update",		["task"] = arc_main.actor_update,		["group"] = 1000 },
-	[11] = { ["name"] = "meceniy_work.mainw",		["task"] = meceniy_work.mainw,			["group"] = 1000 },
-	[12] = { ["name"] = "amk_offline_alife.update",		["task"] = amk_offline_alife.update,		["group"] = 200 },
-	[13] = { ["name"] = "doc_viewer.update",		["task"] = doc_viewer.update,			["group"] = 1000 },
-	[14] = { ["name"] = "stco.update",			["task"] = stco.update,				["group"] = 1000 },
-	-- добавлять по колбэку
-	[15] = { ["name"] = "bind_stalker.border_danger",	["task"] = bind_stalker.border_danger,		["group"] = 1000 },
-	[16] = { ["name"] = "xr_kamp.update",			["task"] = xr_kamp.update,			["group"] = 1000 },
-	[17] = { ["name"] = "amk_mod.check_armor",		["task"] = amk_mod.check_armor,			["group"] = 1000 },
-	[18] = { ["name"] = "amk_mod.interactive_music",		["task"] = amk_mod.interactive_music,		["group"] = 1000 },
-	[19] = { ["name"] = "amk_mod.firebat_ammo",		["task"] = amk_mod.firebat_ammo,		["group"] = 1000 },
-	[20] = { ["name"] = "gps_habar.update_gps_state",	["task"] = gps_habar.update_gps_state,		["group"] = 1000 },
-	[21] = { ["name"] = "bind_stalker.hud_blood",		["task"] = bind_stalker.hud_blood,		["group"] = 1000 },
-	[22] = { ["name"] = "bind_stalker.hud_low_health",	["task"] = bind_stalker.hud_low_health,		["group"] = 1000 },
-
-	-- 5000 ms
-	-- Добавлять только при изменениях в инвентаре.
-	[23] = { ["name"] = "inv_manager.on_update",		["task"] = inv_manager.on_update,		["group"] = 5000 }}
 
 watch_value = 0	-- malandrinus
 game_paused=11

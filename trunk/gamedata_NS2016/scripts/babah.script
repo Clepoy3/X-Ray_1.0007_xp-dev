@@ -517,8 +517,7 @@ function explosiveExplode(id)
 				amk.send_tip("Взрывчатка взорвана", nil, 4)
 			end
 		else -- объект на другой локации или в оффлайне
-			collectExplosivesAll()
-			explodeOffline(se_obj, true)
+			--collectExplosivesAll()
 		end
 	end
 end
@@ -723,7 +722,6 @@ function explode_r(ob)
 								if inv_obj then
 									--amk.send_tip("babah (inv_obj:parent():id() == parent_id): id "..inv_obj:id()..", name "..inv_obj:name())
 									--get_console():execute("load ~babah~ babah (inv_obj:parent():id() == parent_id): id "..inv_obj:id()..", name "..inv_obj:name())
-									zamok.remove(obj, inv_obj, true, true)
 									obj:drop_item_and_teleport(inv_obj, vector():set(pos.x + math_random() - 0.5, pos.y, pos.z + math_random() - 0.5))
 								else
 									amk.send_tip("babah obj == nil: id "..se_obj.id..", name "..se_obj:name())
@@ -928,7 +926,7 @@ end
 function update(delta)
 	if mines["count"] > 0 then
 		local npcOnline = db.storage
-		local npcOffline = amk_offline_alife.off_npcs
+		local npcOffline = {} --KRodin: надо избавиться от этой таблицы и всего что с ней связано!
 		if npcOnline and npcOffline then
 			local npcObj, mineObj
 			local level_object_by_id = level.object_by_id
@@ -1046,103 +1044,6 @@ function update(delta)
 	end
 end
 
--- подрыв в оффлайне
-function explodeOffline(se_obj, first)
-	--amk.send_tip("пробуем взорвать на другой локации")
-	if se_obj then
-		local infoExplosive = collectExplosiveInfo(se_obj:section_name())
-		--amk.dump_table(infoExplosive)
-		local radius = infoExplosive["blast_r"]
-		if infoExplosive["frags"] > 0 then
-			radius = math.max(radius, infoExplosive["frags_r"])
-		end
-		
-		local sim = alife()
-		local obj = se_obj
-		local parent_id = se_obj.parent_id
-		if parent_id and parent_id ~= 0 and parent_id ~= 65535 then
-			obj = sim:object(parent_id) -- получаем объект хозяина
-		end
-		
-		local ggraph = game_graph()
-		if ggraph:valid_vertex_id(obj.m_game_vertex_id) then
-			local infoVictimsOffline = collectExplosiveVictimsOffline(obj, radius)
-			--amk.dump_table(infoVictimsOffline)
-			
-			damageVictimsOffline(infoVictimsOffline, infoExplosive)
-			if first then
-				--local packet
-				local explosivesOnLevel
-				local explosive
-				local explId = se_obj.id
-				local explPos = obj.position
-				local levelNameExplosive = sim:level_name(ggraph:vertex(obj.m_game_vertex_id):level_id())
-				-- взрывчатка отработала
-				sim:release(se_obj, true)
-				-- подрываем взрывчатку рядом
-				--amk.dump_table(explosivesAll)
-				local invBox
-				explosivesOnLevel = explosivesAll["offline"]["onLevelsInInventory"][levelNameExplosive]
-				if explosivesOnLevel then
-					for invBoxId, invBoxExplosives in pairs(explosivesOnLevel) do
-						invBox = sim:object(invBoxId)
-						if invBox and invBox.position:distance_to_sqr(explPos) <= radius*radius then
-							for sect, explIds in pairs(invBoxExplosives) do -- можно отсекать по секциям
-								if explIds then
-									for j = #explIds, 1, -1 do -- а здесь можно и с предметами в инвентаре что-то сделать, если их запомнить вместе со взрывчаткой перед этим
-										if explIds[j] then
-											if explIds[j] ~= explId then
-												explosive = sim:object(explIds[j])
-												table.remove(explIds, j)
-												if explosive then
-													explodeOffline(explosive, true)
-												end
-											else
-												table.remove(explIds, j)
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-				explosivesOnLevel = explosivesAll["offline"]["onLevels"][levelNameExplosive]
-				if explosivesOnLevel then
-					--amk.dump_table(explosivesAll)
-					for sect, explIds in pairs(explosivesOnLevel) do -- можно отсекать по секциям
-						if explIds then
-							for j = #explIds, 1, -1 do
-								if explIds[j] then 
-									if explIds[j] ~= explId then
-										explosive = sim:object(explIds[j])
-										if explosive and explosive.position:distance_to_sqr(explPos) <= radius*radius then
-											table.remove(explIds, j)
-											explodeOffline(explosive, true)
-										end
-									else
-										table.remove(explIds, j)
-									end
-								end
-							end
-						end
-					end
-					--amk.dump_table(explosivesAll)
-				end
-			else
-				sim:release(se_obj, true)
-			end
-			if first then
-				messg("Взорвано на другой территории", "Взрывчатка")
-			end
-		else
-			if first then
-				amk.send_tip("Взрывчатка НЕ взорвана! Она в кривом месте...", nil, 2)
-			end
-		end
-	end
-end
-
 -- для кеширования данных
 local explosivesInfo = {}
 
@@ -1177,50 +1078,6 @@ function collectExplosiveInfo(section)
 	return explosivesInfo[section]
 end
 
--- собираем информацию о жертвах
--- код повзаимствован из amk_offline_alife.offline_alife()
-function collectExplosiveVictimsOffline(se_obj, radius)
-	local sim = alife()
-	local vdata = {}
-	local ggraph = game_graph()
-	if ggraph:valid_vertex_id(se_obj.m_game_vertex_id) then
-		local map = sim:level_name(ggraph:vertex(se_obj.m_game_vertex_id):level_id())
-		local off_npcs = amk_offline_alife.off_npcs
-		local explPos = se_obj.position
-		
-		-- по сталкерам
-		
-		local function collectNPCs(offNPCs)
-			if offNPCs then
-				local offNPC
-				local victim
-				local sect
-				local dist
-				for a = 1, #offNPCs do
-					offNPC = offNPCs[a]
-					if offNPC then
-						victim = sim:object(offNPC.id)
-						if victim and victim.health and victim:health() > 0
-								and victim.can_switch_online and victim:can_switch_online()
-								and victim:name() == offNPC.name then
-							sect = victim:section_name()
-							dist = explPos:distance_to_sqr(victim.position)
-							if dist <= radius*radius then
-								table.insert(vdata, {["id"] = victim.id, ["dist"] = math.sqrt(dist), ["squere"] = getVictimSquare(sect)})
-							end
-						end
-					end
-				end
-			end
-		end
-		
-		collectNPCs(off_npcs[map].stalkers)
-		collectNPCs(off_npcs[map].monsters)
-	end
-	
-	return vdata
-end
-
 -- для кеширования данных
 local victimsSquare = {}
 
@@ -1235,26 +1092,6 @@ function getVictimSquare(sect)
 	end
 	
 	return victimsSquare[sect]
-end
-
-function damageVictimsOffline(infoVictimsOffline, infoExplosive)
-	local sim = alife()
-	local se_obj
-	local damage
-	local health
-	for i = 1, #infoVictimsOffline do
-		se_obj = sim:object(infoVictimsOffline[i].id)
-		if se_obj then
-			damage = calcDamageForVictim(infoVictimsOffline[i], infoExplosive)
-			if damage > 0 then
-				health = se_obj:health() - damage
-				if health < 0 then
-					health = 0
-				end
-				amk_offline_alife.set_npc_health(se_obj, health)
-			end
-		end
-	end
 end
 
 function calcDamageForVictim(victimInfo, infoExplosive)

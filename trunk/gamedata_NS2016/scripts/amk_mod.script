@@ -168,7 +168,6 @@ meceniy_work.main()
 	end
 
 	amk_anoms.init_0()		--загрузка таблицы "anti_spawn_zones"
-	amk_offline_alife.init()	--строим таблицу неписей, монстров и оружия
 	news_main.init()		--инициализация новостей
 	
 	-- перебор объектов и запуск функций с ним связанных
@@ -204,8 +203,6 @@ meceniy_work.main()
 						babah.collectBombs_single(sobj, sect)
 						-- выстреленная граната из подствольника (опять через три скрипта; где ?? о_О)
 						rx_ai.actor_net_spawn_single(sobj, sect, i)
-						-- обновляем список закрытых замком тайников
-						zamok.restore_single(sobj, sect)
 						-- динамические костры
 						xr_kamp.collect_kamp_fire_single(sobj, clid, lvl, sect)
 					end
@@ -213,10 +210,6 @@ meceniy_work.main()
 			end
 		end
 	end
-
---тоже с перебором. обновление таблицы "off_npcs"; иначе нельзя, а то неписи не поймут, какие тайники под замком, а какие нет
-	amk_offline_alife.update_npc_tables()
---- перебор объектов и запуск функций с ним связанных  ------------------ end ----
 
 	--if sol_stat then
 	--	sol_stat.printInfo()
@@ -250,9 +243,6 @@ meceniy_work.main()
 --- спавн удаление и т.д. ----------------------------------------------- end ----
 
 	death_manager.init()
---тесты
---zamok.test_trim()
---zamok.test_str_explode()
 end
 
 function restore_sun(lname)
@@ -1351,32 +1341,6 @@ function af_transform_universal_end( params )
 	end
 end
 
---'*******************************************************************************
---'   **   **   **   **   **    **   **   **   **    AMK_METKA     **   **   **   **   **    **   **   **   **
---'*******************************************************************************
-local beakons={}
-function check_beacon_drop(obj) counterAdd("amk_mod.check_beacon_drop")
-	local sim=not (alife()==nil)
-	local actor=db~=nil and db.actor~=nil
-	local lp=level.present()
-	local dp=device()==nil or device():is_paused()
-	if obj:section()=="amk_metka" then
-		beakons[obj:id()]=true
-	end
-end
-
-function check_metka() counterAdd("amk_mod.check_metka")
-	for id,v in pairs(beakons) do
-		local obj=level.object_by_id(id)
-		if obj then
-			beakons[id]=nil
-			if obj:parent()==nil then
-				local spwn=ui_dots.dots(get_hud(),id)
-				level.start_stop_menu(spwn,true)
-			end
-		end
-	end  
-end
 local last_update=0 
 local inert = 1000 
 local clicks_prev = 200 music_section="" music_previous_section="" music_next_section_start_time=0 music_stop_previous=0 music=false music_init = 0 music_themes = {} music_phases={} musicflag=1 

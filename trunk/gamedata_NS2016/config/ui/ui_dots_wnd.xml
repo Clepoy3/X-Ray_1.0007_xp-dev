@@ -1,34 +1,37 @@
-<w>
-  <main_dialog>
-		<dialog x="200" y="200" width="510" height="206">
-			<texture>ui_frame_error</texture>
-		</dialog>
+<?xml version="1.0" encoding="windows-1251" ?>
 
-		<capt x="90" y="4" width="200" height="29">
-			<text font="graffiti22">Активация GPS</text>
-		</capt>
-		
-		<msg x="180" y="50" width="200" height="30">
-			<text font="graffiti22">Текст для GPS метки:</text>
-		</msg>
+<cheat>	
+	<main x="50" y="50" width="550" height="450"/>
+	
+	<back_video x="10" y="10" width="380" height="320" stretch="1">
+		<texture>ui\credits_back_512_v10</texture>
+	</back_video>
 
-		<edit_box x="180" y="85" width="280" height="23">
-			<texture>ui_linetext_e</texture>
-			<text font="graffiti22" r="240" g="217" b="182"/>
-		</edit_box>
+	<background x="0" y="0" width="400" height="340" stretch="1">
+		<texture x="0" y="0" width="350" height="460">ui\ui_dg_inventory</texture>
+	</background>
 
-		<btn_1 x="30" y="65" width="117" height="29">
-			<texture_e>ui_button_ordinary_e</texture_e>
-			<texture_t>ui_button_ordinary_t</texture_t>
-			<texture_h>ui_button_ordinary_h</texture_h>
-			<text>Установить</text>
-		</btn_1>
+	<caption x="175" y="180" width="50" height="35">
+		<text font="graffiti22">Текст для GPS метки:</text>
+	</caption>
+	
+	<btn_set_gps x="40" y="270" width="117" height="29">
+	<texture_e>ui_button_ordinary_e</texture_e>
+	<texture_t>ui_button_ordinary_t</texture_t>
+	<texture_h>ui_button_ordinary_h</texture_h>
+		<text>Установить</text>
+	</btn_set_gps>
 
-		<btn_quit x="30" y="100" width="117" height="29">
-			<texture_e>ui_button_ordinary_e</texture_e>
-			<texture_t>ui_button_ordinary_t</texture_t>
-			<texture_h>ui_button_ordinary_h</texture_h>
-			<text>Не надо</text>
-		</btn_quit>
-	</main_dialog>
-</w>
+	<edit_box x="45" y="220" width="310" height="23">
+		<texture>ui_linetext_e</texture>
+		<text font="letterica18" r="240" g="217" b="182"/>
+	</edit_box>
+
+
+	<btn_quit x="240" y="270" width="117" height="29">
+		<texture_e>ui_button_ordinary_e</texture_e>
+		<texture_t>ui_button_ordinary_t</texture_t>
+		<texture_h>ui_button_ordinary_h</texture_h>
+		<text>Не надо</text>
+	</btn_quit>
+</cheat>

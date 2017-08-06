@@ -1345,11 +1345,7 @@ end
 function create_box() counterAdd("rx_wmgr.create_box")
 	local pos = vector():set(0,-300,0)
 	if db.actor then
-		local obj = alife():create("rx_inventory_box",pos,db.actor:level_vertex_id(),db.actor:game_vertex_id())
-		if obj then
-			boxid = obj.id
-			amk_offline_alife.protected.ids[boxid] = true
-		end
+		alife():create("rx_inventory_box",pos,db.actor:level_vertex_id(),db.actor:game_vertex_id())
 	end
 end
 
