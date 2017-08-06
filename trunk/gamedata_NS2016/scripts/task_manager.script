@@ -830,10 +830,11 @@ function CRandomTask:task_avail(actor, npc, p1, p2, p3, calculate) counterAdd("t
 
     return t
   end
-  if self.current_parent_type_prior[task_desc.complex_type] ~= nil and
-     self.current_parent_type_prior[task_desc.complex_type] < task_desc.prior then
-    return false
-  end
+  --KRodin: показывать сразу весь список поручений
+  --if self.current_parent_type_prior[task_desc.complex_type] ~= nil and
+  --   self.current_parent_type_prior[task_desc.complex_type] < task_desc.prior then
+  --  return false
+  --end
 
 --' printf("@@@avail %s", tostring(self.task_id_by_init_phrase_id[p3]))
 --' printf("@@@enabled %s", tostring(self.task_info[self.task_id_by_init_phrase_id[p3]].enabled))
