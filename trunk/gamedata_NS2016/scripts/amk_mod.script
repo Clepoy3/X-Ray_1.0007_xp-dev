@@ -203,8 +203,6 @@ meceniy_work.main()
 						babah.collectBombs_single(sobj, sect)
 						-- выстреленна€ граната из подствольника (оп€ть через три скрипта; где ?? о_ќ)
 						rx_ai.actor_net_spawn_single(sobj, sect, i)
-						-- динамические костры
-						xr_kamp.collect_kamp_fire_single(sobj, clid, lvl, sect)
 					end
 				end
 			end
@@ -222,7 +220,6 @@ meceniy_work.main()
 	sak_off_corpses.purge = nil
 	sak_off_corpses = nil
 	amk_anoms.init_2()		--спавн аномалий
-	xr_kamp.keep_actual_lights()	-- костры - зачистка лишнего собранного
 
 --аддон Ѕака - создание €щика при необходимости
 	rx_wmgr.manage_box_2()

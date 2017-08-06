@@ -778,9 +778,9 @@ local tasks_list = {
 	{ ["name"] = "meceniy_work.mainw",		["task"] = meceniy_work.mainw,			["group"] = 1000 },
 	{ ["name"] = "doc_viewer.update",		["task"] = doc_viewer.update,			["group"] = 1000 },
 	{ ["name"] = "stco.update",			["task"] = stco.update,				["group"] = 1000 },
+	{ ["name"] = "ogse_campfire.on_actor_update", ["task"] = ogse_campfire.on_actor_update, ["group"] = 1000 }, --TODO: отдать под управление менеджеру сигналов!
 	-- добавлять по колбэку
 	{ ["name"] = "bind_stalker.border_danger",	["task"] = bind_stalker.border_danger,		["group"] = 1000 },
-	{ ["name"] = "xr_kamp.update",			["task"] = xr_kamp.update,			["group"] = 1000 },
 	{ ["name"] = "amk_mod.check_armor",		["task"] = amk_mod.check_armor,			["group"] = 1000 },
 	{ ["name"] = "amk_mod.interactive_music",		["task"] = amk_mod.interactive_music,		["group"] = 1000 },
 	{ ["name"] = "amk_mod.firebat_ammo",		["task"] = amk_mod.firebat_ammo,		["group"] = 1000 },
