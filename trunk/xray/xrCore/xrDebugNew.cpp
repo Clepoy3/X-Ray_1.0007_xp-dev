@@ -57,34 +57,17 @@
 extern bool shared_str_initialized;
 extern bool force_flush_log;
 
-// KD: we don't need BugTrap since it provides _only_ nice ui window and e-mail sending
 #ifdef __BORLANDC__
     #	include "d3d9.h"
     #	include "d3dx9.h"
     #	include "D3DX_Wrapper.h"
     #	pragma comment(lib,"EToolsB.lib")
        static BOOL			bException	= TRUE;
-//    #   define USE_BUG_TRAP
 #else
-//#	define USE_BUG_TRAP
 	static BOOL bException = FALSE;
 #endif
 
 #define DEBUG_INVOKE __debugbreak()
-
-#ifdef USE_BUG_TRAP
-#ifdef _WIN64
-#	include "bugtrap.h"						// for BugTrap functionality
-#	pragma comment(lib,"BugTrap-x64.lib")		// Link to x64 dll
-#else
-#	include "bugtrap.h"						// for BugTrap functionality
-    #ifndef __BORLANDC__
-        #	pragma comment(lib,"BugTrap.lib")		// Link to ANSI DLL
-    #else
-        #	pragma comment(lib,"BugTrapB.lib")		// Link to ANSI DLL
-    #endif
-#endif
-#endif // USE_BUG_TRAP
 
 #include <new.h>							// for _set_new_mode
 #include <signal.h>							// for signals
@@ -292,9 +275,7 @@ void gather_info		(const char *expression, const char *description, const char *
 
 
 		buffer			+= sprintf(buffer, MSG_SEE_LOG);
-
-//		buffer			+= sprintf(buffer,"stack trace:%s%s",endline,endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
+#endif
 		bool ss_init = shared_str_initialized;
 		shared_str_initialized = false;
 #if XR_USE_BLACKBOX
@@ -316,13 +297,6 @@ void gather_info		(const char *expression, const char *description, const char *
 #if XR_USE_BLACKBOX
 		}
 #endif
-
-
-/*#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		buffer += sprintf(buffer,"%s%s", stackTrace[i],endline);
-#endif*/
-				
-
 		if (!IsDebuggerPresent())
 			 copy_to_clipboard	(assertion_info);
 	}
@@ -332,9 +306,16 @@ void xrDebug::do_exit	(const std::string &message)
 {
 	FlushLog			();
 
-	ShowWindow(GetForegroundWindow(), SW_MINIMIZE); //KRodin: попытка свернуть окно игры
+	auto wnd = GetActiveWindow();
+	if (!wnd)
+		wnd = GetForegroundWindow();
+	ShowWindow(wnd, SW_MINIMIZE);
+	while (ShowCursor(TRUE) < 0);
 
-	MessageBox			(NULL,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+	MessageBox(wnd,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+
+	ShowCursor(FALSE);
+
 	TerminateProcess	(GetCurrentProcess(),1);
 }
 
@@ -357,9 +338,15 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 		get_on_dialog()	(true);
 
 #ifdef XRCORE_STATIC
-	ShowWindow(GetForegroundWindow(), SW_MINIMIZE); //KRodin: попытка свернуть окно игры
+	auto wnd = GetActiveWindow();
+	if (!wnd)
+		wnd = GetForegroundWindow();
+	ShowWindow(wnd, SW_MINIMIZE);
+	while (ShowCursor(TRUE) < 0);
 
-	MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+	MessageBox(wnd,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+
+	ShowCursor(FALSE);
 #else
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	LPCSTR				endline = "\r\n";
@@ -368,12 +355,16 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	buffer				+= sprintf(buffer, MSG_PRESS_RETRY,    endline);
 	buffer				+= sprintf(buffer, MSG_PRESS_CONTINUE, endline,endline);
 
-	game_hwnd = GetForegroundWindow();
-	ShowWindow(game_hwnd, SW_MINIMIZE); //KRodin: теперь окно точно сворачиваетс€
+	game_hwnd = GetActiveWindow();
+	if (!game_hwnd)
+		game_hwnd = GetForegroundWindow();
+	ShowWindow(game_hwnd, SW_MINIMIZE);
+	while (ShowCursor(TRUE) < 0);
+
 	error_after_dialog = true;
 
 	int result = MessageBox( //KRodin: “еперь сообщение об ошибке действительно выводитс€, но курсор внутри окна не виден.  ак это исправить - пон€ти€ не имею
-		NULL,
+		game_hwnd,
 		assertion_info,
 		"‘атальна€ ќшибка",
 		MB_CANCELTRYCONTINUE|MB_ICONERROR|MB_SYSTEMMODAL
@@ -396,12 +387,12 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 		}
 		default : DEBUG_INVOKE; // https://github.com/OpenXRay/xray-16/commit/f0109a39b1a51a2e9ee49d7f25fbce4dd35370e5
 	}
-#else // USE_OWN_ERROR_MESSAGE_WINDOW
-#		ifdef USE_BUG_TRAP
-			BT_SetUserMessage	(assertion_info);
-#		endif // USE_BUG_TRAP
+
+	ShowCursor(FALSE);
+	game_hwnd = nullptr;
+#else
 		DEBUG_INVOKE;
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
+#endif
 #endif
 
 	if (get_on_dialog())
@@ -499,87 +490,6 @@ int out_of_memory_handler	(size_t size)
 	return					1;
 }
 
-extern LPCSTR log_name();
-
-void CALLBACK PreErrorHandler	(INT_PTR)
-{
-#ifdef USE_BUG_TRAP
-	if (!xr_FS || !FS.m_Flags.test(CLocatorAPI::flReady))
-		return;
-
-	string_path				log_folder;
-
-	__try {
-		FS.update_path		(log_folder,"$logs$","");
-		if ((log_folder[0] != '\\') && (log_folder[1] != ':')) {
-			string256		current_folder;
-			_getcwd			(current_folder,sizeof(current_folder));
-			
-			string256		relative_path;
-			strcpy			(relative_path,log_folder);
-			strconcat		(sizeof(log_folder),log_folder,current_folder,"\\",relative_path);
-		}
-	}
-	__except(EXCEPTION_EXECUTE_HANDLER) {
-		strcpy				(log_folder,"logs");
-	}
-
-	BT_AddLogFile			(log_name());
-#endif // USE_BUG_TRAP
-}
-
-#ifdef USE_BUG_TRAP
-void SetupExceptionHandler	(const bool &dedicated)
-{
-	BT_InstallSehFilter		();
-#ifndef USE_OWN_ERROR_MESSAGE_WINDOW
-	if (!dedicated && !strstr(GetCommandLine(),"-silent_error_mode"))
-		BT_SetActivityType	(BTA_SHOWUI);
-	else
-		BT_SetActivityType	(BTA_SAVEREPORT);
-#else // USE_OWN_ERROR_MESSAGE_WINDOW
-	BT_SetActivityType		(BTA_SAVEREPORT);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
-	BT_SetDialogMessage				(
-		BTDM_INTRO2,
-		"\
-This is XRay Engine crash reporting client. \
-To help the development process, \
-please Submit Bug or save report and email it manually (button More...).\
-\r\nMany thanks in advance and sorry for the inconvenience."
-	);
-
-	BT_SetPreErrHandler		(PreErrorHandler,0);
-	BT_SetAppName			("XRay Engine");
-	BT_SetReportFormat		(BTRF_TEXT);
-	BT_SetFlags				(BTF_DETAILEDMODE | /**BTF_EDIETMAIL | /**/BTF_ATTACHREPORT /**| BTF_LISTPROCESSES /**| BTF_SHOWADVANCEDUI /**| BTF_SCREENCAPTURE/**/);
-	BT_SetDumpType			(
-		MiniDumpWithDataSegs |
-//		MiniDumpWithFullMemory |
-//		MiniDumpWithHandleData |
-//		MiniDumpFilterMemory |
-//		MiniDumpScanMemory |
-//		MiniDumpWithUnloadedModules |
-#ifndef _EDITOR
-		MiniDumpWithIndirectlyReferencedMemory |
-#endif // _EDITOR
-//		MiniDumpFilterModulePaths |
-//		MiniDumpWithProcessThreadData |
-//		MiniDumpWithPrivateReadWriteMemory |
-//		MiniDumpWithoutOptionalData |
-//		MiniDumpWithFullMemoryInfo |
-//		MiniDumpWithThreadInfo |
-//		MiniDumpWithCodeSegs |
-		0
-	);
-	BT_SetSupportEMail		("crash-report@stalker-game.com");
-//	BT_SetSupportServer		("localhost", 9999);
-//	BT_SetSupportURL		("www.gsc-game.com");
-}
-#endif // USE_BUG_TRAP
-
-#if 1
 typedef LONG WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pExceptionInfo);
 static UnhandledExceptionFilterType	*previous_filter = 0;
 
@@ -807,16 +717,21 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 #ifdef USE_OWN_MINI_DUMP
 		save_mini_dump		(pExceptionInfo);
 #endif // USE_OWN_MINI_DUMP
+
+	auto wnd = GetActiveWindow();
+	if (!wnd)
+		wnd = GetForegroundWindow();
+	ShowWindow(wnd, SW_MINIMIZE);
+	while (ShowCursor(TRUE) < 0);
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	if (!error_after_dialog) {
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()	(true);
 
-		ShowWindow(GetForegroundWindow(), SW_MINIMIZE); //KRodin: попытка свернуть окно игры
-
-		MessageBox(NULL, MSG_FATAL_ERROR_OK, "Fatal error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		MessageBox(wnd, MSG_FATAL_ERROR_OK, "Fatal error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 	}
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
+#endif
+	ShowCursor(FALSE);
 
 	if (!previous_filter) {
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
@@ -836,7 +751,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	return					(EXCEPTION_CONTINUE_SEARCH) ;
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////
 #ifdef M_BORLAND
@@ -862,7 +776,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
     _CRTIMP int		__cdecl _set_new_mode( int );
     _CRTIMP _PNH	__cdecl _set_new_handler( _PNH );
 */
-#ifndef USE_BUG_TRAP
 	void _terminate		()
 	{
 		if (strstr(GetCommandLine(),"-silent_error_mode"))
@@ -894,27 +807,28 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		LPSTR					buffer = assertion_info + xr_strlen(assertion_info);
 		buffer					+= sprintf(buffer, MSG_OK_TO_ABORT);
 
-		ShowWindow(GetForegroundWindow(), SW_MINIMIZE); //KRodin: попытка свернуть окно игры
+		auto wnd = GetActiveWindow();
+		if (!wnd)
+			wnd = GetForegroundWindow();
+		ShowWindow(wnd, SW_MINIMIZE);
+		while (ShowCursor(TRUE) < 0);
 
 		MessageBox				(
-			GetTopWindow(NULL),
+			wnd,
 			assertion_info,
 			"Fatal Error",
 			MB_OK|MB_ICONERROR|MB_SYSTEMMODAL
 		);
 		
+		ShowCursor(FALSE);
+
 		exit					(-1);
 	//	FATAL					("Unexpected application termination");
 	}
-#endif // USE_BUG_TRAP
 
 	void debug_on_thread_spawn			()
 	{
-#ifdef USE_BUG_TRAP
-		BT_SetTerminate					();
-#else // USE_BUG_TRAP
 		std::set_terminate				(_terminate);
-#endif // USE_BUG_TRAP
 	}
 
 	static void handler_base				(LPCSTR reason_string)
@@ -1055,26 +969,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		_set_purecall_handler			(&pure_call_handler);
 
-#if 0// should be if we use exceptions
-		std::set_unexpected				(_terminate);
-#endif
-
-#ifdef USE_BUG_TRAP
-		SetupExceptionHandler			(dedicated);
-#endif // USE_BUG_TRAP
 		previous_filter					= ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
-
-#if 0
-		struct foo {static void	recurs	(const u32 &count)
-		{
-			if (!count)
-				return;
-
-			_alloca			(4096);
-			recurs			(count - 1);
-		}};
-		foo::recurs			(u32(-1));
-		std::terminate		();
-#endif // 0
 	}
 #endif
