@@ -2071,6 +2071,7 @@ function do_seen_monster()
 									local pk = get_netpk( obj, 1 )
 									ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
 									local data = pk:get()
+									local cd = data.custom_data:getTable()
 									--
 									if not cd.smart_terrains then cd.smart_terrains={} end
 									cd.smart_terrains.none = "true"

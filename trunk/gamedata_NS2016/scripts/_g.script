@@ -67,18 +67,35 @@ if not string.explode then
 	end
 end
 --==============================================================================================
---Поверхностное (простое) клонирование таблицы: 
---создаётся копия таблицы и копии всех элементов без их клонирования,
---т.е. для ссылочных типов обе таблицы будут содержать ссылки на одни и те же данные
---метатаблицы не копируются
-if not table.clone_simple then
-	table.clone_simple = function(tbl)
-		local res = {}
+function table_copy(tbl, simple) --KRodin: неплохая функция
+	if type(tbl) ~= "table" then return tbl end
+	local mt = getmetatable(tbl)
+	local res = {}
+	if simple then
+		local v
+		for i = 1, #tbl do
+			v = tbl[i]
+			-- если значение - таблица
+			if type(v) == "table" then
+				v = table_copy(v, simple)
+			end
+			table.insert(res, v)
+		end
+	else
 		for k,v in pairs(tbl) do
+			-- ключами могут быть и таблицы
+			if type(k) == "table" then
+				k = table_copy(k, simple)
+			end
+			-- если значение - таблица
+			if type(v) == "table" then
+				v = table_copy(v, simple)
+			end
 			res[k] = v
 		end
-		return res
 	end
+	setmetatable(res, mt)
+	return res
 end
 --==============================================================================================
 -- выравнивание значения n в пределы от min до max
@@ -221,6 +238,219 @@ end
 function ASSERT(val, ...)
 	if not val then abort(...) end
 end
+
+-- делит строку в виде "aaa, bbb, ccc" на строки "aaa", "bbb", "ccc" и возвращает их в виде массива
+function parse_names( s )
+	return string.explode(",", s, true)
+end
+
+--Конвертирует строку вида "actor, 0, actor_dolg, 1, actor_freedom, 2, ..."
+--В таблицу вида { ["actor"] = "0", ["actor_dolg"] = "1", ["actor_freedom"] = "2", ... }
+function parse_key_value( s )
+	if s == nil then return nil end --бывает и такое
+
+    local t = {}
+	local t0 = parse_names( s )
+    for i=1, #t0, 2 do
+		local key, nam = t0[i], t0[i+1]
+		ASSERT(nam, "parse_key_value: stopped at %s: [%s] - [%s]", i, key or "nil", nam or "nil")
+		t[key] = nam
+    end
+    return t
+end
+
+--Парсит строку вида "n1, n2, n3..." в таблицу { n1, n2, n3, ... } где n1, n2, n3... - числа
+function parse_nums( s )
+    local t = {}
+    for i,entry in ipairs(parse_names( s )) do
+		local v = tonumber( entry )
+		ASSERT(v, "parse_nums: [%s], stopped at [%s]: [%s]", s, i, entry)
+		table.insert(t,  v)
+    end
+    return t
+end
+
+function yaw( v1, v2 )	-- Вычисляет yaw в радианах
+	return math.abs(v2:getH()-v1:getH())
+end
+
+function yaw_degree( v1, v2 )
+	return yaw(v1, v2) * 57.295779513
+end
+
+function yaw_degree3d( v1, v2 )
+	return math.acos(v1:dotproduct(v2))*57.295779513
+end
+
+function vector_cross ( v1, v2 )
+	return vector():crossproduct(v1, v2)
+end
+
+function vector_rotate_y( v, angle ) -- Вращает вектор вокруг оси y против часовой стрелки
+    angle = angle * 0.017453292519943295769236907684886
+    local c = math.cos(angle)
+    local s = math.sin(angle)
+    return vector():set(v.x * c - v.z * s, v.y, v.x * s + v.z * c)
+end
+
+function clear_table( t ) -- очистка таблицы
+	t = {}
+end
+
+
+sys_ini = system_ini()
+
+-- служебные функции для чтения параметров из секций объектов
+
+function get_string(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_string: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_string(section, param)
+	else
+		return def_val
+	end
+end
+
+function get_string_wq(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_string: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_string_wq(section, param)
+	else
+		return def_val
+	end
+end
+
+function get_u32(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_u32: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_u32(section, param)
+	else
+		return def_val
+	end
+end
+
+function get_bool(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_bool: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_bool(section, param)
+	else
+		return not (not def_val)
+	end
+end
+
+function get_float(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_float: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		return ini:r_float(section, param)
+	else
+		return def_val
+	end
+end
+
+-- получить класс из секции, полезно в том случае, если нет объекта (и недоступен метод clsid), а есть только имя секции
+function get_class(section)
+	ASSERT(sys_ini:section_exist(section), "get_class: section '"..section.."' doesn't exist")
+	ASSERT(sys_ini:line_exist(section, "class"), "get_class: there is no 'class' parameter in the section '"..section.."'")
+	return sys_ini:r_clsid(section, "class")
+end
+
+-- делит строку в виде "aaa,bbb,ccc" на строки "aaa", "bbb", "ccc" и возвращает их в виде массива
+function split_comma_separated_list(s)
+	return string.explode(",", s)
+end
+
+-- читает время, сохранённое в виде строки со значениями, разделёнными запятой, и конвертирует в значение класса CTime
+function unpack_time_from_string(str_time)
+	local time_values = {}
+	for i,s in ipairs(split_comma_separated_list(str_time)) do
+		local value = tonumber(s)
+		ASSERT(value, "unpack_time_from_string: problem with unpacking saved time '%s', value #%d (%s)", str_time, i, s)
+		table.insert(time_values, value)
+	end
+	ASSERT(#time_values == 7, "unpack_time_from_string: packed time '%s' has wrong number of components. Must be equal to seven.")
+	local res = game.CTime()
+	res:set(unpack(time_values))
+	return res
+end
+
+-- упаковать время в виде объекта CTime в строку значений, разделённых запятой
+function pack_time_to_string(t)
+	ASSERT(t, "pack_time_to_string: t is a nil reference")
+	return table.concat({t:get()}, ',')
+end
+
+-- читает строку вида "s1,s2,s3" и парсит на строковые значения, разделённые запятой, в таблицу вида {s1, s2, s3}
+function get_names(section, param, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_names: section '"..section.."' doesn't exist")
+	local s = ini:r_string(section, param)
+	return split_comma_separated_list(s)
+end
+
+-- читает строку вида "s1,s2,s3" и парсит на численные значения, разделённые запятой, в таблицу вида {n1, n2, n3}
+function get_numbers(section, param, ini_file)
+	local t = {}
+	for i,sv in ipairs(get_names(section, param, ini_file)) do
+		local v = tonumber(sv)
+		ASSERT(v, "get_numbers: can not convert to number item ["..i.."]: "..sv)
+		table.insert(t, v)
+	end
+	return t
+end
+
+function get_section_keys(section, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_section_keys: section '"..section.."' doesn't exist")
+	local t = {}
+	for i=0,ini:line_count(section)-1 do
+		local _, key, v = ini:r_line(section, i)
+		t[i+1] = key
+	end
+	return t
+end
+
+function get_section_keys_and_values( section, ini_file )
+  local ini = ini_file or sys_ini
+  ASSERT( ini:section_exist( section ), "get_section_keys: section '" .. section .. "' doesn't exist" )
+  local t = {}
+  for i = 0, ini:line_count( section ) - 1 do
+  local _, key, v = ini:r_line( section, i, "", "" )
+    t[ key ] = v
+  end
+  return t
+end
+
+function get_vector(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_vector: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		local pos = get_names(section, param, ini)
+		return vector():set(tonumber(pos[1]), tonumber(pos[2]), tonumber(pos[3]))
+	else 
+		if def_val then
+			return def_val
+		else
+			return vector():set(0,0,0)
+		end
+	end
+end
+
+-- значение по умолчанию должно задаваться таблицей {num1, num2}
+function get_vector2(section, param, def_val, ini_file)
+	local ini = ini_file or sys_ini
+	ASSERT(ini:section_exist(section), "get_vector2: section '"..section.."' doesn't exist")
+	if ini:line_exist(section, param) then
+		local pos = get_names(section, param, ini)
+		return tonumber(pos[1]), tonumber(pos[2])
+	else
+		return def_val and unpack(def_val)
+	end
+end
 --==============================================================================================
 --*************************************************************************************************************************
 
@@ -240,8 +470,6 @@ math_floor, math_ceil = math.floor, math.ceil
 math_mod, math_sqrt = math.mod, math.sqrt
 math_acos, math_cos, math_sin = math.acos, math.cos, math.sin
 
-sys_ini = system_ini()
-
 -- тоже на  всякий случай. Поиск по _G - долгий. Дублировать и инлайнить там, где нужны
 
 function log( ct, fmt, ... )	-- src - откуда вызван, если false - не выводится, категория игнорируется
@@ -249,7 +477,7 @@ function log( ct, fmt, ... )	-- src - откуда вызван, если false - не выводится, 
 --	get_console():execute( "load ~" .. ct .. "~ [_g] " .. ( ( ... and string_format( fmt, ... ) ) or fmt or "" ) )
 end
 
-function round( v )
+function round( v ) --KRodin: todo: заменить на math.round, протестить
 	local min = math_floor( v )
 	local max = min + 1
 	-- if value - min > max - v then return max end	-- dc: приведем к "<, ==, >="
@@ -284,7 +512,7 @@ function dummy_action()
 	return false
 end
 
-function trim( s ) return string_match( s, "^%s*(.*%S)" ) or "" end	-- обрезаем пробелы
+function trim( s ) return string_match( s, "^%s*(.*%S)" ) or "" end	-- обрезаем пробелы --KRodin: заменить на string.trim!
 
 
 -- старый вариант
@@ -344,88 +572,6 @@ function Parse_StrToTbl( sStr, sDiv, Mode, strong )
 	end
 	return cached_Parse_StrToTbl[key]
 end
-
-
--- function parse_names( s )
---	local t, n = {}, 0
---	for name in string_gfind( s, "([%w%-%._\\]+)[%,%s]*" ) do n = n + 1; t[n] = name end
---	return t
--- end
-
-
-local cached_parse_names = {}
-local cached_hit_parse_names = 0
-function parse_names( s )
-	if not cached_parse_names[s] then
-		local t = {}
-		for name in string_gfind( s, "([%w_\\]+)%p*" ) do table_insert( t, name ) end
-		cached_parse_names[s] = t
-	else
-		cached_hit_parse_names = cached_hit_parse_names + 1
-	end
-	return cached_parse_names[s]
-end
-
-
--- function parse_key_value( s )
---	if s then
---		local t = {}
---		local k
---		for n in string_gfind( s, "([%w%-%._\\]+)[%,%s]*" ) do
---			if k then t[k] = n; k = nil
---    			else k = n
---		end	end
---		return t
---	end
--- end
-
-
-local cached_parse_key_value = {}
-local cached_hit_parse_key_value = 0
-
-function parse_key_value( s )
-	if s == nil then return nil end
-	if not cached_parse_key_value[s] then
-		local t = {}
-		local key, name
-		for name in string_gfind( s, "([%w_\\]+)%p*" ) do
-			if key == nil then key = name
-			else
-				t[key] = name
-				key = nil
-			end
-		end
-		
-		cached_parse_key_value[s] = t
-	else
-		cached_hit_parse_key_value = cached_hit_parse_key_value + 1
-	end
-	return cached_parse_key_value[s]
-end
-
-
--- function parse_nums( s )
---	local t, n = {}, 0
---	for entry in string_gfind( s, "([%d%.]+)%,*" ) do n = n + 1; t[n] = tonumber( entry ) end
---	return t
--- end
-
-
-local cached_parse_nums = {}
-local cached_hit_parse_nums = 0
-
-function parse_nums( s )
-	if not cached_parse_nums[s] then
-		local t = {}
-		for entry in string_gfind( s, "([%d%.]+)%,*" ) do table_insert( t, tonumber( entry ) ) end
-		
-		cached_parse_nums[s] = t
-	else
-		cached_hit_parse_nums = cached_hit_parse_nums + 1
-	end
-	return cached_parse_nums[s]
-end
-
 
 -- ini reading functions by sapsan --
 
@@ -579,10 +725,6 @@ function load_scheme( filename, scheme, stype )	-- имя файла без расширения
 	stypes[scheme] = stype
 end
 
-
-if not time_global then
-	time_global = function() return device():time_global() end
-end
 
 function action( npc, ... )
 	local act = entity_action()
@@ -956,53 +1098,13 @@ end
 
 
 function is_object_online( obj_id )
-	if level.object_by_id( obj_id ) then return true end
-	return false
+	return level.object_by_id( obj_id ) ~= nil
 end
 
 
 function get_clsid( obj )
 	if obj then return obj:clsid() end
 	return nil
-end
-
-
-function yaw( v1, v2 )	-- Вычисляет yaw в радианах
-	return math_acos( ( (v1.x * v2.x ) + ( v1.z * v2.z ) )
-		/ math_sqrt( ( v1.x * v1.x + v1.z * v1.z ) * ( v2.x * v2.x + v2.z * v2.z ) ) )
-end
-
-
-function yaw_degree( v1, v2 )
-	return math_acos( ( ( v1.x * v2.x ) + ( v1.z * v2.z ) )
-		/ math_sqrt( ( v1.x * v1.x + v1.z * v1.z ) * ( v2.x * v2.x + v2.z * v2.z ) ) ) * 57.2957
-end
-
-
-function yaw_degree3d( v1, v2 )
-	return math_acos( ( v1.x * v2.x + v1.y * v2.y + v1.z * v2.z )
-		/ math_sqrt( ( v1.x * v1.x + v1.y * v1.y + v1.z * v1.z )
-			* ( v2.x * v2.x + v2.y * v2.y + v2.z * v2.z ) ) ) * 57.2957
-end
-
-function vector_cross ( v1, v2 )
-	return vector():set(
-		v1.y * v2.z - v1.z * v2.y,
-		v1.z * v2.x - v1.x * v2.z,
-		v1.x * v2.y - v1.y * v2.x )
-end
-
-
-function vector_rotate_y( v, angle )	-- Вращает вектор вокруг оси y против часовой стрелки
-	angle = angle * 0.017453292519943295769236907684886
-	local c = math_cos( angle )
-	local s = math_sin( angle )
-	return vector():set( v.x * c - v.z * s, v.y, v.x * s + v.z * c )
-end
-
-
-function clear_table( t )	-- очистка таблицы, todo: вынести отовсюду эту гадость
-	for i = #t, 1, -1 do table_remove( t, i ) end
 end
 
 
@@ -1186,7 +1288,7 @@ end
 -- end
 
 
-function odd( x )	-- проверяет целую часть числа на нечётность
+function odd( x )	-- проверяет целую часть числа на нечётность -- KRodin: TODO: заменить на что-то более подходящее.
 	-- return math_floor( x * 0.5 ) * 2 == math_floor( x )	-- И НЕ РАБОТАЕТ.
 	return math_floor( math_floor( x * 0.5 ) * 2 ) == math_floor( x )
 end
@@ -1286,14 +1388,11 @@ end
 
 
 function isWeapon( obj )
-	if obj and IAmAWeapon[obj:clsid()] then return true end
-	return false
+	return obj and IAmAWeapon[obj:clsid()]
 end
 
-
 function isWeaponFireOnly( obj )
-	if obj and IAmAWeaponFireOnly[obj:clsid()] then return true end
-	return false
+	return obj and IAmAWeaponFireOnly[obj:clsid()]
 end
 
 
@@ -1314,8 +1413,7 @@ end
 object_type_m = {}
 
 function is_object_monster( obj )
-	if obj and object_type_m[ obj:clsid()] then return true end
-	return false
+	return obj and object_type_m[ obj:clsid()]
 end
 
 
@@ -1341,8 +1439,6 @@ valuable_clsid = {}
 function start_game_callback()
 
 	m_netpk.attach()
-
-	math.randomseed( time_global() )
 
 	ammo_section = _g_tables.ammo_section
 	quest_section = _g_tables.quest_section
@@ -1392,9 +1488,6 @@ function counterPrint()
 
 	get_console():execute("load ~~~ ")
 	get_console():execute("load ~~~ cached_hit_Parse_StrToTbl: "..tostring(cached_hit_Parse_StrToTbl))
-	get_console():execute("load ~~~ cached_hit_parse_names: "..tostring(cached_hit_parse_names))
-	get_console():execute("load ~~~ cached_hit_parse_key_value: "..tostring(cached_hit_parse_key_value))
-	get_console():execute("load ~~~ cached_hit_parse_nums: "..tostring(cached_hit_parse_nums))
 	get_console():execute("load ~~~ ")
 	get_console():execute("load ~~~ ")
 	get_console():execute("load ~~~ ")
@@ -1538,38 +1631,6 @@ function t_finish(name)
 	t.time_spend = t.time_spend + ts
 	t.current = nil
 	get_console():execute("load ~profiling~ TIME SPEND ["..name.."]: "..string_format("%02.4f",ts/1000000).."s, total time: "..string_format("%05.4f",t.time_spend/1000000).."s, count: "..t.count..", average: "..string_format("%02.4f",t.time_spend/1000000/t.count).."s")
-end
-
-
-function table_copy(tbl, simple)
-	if type(tbl) ~= "table" then return tbl end
-	local mt = getmetatable(tbl)
-	local res = {}
-	if simple then
-		local v
-		for i = 1, #tbl do
-			v = tbl[i]
-			-- если значение - таблица
-			if type(v) == "table" then
-				v = table_copy(v, simple)
-			end
-			table_insert(res, v)
-		end
-	else
-		for k,v in pairs(tbl) do
-			-- ключами могут быть и таблицы
-			if type(k) == "table" then
-				k = table_copy(k, simple)
-			end
-			-- если значение - таблица
-			if type(v) == "table" then
-				v = table_copy(v, simple)
-			end
-			res[k] = v
-		end
-	end
-	setmetatable(res, mt)
-	return res
 end
 
 function deepcompare(t1,t2,ignore_mt)
