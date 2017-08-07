@@ -12,7 +12,7 @@ min_radius                   = 0
 max_radius                   = 100 
 description                  = enc_weapons1_wpn-ak74_m1
 
-script_binding  = bind_wpn.init
+;script_binding  = bind_wpn.init ;Надо б поотвывать отовсюду
 
 ef_main_weapon_type          = 2
 ef_weapon_type               = 6
@@ -37,7 +37,7 @@ animation_slot               = 2
 
 inv_name                     = wpn-ak74_m1
 inv_name_short               = wpn-ak74_m1
-inv_weight                   = 3 
+inv_weight                   = 2.7
 
 inv_grid_width     = 4
 inv_grid_height              = 2
@@ -49,45 +49,47 @@ kill_msg_y                   = 123
 kill_msg_width               = 69
 kill_msg_height              = 30
 
-;params of weapon recoil
-fire_dispersion_base          = 0.20 
-control_inertion_factor       = 1.09f
 disp_rate                     = 1.65
+;-----------------------------------------------------------------------------------
+;params of weapon recoil
+fire_dispersion_base    = 0.18 ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor = 1.25f
 
 ;отдача
-cam_relax_speed               = 7 
-cam_relax_speed_ai            = 120.75
-cam_dispersion                = 0.5 
-cam_dispersion_inc            = 0.15
-cam_dispertion_frac           = 0.9 
-cam_max_angle                 = 13 
-cam_max_angle_horz            = 25 
-cam_step_angle_horz           = 1.25
+cam_relax_speed        = 8.5;3.5; 0.15 ;скорость возврата в исходное положение
+cam_relax_speed_ai     = 120.75
+cam_dispersion         = 0.15 ;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc     = 0.15 ;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac    = 0.9 ;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle          = 6.0 ;максимальный угол отдачи
+cam_max_angle_horz     = 8.0 ;(degree) maximum shot horizontal degree 
+cam_step_angle_horz    = 1.1;1 ;(degree) size of step camera moved in horizontal position while shooting
 
-fire_dispersion_condition_factor = 3 
-misfire_probability              = 0.0008 
-misfire_condition_k              = 0.12
-condition_shot_dec               = 0.000066
+fire_dispersion_condition_factor = 1.5 ;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability              = 0.0003 ;вероятность осечки при максимальном износе 
+misfire_condition_k              = 0.05
+condition_shot_dec               = 0.00002 ;увеличение износа при каждом выстреле
+;-----------------------------------------------------------------------------------
 
-fire_point                       = 0,0.3,0.59 
-smoke_particles                  = weapons\group_items\generic_smoke_shells
-shell_point                      = 0.00, 0.262, 0.189 
-shell_particles                  = weapons\g_shells_l_ns_556 
+fire_point = 0,0.216,0.62 ; position (3rd person view) for particles of fire 
+smoke_particles = weapons\generic_shoot_00
+shell_point         = 0,0.1995,0.149
+shell_particles     = weapons\arsenal_shells1
 
-PDM_disp_base                    = 1.3
-PDM_disp_vel_factor              = 0.95
-PDM_disp_accel_factor            = 0.95
-PDM_crouch                       = 1.0
-PDM_crouch_no_acc                = 1.0
+PDM_disp_base          = 1.0
+PDM_disp_vel_factor    = 1.3
+PDM_disp_accel_factor  = 1.3
+PDM_crouch             = 1.0
+PDM_crouch_no_acc      = 1.0
 
 ; ttc
-hit_power                        = 0.75
+hit_power                        = 0.78 ;0.75
 hit_impulse                      = 5 
 hit_type                         = fire_wound 
-hit_rate                         = 1.85
+hit_rate                         = 1.88 ;1.85
 fire_distance                    = 150
-bullet_speed                     = 800 
-rpm                              = 900
+bullet_speed                     = 730 ;800 
+rpm                              = 850 ;900
 
 rpm_empty_click                  = 350
 use_aim_bullet                   = false 
@@ -95,21 +97,21 @@ time_to_aim                      = 0.7
 
 hud = wpn_ak74_m1_hud 
 
-position                         = -0.026,-0.216,0.0 
-orientation                      = 0,0,0 
+position = -0.026,-0.172,-0.02 ; position (offset) and orientation of the weapon in the hands of character
+orientation = 0,0,0 ; (3rd person view)
 
-strap_position           = -0.18,-0.45,0.2 
-strap_orientation        = -10,-5,10 
-strap_bone0              = bip01_spine2
-strap_bone1              = bip01_spine1
+strap_position = -0.16,-0.40,0.15 ; position (offset) and orientation of the weapon when it is strapped
+strap_orientation = -10,-5,10 ; (3rd person view in degrees)
+strap_bone0 = bip01_spine2
+strap_bone1 = bip01_spine1
 
-visual                   = weapons\ak74_m1\wpn_ak74_m1.ogf 
+visual = Aaz\AK104S\wpn_ak104.ogf
 
-light_color              = 0.0,0.0,0.0 
-light_range              = 0 
-light_var_color          = 0.00
-light_var_range          = 0.0
-light_time               = 0.0
+light_color = 0.6,0.5,0.3 ; params for light during the fire
+light_range = 5 ; radius
+light_var_color = 0.05 
+light_var_range = 0.5
+light_time = 0.2 
 
 ;addons
 scope_status             = 0
@@ -117,41 +119,43 @@ silencer_status          = 0
 grenade_launcher_status  = 0
 
 zoom_enabled             = true 
-scope_zoom_factor        = 50 
+scope_zoom_factor        = 45 ;50
 
-snd_draw                 = weapons\ak74_m1\akmod_draw
-snd_holster              = weapons\ak74_m1\akmod_holster
-snd_shoot                = weapons\ak74_m1\akmod_shoot
-snd_empty                = weapons\ak74_m1\akmod_empty, 0.7
-snd_reload               = weapons\ak74_m1\akmod_reload, 0.6, 1
+snd_draw					= weapons\ak104s\draw
+snd_holster					= weapons\ak104s\holster
+snd_shoot					= weapons\ak104s\ak104s_shoot
+snd_reload					= weapons\ak104s\reload2
+snd_empty					= weapons\gen_empty, 0.5
+;snd_silncer_shot			= weapons\ak104s\ak104s_shoot
 
 [wpn_ak74_m1_hud]
-shell_point     	   	 	= -0.081 , 0.0107  , -0.1825 
-shell_dir			     	= 0.0, 1.0, 0.0
-fire_point				= 0.06, 0.13, 0.23
-fire_bone               	= wpn_body
+allow_inertion = true
 
-orientation                  = -180,0,0
-position                     = 0.130, -0.035, 0.300
+shell_point    = 0.0, 0.10, -0.10
+shell_dir      = 0.0, 1.0, 0.0
 
-visual                       = weapons\ak74_m1\wpn_ak74_m1_hud.ogf
+fire_point     = 0.0,0.09,0.07
+fire_point2    = 0.019,0.07,-0.47 ; 0.019,0.07,0.07
+fire_bone      = wpn_body
+
+orientation    = 1, 2, 0 
+position       = 0.09, -0.04, -0.01
+visual         = Aaz\AK104S\wpn_ak104_hud.ogf
 
 ; animation names
-anim_idle                   = idle
-anim_idle_aim               = idle_aim
-anim_reload                 = reload
-anim_draw                   = draw
-anim_holster                = holster
-anim_shoot                  = shoot
-anim_idle_sprint            = idle_sprint
 
-zoom_offset                 = -0.130, 0.01, 0.254
-zoom_rotate_x               = 0
-zoom_rotate_y               = 0
+anim_idle = idle
+anim_idle_aim = idle_aim
+anim_reload = reload
+anim_draw = draw
+anim_holster = holster
+anim_shoot = shoot
+anim_idle_sprint = idle_sprint
 
-;прячем перекрестие прицела в зуме
-zoom_hide_crosshair         = true
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;время поворота HUD (сек)
-zoom_rotate_time            = 0.3
-rotate_time                 = 0.3
+zoom_offset = -0.091558,0.023350,-0.125000
+zoom_rotate_x = 0.05400
+zoom_rotate_y = 0.020
+
+zoom_hide_crosshair = true ;to hide crosshair in zoom
