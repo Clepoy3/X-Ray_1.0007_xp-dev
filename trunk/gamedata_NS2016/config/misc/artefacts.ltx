@@ -137,7 +137,6 @@ GroupControlSection  = spawn_group
 discovery_dependency =
 class  = II_ATTCH
 cform  = skeleton
-radius = 1
 cost = 0
 inv_grid_width = 0
 inv_grid_height = 0
@@ -146,6 +145,7 @@ inv_grid_x = 0
 inv_grid_y = 0
 inv_name = "af_base_attach"
 inv_name_short =
+;can_take = false
 lights_enabled = true
 
 attach_angle_offset = 0,0,0
@@ -810,54 +810,80 @@ hud = zombie_cocoon_hud
 visual = aktiv_embrions\mutant_zombie_hud.ogf
 
 
-;;;;;; Артефакты для аномалии "Трамплин" ;;;;;;
 
-; "Медуза"
-;автор модельки: взято из Stalker Artefact Pack
-[af_medusa]:af_base
+; Артефакты для аномалии "Трамплин"
+
+[af_medusa]:af_base	; "Медуза"; взято из Stalker Artefact Pack
 $spawn = "artifacts\af_medusa"
 $prefetch = 64
 visual = physics\anomaly\artefact_medusa.ogf
 description = enc_zone_artifact_af-medusa
 inv_name = af-medusa
-inv_weight = 0.6
+inv_weight = 0.3
 inv_grid_x = 8
 inv_grid_y = 2
 cost = 1100
-jump_height = 0.5
 
-lights_enabled = false
+jump_height = 0.4
 
-health_restore_speed = 0
-radiation_restore_speed = 0
-satiety_restore_speed = 0
-power_restore_speed = 0
-bleeding_restore_speed = 0
-inventory_radiation = 0.0003
+particles = anomaly2\artefact\artefact_pushok_04
+
+lights_enabled	= true  
+trail_light_color = 0.1, 0.4, 0.2
+trail_light_range = 0.6
+;trail_light_color = 2.5, 2.4, 0
+;trail_light_range = 1.5
+
+health_restore_speed	= 0
+radiation_restore_speed	= 0
+satiety_restore_speed	= 0
+power_restore_speed	= 0
+bleeding_restore_speed	= 0
+inventory_radiation	= 0.0003
 
 hit_absorbation_sect = af_medusa_absorbation
 
-[af_medusa_absorbation]
-burn_immunity = 1.0
-strike_immunity = 1.0
-shock_immunity = 1.0
-wound_immunity = 1.0
-radiation_immunity = 1.0
-telepatic_immunity = 1.0
-chemical_burn_immunity = 1.0
-explosion_immunity = 1.0
-fire_wound_immunity = 0.98
+;health_restore_speed	= 1	; "читерская медуза" by MAV
+;radiation_restore_speed = -1
+;satiety_restore_speed	= 1
+;power_restore_speed	= 1
+;bleeding_restore_speed	= 1
+;inventory_radiation	= 0
 
-; "Каменный цветок"
-;автор модельки: Werner
-[af_cristall_flower]:af_base
+;hit_absorbation_sect = af_medusa_absorbation1
+
+[af_medusa_absorbation]
+burn_immunity		= 1.0
+strike_immunity		= 1.0
+shock_immunity		= 1.0
+wound_immunity		= 1.0
+radiation_immunity	= 1.0
+telepatic_immunity	= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity	= 1.0
+fire_wound_immunity	= 0.98
+
+[af_medusa_absorbation1]
+burn_immunity		= 0
+strike_immunity		= 0
+shock_immunity		= 0
+wound_immunity		= 0
+radiation_immunity	= 0
+telepatic_immunity	= 0
+chemical_burn_immunity	= 0
+explosion_immunity	= 0
+fire_wound_immunity	= 0
+
+
+
+[af_cristall_flower]:af_base	; "Каменный цветок"; автор модельки: Werner
 $spawn = "artifacts\af_cristall_flower"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_kamsvet.ogf
 description = enc_zone_artifact_af-cristall-flower
 inv_name = af-cristall-flower
-inv_weight = 0.65
+inv_weight = 0.4
 inv_grid_x = 9
 inv_grid_y = 2
 cost = 2500
@@ -865,7 +891,8 @@ jump_height = 0.4
 
 particles = anomaly2\artefact\artefact_pushok_00
 
-trail_light_color = 0.6,0.7,0.5
+lights_enabled	= true  
+trail_light_color = 0.5, 0.6, 0.4
 trail_light_range = 0.5
 
 health_restore_speed = 0.0
@@ -889,25 +916,25 @@ explosion_immunity = 1.0
 fire_wound_immunity = 0.96
 
 
-; "Ночная звезда"
-;автор модельки: Werner
-[af_night_star]:af_base
+
+[af_night_star]:af_base	; "Ночная звезда"; автор модельки: Werner
 $spawn = "artifacts\af_night_star"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_night_star.ogf
 description = enc_zone_artifact_af-night-star
 inv_name = af-night-star
-inv_weight = 0.7
+inv_weight = 0.5
 inv_grid_x = 9
 inv_grid_y = 1
 cost = 5000
-jump_height = 0.1
+jump_height = 0.2
 
 particles = samples\tut00_00
 
-trail_light_color = 0.6,0.7,0.5
-trail_light_range = 3.0
+lights_enabled	= true  
+trail_light_color = 0.6, 0.7, 0.6
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = 0.0
@@ -930,24 +957,25 @@ explosion_immunity = 1.0
 fire_wound_immunity = 0.94
 
 
-;;;;;; Артефакты для аномалии "Воронка" ;;;;;;
+; Артефакты для аномалии "Воронка"
 
-; "Выверт"
-;автор модельки: взято из Stalker Artefact Pack
-[af_vyvert]:af_base
+[af_vyvert]:af_base	; "Выверт"; взято из Stalker Artefact Pack
 $spawn = "artifacts\af_vyvert"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_vivert.ogf
 description = enc_zone_artifact_af-vyvert
 inv_name = af-vyvert
-inv_weight = 0.5
+inv_weight = 0.3
 inv_grid_x = 2
 inv_grid_y = 0
 cost = 1000
-jump_height = 0.3
+jump_height = 0.2
 
-lights_enabled = false
+particles = anomaly2\electra_damage_01_smoke
+lights_enabled	= true 
+trail_light_color = 0.4, 0.5, 0.8
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = 0.0
@@ -970,22 +998,22 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Грави"
-;автор модельки: взято из Stalker Artefact Pack
-[af_gravi]:af_base
+[af_gravi]:af_base	; "Грави" ; взято из Stalker Artefact Pack
 $spawn = "artifacts\af_gravi"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_gravi.ogf
 description = enc_zone_artifact_af-gravi
 inv_name = af-gravi
-inv_weight = 0.7
+inv_weight = 0.4
 inv_grid_x = 3
 inv_grid_y = 0
 cost = 2500
 jump_height = 0.3
 
-lights_enabled = false
+lights_enabled	= true 
+trail_light_color = 0.2, 0.3, 0.6
+trail_light_range = 0.6
 
 health_restore_speed = 0.0
 radiation_restore_speed = 0.0
@@ -1016,15 +1044,17 @@ $prefetch = 64
 visual = physics\anomaly\artefact_gravy3.ogf
 description = enc_zone_artifact_af-gold-fish
 inv_name = af-gold-fish
-inv_weight = 0.9
+inv_weight = 0.5
 inv_grid_x = 4
 inv_grid_y = 0
 cost= 5000
 jump_height = 0.2
 
 particles = anomaly2\artefact\artefact_gravi
-trail_light_color = 0.6,0.7,0.5
-trail_light_range = 2.0
+
+lights_enabled	= true 
+trail_light_color = 0.2, 0.3, 0.5
+trail_light_range = 0.6
 
 health_restore_speed = 0.0
 radiation_restore_speed = 0.0
@@ -1046,16 +1076,16 @@ chemical_burn_immunity = 1.0
 explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
-; "Изумруд"
-;автор модельки: взято из Stalker Artefact Pack
-[af_green]:af_base
+
+
+[af_green]:af_base	; "Изумруд"; взято из Stalker Artefact Pack
 $spawn = "artifacts\af_green"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_izumrud.ogf
 description = af_green_desc
 inv_name = af_green
-inv_weight = 1.5
+inv_weight = 0.5
 inv_grid_x = 18
 inv_grid_y = 9
 cost = 15000
@@ -1082,13 +1112,11 @@ explosion_immunity = 1.0
 fire_wound_immunity = 0.90
 
 
-;;;;;; Артефакты для аномалии "Жарка" ;;;;;;
+; Артефакты для аномалии "Жарка"
 
-; "Капля"
-[af_drops]:af_base
+[af_drops]:af_base	; "Капля"
 $spawn = "artifacts\af_drops"
 $npc = on
-
 visual = physics\anomaly\artefact_kaply.ogf
 description = enc_zone_artifact_af-drops
 inv_name = af-drops
@@ -1096,9 +1124,11 @@ inv_weight = 0.3
 inv_grid_x = 10
 inv_grid_y = 1
 cost = 1000
-jump_height = 0.1
+jump_height = 0.2
 
-trail_light_color = 0.6,0.7,0.5
+particles = anomaly2\artefact\artefact_zharka ; samples\tut00_00 - если не будет ничего лучше - будет это
+lights_enabled	= true
+trail_light_color = 0.9, 0.3, 0.3
 trail_light_range = 0.5
 
 health_restore_speed = 0.0
@@ -1121,15 +1151,15 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Огненный шар"
-[af_fireball]:af_base
+
+[af_fireball]:af_base	; "Огненный шар"
 $spawn = "artifacts\af_fireball"
 $npc = on
 
 visual = physics\anomaly\artefact_fire.ogf
 description = enc_zone_artifact_af-fireball
 inv_name = af-fireball
-inv_weight = 0.5
+inv_weight = 0.4
 inv_grid_x = 10
 inv_grid_y = 2
 cost = 2500
@@ -1139,8 +1169,10 @@ radius = 10
 strike_impulse = 20
 
 particles = anomaly2\artefact\artefact_zharka
-trail_light_color = 0.9,0.5,0.5
-trail_light_range = 3.0
+
+lights_enabled	= true 
+trail_light_color = 0.6, 0.2, 0.2
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = -0.001
@@ -1162,23 +1194,25 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Кристалл"
-[af_cristall]:af_base
+
+[af_cristall]:af_base	; "Кристалл"
 $spawn = "artifacts\af_cristall"
 $npc = on
 
 visual = physics\anomaly\artefact_cristall.ogf
 description = enc_zone_artifact_af-cristall
 inv_name = af-cristall
-inv_weight = 0.7
+inv_weight = 0.5
 inv_grid_x = 11
 inv_grid_y = 1
 cost = 5000
 jump_height = 0.1
 
-particles = anomaly2\artefact\artefact_zharka
-trail_light_color = 0.9,0.5,0.5
-trail_light_range = 3.0
+particles = explosions\group_items\campfire_boar_grill_sparks
+
+lights_enabled	= true 
+trail_light_color = 0.9, 0.3, 0.4
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = -0.0015
@@ -1200,9 +1234,8 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Чёрный кристалл"
-;автор модельки: взято из мода AMK 2.0 build305
-[af_black_cristall]:af_base
+
+[af_black_cristall]:af_base	; "Чёрный кристалл" ; взято из мода AMK 2.0 build305
 $spawn  = "artifacts\af_black_cristall"
 $npc = on
 visual = physics\anomaly\artefact_black_cristall.ogf
@@ -1214,29 +1247,32 @@ inv_grid_y = 14
 cost = 50000
 jump_height = 0.1
 
+lights_enabled	= true 
 particles = anomaly2\artefact\artefact_zharka
 trail_light_color = 0.9,0.5,0.5
 trail_light_range = 3.0
 
 
-;;;;;; Артефакты для аномалии "Карусель" ;;;;;;
+; Артефакты для аномалии "Карусель"
 
-; "Кровь камня"
-;автор модельки: взято из Stalker Artefact Pack
-[af_blood]:af_base
+[af_blood]:af_base	; "Кровь камня" ; взято из Stalker Artefact Pack
 $spawn = "artifacts\af_blood"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_blood.ogf
 description = enc_zone_artifact_af-blood
 inv_name = af-blood
-inv_weight = 0.5
+inv_weight = 0.3
 inv_grid_x = 5
 inv_grid_y = 0
 cost = 1000
-jump_height = 0.01
+jump_height = 0.1
 
-lights_enabled = false
+
+lights_enabled	= true 
+trail_light_color = 0.9, 0.4, 0.4
+trail_light_range = 0.65
+
 
 health_restore_speed = 0.0001
 radiation_restore_speed = -0.0003
@@ -1266,14 +1302,17 @@ $prefetch = 64
 visual = physics\anomaly\artefact_myasorubka2.ogf
 description = enc_zone_artifact_af-mincer-meat
 inv_name = af-mincer-meat
-inv_weight = 0.6
+inv_weight = 0.4
 inv_grid_x = 16
 inv_grid_y = 4
 cost = 2500
 jump_height = 0.1
 
 particles = anomaly2\artefact\artefact_mincer
-lights_enabled = false
+
+lights_enabled	= true 
+trail_light_color = 0.4, 0.2, 0.1
+trail_light_range = 0.5
 
 health_restore_speed = 0.0002
 radiation_restore_speed = -0.0005
@@ -1295,23 +1334,25 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Душа"
-;автор модельки: взято из Stalker Artefact Pack
-[af_soul]:af_base
+
+[af_soul]:af_base	; "Душа" ; взято из Stalker Artefact Pack
 $spawn = "artifacts\af_soul"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_dusha.ogf
 description = enc_zone_artifact_af-soul
 inv_name = af-soul
-inv_weight = 0.7
+inv_weight = 0.5
 inv_grid_x = 16
 inv_grid_y = 5
 cost = 5000
-jump_height = 0.1
+jump_height = 0.2
 
 particles = anomaly2\artefact\artefact_pux00_04
-lights_enabled = false
+
+lights_enabled	= true 
+trail_light_color = 0.4, 0.5, 0.6
+trail_light_range = 0.5
 
 health_restore_speed = 0.0003
 radiation_restore_speed = -0.001
@@ -1333,9 +1374,8 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Золотой Ломоть"
-;автор модельки: взято из мода AMK 2.0 build305
-[gold_art]:af_base
+
+[gold_art]:af_base	; "Золотой Ломоть" ; взято из мода AMK 2.0 build305
 $spawn = "artifacts\gold_art"
 $prefetch = 64
 
@@ -1371,25 +1411,27 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-;;;;;; Артефакты для аномалии "Электра" ;;;;;;
+; Артефакты для аномалии "Электра"
 
-; "Бенгальский огонь"
-[af_electra_sparkler]:af_base
+
+[af_electra_sparkler]:af_base	; "Бенгальский огонь"
 $spawn = "artifacts\af_electra_sparkler"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_electra4.ogf
 description = enc_zone_artifact_af-electra-sparkler
 inv_name = af-electra-sparkler
-inv_weight = 0.5
+inv_weight = 0.3
 inv_grid_x = 14
 inv_grid_y = 3
 cost = 700
 jump_height = 0.5
 
 particles = anomaly2\artefact\artefact_pux_00
-trail_light_color = 0.5,0.5,0.9
-trail_light_range = 0.50
+
+lights_enabled	= true 
+trail_light_color = 0.2, 0.2, 0.4
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = 0.0
@@ -1411,23 +1453,25 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Вспышка"
-[af_electra_flash]:af_base
+
+[af_electra_flash]:af_base	; "Вспышка"
 $spawn = "artifacts\af_electra_flash"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_electra3.ogf
 description = enc_zone_artifact_af-electra-flash
 inv_name = af-electra-flash
-inv_weight = 0.6
+inv_weight = 0.4
 inv_grid_x = 4
 inv_grid_y = 8
 cost = 2500
 jump_height = 0.1
 
 particles = anomaly2\artefact\artefact_pux00_00
-trail_light_color = 0.6,0.7,0.9
-trail_light_range = 2.5
+
+lights_enabled	= true 
+trail_light_color = 0.3, 0.3, 0.5
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = 0.0
@@ -1457,15 +1501,17 @@ $prefetch = 64
 visual = physics\anomaly\artefact_electra1.ogf
 description = enc_zone_artifact_af-electra-moonlight
 inv_name = af-electra-moonlight
-inv_weight = 0.7
+inv_weight = 0.5
 inv_grid_x = 15
 inv_grid_y = 9
 cost = 5000
 jump_height = 0.1
 
 particles = anomaly2\artefact\artefact_electra
-trail_light_color = 0.6,0.7,0.9
-trail_light_range = 1.0
+
+lights_enabled	= true 
+trail_light_color = 0.5, 0.6, 0.8
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = 0.0
@@ -1487,15 +1533,15 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Микроб"
-[af_electro_crystal_thorn]:af_base
+
+[af_electro_crystal_thorn]:af_base	; "Микроб"
 $spawn = "artifacts\af_electro_crystal_thorn"
 $npc = on
 
 visual = physics\anomaly\artifact_electro_crystal_thorn.ogf
 description = enc_zone_artifact_electro_crystal_thorn
 inv_name = af_electro_crystal_thorn
-inv_weight = 0.5
+inv_weight = 0.4
 inv_grid_x = 18
 inv_grid_y = 5
 cost = 20000
@@ -1527,8 +1573,7 @@ explosion_immunity = 1.0
 fire_wound_immunity = 0.95
 
 
-; "Вороний глаз"
-;автор модельки: vadyan
+; "Вороний глаз" ; автор модельки: vadyan
 [af_eye_voron]:af_base
 $spawn = "artifacts\af_eye_voron"
 $npc = on
@@ -1536,7 +1581,7 @@ $npc = on
 visual = physics\anomaly\af_eye_voron.ogf
 description = enc_zone_af_eye_voron
 inv_name = af-eye-voron
-inv_weight = 0.5
+inv_weight = 0.35
 inv_grid_x = 24
 inv_grid_y = 40
 cost = 17000
@@ -1568,17 +1613,17 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.07
 
 
-;;;;;; Артефакты для аномалии "Холодец" ;;;;;;
+; Артефакты для аномалии "Холодец"
 
-; "Слизь"
-[af_ameba_slime]:af_base
+
+[af_ameba_slime]:af_base	; "Слизь"
 $spawn = "artifacts\af_ameba_slime"
 $prefetch = 64
 
 visual = physics\anomaly\artefact_sliz.ogf
 description = enc_zone_artifact_af-ameba-slime
 inv_name = af-ameba-slime
-inv_weight = 0.7
+inv_weight = 0.3
 inv_grid_x = 8
 inv_grid_y = 1
 cost = 900
@@ -1615,7 +1660,7 @@ $prefetch = 64
 visual = physics\anomaly\artefact_sliznak.ogf
 description = enc_zone_artifact_af-ameba-slug
 inv_name = af-ameba-slug
-inv_weight = 0.75
+inv_weight = 0.4
 inv_grid_x = 7
 inv_grid_y = 2
 cost = 2500
@@ -1653,7 +1698,7 @@ $prefetch = 64
 visual = physics\anomaly\artefact_sluda.ogf
 description = enc_zone_artifact_af-ameba-mica
 inv_name = af-ameba-mica
-inv_weight = 0.8
+inv_weight = 0.5
 inv_grid_x = 6
 inv_grid_y = 2
 cost = 5000
@@ -1683,24 +1728,24 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-;;;;;; Артефакты для аномалии "Жгучий Пух" ;;;;;;
+; Артефакты для аномалии "Жгучий Пух"
 
-; "Колючка"
-;автор модельки: взято из мода AMK 2.0 build305
-[af_rusty_thorn]:af_base
+[af_rusty_thorn]:af_base	; "Колючка" ; взято из мода AMK 2.0 build305
 $spawn = "artifacts\af_rusty_thorn"
 $npc = on
 
 visual = physics\anomaly\artefact_kolychka.ogf
 description = enc_zone_artifact_af-rusty-thorn
 inv_name = af-rusty-thorn
-inv_weight = 0.5
+inv_weight = 0.2
 inv_grid_x = 15
 inv_grid_y = 3
 cost = 1000
 jump_height = 0.3
 
-lights_enabled = false
+lights_enabled	= true 
+trail_light_color = 0.4, 0.2, 0.4
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = -0.0005
@@ -1731,14 +1776,16 @@ $npc = on
 visual = physics\anomaly\artefact_kriskol.ogf
 description = enc_zone_artifact_af-rusty-kristall
 inv_name = af-rusty-kristall
-inv_weight = 0.7
+inv_weight = 0.3
 inv_grid_x = 26
 inv_grid_y = 1
 cost = 2500
 
 jump_height = 0.4
 
-lights_enabled = false
+lights_enabled	= true 
+trail_light_color = 0.3, 0.3, 0.4
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = -0.001
@@ -1769,14 +1816,16 @@ $npc = on
 visual = physics\anomaly\artifact_rusty_sea-urchin.ogf
 description = enc_zone_artifact_af-rusty-sea-urchin
 inv_name = af-rusty-sea-urchin
-inv_weight = 0.8
+inv_weight = 0.4
 inv_grid_x = 15
 inv_grid_y = 0
 cost = 5000
 
 jump_height = 0.5
 
-lights_enabled = false
+lights_enabled	= true 
+trail_light_color = 0.4, 0.2, 0.4
+trail_light_range = 0.5
 
 health_restore_speed = 0.0
 radiation_restore_speed = -0.002
@@ -1798,10 +1847,9 @@ explosion_immunity = 1.0
 fire_wound_immunity  = 1.0
 
 
-;;;;;; Артефакты для аномалии "Ржавые волосы" ;;;;;;
+; Артефакты для аномалии "Ржавые волосы"
 
-; "Колобок"
-[af_fuzz_kolobok]:af_base
+[af_fuzz_kolobok]:af_base	; "Колобок"
 $spawn = "artifacts\af_fuzz_kolobok"
 $npc = on
 
@@ -1838,17 +1886,16 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-;;;;;; Артефакты неизвестного происхождения "Пустышки" ;;;;;;
+; Артефакты неизвестного происхождения "Пустышки"
 
-; "Пустышка"
-[af_dummy_dummy]:af_base
+[af_dummy_dummy]:af_base	; "Пустышка"
 $spawn = "artifacts\af_dummy_dummy"
 $npc = on
 
 visual = physics\anomaly\artefact_pustishka1.ogf
 description = enc_zone_artifact_af-dummy-dummy
 inv_name = af-dummy-dummy
-inv_weight = 0.45
+inv_weight = 0.4
 inv_grid_x = 15
 inv_grid_y = 2
 cost = 5000
@@ -1876,16 +1923,15 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Пружина"
-;автор модельки: vadyan
-[af_dummy_spring]:af_base
+
+[af_dummy_spring]:af_base	; "Пружина" ; автор модельки: vadyan
 $spawn = "artifacts\af_dummy_spring"
 $npc = on
 
 visual = physics\anomaly\artefact_prygina.ogf
 description = enc_zone_artifact_af-dummy-spring
 inv_name = af-dummy-spring
-inv_weight = 0.7
+inv_weight = 0.5
 inv_grid_x = 14
 inv_grid_y = 0
 cost = 5000
@@ -1913,8 +1959,8 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Батарейка"
-[af_dummy_battery]:af_base
+
+[af_dummy_battery]:af_base	; "Батарейка"
 $spawn = "artifacts\af_dummy_battery"
 $npc = on
 
@@ -1950,15 +1996,15 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Плёнка"
-[af_dummy_pellicle]:af_base
+
+[af_dummy_pellicle]:af_base	; "Плёнка"
 $spawn = "artifacts\af_dummy_pellicle"
 $npc = on
 
 visual = physics\anomaly\artefact_plenka.ogf
 description = enc_zone_artifact_af-dummy-pellicle
 inv_name = af-dummy-pellicle
-inv_weight = 0.8
+inv_weight = 0.35
 inv_grid_x = 19
 inv_grid_y = 2
 cost = 5000
@@ -1987,15 +2033,14 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-; "Мамины бусы"
-[af_dummy_glassbeads]:af_base
+[af_dummy_glassbeads]:af_base	; "Мамины бусы"
 $spawn = "artifacts\af_dummy_glassbeads"
 $npc = on
 
 visual = physics\anomaly\artefact_busimam.ogf
 description = enc_zone_artifact_af-dummy-glassbeads
 inv_name = af-dummy-glassbeads
-inv_weight = 0.7
+inv_weight = 0.27
 inv_grid_x = 16
 inv_grid_y = 0
 cost = 5000
@@ -2024,23 +2069,22 @@ explosion_immunity = 1.0
 fire_wound_immunity = 0.95
 
 
-; "Рубиновая пружина"
-;автор модельки: vadyan
-[af_dummy_spring_red]:af_base
+
+[af_dummy_spring_red]:af_base	; "Рубиновая пружина" ; автор модельки: vadyan
 $spawn = "artifacts\af_dummy_spring_red"
 $npc = on
 
 visual = physics\anomaly\artefact_pryginared.ogf
 description = af_dummy_spring_red
 inv_name = af_dummy_spring
-inv_weight = 2
+inv_weight = 0.45
 inv_grid_x = 13
 inv_grid_y = 9
 cost = 20000
 jump_height = 0.2
 
-lights_enabled = false
-trail_light_color = 0.6,0.7,0.6
+lights_enabled = true
+trail_light_color = 0.4, 0.1, 0.15
 trail_light_range = 1
 
 health_restore_speed = 0.0
@@ -2064,23 +2108,23 @@ explosion_immunity = 0.94
 fire_wound_immunity = 0.92
 
 
-; "Рубиновая батарейка"
-[af_dummy_battery_red]:af_base
+
+[af_dummy_battery_red]:af_base	; "Рубиновая батарейка"
 $spawn = "artifacts\af_dummy_battery_red"
 $npc = on
 
 visual = physics\anomaly\artefact_batteryred.ogf
 description = af_dummy_battery_red
 inv_name = af_dummy_battery
-inv_weight = 1.5
+inv_weight = 0.5
 inv_grid_x = 14
 inv_grid_y = 9
 cost = 20000
 jump_height = .2
 
 ;particles = anomaly2\artefact\artefact_gravi
-lights_enabled = false
-trail_light_color = 0.6,0.7,0.6
+lights_enabled = true
+trail_light_color = 0.4, 0.1, 0.16
 trail_light_range = 1
 
 health_restore_speed = 0.0
@@ -2104,23 +2148,23 @@ explosion_immunity = 0.95
 fire_wound_immunity = 0.95
 
 
-; "Рубиновая пленка"
-[af_dummy_pellicle_red]:af_base
+
+[af_dummy_pellicle_red]:af_base	; "Рубиновая пленка"
 $spawn = "artifacts\af_dummy_pellicle_red"
 $npc = on
 
 visual = physics\anomaly\artefact_plenkared.ogf
 description = af_pellicle_red
 inv_name = af_pellicle
-inv_weight = 2
+inv_weight = 0.25
 inv_grid_x = 12
 inv_grid_y = 9
 cost = 20000
 jump_height = 0.2
 
 ;particles = anomaly2\artefact\artefact_ameba
-lights_enabled = false
-trail_light_color = 50,0.205,0.50
+lights_enabled = true
+trail_light_color = 0.50, 0.205, 0.50
 trail_light_range = 1
 
 health_restore_speed = 0.0007
@@ -2143,17 +2187,16 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.5
 
 
-;;;;;; Артефакты трансмутации ;;;;;;
+; Артефакты трансмутации
 
-; "Гусеница"
-[af_caterpillar]:af_base
+[af_caterpillar]:af_base	; "Гусеница"
 $spawn = "artifacts\af_caterpillar"
 $npc = on
 
 visual = physics\anomaly\caterpillar.ogf
 description = enc_zone_artifact_af-caterpillar
 inv_name = af-caterpillar
-inv_weight = 1.5
+inv_weight = 0.2
 inv_grid_x = 18
 inv_grid_y = 1
 cost = 15000
@@ -2182,16 +2225,15 @@ explosion_immunity = 1.0
 fire_wound_immunity = 0.98
 
 
-; "Камень Удачи"
-;автор модельки: взято из мода AMK 2.0 build305
-[af_kamen_udachy]:af_base
+
+[af_kamen_udachy]:af_base	; "Камень Удачи" ; взято из мода AMK 2.0 build305
 $spawn = "artifacts\af_kamen_udachy"
 $npc = on
 
 visual = physics\anomaly\artefact_kamenudachi.ogf
 description = artifact_af_kamen_udachy
 inv_name = af-kamen-udachy
-inv_weight = 2.1
+inv_weight = 0.8
 inv_grid_x = 26
 inv_grid_y = 39
 cost = 450000
@@ -2222,17 +2264,16 @@ explosion_immunity = 1.0
 fire_wound_immunity = 1.0
 
 
-;;;;;; Модифицированные артефакты ;;;;;;
+; Модифицированные артефакты
 
-; "Шкура"
-[af_armor_1]:af_base
+[af_armor_1]:af_base	; "Шкура"
 $spawn = "artifacts\af_armor_1"
 $npc = on
 
 visual = physics\anomaly\artefact_plenka3.ogf
 description = enc_zone_artifact_armor_1
 inv_name = af_armor_1
-inv_weight = 1.0
+inv_weight = 0.3
 inv_grid_x = 10
 inv_grid_y = 9
 cost = 8000
@@ -2240,7 +2281,7 @@ jump_height = 0.2
 
 ;particles = anomaly2\artefact\artefact_ameba
 lights_enabled = false
-trail_light_color =  0.325,1,0.203
+trail_light_color =  0.325, 1, 0.203
 trail_light_range = 1
 
 health_restore_speed = 0.0
@@ -2272,7 +2313,7 @@ $npc = on
 visual = physics\anomaly\artefact_plenka2.ogf
 description = enc_zone_artifact_armor_2
 inv_name = af_armor_2
-inv_weight = 1.2
+inv_weight = 0.2
 inv_grid_x = 11
 inv_grid_y = 9
 cost = 12000
@@ -2312,7 +2353,7 @@ $npc = on
 visual = physics\anomaly\artefact_plenka4.ogf
 description = enc_zone_artifact_armor_3
 inv_name = af_armor_3
-inv_weight = 1.5
+inv_weight = 0.5
 inv_grid_x = 12
 inv_grid_y = 12
 cost = 15000
@@ -2352,7 +2393,7 @@ $npc = on
 visual = physics\anomaly\artefact_plenka1.ogf
 description = enc_zone_artifact_armor_4
 inv_name = af_armor_4
-inv_weight = 2.0
+inv_weight = 0.45
 inv_grid_x = 0
 inv_grid_y = 18
 cost = 20000
@@ -2392,7 +2433,7 @@ $npc = on
 visual = physics\anomaly\artefact_busibab.ogf
 description = enc_zone_artifact_babka_1
 inv_name = af_babka_1
-inv_weight = 0.8
+inv_weight = 0.3
 inv_grid_x = 5
 inv_grid_y = 23
 cost = 8000
@@ -2432,7 +2473,7 @@ $npc = on
 visual = physics\anomaly\artefact_busiprab.ogf
 description = enc_zone_artifact_babka_2
 inv_name = af_babka_2
-inv_weight = 0.9
+inv_weight = 0.3
 inv_grid_x = 4
 inv_grid_y = 35
 cost = 10000
@@ -2472,7 +2513,7 @@ $npc = on
 visual = physics\anomaly\artefact_bbabb.ogf
 description = enc_zone_artifact_babka_3
 inv_name = af_babka_3
-inv_weight = 1
+inv_weight = 0.5
 inv_grid_x = 19
 inv_grid_y = 7
 cost = 15000
@@ -2512,7 +2553,7 @@ $npc = on
 visual = physics\anomaly\artefact_bprabb.ogf
 description = enc_zone_artifact_af-babka_4_d
 inv_name = af-babka_4
-inv_weight = 1.1
+inv_weight = 0.4
 inv_grid_x = 21
 inv_grid_y = 8
 cost = 18000
@@ -2553,7 +2594,7 @@ $prefetch = 64
 visual = physics\anomaly\artefact_sleziel.ogf
 description = enc_zone_artifact_cry_1
 inv_name = af_cry_1
-inv_weight = 0.5
+inv_weight = 0.3
 inv_grid_x = 22
 inv_grid_y = 8
 cost = 7000
@@ -2593,7 +2634,7 @@ $prefetch = 64
 visual = physics\anomaly\artefact_sleziogn.ogf
 description = enc_zone_artifact_cry_2
 inv_name = af_cry_2
-inv_weight = 0.6
+inv_weight = 0.3
 inv_grid_x = 16
 inv_grid_y = 9
 cost = 9000
@@ -2633,7 +2674,7 @@ $prefetch = 64
 visual = physics\anomaly\artefact_slezixim.ogf
 description = enc_zone_artifact_cry_3
 inv_name = af_cry_3
-inv_weight = 0.8
+inv_weight = 0.3
 inv_grid_x = 23
 inv_grid_y = 9
 cost = 12000
@@ -2673,7 +2714,7 @@ $npc = on
 visual = physics\anomaly\artefact_dikobraz.ogf
 description = enc_zone_artifact_dik_1
 inv_name = af_dik_1
-inv_weight = 0.8
+inv_weight = 0.35
 inv_grid_x = 17
 inv_grid_y = 12
 cost = 7000
@@ -2719,7 +2760,7 @@ $npc = on
 visual = physics\anomaly\artefact_el_dikobraz.ogf
 description = enc_zone_artifact_dik_2
 inv_name = af_dik_2
-inv_weight = 0.9
+inv_weight = 0.35
 inv_grid_x = 22
 inv_grid_y = 12
 cost = 10000
@@ -2759,7 +2800,7 @@ $npc = on
 visual = physics\anomaly\artefact_slim_dikobraz.ogf
 description = enc_zone_artifact_dik_3
 inv_name = af_dik_3
-inv_weight = 1.1
+inv_weight = 0.35
 inv_grid_x = 23
 inv_grid_y = 12
 cost = 15000
@@ -2799,7 +2840,7 @@ $npc = on
 visual = physics\anomaly\artefact_kam_dikobraz.ogf
 description = enc_zone_artifact_dik_4
 inv_name = af_dik_4
-inv_weight = 1.3
+inv_weight = 0.3
 inv_grid_x = 14
 inv_grid_y = 14
 cost = 20000
@@ -2878,7 +2919,7 @@ $npc = on
 visual = physics\anomaly\artefact_titkolob.ogf
 description = enc_zone_artifact_kol_2
 inv_name = af_kol_2
-inv_weight = 0.6
+inv_weight = 0.45
 inv_grid_x = 15
 inv_grid_y = 17
 cost = 9000
@@ -2918,7 +2959,7 @@ $npc = on
 visual = physics\anomaly\artefact_almkolob.ogf
 description = enc_zone_artifact_kol_3
 inv_name = af_kol_3
-inv_weight = 0.8
+inv_weight = 0.4
 inv_grid_x = 23
 inv_grid_y = 17
 cost = 13000
@@ -2958,7 +2999,7 @@ $npc = on
 visual = physics\anomaly\artefact_gigkolob.ogf
 description = enc_zone_artifact_kol_4
 inv_name = af_kol_4
-inv_weight = 1.0
+inv_weight = 0.5
 inv_grid_x = 26
 inv_grid_y = 0
 cost = 20000
@@ -2998,7 +3039,7 @@ $npc = on
 visual = physics\anomaly\artefact_ognpust.ogf
 description = enc_zone_artifact_pudd_1
 inv_name = af_pudd_1
-inv_weight = 0.5
+inv_weight = 0.4
 inv_grid_x = 25
 inv_grid_y = 2
 cost = 7000
@@ -3038,7 +3079,7 @@ $npc = on
 visual = physics\anomaly\artefact_yarkpust.ogf
 description = enc_zone_artifact_pudd_2
 inv_name = af_pudd_2
-inv_weight = 0.6
+inv_weight = 0.4
 inv_grid_x = 26
 inv_grid_y = 2
 cost = 9000
@@ -3078,7 +3119,7 @@ $npc = on
 visual = physics\anomaly\artefact_lunpust.ogf
 description = enc_zone_artifact_pudd_3
 inv_name = af_pudd_3
-inv_weight = 0.7
+inv_weight = 0.4
 inv_grid_x = 26
 inv_grid_y = 3
 cost = 13000
@@ -3118,7 +3159,7 @@ $npc = on
 visual = physics\anomaly\artefact_pydpust.ogf
 description = enc_zone_artifact_pudd_4
 inv_name = af_pudd_4
-inv_weight = 0.9
+inv_weight = 0.4
 inv_grid_x = 25
 inv_grid_y = 9
 cost = 20000
@@ -3197,7 +3238,7 @@ $prefetch = 64
 visual = physics\anomaly\artefact_dushasl.ogf
 description = enc_zone_artifact_spirit_1
 inv_name = af_spirit_1
-inv_weight = 0.8
+inv_weight = 0.4
 inv_grid_x = 20
 inv_grid_y = 40
 cost = 8000
@@ -3237,7 +3278,7 @@ $prefetch = 64
 visual = physics\anomaly\artefact_dushaog.ogf
 description = enc_zone_artifact_spirit_2
 inv_name = af_spirit_2
-inv_weight = 1.0
+inv_weight = 0.4
 inv_grid_x = 21
 inv_grid_y = 40
 cost = 10000
@@ -3277,7 +3318,7 @@ $prefetch = 64
 visual = physics\anomaly\artefact_dushakris.ogf
 description = enc_zone_artifact_spirit_3
 inv_name = af_spirit_3
-inv_weight = 1.2
+inv_weight = 0.4
 inv_grid_x = 22
 inv_grid_y = 40
 cost = 13000
@@ -3317,7 +3358,7 @@ $prefetch = 64
 visual = physics\anomaly\artefact_dushaben.ogf
 description = enc_zone_artifact_spirit_4
 inv_name = af_spirit_4
-inv_weight = 1.5
+inv_weight = 0.4
 inv_grid_x = 23
 inv_grid_y = 40
 cost = 20000
@@ -3354,11 +3395,10 @@ $spawn = "artifacts\af_spirit_pes"
 default_to_ruck = false
 
 
-;;;;;; "Другие" ;;;;;;
+; "Другие"
 
-; "Булыжник"
-;автор модельки: взято из мода AMK 2.0 build305
-[af_buliz]:af_base
+
+[af_buliz]:af_base	; "Булыжник" ; взято из мода AMK 2.0 build305
 $spawn = "artifacts\af_buliz"
 $prefetch = 64
 

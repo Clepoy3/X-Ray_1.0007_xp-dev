@@ -1,0 +1,35 @@
+-- таблицы серверных объектов по типам и локаци€м
+-- заполн€ютс€/измен€ютс€ из se_*.script и bind_*.script
+
+-- »спользовать эти дл€ исключени€ конфликтов между другими скриптами
+
+function log( ... ) _util.log( "xl_data", ... ) end
+
+local obj_by_lv = {}
+
+local online = {
+	["binder"] = {},	-- способ добратьс€ до данных, сохран€емых в биндерах как self.* = ...
+	["npc_by_name"] = {}, ["npc_by_id"] = {},
+	["npc_alive"] = {}, ["npc_dead"] = {}, ["npc_zombie"] = {}
+}
+
+
+local t_npc = {}
+local t_mob = {}
+local t_strn, t_strn_by_name = {}, {}
+
+local anoms = {}
+
+function get_t_anoms() return anoms end		-- аномалии
+function get_t_online() return online end	-- объекты в онлайне
+function get_t_npc() return t_npc end		-- неписи
+function get_t_mob() return t_mob end		-- монстры
+
+function get_t_strn( s )	-- смарты
+	if s == "name" then return t_strn_by_name end
+	return t_strn
+end
+
+
+-- log( "module", "ok" )	-- убрать при подключении offline-скриптов типа smart_terrain.script,
+				-- так как alife() там еще нет; fixed

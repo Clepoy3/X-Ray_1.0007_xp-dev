@@ -64,11 +64,11 @@ function art_binder:update(delta)
 	local art = self.object
 	-- утверждают, что это от провала артов под текстуры
 	if self.init then
---		local ps = art:get_physics_shell()
---		if ps and not art:parent() then
---			local impulse = art:mass() * 1300
---			ps:apply_force( 0, impulse, 0 )
---		end
+		local ps = art:get_physics_shell()
+		if ps and not art:parent() then
+			local impulse = art:mass() * 1300
+			ps:apply_force( 0, impulse, 0 )
+		end
 		self.init = nil
 	end
 	-- проверка пояса на детекторы.

@@ -1,0 +1,33 @@
+-- внешний конфиг для смарт-террейнов
+
+function log( ... ) _util.log( "smart_terrain_ovr", ... ) end
+function abort( ... ) _util.abort( "smart_terrain_ovr", ... ) end
+
+
+-- параметры:
+-- ["capacity"] = граничение_на_численность
+-- ["cond"] = условия_работы ( плюсики, скобочки и прочее, "never" - выключен, "always" - включен всегда )
+-- Внимание !!! Warning !!! Пробелы в условиях не нужны !
+
+local ovr = {
+
+["svalka_bandosu_angar"]= {	-- бандосы в ангаре всю игру спавнятся на головы сталкерам и их убивают
+	-- ["capacity"] = 100,
+	["cond"] = "never" },
+
+["rad_military3"]	= {	-- мясорубка нейтралов и вояк на радаре, разводим по появлению Призрака
+	["cond"] = "{+bar_deactivate_radar_start-yakut_false_done}" },
+
+["rad_stalker_vagon"] = {	-- мясорубка нейтралов и вояк на радаре, продолжение
+	["cond"] = "{+yakut_false_done}" },
+
+["ros_smart_stalker1"] = {	-- сталки на ДТ и наймы Захара
+	["cond"] = "{+zahar_naemnik_done}" },
+
+}	-- финальная скобка
+
+
+function get_ovr() return ovr end
+
+
+-- log( "module", "ok" )

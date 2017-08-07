@@ -1,11 +1,13 @@
-local string_find, string_format, string_gsub = string.find, string.format, string.gsub
-local table_getn = table.getn
+-- Smart Terrain (механизм, организовывающий всех сталкеров и некоторых монстров в сцены)
+-- Чугай Александр; без симуляции не работает !
 
---[[------------------------------------------------------------------------------------------------------------------
-Smart Terrain (механизм, организовывающий всех сталкеров и некоторых монстров в сцены)
-Чугай Александр
-!без симуляции не работает!
---------------------------------------------------------------------------------------------------------------------]]
+local string_find, string_format, string_gsub = string.find, string.format, string.gsub
+
+
+function log( ... ) _util.log( "smart_terrain", ... ) end
+function abort( ... ) _util.abort( "smart_terrain", ... ) end
+
+local smart_ovr = ( smart_terrain_ovr and smart_terrain_ovr.get_ovr() ) or {}
 
 local check_period
 
@@ -21,8 +23,10 @@ local disagreed, agreed, agreed_exclusive = 0, 1, 2
 
 local smart_section = "smart_terrains"
 
-local smart_terrains = {}
-local smart_terrains_by_name = {}
+
+local smart_terrains = xl_data.get_t_strn()	-- { [level_name] = { [id] = obj } }
+local smart_terrains_by_name = xl_data.get_t_strn( "name" )
+
 smart_for_wounded = {}
 exclusives = {}
 
@@ -58,7 +62,7 @@ function r_2nums( spawn_ini, section, line, def1, def2 )
 	if spawn_ini:line_exist( section, line ) then
 		-- если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
 		local t = parse_nums( spawn_ini:r_string( section, line ) )
-		local n = table_getn( t )
+		local n = #t
 
 		if n == 0 then return def1, def2
 		elseif n == 1 then return t[1], def2
@@ -269,13 +273,20 @@ function se_smart_terrain:read_params()
 	end
 	if not ini:line_exist( sect, "type" ) then abort( "[smart_terrain %s] type is not specified", self.nm) end
 
+	local ovr = smart_ovr[self:name()]
+
 	local gp	= {}
 	self.npc_info	= {}	-- group и squad для каждого npc
 	self.gparams	= gp	-- настройки гулага
 
 	gp.type = ini:r_string( sect, "type" )
 	gp.preset_name = r_str ( ini, sect, "preset" )
-	gp.capacity = r_num ( ini, sect, "capacity", 100 ) -- ёмкость. а настоящая ёмкость = min(эта_ёмкость, ёмкость гулага)
+
+	if ovr and ovr.capacity then -- ограничение на ёмкость; настоящая ёмкость определяется гулагом
+		gp.capacity = ovr.capacity
+	else gp.capacity = ( ini:line_exist( sect, "capacity" ) and ini:r_float( sect, "capacity" ) ) or 100
+	end
+
 	gp.squad = r_num ( ini, sect, "squad" )
 
 	gp.idle_min,     gp.idle_max      = r_2nums( ini, sect, "idle",       0,     0 )
@@ -283,8 +294,15 @@ function se_smart_terrain:read_params()
 	gp.stay_min,     gp.stay_max      = smart_terrain_params.get_stay_time_interval( r_str( ini, sect, "stay", "default" ) )
 	gp.respawn     = r_str ( ini, sect, "respawn" )
 
-	gp.cond = r_str( ini, sect, "cond" )
-	if gp.cond then gp.cond = xr_logic.parse_condlist( gp.cond, nil, sect, "cond" ) end
+	local s
+	if ovr and ovr.cond then -- условия, когда смарт принимает кого-либо, "never" - отключен
+		s = ovr.cond
+	else s = ini:line_exist( sect, "cond" ) and ini:r_string( sect, "cond" )
+	end
+	if s then
+		-- log( "info", "(%s):read_params, cond: %s", self:name(), s )
+		gp.cond = xr_logic.parse_condlist( s ) end
+
 	gp.groups = r_str( ini, sect, "groups" )
 	if gp.groups then gp.groups = parse_nums( gp.groups ) end
 
@@ -348,13 +366,13 @@ local level_groups = {
 	peshera = "group1",
 	puzir = "group1",
 	aver = "group2",
-	av_peshera = "group2",
+	av_peshera = "group5",
 	atp_for_test22 = "group2",
 	dead_city = "group2",
 	jupiter = "group2",
 	jupiter_underground = "group2",
 	labx8 = "group2",
-	l06_rostok = "group1",
+	l06_rostok = "group2",
 	l07_military = "group2",
 	l08_yantar = "group1",
 	l08u_brainlab = "group2",
@@ -606,7 +624,15 @@ end
 function se_smart_terrain:is_gulag_available()
 	local flag = true
 	if self.gparams.cond then
+		-- if self:name() == "svalka_bandosu_angar" then
+		--	log( "info", "(%s):is_gulag_available, cond present", self:name() )
+		-- end
+
 		flag = xr_logic.pick_section_from_condlist(db.actor_proxy,self,self.gparams.cond) ~= nil
+		-- if self:name() == "svalka_bandosu_angar" then
+		--	log( "info", "(%s):is_gulag_available, active: %s", self:name(), tostring( flag ) )
+		-- end
+
 	end
 	self:show_smart_debug_spot(flag)
 	return flag
@@ -774,9 +800,7 @@ function se_smart_terrain:on_unregister()
 	if lvl_smarts then lvl_smarts[self.id] = nil end
 	smart_terrains_by_name[self.nm] = nil
 	if self.gparams and self.gparams.respawn then
-		if db.strn_by_respawn[self.gparams.respawn] then
-			db.strn_by_respawn[self.gparams.respawn] = nil
-		end
+		db.strn_by_respawn[self.gparams.respawn] = nil
 	end
 	db.actor_proxy:deinit()
 end

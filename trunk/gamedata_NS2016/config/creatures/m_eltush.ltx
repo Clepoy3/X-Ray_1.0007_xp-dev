@@ -1,32 +1,31 @@
-;---''' ELTUSH '''---
 [m_eltush_e]:monster_base
-GroupControlSection = spawn_group
-SpaceRestrictionSection = space_restrictor,zone_mosquito_bald
-;$spawn = "monsters\eltushs"
-$npc = on
-$prefetch = 16
-visual = monsters\tushkano\tushkano_nev
-corpse_visual = monsters\tushkano\tushkano_dead
-icon = ui_npc_monster_eltush
+GroupControlSection	= spawn_group
+SpaceRestrictionSection	= space_restrictor, zone_mosquito_bald
+;$spawn		= "monsters\eltushs"
+$npc		= on
+$prefetch	= 16
+visual		= monsters\tushkano\tushkano_nev
+corpse_visual	= monsters\tushkano\tushkano_dead
+icon		= ui_npc_monster_eltush
 
-Scheduled = on
-Human = off
-Health = 100
-MinSpeed = 1
-MaxSpeed = 2.5
-going_speed = 3.5
+Scheduled	= on
+Human		= off
+Health		= 100
+MinSpeed	= 1
+MaxSpeed	= 2.5
+going_speed	= 3.5
 current_level_going_speed = 1
-search_speed = 1.5
-MaxHealthValue = 200
-DynamicObjectsCount = 32
-smart_terrain_choose_interval = 00:15:00
-Spawn_Inventory_Item_Section = mutant_face_tushkano
+search_speed	= 1.5
+MaxHealthValue	= 100
+DynamicObjectsCount	= 32
+smart_terrain_choose_interval	= 00:15:00
+Spawn_Inventory_Item_Section	= mutant_face_tushkano
 Spawn_Inventory_Item_Probability_onDeath = 0
 
-ph_box0_center = 0, 0.9, 0
-ph_box0_size = 0.35, 0.9, 0.35
-ph_box1_center = 0, 0.6, 0
-ph_box1_size = 0.4, 0.6, 0.4
+ph_box0_center	= 0, 0.9, 0
+ph_box0_size	= 0.35, 0.9, 0.35
+ph_box1_center	= 0, 0.6, 0
+ph_box1_size	= 0.4, 0.6, 0.4
 ph_crash_speed_min = 10
 ph_crash_speed_max = 30
 ph_collision_damage_factor = 0.1
@@ -106,7 +105,7 @@ sound_panic = anomaly\electra_idle1
 sound_growling = anomaly\electra_blast1
 sound_die_in_anomaly = anomaly\electra_hit
 
-killer_clsids = Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
+killer_clsids = Z_MINCER, Z_GALANT, ZS_BFUZZ, ZS_MBALD, ZS_GALAN, ZS_MINCE
 
 sound_distant_idle = anomaly\electra_blast1
 distant_idle_sound_delay = 80000
@@ -189,9 +188,9 @@ squad_attack_algorithm = 1
 
 
 [electro_tushkano_attack_params]
-stand_attack_0 = 0.25, 1.55, 185, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
-stand_attack_1 = 0.25, 1.55, 185, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
-stand_attack_2 = 0.25, 1.75, 185, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
+stand_attack_0 = 0.25, 0.1, 18, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
+stand_attack_1 = 0.25, 0.1, 18, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
+stand_attack_2 = 0.25, 0.2, 18, 0, 1, 0, -1.2, 1.2, -1.6, 1.6, 1
 
 [electro_tushkano_damage]
 default = 1, -1, 0.3
@@ -202,11 +201,19 @@ bip01_neck = 1, -1, 1.5
 bip01_head = 2, -1, 0.5, 10
 
 [electro_tushkano_terrain]
-255,000,255,255
-001,002,000,000 ;Кордон
-008,001,000,000 ;Бар
-010,001,000,000 ;Янтарь
-012,001,000,000 ;Миллитари
+255,000,255,255 ; на всех уровнях, по графам без описания
+; 255,004,255,255 ; на всех уровнях, по мертвой земле
+; 255,005,255,255 ; на всех уровнях, по деревням
+; 255,006,255,255 ; на всех уровнях, по городам
+; 255,007,255,255 ; на всех уровнях, по промзастройкам
+; 255,008,255,255 ; на всех уровнях, по туннелям
+; 255,009,255,255 ; на всех уровнях, по подземельям
+; 255,014,255,255 ; на всех уровнях, по железнодорожным насыпям
+; 255,015,255,255 ; на всех уровнях, по искусственным заграждениям
+001,002,000,000 ; Кордон
+008,001,000,000 ; Бар
+010,001,000,000 ; Янтарь
+012,001,000,000 ; Милитари
 
 [electro_tushkano_step_params]
 stand_walk_fwd_0 = 1, 0.2, 0.5, 0.7, 1
@@ -216,7 +223,7 @@ stand_run_0 = 1, 0.25, 1, 0.25, 1
 burn_immunity = 0.06
 strike_immunity = 0.2
 shock_immunity = 0
-wound_immunity = 0.03
+wound_immunity = 0.1
 radiation_immunity = 0
 telepatic_immunity = 1
 chemical_burn_immunity = 0.1
@@ -224,35 +231,19 @@ explosion_immunity = 0.1
 fire_wound_immunity = 0.04
 
 [electro_tushkano_particles]
-electro_tushkano_particles_lfoot = electro_tushkano_particles_lfoot
-electro_tushkano_particles_rfoot = electro_tushkano_particles_rfoot
-electro_tushkano_particles_lhand = electro_tushkano_particles_lhand
-electro_tushkano_particles_rhand = electro_tushkano_particles_rhand
+electro_tushkano_particles_neck = electro_tushkano_particles_neck
+electro_tushkano_particles_spine = electro_tushkano_particles_spine
 
-[electro_tushkano_particles_lfoot]
+[electro_tushkano_particles_neck]
+particle = alwen\artefact_kaktus
+bone = bip01_neck
+stop_on_death = true
+sound = anomaly\electra_idle1
+sound_looped = true
+
+[electro_tushkano_particles_spine]
 particle = anomaly2\generator\anomaly_teleport_00001_02
-bone = bip01_l_foot
-stop_on_death = true
-sound = anomaly\electra_idle1
-sound_looped = true
-
-[electro_tushkano_particles_rfoot]
-particle = anomaly2\body_tear_01
-bone = bip01_r_foot
-stop_on_death = true
-sound = anomaly\electra_idle1
-sound_looped = true
-
-[electro_tushkano_particles_lhand]
-particle = alwen\artefact_kaktus
-bone = bip01_l_hand
-stop_on_death = true
-sound = anomaly\electra_idle1
-sound_looped = true
-
-[electro_tushkano_particles_rhand]
-particle = alwen\artefact_kaktus
-bone = bip01_r_hand
+bone = bip01_spine
 stop_on_death = true
 sound = anomaly\electra_idle1
 sound_looped = true
@@ -273,76 +264,43 @@ immunities_sect = sharik_immunities
 attack_params = sharik_attack_params
 bones_particles = sharik_particles
 
-sound_idle			= anomaly\fireball_idle
-sound_eat				= anomaly\fireball_idle
-sound_aggressive		= anomaly\fireball_idle
-sound_attack_hit		= anomaly\fire2
-sound_take_damage		= anomaly\fire2
-sound_die				= anomaly\fireball_blow
-sound_threaten			= anomaly\fireball_idle
-sound_landing			= anomaly\fireball_idle
-sound_steal			= anomaly\fireball_idle
-sound_panic			= anomaly\fireball_idle
-sound_growling			= anomaly\fireball_blow
-sound_die_in_anomaly	= anomaly\fire2
+sound_idle	= anomaly\fireball_idle
+sound_eat	= anomaly\fireball_idle
+sound_aggressive= anomaly\fireball_idle
+sound_attack_hit= anomaly\fire2
+sound_take_damage= anomaly\fire2
+sound_die	= anomaly\fireball_blow
+sound_threaten	= anomaly\fireball_idle
+sound_landing	= anomaly\fireball_idle
+sound_steal	= anomaly\fireball_idle
+sound_panic	= anomaly\fireball_idle
+sound_growling	= anomaly\fireball_blow
+sound_die_in_anomaly = anomaly\fire2
 
 
 [sharik_particles]
-electro_tushkano_particles_lfoot = sharik_particles_lfoot
-electro_tushkano_particles_rfoot = sharik_particles_rfoot
-electro_tushkano_particles_lhand = sharik_particles_lhand
-electro_tushkano_particles_rhand = sharik_particles_rhand
+electro_tushkano_particles_neck = sharik_particles_neck
 
-[sharik_particles_lfoot]
-particle = anomaly2\artefact\artefact_sun
-;particle = anomaly2\heat_00
-bone = bip01_l_foot
-stop_on_death = true
-sound = anomaly\fireball_idle
-sound_looped = true
-
-[sharik_particles_rfoot]
-;particle = anomaly2\electra_damage_02_smoke_new
-particle = anomaly2\artefact\artefact_sun
-;particle = anomaly2\heat_03
-bone = bip01_r_foot
-stop_on_death = true
-sound = anomaly\fireball_idle
-sound_looped = true
-
-[sharik_particles_lhand]
-;particle = anomaly2\electra_damage_02_smoke_new
-particle = anomaly2\artefact\artefact_sun
-;particle = anomaly2\heat_02
-bone = bip01_l_hand
-stop_on_death = true
-sound = anomaly\fireball_idle
-sound_looped = true
-
-[sharik_particles_rhand]
-particle = anomaly2\artefact\artefact_sun
-;particle	= anomaly2\generator\anomaly_teleport_00001
-;particle = anomaly2\heat_02
-bone = bip01_r_hand
-stop_on_death = true
-sound = anomaly\fireball_idle
-sound_looped = true
+[sharik_particles_neck]
+particle	= anomaly2\artefact\artefact_sun
+bone		= bip01_neck
+stop_on_death	= true
+sound		= anomaly\fireball_idle
+sound_looped	= true
 
 [sharik_immunities]
-burn_immunity			= 0.07			;коэффициенты иммунитета 
-strike_immunity		= 0.07
-shock_immunity			= 0.0
-wound_immunity			= 0.06
-radiation_immunity		= 0.0
-telepatic_immunity		= 1.0
+burn_immunity	= 0.1
+strike_immunity	= 0.1
+shock_immunity	= 0.0
+wound_immunity	= 0.1
+radiation_immunity	= 0.0
+telepatic_immunity	= 1.0
 chemical_burn_immunity	= 0.3
-explosion_immunity		= 0.19
-fire_wound_immunity		= 0.05
+explosion_immunity	= 0.19
+fire_wound_immunity	= 0.05
 
 [sharik_attack_params]
-;----------------------------------------------------------------------------------------------------
-;	anim			| time[0..1] | hit_power | impulse | impulse_dir (x,y,z)  |	Field of hit_test  (left,right, bottom, top ) |	Test Dist
-;--------------------------------------------------------------------------------------------------------------
-stand_attack_0 =	  	0.25,		2.05,	185,        0.0, 1.0, 0.0,		 -1.2, 1.2, -1.6, 1.6,							  1.0
-stand_attack_1 =	  	0.25,		2.05,	185,        0.0, 1.0, 0.0,		 -1.2, 1.2, -1.6, 1.6,							  1.0
-stand_attack_2 =	  	0.25,		2.25,	185,        0.0, 1.0, 0.0,		 -1.2, 1.2, -1.6, 1.6,							  1.0
+anim	time[0..1]	hit	impulse	dir(x,y,z)	Field of hit_test (l,r,bottom,top)	Test Dist
+stand_attack_0 = 0.25,	0.1,	18,	0.0, 1.0, 0.0,	-1.2, 1.2, -1.6, 1.6,			1.0
+stand_attack_1 = 0.25,	0.1,	18,	0.0, 1.0, 0.0,	-1.2, 1.2, -1.6, 1.6,			1.0
+stand_attack_2 = 0.25,	0.5,	18,	0.0, 1.0, 0.0,	-1.2, 1.2, -1.6, 1.6,			1.0
