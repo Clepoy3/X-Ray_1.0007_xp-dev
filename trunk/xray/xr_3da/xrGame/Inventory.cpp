@@ -452,9 +452,8 @@ bool CInventory::Ruck(PIItem pIItem)
 	m_pOwner->OnItemRuck							(pIItem, pIItem->m_eItemPlace);
 	pIItem->m_eItemPlace							= eItemPlaceRuck;
 
-	
-
-	pIItem->OnMoveToRuck							();
+	if (pIItem->GetSlot() != OUTFIT_SLOT || (smart_cast<CActor*>(GetOwner()) && in_slot)) //KRodin: попытка исправить сброс визуала актора при подбирании в инвентарь любого костюма
+		pIItem->OnMoveToRuck();
 
 	if(in_slot)
 		pIItem->object().processing_deactivate();
