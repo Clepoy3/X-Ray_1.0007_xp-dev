@@ -411,6 +411,8 @@ void CWeapon::Load(LPCSTR section)
 	m_bHasTracers = READ_IF_EXISTS(pSettings, r_bool, section, "tracers", true);
 	m_u8TracerColorID = READ_IF_EXISTS(pSettings, r_u8, section, "tracers_color_ID", u8(-1));
 
+	wpn_clsid_str = pSettings->r_string(section, "class"); //KRodin: костыль для того, чтоб определить класс оружия
+
 	string256						temp;
 	for (int i = egdNovice; i < egdCount; ++i) {
 		strconcat(sizeof(temp), temp, "hit_probability_", get_token_name(difficulty_type_token, i));
@@ -627,7 +629,7 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 			m_set_next_ammoType_on_reload = u8(NextAmmo);
 
 		if (OnClient()) SetAmmoElapsed(int(AmmoElapsed));
-		OnStateSwitch(u32(state));
+		OnStateSwitch(u32(state), GetState());
 	}
 		break;
 	default:
@@ -832,10 +834,12 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 
 	case kWPN_ZOOM_INC:
 	case kWPN_ZOOM_DEC:
-		if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached())
+		if (IsZoomEnabled() && IsZoomed() && (flags&CMD_START) && ((m_bScopeDynamicZoom && IsScopeAttached()) || strstr(wpn_clsid_str, "BINOC"))) //KRodin: у стволов на классе бинокля зум должен работать в любом случае.
 		{
-			if (cmd == kWPN_ZOOM_INC)  ZoomInc();
-			else					ZoomDec();
+			if (cmd == kWPN_ZOOM_INC)
+				ZoomInc();
+			else
+				ZoomDec();
 			return true;
 		}
 		else
@@ -1545,6 +1549,24 @@ LPCSTR	CWeapon::GetCurrentAmmo_ShortName()
 	return *(l_cartridge.m_InvShortName);
 }
 
+float CWeapon::GetMagazineWeight(const decltype(CWeapon::m_magazine)& mag) const
+{
+	float res = 0;
+	const char* last_type = nullptr;
+	float last_ammo_weight = 0;
+	for (auto& c : mag)
+	{
+		// Usually ammos in mag have same type, use this fact to improve performance
+		if (last_type != c.m_ammoSect.c_str())
+		{
+			last_type = c.m_ammoSect.c_str();
+			last_ammo_weight = c.Weight();
+		}
+		res += last_ammo_weight;
+	}
+	return res;
+}
+
 float CWeapon::Weight()
 {
 	float res = CInventoryItemObject::Weight();
@@ -1557,14 +1579,8 @@ float CWeapon::Weight()
 	if (IsSilencerAttached() && GetSilencerName().size()){
 		res += pSettings->r_float(GetSilencerName(), "inv_weight");
 	}
+	res += GetMagazineWeight(m_magazine);
 
-	if (iAmmoElapsed)
-	{
-		float w = pSettings->r_float(*m_ammoTypes[m_ammoType], "inv_weight");
-		float bs = pSettings->r_float(*m_ammoTypes[m_ammoType], "box_size");
-
-		res += w*(iAmmoElapsed / bs);
-	}
 	return res;
 }
 void CWeapon::Hide()

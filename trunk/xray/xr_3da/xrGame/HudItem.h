@@ -53,7 +53,7 @@ public:
 	//посылка сообщения на сервер о смене состояния оружия 
 	virtual void	SwitchState			(u32 S);
 	//прием сообщения с сервера и его обработка
-	virtual void	OnStateSwitch		(u32 S);
+	virtual void	OnStateSwitch		(u32 S, u32 oldState);
 	virtual void	OnEvent				(NET_Packet& P, u16 type);
 
 	virtual void	OnH_A_Chield		();

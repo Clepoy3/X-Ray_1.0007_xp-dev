@@ -58,8 +58,8 @@ public:
 	virtual bool 			Action						(s32 cmd, u32 flags);
 
 //.	IC u32		 			State						()				{return m_state;}
-	virtual void 			State						(u32 state);
-	virtual void 			OnStateSwitch				(u32 S);
+	virtual void 			State						(u32 state, u32 old_state);
+	virtual void 			OnStateSwitch				(u32 S, u32 oldState);
 	virtual void			GetBriefInfo				(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
 protected:

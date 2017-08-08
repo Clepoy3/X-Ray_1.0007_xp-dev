@@ -363,9 +363,9 @@ void CArtefact::onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)
 		PlayAnimIdle		();
 }
 
-void CArtefact::OnStateSwitch		(u32 S)
+void CArtefact::OnStateSwitch(u32 S, u32 oldState)
 {
-	inherited::OnStateSwitch	(S);
+	inherited::OnStateSwitch(S, oldState);
 	switch(S){
 	case eShowing:
 		{
@@ -373,7 +373,8 @@ void CArtefact::OnStateSwitch		(u32 S)
 		}break;
 	case eHiding:
 		{
-			m_pHUD->animPlay(random_anim(m_anim_hide),		FALSE, this, S);
+			if (oldState != eHiding)
+				m_pHUD->animPlay(random_anim(m_anim_hide), FALSE, this, S);
 		}break;
 	case eActivating:
 		{

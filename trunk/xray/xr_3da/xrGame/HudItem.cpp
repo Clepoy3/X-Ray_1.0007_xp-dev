@@ -135,13 +135,13 @@ void CHudItem::OnEvent		(NET_Packet& P, u16 type)
 		{
 			u8				S;
 			P.r_u8			(S);
-			OnStateSwitch	(u32(S));
+			OnStateSwitch	(u32(S), GetState());
 		}
 		break;
 	}
 }
 
-void CHudItem::OnStateSwitch	(u32 S)
+void CHudItem::OnStateSwitch	(u32 S, u32 oldState)
 {
 	m_dwStateTime = 0;
 	SetState( S );

@@ -184,7 +184,7 @@ void CSpaceRestrictionHolder::unregister_restrictor			(CSpaceRestrictor *space_r
 
 	CSpaceRestrictionBase	*composition = xr_new<CSpaceRestrictionComposition>(this,restrictor_id);
 	CSpaceRestrictionBridge	*bridge = xr_new<CSpaceRestrictionBridge>(composition);
-	m_restrictions.insert	(std::make_pair(restrictor_id,bridge));
+	m_restrictions.insert(std::make_pair(restrictor_id, bridge));
 
 	collect_garbage			();
 }

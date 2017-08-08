@@ -221,7 +221,7 @@ bool CWeaponMagazined::TryReload()
 		{
 			if (TryToGetAmmo(i))
 			{
-				m_ammoType	= i;
+				m_set_next_ammoType_on_reload = i;
 				m_bPending	= true;
 				SwitchState(eReload);
 				return true;
@@ -442,9 +442,9 @@ void CWeaponMagazined::StateSwitchCallback(GameObject::ECallbackType actor_type,
 	}
 }
 
-void CWeaponMagazined::OnStateSwitch(u32 S)
+void CWeaponMagazined::OnStateSwitch(u32 S, u32 oldState)
 {
-	inherited::OnStateSwitch(S);
+	inherited::OnStateSwitch(S, oldState);
 	switch (S)
 	{
 	case eIdle:
@@ -476,7 +476,8 @@ void CWeaponMagazined::OnStateSwitch(u32 S)
 		switch2_Showing();
 		break;
 	case eHiding:
-		switch2_Hiding();
+		if (oldState != eHiding)
+			switch2_Hiding();
 		break;
 	case eHidden:
 		switch2_Hidden();

@@ -227,10 +227,12 @@ void CActor::IR_OnMouseWheel(int direction)
 {
 	if(inventory().Action( (direction>0)? kWPN_ZOOM_DEC:kWPN_ZOOM_INC , CMD_START)) return;
 
+/* //KRodin: переключение слотов мышкой отключено
 	if (direction>0)
 		OnNextWeaponSlot				();
 	else
 		OnPrevWeaponSlot				();
+*/
 }
 void CActor::IR_OnKeyboardRelease(int cmd)
 {

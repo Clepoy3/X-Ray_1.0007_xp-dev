@@ -97,7 +97,7 @@ public:
 	virtual	void					UpdateXForm			();
 	virtual bool					Action				(s32 cmd, u32 flags);
 	virtual void					onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
-	virtual void					OnStateSwitch		(u32 S);
+	virtual void					OnStateSwitch		(u32 S, u32 oldState);
 	virtual void					OnAnimationEnd		(u32 state);
 	virtual bool					IsHidden			()	const	{return GetState()==eHidden;}
 	virtual u16						bone_count_to_synchronize	() const;

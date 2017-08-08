@@ -32,7 +32,7 @@ protected:
 			void		switch2_Attacking			(u32 state);
 
 	virtual void		OnAnimationEnd				(u32 state);
-	virtual void		OnStateSwitch				(u32 S);
+	virtual void		OnStateSwitch				(u32 S, u32 oldState);
 
 	void				state_Attacking				(float dt);
 

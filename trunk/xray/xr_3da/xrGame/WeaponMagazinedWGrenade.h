@@ -36,7 +36,7 @@ public:
 	virtual	float	CurrentZoomFactor	();
 
 	
-	virtual void	OnStateSwitch	(u32 S);
+	virtual void	OnStateSwitch	(u32 S, u32 oldState);
 	
 	virtual void	switch2_Idle	();
 	virtual void	switch2_Reload	();
@@ -57,6 +57,7 @@ public:
 	void			OnAnimationEnd	(u32 state);
 
 	virtual bool	IsNecessaryItem	    (const shared_str& item_sect);
+	virtual float	Weight() /*const*/;
 
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimShow();

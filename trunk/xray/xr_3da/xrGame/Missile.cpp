@@ -192,8 +192,9 @@ void CMissile::UpdateCL()
 {
 	inherited::UpdateCL();
 
-	if(GetState() == MS_IDLE && m_dwStateTime > PLAYING_ANIM_TIME) 
-		OnStateSwitch(MS_PLAYING);
+	u32 oldState = GetState();
+	if(oldState == MS_IDLE && m_dwStateTime > PLAYING_ANIM_TIME)
+		OnStateSwitch(MS_PLAYING, oldState);
 
 	// alpet: поддержка анимации спринта для болтов
 	CActor	*actor = smart_cast<CActor*>(H_Parent());
@@ -239,9 +240,9 @@ void CMissile::StartIdleAnim()
 	m_pHUD->animDisplay(m_pHUD->animGet(*m_sAnimIdle), TRUE);
 }
 
-void CMissile::State(u32 state) 
+void CMissile::State(u32 state, u32 old_state)
 {
-	switch(GetState()) 
+	switch(state)
 	{
 	case MS_SHOWING:
         {
@@ -269,8 +270,11 @@ void CMissile::State(u32 state)
 		} break;
 	case MS_HIDING:
 		{
-			m_bPending = true;
-			m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimHide), TRUE, this, GetState());
+			if (old_state != MS_HIDING)
+			{
+				m_bPending = true;
+				m_pHUD->animPlay(m_pHUD->animGet(*m_sAnimHide), TRUE, this, GetState());
+			}
 		} break;
 	case MS_HIDDEN:
 		{
@@ -321,10 +325,10 @@ void CMissile::State(u32 state)
 	}
 }
 
-void CMissile::OnStateSwitch	(u32 S)
+void CMissile::OnStateSwitch(u32 S, u32 oldState)
 {
-	inherited::OnStateSwitch	(S);
-	State						(S);
+	inherited::OnStateSwitch(S, oldState);
+	State(S, oldState);
 }
 
 
@@ -335,13 +339,13 @@ void CMissile::OnAnimationEnd(u32 state)
 	case MS_HIDING:
 		{
 			setVisible(FALSE);
-			OnStateSwitch(MS_HIDDEN);
+			OnStateSwitch(MS_HIDDEN, state);
 		} break;
 	case MS_SHOWING:
 	case MS_SHOWING2:
 		{
 			setVisible(TRUE);
-			OnStateSwitch(idle_state());
+			OnStateSwitch(idle_state(), state);
 		} break;
 	case MS_THREATEN:
 		{
@@ -358,23 +362,23 @@ void CMissile::OnAnimationEnd(u32 state)
 
 			if(m_throw) 
 				SwitchState(MS_THROW); 
-//				OnStateSwitch(MS_THROW); 
+//				OnStateSwitch(MS_THROW, state); 
 			else 
 				SwitchState(MS_READY);
-//				OnStateSwitch(MS_READY);
+//				OnStateSwitch(MS_READY, state);
 		} break;
 	case MS_THROW:
 		{
 			Throw();
-			OnStateSwitch(MS_END);
+			OnStateSwitch(MS_END, state);
 		} break;
 	case MS_END:
 		{
-			OnStateSwitch(MS_SHOWING2);
+			OnStateSwitch(MS_SHOWING2, state);
 		} break;
 	case MS_PLAYING:
 		{
-			OnStateSwitch(idle_state());
+			OnStateSwitch(idle_state(), state);
 		} break;
 	}
 }

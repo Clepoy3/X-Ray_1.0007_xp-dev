@@ -452,6 +452,9 @@ public:
 	shared_str				m_ammoName;
 	BOOL					m_bHasTracers;
 	u8						m_u8TracerColorID;
+	//
+	const char* wpn_clsid_str;
+	//
 	u32						m_set_next_ammoType_on_reload;
 	// Multitype ammo support
 	xr_vector<CCartridge>	m_magazine;
@@ -463,6 +466,7 @@ public:
 
 	LPCSTR					GetCurrentAmmo_ShortName();
 
+	float					GetMagazineWeight(const decltype(m_magazine)& mag) const;
 protected:
 	u32						m_ef_main_weapon_type;
 	u32						m_ef_weapon_type;
