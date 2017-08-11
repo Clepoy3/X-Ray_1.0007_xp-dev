@@ -287,7 +287,7 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	local bind = dik_to_bind(dik)
 	local console = get_console()
-	
+
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		local alive_on_level = level.present() and (db.actor ~= nil) and db.actor:alive()
 		if dik == DIK_keys.DIK_ESCAPE then
@@ -303,28 +303,25 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 				return false --let the original functionality have it
 			end
 		end
+		--
 		if dik == DIK_keys.DIK_F6 then
-			local res, err = pcall(my_proxy.start_chunk_from_file)
-			get_console():execute(res and "Succesfull!" or string.gsub(err, " ", "_"))
+			xpcall( function() dofile(getFS():update_path("$game_scripts$", "personal_test.lua")) end, log1)
 		end
-		
+		--
 		-- раскоментируем и заоодно включим убранное спавн меню 
 		--[[if	dik == DIK_keys.DIK_S then
 		--	self:OnButton_load_spawn()
-		
-		else]]if 	dik == DIK_keys.DIK_Q then
+		else]]if dik == DIK_keys.DIK_Q then
 			self:OnMessageQuitWin()	
 		elseif 	dik == DIK_keys.DIK_S then
 			if amk.check_game() then 
 				self:amk_options()
-			end	
-		
-		elseif dik == DIK_keys.DIK_F4 then
-	                self:show_position_informer_window()	
+			end
+		--elseif dik == DIK_keys.DIK_F4 then
+	    --	self:show_position_informer_window()	
 		end
-
 	end
-   
+
 	return true
 end
 

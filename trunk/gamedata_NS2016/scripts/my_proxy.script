@@ -1,6 +1,0 @@
-function start_chunk_from_file()
-    local chunk, err = dofile("..\\gamedata\\scripts\\test.lua")
-    if err then
-        get_console():execute("err="..tostring(string.gsub(err, " ", "_")))
-    end
-end
