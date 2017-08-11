@@ -175,7 +175,7 @@ end
 
 function generic_physics_binder:save( packet )
 	object_binder.save( self, packet )
-	xr_logic.save_obj( self.object, packet )
+	xr_logic.save_obj( self.object, packet, not self.initialized )
 end
 
 function generic_physics_binder:load( reader )

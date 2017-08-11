@@ -107,7 +107,7 @@ end
 
 function restrictor_binder:save(packet)
 	object_binder.save(self, packet)
-	xr_logic.save_obj(self.object, packet)
+	xr_logic.save_obj(self.object, packet, not self.initialized)
 	if self.psy_zone and not psy_zone_save and self.object:inside(db.actor:position()) then
 			psy_zone_save = true
 			sr_psy_antenna.save(packet)

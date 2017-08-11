@@ -1174,13 +1174,36 @@ function pstor_load_all( npc, reader )
 end
 
 
-function save_obj( npc, pk )
-	local st = db.storage[npc:id()]
-	pk:w_stringZ( st.ini_filename or "" )
-	pk:w_stringZ( st.section_logic or "" )
-	pk:w_stringZ( st.active_section or "" )
-	pk:w_stringZ( st.gulag_name or "" )
+local st_loaded_keys = {
+  [ "active_section" ] = "loaded_active_section",
+  [ "gulag_name"     ] = "loaded_gulag_name",
+  [ "ini_filename"   ] = "loaded_ini_filename",
+  [ "section_logic"  ] = "loaded_section_logic",
+}
 
+function get_st_loaded_value( st, k )
+  ASSERT(
+    st_loaded_keys[ k ],
+    "[%s]: '%s' not found in st_loaded_keys", script_name(), tostring( k )
+  )
+  return st[ st_loaded_keys[ k ] ]
+end
+
+function get_st_value( st, k )
+  return st[ k ]
+end
+
+local save_obj_keys = {
+  "ini_filename", "section_logic", "active_section", "gulag_name"
+}
+
+function save_obj( npc, pk, loaded )
+	local st = db.storage[npc:id()]
+	local get_st = loaded and this.get_st_loaded_value or this.get_st_value
+	for _, k in ipairs( save_obj_keys ) do
+		local v = get_st( st, k )
+		pk:w_stringZ( v or "" )
+	end
 	-- save_logic( npc, pk )
 	pk:w_s32( ( st.activation_time or 0 ) - time_global() )
 	utils.w_CTime( pk, st.activation_game_time )
