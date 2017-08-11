@@ -54,29 +54,32 @@ end
 function check_shedule(flame)
 	for k, t in pairs(sheduled_flames) do
 		if t.pos:distance_to_sqr(flame:position()) < DIST_TO_FLAME then
-			switch_flame(flame, ena)
+			switch_flame(flame, t.ena)
 			sheduled_flames[k] = nil
-			return
 		end
 	end
 end
 
 function switch_flame_near_light(light, ena)
+	local flame_found = false
 	for id, pos in pairs(flames) do
 		if pos:distance_to_sqr(light:position()) < DIST_TO_FLAME then
 			local flame = level.object_by_id(id)
 			switch_flame(flame, ena)
-			return
+			flame_found = true
 		end
 	end
-	
-	local t = sheduled_flames[light:name()]
-	if t == nil then
-		sheduled_flames[light:name()] = {}
-		t = sheduled_flames[light:name()]		
+	--
+	if not flame_found then --Такое вообще бывает?
+		log3("!![%s] Flame not found for light [%s]", script_name(), light:name())
+		local t = sheduled_flames[light:name()]
+		if t == nil then
+			sheduled_flames[light:name()] = {}
+			t = sheduled_flames[light:name()]		
+		end
+		t.pos = light:position()
+		t.ena = ena
 	end
-	t.pos = light:position()
-	t.ena = ena
 end
 
 function play_particle_near_light(light, particle)

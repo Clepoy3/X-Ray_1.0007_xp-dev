@@ -5,9 +5,13 @@
 --| также поддерживает встроенную игровую логику                            |--
 --| Malandrinus, OGS Evolution Team, 2012                                   |--
 -------------------------------------------------------------------------------
+local campfire_lamp_names = {
+	['rebyta_smertniki_koster_lights'] = true,
+}
 function init(obj)
 	if
 		string.find(obj:name(), "r1_r2")
+		or campfire_lamp_names[obj:name()]
 		--or get_bool( obj:section(), "ogse_campfire.bind_light" )
 	then
 		ogse_campfire.bind_light(obj)
