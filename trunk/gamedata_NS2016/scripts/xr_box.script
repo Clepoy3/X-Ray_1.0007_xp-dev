@@ -123,22 +123,17 @@ end
 
 --' Функция спавнит необходимое число предметов
 function create_items(obj, section, number, rnd)
-    printf("create %s of %s", tostring(number), tostring(section))
     if ammo_sections[section] == true then
 		if math.random(100) <= rnd	then
-				
-			if number > 0 then
-				local position = vector():set(0,0,0)
+			local num_in_box = get_u32(section, "box_size")
+			while number > num_in_box or number > 0 do
 				position.x = obj:position().x + math.random(-30,30)/100
 				position.z = obj:position().z + math.random(-30,30)/100
 				position.y = obj:position().y + math.random(30,50)/100
-
-				se_respawn.create_ammo(section,	
-					    position,
-						obj:level_vertex_id(),	
-						obj:game_vertex_id(),
-						65535,
-						number)
+				local sammo = alife():create_ammo(section, position, obj:level_vertex_id(), obj:game_vertex_id(), 65535, num_in_box)
+				local _sammo = alife():object(sammo.id)
+				_krodin_utils.clear_used_ai_locations(_sammo)
+				number = number - num_in_box
 			end
 		end
     else
@@ -149,22 +144,12 @@ function create_items(obj, section, number, rnd)
 				position.x = obj:position().x + math.random(-30,30)/100
 				position.z = obj:position().z + math.random(-30,30)/100
 				position.y = obj:position().y + math.random(30,50)/100
-
-				alife():create(section,	
-					    position,
-						obj:level_vertex_id(),	
-						obj:game_vertex_id())
+				local sitem = alife():create(section, position, obj:level_vertex_id(), obj:game_vertex_id())
+				local _sitem = alife():object(sitem.id)
+				_krodin_utils.clear_used_ai_locations(_sitem)
 			end
         end
     end    
-end
-
-function parse_names( s )
-    local t = {}
-    for name in string.gfind( s, "([%w_%-.\\]+)%p*" ) do
-        table.insert( t, name )
-    end
-    return t
 end
 
 function r_items( spawn_ini, section, line)
@@ -203,14 +188,16 @@ function r_items( spawn_ini, section, line)
 end
 
 function create_obligatory_items(obj, item , count)
-	for i = 1,count do
-				local position = vector():set(0,0,0)
-				position.x = obj:position().x + math.random(-30,30)/100
-				position.z = obj:position().z + math.random(-30,30)/100
-				position.y = obj:position().y + math.random(30,50)/100
-				alife():create(item,	
-					    position,
-						obj:level_vertex_id(),	
-						obj:game_vertex_id())
-			end
+	for i = 1, count do
+		local position = vector():set(0,0,0)
+		position.x = obj:position().x + math.random(-30,30)/100
+		position.z = obj:position().z + math.random(-30,30)/100
+		position.y = obj:position().y + math.random(30,50)/100
+		local sitem = alife():create(item,	
+				position,
+				obj:level_vertex_id(),	
+				obj:game_vertex_id())
+		local _sitem = alife():object(sitem.id)
+		_krodin_utils.clear_used_ai_locations(_sitem)
+	end
 end
