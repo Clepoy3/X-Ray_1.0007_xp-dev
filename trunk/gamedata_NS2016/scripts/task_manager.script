@@ -184,7 +184,7 @@ function CRandomTask:__init() counterAdd("task_manager.CRandomTask:__init")
 
     local sss = utils.cfg_get_string(self.task_ini, id, "reward_item", nil, false, "")
     if sss ~= nil then
-      curr_task_info.reward_item = se_respawn.parse_names(sss) 
+      curr_task_info.reward_item = parse_names(sss) 
     else
       curr_task_info.reward_item = sss
     end
@@ -273,7 +273,7 @@ end
 function CRandomTask:read_info_reward_section(ini,sect,container) counterAdd("task_manager.CRandomTask:read_info_reward_section")
   local rip = utils.cfg_get_string(ini,sect,"info_portion",nil,true,"")
   if rip ~= nil then
-    container.reward_info_portion = se_respawn.parse_names(rip)
+    container.reward_info_portion = parse_names(rip)
   else
     container.reward_info_portion = rip
   end

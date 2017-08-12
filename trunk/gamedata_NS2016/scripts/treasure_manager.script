@@ -718,14 +718,6 @@ function get_treasure_manager()
 	return treasure_manager
 end
 
-function parse_names( s )
-	local tabl = {}
-	for name in string.gfind( s,"([%w_%-.\\]+)%p*" ) do
-		table_insert( tabl, name )
-	end
-	return tabl
-end
-
 function parse_spawns( line )
 	if line == nil then
 		return {}

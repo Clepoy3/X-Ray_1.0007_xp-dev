@@ -62,7 +62,6 @@ function first_run()
 		amk.g_start_timer("gg_need_sleep",0,0,6)
 		amk.g_start_timer("show_news",0,0,10)
 		amk.save_variable("gg_need_sleep",80)
-		math.randomseed( time_global() + 172800 )
 		amk.save_variable("x_first_run",false)
 	end
 

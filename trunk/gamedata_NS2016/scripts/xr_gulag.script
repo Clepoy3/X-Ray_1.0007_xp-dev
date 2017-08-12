@@ -1320,11 +1320,3 @@ function get_npc_gulag( obj, parent )
 		return strn.gulag
 	end
 end
-
-function parse_names(s)
-	local tabl = {}
-	for name in string.gfind(s,"([%w_%-.\\]+)%p*") do
-		table_insert(tabl,name)
-	end
-	return tabl
-end

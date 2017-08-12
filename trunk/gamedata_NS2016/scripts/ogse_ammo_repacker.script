@@ -1,0 +1,85 @@
+--Перепаковщик патронов в инвентаре актора.
+--KRodin (c) 2017
+
+function attach(sm)
+	sm:subscribe({signal = "on_take", fun = this.on_take}) --должен вызываться первым в on_take!
+end
+
+local ammo = {}
+local update_planned = false
+
+--------
+-- вызывается при добавлении в инвентарь ГГ любых патрон
+-- здесь будем только ставить флажки о необходимости проверки,
+-- саму проверку и перепаковку сделаем в апдейте актёра,
+-- если перепаковку делать прям здесь, то будут сильные тормоза
+-- при взятии из нычки кучи патрон (взять всё)
+--------
+function on_take(obj, s_obj)
+	if not obj:is_ammo() then return end
+	if device().precache_frame > 1 or device():is_paused() then return end --Во время загрузки ничего не делаем
+
+	local section = obj:section()
+	if not ammo[section] then
+		ammo[section] = {
+			["repack"] = false,
+			["box"] = get_u32(section, "box_size")
+		}
+	end
+	--log3("~~[%s.on_take] Size of [%s]: [%s], default in box: [%s]", script_name(), obj:name(), _krodin_utils.get_ammo_size(obj), ammo[section].box)
+	if not ammo[section].repack then
+		if _krodin_utils.get_ammo_size(obj) < ammo[section].box then
+			ammo[section].repack = true
+			if not update_planned then
+				level.add_call(
+					function() return not level.main_input_receiver() end,
+					this.on_update
+				)
+				update_planned = true
+			end
+		end
+	end
+	--return true --KRodin: надо б проверить, нужны ли ещё где-нибудь патроны в on_take
+end
+
+
+function on_update() --Поиск в инвентаре неполных пачек и их переупаковка
+	local repack_tbl = {}
+	db.actor:inventory_for_each(function(obj, npc)
+		if npc:is_in_ruck(obj) then
+			local sect = obj:section()
+			local ammo_data = ammo[sect]
+			if ammo_data and ammo_data.repack then
+				local size = _krodin_utils.get_ammo_size(obj)
+				if size < ammo_data.box then
+					if not repack_tbl[sect] then
+						repack_tbl[sect] = {["size"] = size, ["remove_ids"] = {obj:id()}}
+					else
+						repack_tbl[sect]["size"] = repack_tbl[sect]["size"] + size
+						table.insert(repack_tbl[sect]["remove_ids"], obj:id())
+					end
+				end
+			end
+		end
+	end)
+
+	for k, v in pairs(repack_tbl) do
+		if #v.remove_ids > 1 and v.size > 0 then
+			for i = 1, #v.remove_ids do
+				local id = v.remove_ids[i]
+				local sobj = alife():object(id)
+				if sobj then
+					alife():release(sobj)
+				end
+			end
+			--log3("--[%s] Create ammo! Section: [%s], size: [%s]", script_name(), k, v.size)
+			_krodin_utils.spawn_ammo_in_inv(k, v.size)
+		end
+	end
+
+	for k, v in pairs(ammo) do
+		if v.repack then ammo[k].repack = false end
+	end
+
+	update_planned = false
+end

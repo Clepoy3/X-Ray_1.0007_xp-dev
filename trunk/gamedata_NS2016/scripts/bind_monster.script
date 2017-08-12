@@ -611,14 +611,7 @@ end
 function generic_object_binder:load(reader) counterAdd("bind_monster.generic_object_binder:load")
 	self.loaded = true  
 	object_binder.load(self, reader) 
-
-	if reader:r_eof() then 
-		abort("SAVE FILE IS CORRUPT generic_object_binder:load "..self.object:name())
-		remove_zavis.remove_obj(self.object)
-		if not self.object then
-			return
-		end
-	end 
+	ASSERT(not reader:r_eof(), "SAVE FILE IS CORRUPT generic_object_binder:load [%s]", self.object:name())
 
 	xr_logic.load_obj(self.object, reader) 
 	if self.object:clsid() == clsid.script_trader then 

@@ -82,51 +82,26 @@ function strip_quotes( s ) --Срезать кавычки с начала и с конца строки
   return s:gsub( '^[«»\"\'](.*)[«»\"\']$', '%1' ) --Срезает самую первую кавычку слева и самую последнюю кавычку справа.
 end
 
-if ogse_qt then
-
-class "timeout_timer" ( ogse_qt.quick_timer )
-function timeout_timer:__init( delay, fun, ... ) super( delay )
-  self.fun = fun
-  self.args = { ... }
-end
-function timeout_timer:taction()
-  self.fun( unpack( self.args ) )
-end
-function timeout( delay, fun, ... )
-  local tmout = timeout_timer( delay, fun, ... )
-  --
-  local d = debug.getinfo(2)
-  ASSERT(d, "")
-  tmout.script_name = d.short_src:gsub('^.-([^\\]+)%.[^.]+$', '%1')
-  tmout.line = d.linedefined
-  --
-  tmout:start()
-  return tmout
-end
-
-end
 --dsh mod - end
 
 --ogse
 
 -----------------------------------------------------------------------------------------------------------
+local function fix_spawn_item_in_inv(obj, item_id, item_obj) --Фикс пропадания доспавненного предмета при сейв/лоаде
+    obj:transfer_item(item_obj, obj)
+end
+
 --Спавним предметы в инвентарь актора, НПС, монстров, ящиков (поддерживаются и клиентские, и серверные объекты)
 --ДЛЯ СПАВНА ПАТРОНОВ ИСПОЛЬЗОВАТЬ ОТДЕЛЬНУЮ ФУНКЦИЮ!!!
 function spawn_item_in_inv(section, npc, num)
-	local npc = npc or db.actor
-	local num = num or 1
-
-	local pos, lvi, gvi, pid, sobj
-	if type(npc.id) == "function" then
-		pos, lvi, gvi, pid = npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id()
-	else
-		pos, lvi, gvi, pid = npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id
-	end
-
+	npc = npc or db.actor
+	num = num or 1
+	local sobj
+	local pid = type(npc.id) == "function" and npc:id() or npc.id
 	local is_actor = pid == db.actor:id()
 	local game_obj = level.object_by_id(pid)
 	for i = 1, num do
-		sobj = alife():create(section, pos, lvi, gvi, pid)
+		sobj = alife():create(section, vector(), 0, 0, pid)
 		if not is_actor and game_obj then
 			level.client_spawn_manager():add(sobj.id, -1, fix_spawn_item_in_inv, game_obj) --Фикс пропадания доспавненного предмета при сейв/лоаде
 		end
@@ -140,29 +115,18 @@ end
 function spawn_ammo_in_inv(section, num, npc)
 	if num < 1 then return end
 
-	local npc = npc or db.actor
-
-	local pos, lvi, gvi, pid
-	if type(npc.id) == "function" then
-		pos, lvi, gvi, pid = npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id()
-	else
-		pos, lvi, gvi, pid = npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id
-	end
-
+	npc = npc or db.actor
+	local pid = type(npc.id) == "function" and npc:id() or npc.id
 	local is_actor = pid == db.actor:id()
 	local game_obj = level.object_by_id(pid)
 	local num_in_box = get_u32(section, "box_size")
 	while num > num_in_box or num > 0 do
-		local sitem = alife():create_ammo(section, pos, lvi, gvi, pid, num_in_box)
+		local sitem = alife():create_ammo(section, vector(), 0, 0, pid, num_in_box)
 		if not is_actor and game_obj then
 			level.client_spawn_manager():add(sitem.id, -1, fix_spawn_item_in_inv, game_obj) --Фикс пропадания доспавненного предмета при сейв/лоаде
 		end
 		num = num - num_in_box
 	end
-end
-
-function fix_spawn_item_in_inv(obj, item_id, item_obj) --Фикс пропадания доспавненного предмета при сейв/лоаде
-    obj:transfer_item(item_obj, obj)
 end
 -----------------------------------------------------------------------------------------------------------
 

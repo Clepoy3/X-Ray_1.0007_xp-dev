@@ -50,14 +50,6 @@ function r_tab(spawn_ini,section,line,default)
 	return default
 end
 
-function parse_names(s)
-	local tabl = {}
-	for name in string.gfind(s,"([%w_%-.\\]+)%p*") do
-		table_insert(tabl,name)
-	end
-	return tabl
-end
-
 function r_spawns(spawn_ini,section,line,sectSpawnProps)
 	local check = nil
 	local c_data,comm,count,ltx,num_even,prob,rank,spawn,tabl,tab_spawn

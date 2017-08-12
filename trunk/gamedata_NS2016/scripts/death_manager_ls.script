@@ -597,9 +597,4 @@ function create_ammo(npc, section, size)
 	if size < 1 then size = 1 end
 	-- get_console():execute(string.format("load ~dc~: info, [death_manager], create %s ammo: %s", tostring(size),section))
 	return se_respawn.create_ammo(section, npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id(), size)
-	end
-
--- количество патронов в пачке, тоже уперто из того же dunin_ammo.script
-function get_ammo_size(obj)
-	return _krodin_utils.get_ammo_size(obj)
 end

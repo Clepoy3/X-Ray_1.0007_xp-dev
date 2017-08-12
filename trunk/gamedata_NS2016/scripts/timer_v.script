@@ -25,16 +25,6 @@ function lose_item(obj)
 	end
 end
 
-function used_item()
--- Вызывается из xr_detector.script (функция actor_detector:update())
--- отслеживает использование часов
-
-	if (lost_id > 0) and (alife():object(lost_id)==nil) then 
-		used_timer()	-- открываю часы в инвентаре
-	end
-	
-end
-
 function used_timer() 
 --использование часов (просмотр, установка таймера или секундомера)
 

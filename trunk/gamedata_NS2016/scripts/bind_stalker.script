@@ -485,7 +485,6 @@ function actor_binder:on_item_take(obj)
 	ex_hoard.hoard_spawn(obj)
 	amk.on_item_take(obj)
 	amk_utils.actor_item_take(obj)
-	inv_manager.on_item_moved(obj, true)
 	sak.check_used_item(obj)
 	braad_test.checking_use_item(obj)
 	if xrs_ai then xrs_ai.actor_item_take(obj) end 
@@ -511,7 +510,6 @@ function actor_binder:on_item_drop(obj)
 	babah.li(obj)
 	player_ogg.lose_item(obj)	-- Vergas ogg-player
 	level_tasks.proceed(self.object)
-	inv_manager.on_item_moved(obj, false)
 	amk.on_item_drop(obj)
 	amk_utils.actor_item_drop(obj)
 	inventory.on_item_drop(obj)
@@ -864,10 +862,6 @@ local tasks_list = {
 	{ ["name"] = "amk_mod.firebat_ammo",		["task"] = amk_mod.firebat_ammo,		["group"] = 1000 },
 	{ ["name"] = "bind_stalker.hud_blood",		["task"] = bind_stalker.hud_blood,		["group"] = 1000 },
 	{ ["name"] = "bind_stalker.hud_low_health",	["task"] = bind_stalker.hud_low_health,		["group"] = 1000 },
-
-	-- 5000 ms
-	-- Добавлять только при изменениях в инвентаре.
-	{ ["name"] = "inv_manager.on_update",		["task"] = inv_manager.on_update,		["group"] = 5000 }
 }
 function task_ini()
 	for i = 1, #tasks_list do

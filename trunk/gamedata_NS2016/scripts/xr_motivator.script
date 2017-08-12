@@ -645,11 +645,8 @@ end
 function motivator_binder:load(reader) counterAdd("xr_motivator.motivator_binder:load")
 	self.loaded = true
 	object_binder.load(self, reader)
-	if reader:r_eof() then
-		abort("SAVE FILE IS CORRUPT motivator_binder:load "..self.object:name())
-		remove_zavis.remove_obj(self.object)
-		if not self.object then return end
-	end
+	ASSERT(not reader:r_eof(), "SAVE FILE IS CORRUPT motivator_binder:load [%s]", self.object:name())
+
 	--self.st.treasure_processed = reader:r_bool()
 	xr_logic.load_obj(self.object, reader)
 	dialog_manager.load(self.object, reader)

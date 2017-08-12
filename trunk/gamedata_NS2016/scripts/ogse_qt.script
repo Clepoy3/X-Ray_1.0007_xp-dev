@@ -96,7 +96,6 @@ function quick_timer:start( low_priority )
     self.termination_time = self.start_time + self.timeout
   end
   local d = debug.getinfo(2)
-  ASSERT(d, "")
   if not self.script_name then
     self.script_name = d.short_src:gsub('^.-([^\\]+)%.[^.]+$', '%1')
   end
@@ -168,4 +167,73 @@ end
 
 -- заглушка для периодического действия
 function quick_timer:update()
+end
+
+
+--KRodin: функции ниже утащил из dsh мода--
+class "timeout_timer" ( quick_timer )
+function timeout_timer:__init( delay, fun, ... ) super( delay )
+  self.fun = fun
+  self.args = { ... }
+end
+function timeout_timer:taction()
+  self.fun( unpack( self.args ) )
+end
+function timeout( delay, fun, ... )
+  local tmout = timeout_timer( delay, fun, ... )
+  --
+  local d = debug.getinfo(2)
+  tmout.script_name = d.short_src:gsub('^.-([^\\]+)%.[^.]+$', '%1')
+  tmout.line = d.linedefined
+  --
+  tmout:start()
+  return tmout
+end
+
+class "condition_timer" ( quick_timer )
+function condition_timer:__init( fun1, fun2, fun3 )
+  self.fun1 = fun1
+  self.fun2 = fun2
+  self.fun3 = fun3
+end
+function condition_timer:condition()
+  return self.fun1()
+end
+function condition_timer:action()
+  self.fun2()
+end
+function condition_timer:update()
+  if self.fun3 then self.fun3() end
+end
+function wait_condition( ... )
+  local tmout = condition_timer( ... )
+  --
+  local d = debug.getinfo(2)
+  tmout.script_name = d.short_src:gsub('^.-([^\\]+)%.[^.]+$', '%1')
+  tmout.line = d.linedefined
+  --
+  tmout:start()
+  return tmout
+end
+
+class "exec_on_update_timer" ( quick_timer )
+function exec_on_update_timer:__init( fun, ... )
+  self.fun  = fun
+  self.args = { ... }
+end
+function exec_on_update_timer:condition()
+  return true
+end
+function exec_on_update_timer:update()
+  self.fun( unpack( self.args ) )
+end
+function exec_on_update( ... )
+  local tmout = exec_on_update_timer( ... )
+  --
+  local d = debug.getinfo(2)
+  tmout.script_name = d.short_src:gsub('^.-([^\\]+)%.[^.]+$', '%1')
+  tmout.line = d.linedefined
+  --
+  tmout:start()
+  return tmout
 end

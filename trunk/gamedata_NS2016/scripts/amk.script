@@ -740,11 +740,6 @@ local func_by_string = {}
 		monnoroch_thirst.mon_thirst:thirst_change_slow(params)
  	end
 
---dc-- А оно здесь надо ?
---	func_by_string["border_exit"] = function (params)
---		xr_detector.hit_actor(params)
---	end
-
 	func_by_string["new_game"] = function (params) counterAdd("amk.new_game")
 		--level.remove_complex_effector(params)
 		--level.remove_pp_effector(params)

@@ -64,15 +64,13 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 end
 
 function issue_event(npc, type, ...)
-	local arg = {...}
 	if type == "hit_callback" then
 		for k,v in pairs(territory) do
-			v.hit_callback(v, unpack(arg))
+			v.hit_callback(v, ...)
 		end
-	end
-	if type == "death_callback" then
+	elseif type == "death_callback" then
 		for k,v in pairs(territory) do
-			v.death_callback(v, unpack(arg))
+			v.death_callback(v, ...)
 		end
 	end
 end
