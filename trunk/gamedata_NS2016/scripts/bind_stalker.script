@@ -52,10 +52,18 @@ torchFirst = false
 class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:__init (obj) super(obj)
+	self.sm = ogse_signals.get_mgr()
+	self.sm:call("on_load_before_all")
+	self.sm:call("on_init", obj)
+	--
 	self.bCheckStart = false
 	self.weather_manager = level_weathers.get_weather_manager()
 	self.is_saved = false
 	monnoroch_utils.mon_callback:init()
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:__finalize()
+	self.sm:call("on_finalize", self.object)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)
@@ -98,6 +106,8 @@ function actor_binder:net_spawn(data)
 	
 	--nightvision_snd_start_restore()
 
+	self.sm:call("on_spawn", data)
+
 	return true
 end
 
@@ -139,10 +149,12 @@ function actor_binder:net_destroy()
 		amk.dump_table(t)
 	end
 
-	object_binder.net_destroy(self)
-	
 --	counterPrint()
  	m_icons.RemoveIcons()
+	--
+	self.sm:call("on_destroy")
+	--
+	object_binder.net_destroy(self)
 end
 
 function sortStat(t1, t2)
@@ -170,6 +182,8 @@ function actor_binder:reinit()
 	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
 	self.object:set_callback(callback.use_object, self.on_use_object, self)
 	self.object:set_callback(callback.death, self.death_callback, self)
+	--
+	self.sm:call("on_reinit")
 end
 ----------------------------------------------------------------------------------------------------------------------
 controllerSoundPresentOnDeath = false
@@ -194,16 +208,22 @@ function actor_binder:death_callback(victim, who)
 	
 	end
 	--get_console():execute("load sergeyt ne hochet poymat controlera")
+	--
+	self.sm:call("on_actor_death", victim, who)
 end
 
 function actor_binder:take_item_from_box(box, item)
-	local story_id = box:story_id()
-	if story_id == nil then return end
+	if not box or not item then return end
+	local sobj = alife():object(item:id())
+	if not sobj then return end
+	--
 	--get_console():execute("load ~~~ take_item_from_box: "..box:name().." story_id: "..story_id)
 	treasure_manager.take_item_from_box(box, story_id)
 	if level.map_has_object_spot(box:id(), "crlc_big")~= 0 then
 		level.map_remove_object_spot(box:id(), "crlc_big")
 	end
+	--
+	self.sm:call("on_take_from_box", box, item, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 local border_str = 0
@@ -218,6 +238,8 @@ function actor_binder:level_border_enter(npc, info_id)
 	level.remove_pp_effector(1001)
 	level.remove_pp_effector(1002)
 	xr_sound.set_actor_sound("")
+	--
+	self.sm:call("on_level_border_enter", npc, info_id)
 end
 
 function actor_binder:level_border_exit(npc, info_id)
@@ -230,6 +252,8 @@ function actor_binder:level_border_exit(npc, info_id)
 	level.set_pp_effector_factor(1002, 0.5)
 	xr_sound.set_actor_sound("level_border_detector")
 	xr_sound.set_actor_sound_factor(5)
+	--
+	self.sm:call("on_level_border_exit", npc, info_id)
 end
 
 function border_danger()
@@ -305,7 +329,36 @@ function border_danger()
 end
 
 ----------------------------------------------------------------------------------------------------------------------
-trader = nil
+local info2call = {
+	ui_pda                   = "on_pda_open",
+	ui_pda_hide              = "on_pda_hide",
+	ui_pda_contacts          = "on_pda_contacts_open",
+	ui_pda_contacts_hide     = "on_pda_contacts_hide",
+	ui_pda_map_local         = "on_pda_map_local",
+	ui_pda_map_global        = "on_pda_map_global",
+	ui_pda_news              = "on_pda_news_open",
+	ui_pda_news_hide         = "on_pda_news_hide",
+	ui_pda_jobs_failed       = "on_pda_jobs_failed",
+	ui_pda_jobs_accomplished = "on_pda_jobs_accomplished",
+	ui_pda_jobs_current      = "on_pda_jobs_current",
+	ui_pda_jobs              = "on_pda_jobs_open",
+	ui_pda_jobs_hide         = "on_pda_jobs_hide",
+	ui_pda_diary             = "on_pda_diary_open",
+	ui_pda_diary_hide        = "on_pda_diary_hide",
+	ui_pda_encyclopedia      = "on_pda_encyclopedia_open",
+	ui_pda_encyclopedia_hide = "on_pda_encyclopedia_hide",
+	ui_pda_actor_info        = "on_pda_actor_info",
+	ui_pda_ranking           = "on_pda_ranking",
+	ui_pda_events            = "on_pda_events",
+	ui_inventory             = "on_inventory_open",
+	ui_inventory_hide        = "on_inventory_hide",
+	ui_talk                  = "on_talk_open",
+	ui_talk_hide             = "on_talk_hide",
+	ui_trade                 = "on_trade_open",
+	ui_trade_hide            = "on_trade_hide",
+	ui_car_body              = "on_body_open",
+	ui_car_body_hide         = "on_body_hide",
+}
 function actor_binder:info_callback(npc, info_id)
 	ex_audit.info_call(info_id)
 
@@ -334,9 +387,16 @@ function actor_binder:info_callback(npc, info_id)
 	end
 
 	trade_manager.onInfoPortion(info_id)
+	--
+	self.sm:call("on_info", npc, info_id)
+	local sc = info2call[info_id]
+	if sc then
+		self.sm:call(sc, npc)
+	end
 end
 
 ----------------------------------------------------------------------------------------------------------------------
+trader = nil
 function actor_binder:trade_sell_buy_item(item, sell_bye, money)
 	if sell_bye == true then
 		game_stats.money_trade_update (money)
@@ -349,10 +409,12 @@ function actor_binder:trade_sell_buy_item(item, sell_bye, money)
 	if trader and trader:alive() then
 		trade_manager.onTradeItem(item, trader, sell_bye)
 	end
+	--
+	self.sm:call("on_trade", item, sell_bye, money)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:article_callback(npc, group, name)
+function actor_binder:article_callback(npc, group, name, article_type)
 	if device().precache_frame >1 then return end
 	if group == "Diary" then
 		news_manager.send_encyclopedy(group, "diary")	-- fix per Cpt. Borovich -- now 100% more annoying
@@ -361,9 +423,20 @@ function actor_binder:article_callback(npc, group, name)
 	--AMK UTILS--
 	amk_utils.actor_article(npc, group, name)
 	--AMK UTILS--
+	--
+	self.sm:call("on_article", npc, group, name, article_type)
 end
 --------------------------------------------------------------------------------------------------
-function actor_binder:on_item_take (obj)
+function actor_binder:on_item_take(obj)
+	if not obj then return end
+	local sobj = alife():object(obj:id())
+	if not sobj then
+		if obj:section() ~= "bolt" then
+			self.object:drop_item(obj)
+		end
+		return
+	end
+	--
 	inventory.on_item_take(obj)
 	level_tasks.proceed(self.object)
 
@@ -426,10 +499,14 @@ function actor_binder:on_item_take (obj)
 	if sol_utils then sol_utils.binoc_restore() end
 	monnoroch_utils.mon_callback:on_item_take(obj)
 	--
-	ogse_metka.on_item_take(obj)
+	self.sm:call("on_take", obj, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_drop(obj)
+	if not obj then return end
+	local sobj = alife():object(obj:id())
+	if not sobj then return end
+	--
 	sol_item_drop.on_item_drop(obj)
 	babah.li(obj)
 	player_ogg.lose_item(obj)	-- Vergas ogg-player
@@ -443,7 +520,7 @@ function actor_binder:on_item_drop(obj)
 	spawn_level_changer.checking_droped_obj(obj)
 	monnoroch_utils.mon_callback:on_item_drop(obj)
 	--
-	ogse_metka.on_item_drop(obj)
+	self.sm:call("on_drop", obj, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -460,11 +537,13 @@ function actor_binder:task_callback(_task, _objective, _state)
 		news_manager.send_task(db.actor, "update", _task, _objective)
 	end
 	amk_utils.actor_task(_task, _objective, _state)	--AMK UTILS
+	--
+	self.sm:call("on_task", _task, _objective, _state)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:map_location_added_callback(spot_type_str, object_id)
-	if app_ready() == false or device().precache_frame > 1 then return end
+	--if app_ready() == false or device().precache_frame > 1 then return end
 	-- news_manager.send_task(db.actor, "new")
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -778,7 +857,6 @@ local tasks_list = {
 	{ ["name"] = "meceniy_work.mainw",		["task"] = meceniy_work.mainw,			["group"] = 1000 },
 	{ ["name"] = "doc_viewer.update",		["task"] = doc_viewer.update,			["group"] = 1000 },
 	{ ["name"] = "stco.update",			["task"] = stco.update,				["group"] = 1000 },
-	{ ["name"] = "ogse_campfire.on_actor_update", ["task"] = ogse_campfire.on_actor_update, ["group"] = 1000 }, --TODO: отдать под управление менеджеру сигналов!
 	-- добавлять по колбэку
 	{ ["name"] = "bind_stalker.border_danger",	["task"] = bind_stalker.border_danger,		["group"] = 1000 },
 	{ ["name"] = "amk_mod.check_armor",		["task"] = amk_mod.check_armor,			["group"] = 1000 },
@@ -807,6 +885,8 @@ active_item_saved = false
 
 
 function actor_binder:update(delta)
+	self.sm:call("on_update", delta)
+	--
 	if _G.watchdog then
 		log( "error", "watchdog: %s", _G.watchdog )
 		a = _G.watchdog / 0
@@ -1045,7 +1125,7 @@ function actor_binder:update(delta)
 			end
 		end
 		if db.actor:has_info("SergeT_talk_start") and not has_alife_info("bar_kpk_remont_done") and not task_exists("kpk_hide", 0) then
-			task_add("kpk_hide", arhara_dialog.disabl_karta, 0)
+			task_add("kpk_hide", arhara_dialog.disabl_karta, 0) --KRodin: TODO: всё что связано с поломкой пда переделать нафиг и вынести отсюда!
 		end
 	end
 
@@ -1087,6 +1167,9 @@ function actor_binder:update(delta)
 		if not has_alife_info("level_changer_icons") then self.object:give_info_portion("level_changer_icons") end
 
 	--	level_tasks.add_lchanger_location()
+		--
+		self.sm:call("on_first_update")
+		--
 		self.bCheckStart = false
 	end
 
@@ -1133,7 +1216,7 @@ function actor_binder:update(delta)
 			t200test["entry"] = time
 			t200t, t200n = time + t200q, 1
 			local actor = db.actor
-			if actor:accuracy() < 0.0015 then
+			if actor:accuracy() < 0.0015 then --KRodin: это что?
 				if not scopeUsed then
 					local item = actor:active_item()
 					local item_id = item and item:id()
@@ -1297,6 +1380,9 @@ function actor_binder:save(packet)
 -- amk.send_tip("Actor packet size <6000 ","Размер нетпакета ГГ мал. Всё ОК:"..pk1:w_tell(),0,15,"gen_info") -- это добавляем
   end
   self.is_saved = true
+	--
+	self.sm:call("on_save", packet)
+	self.sm:call("on_save_after_all")
 end
 
 
@@ -1419,6 +1505,8 @@ function actor_binder:load(reader)
     self.critical=2
     self.wt=time_global()+60000
   end
+	--
+	self.sm:call("on_load", reader)
 end
 ----------------------------------------------------------------------------------------------------------------------
 

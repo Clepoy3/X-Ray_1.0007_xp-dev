@@ -1,0 +1,10 @@
+-- -*- mode: lua; coding: windows-1251-dos -*-
+-- список явно подключаемых модулей
+
+addons = {
+	"ogse_unist",
+	"ogse_st_mgr",
+	"ogse_qt",
+	"ogse_campfire",
+	"ogse_metka",
+}

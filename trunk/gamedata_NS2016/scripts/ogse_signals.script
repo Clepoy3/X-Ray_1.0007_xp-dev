@@ -1,0 +1,499 @@
+-- -*- mode: lua; coding: windows-1251-dos -*-
+-------------------------------------------------------------------------------
+--| ogse_signals.script
+--| signals and slots system
+--| Malandrinus, OGS Evolution Team, 2011
+--| Глобальное обновление скрипта: KRodin (c) 2017
+--| Используется некоторый код dsh мода:
+--| https://github.com/dsh2dsh/op2ogse/blob/master/gamedata/scripts/ogse_signals.script
+-------------------------------------------------------------------------------
+
+--[=[
+Можно подписывать на события глобальные функции, методы классов, "методы" таблиц, 
+функциональные объекты.
+
+------------===< Пример для глобальной функции: >===------------------------------
+
+function some_global_function(arg1, arg2)
+end
+local slot_desc = {signal = "signal_name", fun = some_global_function, queued = true}
+ogse_signals.get_mgr():subscribe(slot_desc) -- подписали в низкоприоритетную очередь
+--...
+ogse_signals.get_mgr():unsubscribe(slot_desc) -- отписали
+вызвали сигнал
+local sm = ogse_signals.get_mgr()
+--...
+sm.call("signal_name", arg1, arg2)
+
+------------===< Пример для функционального объекта: >===-------------------------
+
+class "some_luabind_class"
+function some_luabind_class:__init()
+  local mt = getmetatable(self)
+  mt.__call = self.method_to_call
+end
+function some_luabind_class:method_to_call()
+end
+
+local slot_desc = {signal = "signal_name", fun = some_luabind_class()}
+ogse_signals.get_mgr():subscribe(slot_desc) -- подписали в высокоприоритетную очередь
+--...
+ogse_signals.get_mgr():unsubscribe(slot_desc) -- отписали
+
+Функциональный класс на таблице строится немного сложнее
+local t = {}
+function t:method_to_call()
+end
+local mt = {}
+mt.__call = t.method_to_call
+getmetatable(t, mt)
+end
+
+------------===< Пример для произвольного метода класса: >===----------------------
+
+class "some_luabind_class"
+function some_luabind_class:__init()
+end
+function some_luabind_class:method_to_call()
+end
+
+class obj = some_luabind_class()
+local slot_desc = {signal = "signal_name", self = obj, fun = obj.method_to_call}
+ogse_signals.get_mgr():subscribe(slot_desc) -- подписали в высокоприоритетную очередь
+--...
+ogse_signals.get_mgr():unsubscribe(slot_desc) -- отписали
+
+-----===< Менеджер сигналов поддерживает постановку обработчика на паузу: >===-----
+Очередь обработчиков сортируется таким образом, что бы сначала были
+те, кто должен быть выполнен немедленно, а потом остальные, по
+времени. Перебор очереди прекращается, как только будет встречен
+обработчик, который еще рано выполнять.
+Что бы поставить себя на паузу, нужно выполнить ИЗНУТРИ ОБРАБОТЧИКА:
+
+ogse_signals.get_mgr():reschedule( 1000 )
+
+В данном случае, текущий обработчик будет выполнен не ранее, чем через секунду реального (НЕ игрового) времени.
+--
+Если нужно поставить обработчик на паузу, но сделать это изнутри обработчика
+по каким-то причинам невозможно, то можно использовать метод:
+
+ogse_signals.get_mgr():rechange_scheduled_time( slot_desc , 1000 )
+--]=]
+
+
+local SIGNALS_MANAGER = nil
+
+function get_mgr()
+  --SIGNALS_MANAGER инициализируется внутри конструтора.
+  return SIGNALS_MANAGER or signals_mgr( "global", ogse_signals_addons_list.addons, false )
+end
+
+
+class "signals_mgr"
+function signals_mgr:__init( name, modules_list, scan_for_autoattaching_modules )
+  log3("--[%s] Init Signals Manager - start", script_name())
+  SIGNALS_MANAGER = self
+  self.mgr_name = name
+  self.signals  = {}
+  self.slots_in_process = {}
+  self.after_call_callback = {}
+  --
+  local registered_modules = {}
+  if scan_for_autoattaching_modules then --Если включено автоподключение, ищем и регистрируем все автоподключаемые модули
+    local flist = getFS():file_list_open_ex(
+      "$game_scripts$", FS.FS_ListFiles + FS.FS_ClampExt, "ogse_*.script"
+    )
+    for i = 0, flist:Size() - 1 do
+      local file  = flist:GetAt( i )
+      local fname = file:NameFull()
+      prefetch( fname )
+      local module = _G[ fname ]
+      if
+        module and type( module ) == "table"
+        and type( module.attach ) == "function"
+		and module.auto_attach == true
+      then
+        self:subscribe_module( fname )
+        registered_modules[ fname ] = true
+      end
+    end
+  end
+  --
+  if modules_list then -- если задали список модулей, то начинаем их подключение
+    for i=1, #modules_list do
+      local fname = modules_list[i]
+      if not registered_modules[ fname ] then
+        prefetch( fname )
+        self:subscribe_module( fname )
+      end
+    end
+  end
+  log3("--[%s] Init Signals Manager - end", script_name())
+end
+
+
+local function slots_equal( slot1, slot2 )
+  return
+    rawequal( slot1.self, slot2.self )
+    and rawequal( slot1.fun, slot2.fun )
+end
+
+
+function signals_mgr:is_already_subscribed( slot_in_question )
+  local slots = self.signals[ slot_in_question.signal ]
+  if not slots then return false end
+  --
+  local qn
+  if slots.time_limited then
+    qn = slot_in_question.queued and { "queue" } or { "scheduled", "normal" }
+  else
+    qn = { "normal" }
+  end
+  for idx=1, #qn do
+    local check_slots = slots[qn[idx]]
+    for i=1, #check_slots do
+      local slot = check_slots[i]
+      if
+        slots_equal( slot, slot_in_question )
+      then
+        return slot, qn[idx], i --Теперь функция возвращает ссылку на слот (если он подписан), название очереди и его номер в очереди. В противном случае false.
+      end
+    end
+  end
+  return false
+end
+
+
+function signals_mgr:subscribe( slot_to_subscribe )
+  local signal = slot_to_subscribe.signal
+  ASSERT( signal, "signals_mgr:subscribe: 'signal' is a nil reference!" )
+  ASSERT(
+    slot_to_subscribe.fun,
+    "signals_mgr:subscribe: 'fun' is a nil reference while attempting to subscribe on signal [%s]",
+    signal
+  )
+  ASSERT(
+    not self:is_already_subscribed( slot_to_subscribe ),
+    "signals_mgr:subscribe: can't subscribe slot on signal [%s], it's already subscribed",
+	signal
+  )
+  self.signals[ signal ] = self.signals[ signal ] or self:make_empty_signal( signal )
+  local d = debug.getinfo(slot_to_subscribe.fun)
+  if not slot_to_subscribe.script_name then
+    slot_to_subscribe.script_name = d.short_src:gsub('^.-([^\\]+)%.[^.]+$', '%1')
+  end
+  if not slot_to_subscribe.line then
+    slot_to_subscribe.line = d.linedefined --Номер строки скрипта, на которой расположена функция
+  end
+  if slot_to_subscribe.queued then
+    ASSERT(self.signals[ signal ].time_limited, "Signal [%s] is not time_limited! It is forbidden to use 'queued' for slot [%s.%s]!", signal, slot_to_subscribe.script_name, slot_to_subscribe.line) --НЕ УДАЛЯТЬ!
+    slot_to_subscribe.timeout = 0
+    table.insert( self.signals[ signal ].queue, slot_to_subscribe )
+  else
+    if #self.slots_in_process > 0 then
+      for i=1, #self.slots_in_process do
+        local slot_i_p = self.slots_in_process[ i ]
+        if slot_i_p.signal == signal then
+          table.insert(self.after_call_callback, function() table.insert( self.signals[ signal ].normal, 1, slot_to_subscribe ) end)
+          return --больше здесь делать нечего.
+        end
+      end
+    end
+    table.insert( self.signals[ signal ].normal, 1, slot_to_subscribe ) --Добавляем в самое начало, т.к. перебор normal очереди в методе call идёт в обратном порядке.
+  end
+end
+
+
+function signals_mgr:make_empty_signal( signal )
+  local t = {
+    ["normal"] = {},
+    ["time_limited"] = ( signal:find("update") and not signal:find("first_update") ),
+  }
+  if t.time_limited then
+    t.scheduled = {}
+    t.queue = {}
+    t.next_in_queue = 1
+  end
+  return t
+end
+
+
+function signals_mgr:unsubscribe( slot_to_unsubscribe )
+  local real_slot_to_unsubscribe = self:is_already_subscribed( slot_to_unsubscribe ) --Сделано потому что нам точно неизвестно, что именно slot_to_unsubscribe - ссылка на слот, или его копия. Быдлокодеры ведь могут и копию сюда передать.
+  ASSERT( real_slot_to_unsubscribe,
+    "signals_mgr:unsubscribe: can't unsubscribe slot from signal [%s], which is not previously subscribed",
+	slot_to_unsubscribe.signal or ""
+  )
+  ASSERT( not real_slot_to_unsubscribe.unsubscribed,
+    "signals_mgr:unsubscribe: can't unsubscribe slot from signal [%s], because it is already in the process of unsubscribing",
+	slot_to_unsubscribe.signal or ""
+  )
+  --
+  if #self.slots_in_process > 0 then
+    for i=1, #self.slots_in_process do
+      local slot_i_p = self.slots_in_process[ i ]
+      if slot_i_p.signal == real_slot_to_unsubscribe.signal then
+        -- если находимся в процессе выполнения вызова, то физически
+        -- удалять слоты из очередей нельзя. Надо просто промаркировать их
+        -- на удаление, чтобы не менять размер очереди. В дальнейшем
+        -- промаркированные на удаление слоты не будут вызываться, а при
+        -- ближайшем выходе из рекурсивного цикла будут удалены физически.
+        real_slot_to_unsubscribe.unsubscribed = true
+        table.insert(self.after_call_callback, function() self:process_unsubscribe(real_slot_to_unsubscribe) end)
+        return --больше здесь делать нечего.
+      end
+    end
+  end
+  --
+  self:process_unsubscribe(real_slot_to_unsubscribe)
+end
+
+
+function signals_mgr:process_unsubscribe( uns_slot )
+  local slots = self.signals[ uns_slot.signal ]
+  local qc = uns_slot.queued and "next_in_queue" or false
+  local qn = 
+    uns_slot.queued and "queue"
+    or uns_slot.scheduled and "scheduled" --Здесь можно такую проверку оставить, т.к. тут точно работаем с ссылкой на реальную таблицу uns_slot, а не с её копией.
+    or "normal"
+  local check_slots = slots[ qn ]
+  --
+  for i=1, #check_slots do
+    local slot = check_slots[i]
+    if slots_equal( slot, uns_slot ) then
+      --log3( "--[%s] Unsubscribe slot [%s.%s]: queue = [%s], signal = [%s]", script_name(), slot.script_name, slot.line, qn, slot.signal )
+      --На всякий случай. Чтобы точно не было проблем при повторном подписывании слота
+      slot.unsubscribed = nil
+      slot.timeout = nil
+      slot.scheduled = nil
+      --
+      table.remove( check_slots, i )
+      if qc and slots[ qc ] > i then
+        slots[ qc ] = slots[ qc ] - 1
+      end
+      break
+    end
+  end
+end
+
+
+function signals_mgr:cleanup_signal_subs( signal )
+  if self.signals[ signal ] then
+    self.signals[ signal ] = self:make_empty_signal( signal )
+  end
+end
+
+
+function signals_mgr:subscribe_module( module_name )
+  local module = _G[ module_name ]
+  ASSERT(
+    module,
+    "signals_mgr:subscribe_module: Failed to subscribe module [%s]", module_name
+  )
+  ASSERT(
+    type( module ) == "table",
+    "signals_mgr:subscribe_module: Failed to subscribe module [%s], must be a table", module_name
+  )
+  ASSERT(
+    type( module.attach ) == "function",
+    "signals_mgr:subscribe_module: Failed to subscribe module [%s], has no 'attach' function", module_name
+  )
+  module.attach( self )
+end
+
+
+local work_time_limit = 30000
+function signals_mgr:call( signal_name, ... )
+  local slots = self.signals[ signal_name ]
+  if not slots then return end --На сигнал ничего не подписано - выходим.
+  --
+  --Исправление проблемы, когда внутри вызова сигнала вызывается такой же сигнал. Например, при :give_info_portion(...)
+  if #self.slots_in_process > 0 then
+    for i=1, #self.slots_in_process do --Перебираем незавершенные вызовы, если они есть
+      local slot = self.slots_in_process[i]
+      if slot.signal == signal_name then --Если название текущего сигнала совпадает с именем сигнала одного из незавершенных слотов
+        --log3("~~[%s] The same running signals [%s] are detected! Slots_in_process: %s %s", script_name(), signal_name, self.slots_in_process, debug.traceback())
+        local args = {...} --Без этого не получилось сделать
+        table.insert(self.after_call_callback, function() self:call(signal_name, unpack(args)) end) --Переносим вызов сигнала на момент, когда незавершенных вызовов не будет.
+        return --Выходим, больше здесь делать нечего.
+      end
+    end
+  end
+  --
+  local times = {}
+  local work_time = 0
+  --
+  for next_in_normal = #slots.normal, 1, -1 do --Выполнится для всех слотов в таблице slots.normal. Цикл в обратном порядке сделан для корректной работы table.remove.
+    local slot = slots.normal[ next_in_normal ]
+    --
+    if not slot.unsubscribed then --Если этот слот отписан - переходим к следующему
+	  local result
+      if not slot.timeout then --На случай, если таймаут установили из метода rechange_scheduled_time(...)
+        work_time, result = self:process_call(slot, work_time, times, ...) --Собственно, запуск слота
+      end
+      --
+      if slot.timeout then --Если задали таймаут, переносим слот в scheduled очередь
+        ASSERT(slots.time_limited, "!![%s] Found not time_limited slot with timeout: [%s.%s]", signal_name, slot.script_name, slot.line) --НЕ УДАЛЯТЬ!
+        slots.reschedule_scheduled = true
+        slot.scheduled = true --Проверяется при отписывании.
+        table.insert( slots.scheduled, slot )
+        table.remove( slots.normal, next_in_normal )
+      end
+      --
+      if result == true then --Если вызванный слот вернул true, цикл прерываем.
+        --log3( "~~[%s] Call [%s] is interrupted from slot [%s.%s]", script_name(), signal_name, slot.script_name, slot.line )
+        break
+      end
+    end
+  end
+  --
+  if not slots.time_limited then goto EXIT end --scheduled и queued очереди только для всяких апдейтов подходят. Для остальных вызывать не имеет смысла.
+  --
+  for next_in_scheduled = 1, #slots.scheduled do --Выполнится для всех слотов (если наступило время их запуска) в таблице slots.scheduled
+    local slot = slots.scheduled[ next_in_scheduled ]
+    --
+    if slot.timeout > time_global() then break end --Ещё рано запускать слот - значит рано запускать и все последующие.
+    --
+    if not slot.unsubscribed then
+      work_time = self:process_call(slot, work_time, times, ...)
+      slots.reschedule_scheduled = true
+    end
+  end
+  --
+  while #slots.queue > 0 do --Зпускает слоты в таблице slots.queue по одному за апдейт. Таймауты поддерживаются так же как и в scheduled очереди.
+    local slot = slots.queue[ slots.next_in_queue ]
+	local continue = false
+    --
+    if slot.timeout > time_global() then
+      if slots.next_in_queue > 1 then --Если это НЕ первый слот в очереди, попробуем пересортировать её (если надо) и запустить первый слот.
+        slots.next_in_queue = 1
+        if slots.reschedule_queue then
+          slots.reschedule_queue = false
+          if #slots.queue > 1 then
+            table.sort(
+              slots.queue, function( a, b ) return a.timeout < b.timeout end
+            )
+          end
+        end
+        continue = true
+      else
+	    break
+      end
+	end
+    --
+	if not continue then
+      if not slot.unsubscribed then
+        slot.timeout = 0 --Нужно для проверки ниже, нужна ли пересортировка.
+        work_time = self:process_call(slot, work_time, times, ...)
+        if slot.timeout > 0 then
+          slots.reschedule_queue = true
+        end
+      end
+      --
+      slots.next_in_queue = slots.next_in_queue + 1
+      if slots.next_in_queue > #slots.queue then
+        slots.next_in_queue = 1
+      end
+      break --Прерывать цикл здесь обязательно, иначе повиснет, вечный цикл же.
+    end
+  end
+  --
+  if slots.reschedule_scheduled then
+    slots.reschedule_scheduled = false
+    if #slots.scheduled > 1 then
+      table.sort(
+        slots.scheduled, function( a, b ) return a.timeout < b.timeout end
+      )
+    end
+  end
+  if slots.reschedule_queue and slots.next_in_queue == 1 then
+    slots.reschedule_queue = false
+    if #slots.queue > 1 then
+      table.sort(
+        slots.queue, function( a, b ) return a.timeout < b.timeout end
+      )
+    end
+  end
+  --
+  ::EXIT::
+  --
+  if #self.after_call_callback > 0 and #self.slots_in_process == 0 and not self.after_call_callback_locked then --Что-то делаем по факту завершения всех вызовов.
+    self.after_call_callback_locked = true --НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!
+    for i=1, #self.after_call_callback do
+      self.after_call_callback[i]()
+    end
+    self.after_call_callback = {}
+    self.after_call_callback_locked = false
+  end
+  --
+  if work_time > work_time_limit then
+    log3( "!![%s]: signal [%s] is too slow: [%.2f s.]", script_name(), signal_name, work_time / 1e+6 )
+    for i=1, #times do
+      local t = times[i]
+      if t.time > work_time_limit then
+        log3( "!!  slot: [%s.%s], time: [%.2f s.]", t.script_name, t.line, t.time / 1e+6 )
+      end
+    end
+  end
+end
+
+
+--Вынес в отдельный метод, т.к. этот код общий для всех трёх очередей.
+function signals_mgr:process_call(slot, work_time, times, ...)
+  table.insert( self.slots_in_process, slot )
+  local result
+  local pt = profile_timer()
+  pt:start()
+--[=[
+  local args = {...}
+  local args_s = ""
+  for i=1, #args do
+    args_s = args_s.."%s,"
+  end
+  log3("--[signals_mgr:process_call] Calling slot: [%s.%s]("..args_s..")", slot.script_name, slot.line, unpack(args))
+--]=]
+  if slot.self then
+    result = slot.fun( slot.self, ... )
+  else
+    result = slot.fun( ... )
+  end
+  pt:stop()
+  local time = pt:time()
+  table.insert(
+    times, {
+      [ "script_name" ] = slot.script_name,
+      [ "line"        ] = slot.line,
+      [ "time"        ] = time,
+    }
+  )
+  table.remove( self.slots_in_process )
+  return work_time + time, result
+end
+
+
+--Установить таймаут для слота, который выполняется в данный момент
+function signals_mgr:reschedule( timeout )
+  local n = #self.slots_in_process
+  ASSERT( n > 0, "empty slots_in_process table" )
+  local slot   = self.slots_in_process[ n ]
+  slot.timeout = time_global() + timeout
+end
+
+
+--Установить таймаут для конкретного слота.
+--Пример использования можно посмотреть в ogse_st_mgr.
+function signals_mgr:rechange_scheduled_time( check_slot, new_timeout )
+  ASSERT(check_slot, "")
+  local slots = self.signals[ check_slot.signal ]
+  ASSERT(slots, "")
+  --
+  local slot, qn = self:is_already_subscribed( check_slot ) --Сделано потому что нам точно неизвестно, что именно check_slot - ссылка на слот, или его копия. Быдлокодеры ведь могут и копию сюда передать.
+  ASSERT(slot, "[signals_mgr:rechange_scheduled_time] SLOT ISN'T SUBSCRIBED!")
+  --log3("--[%s] Changing new timeout for slot [%s.%s]: [%s], old timeout: [%s], queue_name: [%s]", script_name(), slot.script_name, slot.line, time_global() + new_timeout, slot.timeout, qn)
+  slot.timeout = time_global() + new_timeout
+  if qn == "queue" then
+    slots.reschedule_queue = true
+  elseif qn == "scheduled" then
+    slots.reschedule_scheduled = true
+  end
+end

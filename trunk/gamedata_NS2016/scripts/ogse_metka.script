@@ -5,10 +5,10 @@
 
 --/ Модуль GPS маячка (основан на наработках АМК) /--
 
---function attach(sm) --TODO: перенести менеджер сигналов!
---	sm:subscribe({signal = "on_take",     fun = this.on_item_take})
---	sm:subscribe({signal = "on_drop",     fun = this.on_item_drop})
---end
+function attach(sm)
+	sm:subscribe({signal = "on_take", fun = this.on_item_take})
+	sm:subscribe({signal = "on_drop", fun = this.on_item_drop})
+end
 
 
 local setup_gps_beacon_wnd = nil
