@@ -37,8 +37,7 @@ local cur_cont_index
 
 function show_menu(cont_index)
   cur_cont_index = cont_index
-  arc_1containers.set_menu_showed(true)
-  local spwn=arc_1container_menu(get_hud())
+  local spwn=arc_1container_menu()
   level.start_stop_menu(spwn,true)
 end
 
@@ -257,7 +256,7 @@ function arc_1container_menu:DrawButtons()
     self:AddCallback("btn_next", ui_events.BUTTON_CLICKED, self.next_container, self)
   end
   
-  local f = (arc_1containers.get_inv_containers_number()>1)
+  local f = (#arc_1containers.inv_containers>1)
   p:Show(f)
   n:Show(f)
 end
@@ -265,7 +264,6 @@ end
 function arc_1container_menu:on_quit()
   arc_1containers.respawn_container(cur_cont_index)
   self:GetHolder():start_stop_menu(self,true)
-  arc_1containers.set_menu_showed(false)
 end
 
 function arc_1container_menu:OnKeyboard(dik, keyboard_action)
@@ -348,7 +346,7 @@ end
 
 function arc_1container_menu:next_container()
   arc_1containers.respawn_container(cur_cont_index)
-  cur_cont_index = arc.to_interval(cur_cont_index+1,1,arc_1containers.get_inv_containers_number())
+  cur_cont_index = arc.to_interval(cur_cont_index+1,1,#arc_1containers.inv_containers)
   get_container_arts()
   arc_1containers.remove_container(cur_cont_index)
   self:UpdateMenu()
@@ -356,7 +354,7 @@ end
 
 function arc_1container_menu:prev_container()
   arc_1containers.respawn_container(cur_cont_index)
-  cur_cont_index = arc.to_interval(cur_cont_index-1,1,arc_1containers.get_inv_containers_number())
+  cur_cont_index = arc.to_interval(cur_cont_index-1,1,#arc_1containers.inv_containers)
   get_container_arts()
   arc_1containers.remove_container(cur_cont_index)
   self:UpdateMenu()

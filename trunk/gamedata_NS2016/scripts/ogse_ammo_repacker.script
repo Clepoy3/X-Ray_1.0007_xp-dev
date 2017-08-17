@@ -39,7 +39,6 @@ function on_take(obj, s_obj)
 			end
 		end
 	end
-	--return true --KRodin: надо б проверить, нужны ли ещё где-нибудь патроны в on_take
 end
 
 

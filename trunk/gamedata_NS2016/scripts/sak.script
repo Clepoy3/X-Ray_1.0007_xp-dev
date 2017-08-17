@@ -119,9 +119,6 @@ function check_used_item(obj)
  local actor = db.actor
  if actor==nil or obj==nil then return end
 
- arc_main.get_item(obj)
-
-
  local clevel=level.name()
  local csect=obj:section()
  local info=nil 

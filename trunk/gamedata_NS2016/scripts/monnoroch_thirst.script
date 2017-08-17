@@ -1,11 +1,5 @@
---[[
-	Меченому хочется пить. (c) Monnoroch.
-	Переделал sapsan
-]]
-
-local last_outfit
-local last_outfit_additional_inventory_weight
-local max_weight = 100 -- максимально переносимый вес (стартовое значение)
+--Меченому хочется пить. (c) Monnoroch.
+--Переделал sapsan
 
 -- общий коефициент
 local time_koef = 1 -- 0.5 - медленнее захочет пить, 2 - быстрее
@@ -61,7 +55,6 @@ local thirst_hit = {
 class "mon_thirst"
 
 function mon_thirst:net_spawn()
-	--max_weight = getIniValueFloatSimple("inventory", "max_weight", 100) -- а чтобы не читерили с весом ;)
 	self.thirst_v = getIniValueFloatSimple("actor_condition", "thirst_v", 0.000005) -- скорость уменьшения водной сытости
 	thirst_hit["psy_health"]["hit"] = getIniValueFloatSimple("actor_condition", "thirst_hit_psy_health", -0.003) -- наносимый хит на психику от жажды
 	thirst_hit["psy_health"]["border"] = getIniValueFloatSimple("actor_condition", "thirst_border_psy_health", 0.5) -- граница, ниже которой хит на психику от жажды не наносится
@@ -135,7 +128,12 @@ function mon_thirst:update()
 		local actor = db.actor
 		if actor and actor:alive() then
 			local koef_global = time_koef * difficulty_koef[level.get_game_difficulty()]
-			local koef = monnoroch_utils.mon_weight:get_weight() / self.get_max_weight() -- относительна загруженность ГГ (чем меньшая загруженность, тем медленнее приходит жажда)
+			local max_weight = db.actor:get_actor_max_weight()
+			local outfit = db.actor:get_current_outfit()
+			if outfit then
+				max_weight = max_weight + outfit:get_additional_max_walk_weight() * outfit:condition()
+			end
+			local koef = db.actor:get_total_weight() / max_weight -- относительна загруженность ГГ (чем меньшая загруженность, тем медленнее приходит жажда)
 			koef = koef * (1 + db.actor:get_bleeding()) -- кровотечение увеличивает скорость прихода жажды
 			koef = koef * koef_global
 			if sleep_manager.is_sleep_active() then
@@ -221,22 +219,4 @@ end
 
 function mon_thirst:get_thirst()
 	return self.thirst
-end
-
-function mon_thirst:get_max_weight()
-	local result = max_weight
-	local actor = db.actor
-	
-	if actor then
-		local outfit = actor:item_in_slot(6)
-		if outfit then
-			if last_outfit ~= outfit:id() then
-				last_outfit = outfit:id()
-				last_outfit_additional_inventory_weight = getIniValueFloatSimple(outfit:section(), "additional_inventory_weight", 0)
-			end
-			result = result + last_outfit_additional_inventory_weight * outfit:condition()
-		end
-	end
-	
-	return result
 end

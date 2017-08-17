@@ -59,7 +59,6 @@ function actor_binder:__init (obj) super(obj)
 	self.bCheckStart = false
 	self.weather_manager = level_weathers.get_weather_manager()
 	self.is_saved = false
-	monnoroch_utils.mon_callback:init()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:__finalize()
@@ -86,7 +85,7 @@ function actor_binder:net_spawn(data)
 
 	treasure_manager:get_treasure_manager()
 	death_manager.init()	-- Загружаем настройки лута
-	monnoroch_utils.mon_callback:net_spawn()
+	monnoroch_thirst.mon_thirst:net_spawn()
 
 	amk.on_game_load(obj)
 	local actor = db.actor
@@ -496,15 +495,17 @@ function actor_binder:on_item_take(obj)
 	
 	if rx_ai then rx_ai.actor_item_take(obj) end
 	if sol_utils then sol_utils.binoc_restore() end
-	monnoroch_utils.mon_callback:on_item_take(obj)
 	--
 	self.sm:call("on_take", obj, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_drop(obj)
 	if not obj then return end
+	self.sm:call( "on_drop_before_all", obj )
 	local sobj = alife():object(obj:id())
-	if not sobj then return end
+	if sobj then --KRodin: пока так, для совместимости с соляночными говноскриптами
+		self.sm:call("on_drop", obj, sobj)
+	end
 	--
 	sol_item_drop.on_item_drop(obj)
 	babah.li(obj)
@@ -513,12 +514,8 @@ function actor_binder:on_item_drop(obj)
 	amk.on_item_drop(obj)
 	amk_utils.actor_item_drop(obj)
 	inventory.on_item_drop(obj)
-	arc_main.lose_item(obj)
 	braad_test.drop_actor(obj)
 	spawn_level_changer.checking_droped_obj(obj)
-	monnoroch_utils.mon_callback:on_item_drop(obj)
-	--
-	self.sm:call("on_drop", obj, sobj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -851,7 +848,6 @@ local tasks_list = {
 
 	-- 1000 ms
 	{ ["name"] = "meceniy_utils.on_actor_update_callback",["task"] = meceniy_utils.on_actor_update_callback,["group"] = 1000 },
-	{ ["name"] = "arc_main.actor_update",		["task"] = arc_main.actor_update,		["group"] = 1000 },
 	{ ["name"] = "meceniy_work.mainw",		["task"] = meceniy_work.mainw,			["group"] = 1000 },
 	{ ["name"] = "doc_viewer.update",		["task"] = doc_viewer.update,			["group"] = 1000 },
 	{ ["name"] = "stco.update",			["task"] = stco.update,				["group"] = 1000 },
@@ -978,7 +974,7 @@ function actor_binder:update(delta)
 			t1000n = t1000n + 1
 		else
 			t1000n = 0
-			monnoroch_utils.mon_callback:update()	-- и используем остаток
+			monnoroch_thirst.mon_thirst:update() -- и используем остаток
 			if self.warning then	-- сообщение о переполнении нетпакета. todo: оторвать отсюда нафиг.
 				self.warning = nil
 				local hud = get_hud()
@@ -1140,7 +1136,6 @@ function actor_binder:update(delta)
 		bind_restrictor.actor_update(delta)
 		bind_mteleport.actor_update(delta)	-- Апдейтим наш телепорт (Kostya_level)
 		self.next_restrictors_update_time = time + 200
-		task_manager.actor_update()
 	end
 	amk.oau_watchdog=190
 	-- обновление постпроцессов
@@ -1297,9 +1292,8 @@ function actor_binder:update(delta)
 				end
 				if night_vision_real or night_vision_outfit_current_id ~= night_vision_outfit_id and db.actor:alive() and torch then
 					local storch = alife():object(torch:id())
-					if storch and not db.actor:marked_dropped(torch) then
+					if storch then
 						db.actor:drop_item(torch)
-						db.actor:mark_item_dropped(torch)
 						alife():release(storch, true)
 						amk.spawn_item_in_inv("device_torch")
 						torchFirst = false
@@ -1350,8 +1344,6 @@ end
 function actor_binder:save(packet)
 
   if rx_ai then rx_ai.actor_save(packet) end
-
-  monnoroch_utils.mon_callback:save(packet)
   
   local pk1=fake_net_packet.fake_net_packet()
   self:save_old(pk1)
@@ -1450,7 +1442,6 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:load(reader)
 	object_binder.load(self, reader)
-    monnoroch_utils.mon_callback:load(reader)
 	--' Загружаем уровень сложности
 	local game_difficulty = reader:r_u8()
 	
@@ -1532,9 +1523,15 @@ end
 --test_section_iteration("system.ltx","space_restrictor")
 --/**/
 function actor_binder:on_use_object(obj)
+	if not obj then return end
+	local sobj = alife():object(obj:id())
+	if sobj then --KRodin: пока так, для совместимости с соляночными говноскриптами
+		self.sm:call("on_use", obj, sobj)
+	end
+	--
 	sol_use_object.on_use_object(obj)
 	meceniy_outfit.on_item_drop(obj)
-	monnoroch_utils.mon_callback:on_use_object(obj)
+	monnoroch_thirst.mon_thirst:on_use_object(obj)
 end
 
 function nightvision_snd_start_hide()

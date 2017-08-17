@@ -1,4 +1,4 @@
-total_diaries_number = 33
+local total_diaries_number = 33
 
 function monster_killed(obj,who) 
   if obj and string.find(obj:section(),'controller') then

@@ -1,51 +1,150 @@
+-- -*- mode: lua; coding: windows-1251-dos -*-
+
+--KRodin: переделал контейнеры на каллбек on_use, чтобы не было проблем при их перекладывании в волшебные рюкзаки.
+--И избавился от arc_ballast. Теперь вес контейнерам устанавливается по-нормальному движковым методом.
+--TODO: присмотреться к arc_radiation, вынести отсюда arc_diary
+
+function attach( sm )
+	sm:subscribe({ signal = "on_use",             fun = this.on_use       })
+	sm:subscribe({ signal = "on_drop",            fun = this.on_drop      })
+	sm:subscribe({ signal = "on_take",            fun = this.get_item     })
+	sm:subscribe({ signal = "on_update",          fun = this.actor_update })
+	sm:subscribe({ signal = "on_drop_before_all", fun = this.lose_item    })
+end
+
+local container_sections = {
+	["arc_art_box_basic" ] = { arc_containers,  arc_ui_container_menu  },
+	["arc_art_box_8basic"] = { arc_8containers, arc_ui_8container_menu },
+	["arc_art_box_1basic"] = { arc_1containers, arc_ui_1container_menu }
+}
+
+function on_use(obj) --Контейнер использован. Показать меню
+	if not container_sections[obj:section()] then return end
+	--
+	local script, script_menu = unpack(container_sections[obj:section()])
+	--
+	script_menu.show_menu( script.get_inv_index( obj:id() ) )
+	--
+	return true --вряд ли контейнеры нужны где-то ещё в use каллбеке
+end
+
+function on_drop(obj) --Контейнер выброшен. Удалить контейнер и арты в нём из списка
+	if not container_sections[obj:section()] then return end
+	--
+	local script = unpack(container_sections[obj:section()])
+	--
+	local n = script.get_inv_index(obj:id())
+	local arts = script.inv_containers[n].arts
+	for i = 1, #arts do
+		if arts[i]>0 then
+			--Skunk start
+			local art_section = arc_arts.get_art_section(arts[i])
+			local belt_rad = getIniValueFloatSimple(art_section, "radiation_restore_speed")
+			local inv_rad = getIniValueFloatSimple(art_section, "inventory_radiation", math.max(belt_rad,0))
+			if inv_rad >= 0.0007 then
+				arc_radiation.change_inv_arts_radiation(-(inv_rad-0.0007))
+			end
+			-- Skunk finish
+			arc_arts.register_artefact(arc_arts.get_art_section(arts[i]), -1, true)
+		end
+	end
+	table.remove(script.inv_containers, n)
+	--
+	return true --вряд ли контейнеры нужны где-то ещё в drop каллбеке
+end
+
+
 function lose_item(obj)
-  local obj_id = obj:id()
-  local obj_sect = obj:section()
-  local obj_clsid = obj:clsid()
-  
-  arc.info("Lose item: "..obj:section().."("..obj:clsid()..") id="..obj_id, 2)
-  
-  if obj_clsid == clsid.wpn_ammo then -- 38
-    if obj_sect == "arc_ballast" then
-      arc_ballast.on_lose_ballast(obj)
-    end
-  elseif obj_clsid == clsid.artefact then
-    arc_arts.register_artefact(obj_sect, -1)
-  elseif obj_clsid == clsid.obj_antirad then
-    if obj_sect=="arc_art_box_basic" then
-      arc_containers.on_lose_container(obj_id)
-    elseif obj_sect=="arc_art_box_8basic" then
-      arc_8containers.on_lose_container(obj_id)
-    elseif obj_sect=="arc_art_box_1basic" then
-      arc_1containers.on_lose_container(obj_id)
-   end  
+  if obj:is_artefact() then
+	--log3("~~[%s] Unregistered artefact [%s]", script_name(), obj:name())
+    arc_arts.register_artefact(obj:section(), -1)
   end
 end
 
 function get_item(obj)
-  local obj_id = obj:id()
   local obj_sect = obj:section()
-  local obj_clsid = obj:clsid()
-  
-  arc.info("Get item: "..obj:section().."("..obj:clsid()..") id="..obj_id, 2)
-  
-  if obj_clsid == clsid.wpn_ammo then -- 38
-    if obj_sect == "arc_ballast" then
-      arc_ballast.on_get_ballast(obj)
-    end
-  elseif obj_clsid == clsid.artefact then
+  if obj_sect == "arc_ballast" then
+    log3("--[%s] Removed [%s]", script_name(), obj:name())
+    _krodin_utils.remove_item_from_inventory( obj ) --KRodin: убрать с НИ!
+  elseif obj:is_artefact() then
+	--log3("~~[%s] Registered artefact [%s]", script_name(), obj:name())
     arc_arts.register_artefact(obj_sect, 1)
-  elseif obj_clsid == clsid.obj_antirad then -- 65
-    if obj_sect=="arc_art_box_basic" then
-      arc_containers.register_container(obj_id, obj_sect)
+  elseif container_sections[obj_sect] then
+	local script = unpack(container_sections[obj_sect])
+	--
+    local cont_id = obj:id()
+    local arts = script.get_container_arts(cont_id)
+    --Установим контейнеру вес с учётом находящихся в нём артефактов.
+	local eng_obj = engine_object(obj)
+	if arts and eng_obj.inv_weight == get_float(obj_sect, "inv_weight") then
+	  for _, art_sect in ipairs(arts) do
+		if art_sect ~= "_" then
+		  eng_obj.inv_weight = eng_obj.inv_weight + get_float(art_sect, "inv_weight")
+		end
+	  end
+	end
+    --
+    if script.get_inv_index(cont_id) > 0 then -- Уже зарегистрирован
+      return true
     end
-    if obj_sect=="arc_art_box_8basic" then
-      arc_8containers.register_container(obj_id, obj_sect)
+
+    local f = script.get_cfg_index(obj_sect)
+  
+    if f==0 then
+      if iniSectionExistSimple(obj_sect) then
+        local tmp = {}
+        tmp.section = obj_sect
+        local slots = getIniValueU32Simple(obj_sect, "container_slots")
+        if slots then
+          tmp.slots = slots
+        else
+          return true
+        end
+      
+        tmp.tx = getIniValueU32Simple(obj_sect, "inv_grid_x")
+        tmp.ty = getIniValueU32Simple(obj_sect, "inv_grid_y")
+        tmp.weight = getIniValueFloatSimple(obj_sect, "inv_weight")
+
+        table.insert(script.cfg_containers, tmp)
+        f = #script.cfg_containers
+      else
+        return true
+      end
     end
-    if obj_sect=="arc_art_box_1basic" then
-      arc_1containers.register_container(obj_id, obj_sect)
+
+    local cnt = {}
+    cnt.id = cont_id
+    cnt.type = f
+    cnt.arts = {}
+    local s = script.cfg_containers[f].slots
+
+    for i = 1, s do
+      if (not arts) or (not arts[i]) or (arts[i]=="_") then
+        cnt.arts[i] = 0
+      else
+        local a = arc_arts.register_artefact(arts[i],1,true)
+        if a==0 then
+          arc.warning("Неизвестный артефакт "..tostring(arts[i]).." находится в слоте #"..i.." контейнера #"..cont_id..". При открытии контейнера артефакт будет удалён.")
+        end
+        cnt.arts[i] = a
+		--Skunk start
+        local art_section = arts[i]
+        local belt_rad = getIniValueFloatSimple(art_section, "radiation_restore_speed")
+	    local inv_rad = getIniValueFloatSimple(art_section, "inventory_radiation", math.max(belt_rad,0))
+		if inv_rad >= 0.0007 then
+		  arc_radiation.change_inv_arts_radiation(inv_rad-0.0007)
+		end
+		-- Skunk finish
+      end
     end
-  elseif obj_clsid == clsid.obj_attachable then -- 66
+
+    table.insert(script.inv_containers, cnt)
+  
+    if arts and #arts > s then
+      arc.warning("Количество артефактов превышает количество слотов в контейнере #"..cont_id..". При открытии контейнера лишние артефакты будут удалены.")
+    end
+	return true --вряд ли контейнеры нужны где-то ещё в take каллбеке
+  elseif obj:clsid() == clsid.obj_attachable then -- 66 --Этот кусок надо вынести отсюда, к контейнерам это отношения не имеет
     if arc.compare_part(obj_sect, "arc_diary") then
       arc_diary.on_get_diary(obj)
     end
@@ -53,14 +152,11 @@ function get_item(obj)
 end
 
 function actor_update()
-  arc_containers.on_actor_update()
-  arc_1containers.on_actor_update()
-  arc_8containers.on_actor_update()
   arc_radiation.apply_radiation()
-  arc_ballast.check_ballast()
+  --
+  ogse_signals.get_mgr():reschedule(math.random(1000, 1100))
 end
 
-function on_monster_kill(victim,who)
+function on_monster_kill(victim,who) --Это перевести на сигнал и вынести отсюда
   arc_diary.monster_killed(victim,who)
 end
-

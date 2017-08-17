@@ -1,15 +1,8 @@
-local cfg_containers = {}
-local inv_containers = {}
-
-local lost_cont_id = -1
-local menu_showed = false
+cfg_containers = {}
+inv_containers = {}
 
 function get_cfg_containers_number()
-  return table.getn(cfg_containers)
-end
-
-function get_inv_containers_number()
-  return table.getn(inv_containers)
+  return #cfg_containers
 end
 
 function get_cfg_index(cont_section)
@@ -22,7 +15,7 @@ function get_cfg_index(cont_section)
 end
 
 function get_inv_index(cont_id)
-  for i = 1, get_inv_containers_number() do
+  for i = 1, #inv_containers do
     if inv_containers[i].id == cont_id then
       return i
     end
@@ -34,90 +27,11 @@ function get_inv_container_arts(cont_index)
   return inv_containers[cont_index].arts
 end
 
-function register_container(cont_id, cont_section, cont_arts)
-  if get_inv_index(cont_id)>0 then -- Уже зарегистрирован
-    return true
-  end
-  
-  local f = get_cfg_index(cont_section)
-  
-  if f==0 then
-    
-    if iniSectionExistSimple(cont_section) then
-      local tmp = {}
-      
-      tmp.section = cont_section
-      local slots = getIniValueU32Simple(cont_section, "container_slots")
-      if slots then
-        tmp.slots = slots --ini:r_u32(cont_section, "container_slots")
-      else
-        return false
-      end
-      
-      -- TODO: добавить настройки меню
-      
-      tmp.tx = getIniValueU32Simple(cont_section, "inv_grid_x")
-      tmp.ty = getIniValueU32Simple(cont_section, "inv_grid_y")
-      tmp.weight = getIniValueFloatSimple(cont_section, "inv_weight")
-      
-      table.insert(cfg_containers, tmp)
-      f = table.getn(cfg_containers)
-      
-      arc.info(list_cfg_containers(),1)
-    else
-      return false
-    end
-  end
-  
-  local cnt = {}
-  
-  cnt.id = cont_id
-  cnt.type = f
-  cnt.arts = {}
-  
-  local arts = cont_arts
-  if not arts then
-    arts = get_container_arts(cont_id)
-  end
-  local s = cfg_containers[f].slots
-  
-  for i = 1, s do
-    if (not arts) or (not arts[i]) or (arts[i]=="_") then
-      cnt.arts[i] = 0
-    else
-      local a = arc_arts.register_artefact(arts[i],1,true)
-      if a==0 then
-        arc.warning("Неизвестный артефакт "..tostring(arts[i]).." находится в слоте #"..i.." контейнера #"..cont_id..". При открытии контейнера артефакт будет удалён.")
-      end
-      cnt.arts[i] = a
-		--Skunk start
-        local art_section = arts[i]
-        local belt_rad = getIniValueFloatSimple(art_section, "radiation_restore_speed")
-	local inv_rad = getIniValueFloatSimple(art_section, "inventory_radiation", math.max(belt_rad,0))
-		if inv_rad >= 0.0003 then
-			arc_radiation.change_inv_arts_radiation(inv_rad-0.0003)
-		end
-		-- Skunk finish
-    end
-  end
-  
-  
-  table.insert(inv_containers, cnt)
-  arc.info(list_inv_containers(),1)
-  
-  if arts and (table.getn(arts)>s) then
-    arc.warning("Количество артефактов превышает количество слотов в контейнере #"..cont_id..". При открытии контейнера лишние артефакты будут удалены.")
-  end
-  
-  return true --f
-end
---]]
-
 function respawn_container(cont_index)
   local ic = inv_containers[cont_index]
-  if not ic then
+  --if not ic then
 --    return false
-  end
+  --end
   local a = {}
   
   for i=1, cfg_containers[ic.type].slots do
@@ -129,68 +43,12 @@ function respawn_container(cont_index)
   end
   
   local sobj = arc.give_item(cfg_containers[ic.type].section)
-  if not sobj then
-    return false
-  else
-    inv_containers[cont_index].id = sobj.id
-    set_container_arts(sobj.id, a)
-  end
+  inv_containers[cont_index].id = sobj.id
+  set_container_arts(sobj, a)
 end
 
 function remove_container(cont_index)
   arc.remove_obj(inv_containers[cont_index].id)
-end
-
---[[
-function on_get_container(cont)
-  register_container(cont:id(),cont:section())
-end
---]]
-function on_lose_container(cont_id)
-  if not menu_showed then
-    if lost_cont_id > 0 then
-      arc.fault("Потеряно более одного контейнера!")
-    end
-    
-    lost_cont_id = cont_id
-  end
-end
-
-function on_actor_update()
-  if lost_cont_id > 0 then
-    local n = get_inv_index(lost_cont_id)
-    
-    if alife():object(lost_cont_id)==nil then
-      -- Контейнер использован. Показать меню
-      arc_ui_8container_menu.show_menu(get_inv_index(lost_cont_id))
-    else
-      -- Контейнер выброшен. Удалить контейнер и арты в нём из списка
-      local arts = inv_containers[n].arts
-      
-      for i = 1, table.getn(arts) do
-        if arts[i]>0 then
-          arc_arts.register_artefact(arc_arts.get_art_section(arts[i]), -1, true)
-
-		--Skunk start
-        local art_section = arc_arts.get_art_section(arts[i])
-        local belt_rad = getIniValueFloatSimple(art_section, "radiation_restore_speed")
-	local inv_rad = getIniValueFloatSimple(art_section, "inventory_radiation", math.max(belt_rad,0))
-		if inv_rad >= 0.0003 then
-			arc_radiation.change_inv_arts_radiation(-(inv_rad-0.0003))
-		end
-		-- Skunk finish
-
-		  end
-      end
-      
-      table.remove(inv_containers, n)
-    end
-    lost_cont_id = -1
-  end
-end
-
-function set_menu_showed(f)
-  menu_showed = f
 end
 
 get_container_arts = arc_containers.get_container_arts
@@ -201,7 +59,6 @@ function list_cfg_containers()
   
   for i=1, get_cfg_containers_number() do
     local c = cfg_containers[i]
---    s = s.."\n s=["..c.section.."], b_r="..c.belt_rad..", i_r="..c.inv_rad.."; tx=["..c.tx..","..c.ty.."], w="..c.weight
     s = s.."["..c.section.."] "
   end
   
@@ -211,9 +68,8 @@ end
 function list_inv_containers()
   local s = "inv_containers = "
   
-  for i=1, get_inv_containers_number() do
+  for i=1, #inv_containers do
     local c = inv_containers[i]
---    s = s.."\n s=["..c.section.."], b_r="..c.belt_rad..", i_r="..c.inv_rad.."; tx=["..c.tx..","..c.ty.."], w="..c.weight
     s = s.."["..c.id.."] arts={"..table.concat(c.arts, ",").."}"
   end
   
