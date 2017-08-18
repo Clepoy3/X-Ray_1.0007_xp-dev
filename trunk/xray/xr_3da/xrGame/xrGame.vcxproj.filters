@@ -1273,12 +1273,6 @@
     <Filter Include="Core\Client\Effectors\Weapon">
       <UniqueIdentifier>{6fca11ba-c7c4-4bb4-8d17-33fcaa98f464}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Effects">
-      <UniqueIdentifier>{31019855-598c-4c33-873e-96909759cf4b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Effects\Core">
-      <UniqueIdentifier>{b362a485-b597-44f4-bbfe-2322240bd400}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Game Materials">
       <UniqueIdentifier>{458e12ef-29b2-43f8-b9d0-5a8dfa781c6f}</UniqueIdentifier>
     </Filter>
@@ -1287,9 +1281,6 @@
     </Filter>
     <Filter Include="Core\Client\Level">
       <UniqueIdentifier>{d9a57223-d5ec-40c2-9807-8dffbfb3438d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Level\Map Fog Of War">
-      <UniqueIdentifier>{3bd68629-e1e5-4163-b78d-65217f9dad4e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Client\Level\Bullet Manager">
       <UniqueIdentifier>{d899092e-d1e7-4742-baff-dd1e10755499}</UniqueIdentifier>
@@ -1308,9 +1299,6 @@
     </Filter>
     <Filter Include="Core\Client\Level\ClientSpawnManager">
       <UniqueIdentifier>{d7e9b82c-7160-4c07-a241-ee514c31f9ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Level\AutosaveManager">
-      <UniqueIdentifier>{29620844-158e-423e-b8fa-bec79d10cfb5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Client\Level\Level Sounds">
       <UniqueIdentifier>{cca76419-3e9c-429e-8724-6c9497fa7c66}</UniqueIdentifier>
@@ -4563,9 +4551,6 @@
     <ClInclude Include="EffectorZoomInertion.h">
       <Filter>Core\Client\Effectors\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicHeightMap.h">
-      <Filter>Core\Client\Effects\Core</Filter>
-    </ClInclude>
     <ClInclude Include="GameMtlLib.h">
       <Filter>Core\Client\Game Materials</Filter>
     </ClInclude>
@@ -4580,9 +4565,6 @@
     </ClInclude>
     <ClInclude Include="LevelGameDef.h">
       <Filter>Core\Client\Level</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelFogOfWar.h">
-      <Filter>Core\Client\Level\Map Fog Of War</Filter>
     </ClInclude>
     <ClInclude Include="Level_Bullet_Manager.h">
       <Filter>Core\Client\Level\Bullet Manager</Filter>
@@ -4622,12 +4604,6 @@
     </ClInclude>
     <ClInclude Include="client_spawn_manager_inline.h">
       <Filter>Core\Client\Level\ClientSpawnManager</Filter>
-    </ClInclude>
-    <ClInclude Include="autosave_manager.h">
-      <Filter>Core\Client\Level\AutosaveManager</Filter>
-    </ClInclude>
-    <ClInclude Include="autosave_manager_inline.h">
-      <Filter>Core\Client\Level\AutosaveManager</Filter>
     </ClInclude>
     <ClInclude Include="level_sounds.h">
       <Filter>Core\Client\Level\Level Sounds</Filter>
@@ -7419,9 +7395,6 @@
     <ClCompile Include="EffectorZoomInertion.cpp">
       <Filter>Core\Client\Effectors\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicHeightMap.cpp">
-      <Filter>Core\Client\Effects\Core</Filter>
-    </ClCompile>
     <ClCompile Include="GameMtlLib.cpp">
       <Filter>Core\Client\Game Materials</Filter>
     </ClCompile>
@@ -7473,9 +7446,6 @@
     <ClCompile Include="Level_start.cpp">
       <Filter>Core\Client\Level</Filter>
     </ClCompile>
-    <ClCompile Include="LevelFogOfWar.cpp">
-      <Filter>Core\Client\Level\Map Fog Of War</Filter>
-    </ClCompile>
     <ClCompile Include="Level_Bullet_Manager.cpp">
       <Filter>Core\Client\Level\Bullet Manager</Filter>
     </ClCompile>
@@ -7502,9 +7472,6 @@
     </ClCompile>
     <ClCompile Include="client_spawn_manager_script.cpp">
       <Filter>Core\Client\Level\ClientSpawnManager</Filter>
-    </ClCompile>
-    <ClCompile Include="autosave_manager.cpp">
-      <Filter>Core\Client\Level\AutosaveManager</Filter>
     </ClCompile>
     <ClCompile Include="level_sounds.cpp">
       <Filter>Core\Client\Level\Level Sounds</Filter>
@@ -7537,9 +7504,6 @@
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClCompile>
     <ClCompile Include="Actor_Network.cpp">
-      <Filter>Core\Client\Objects\actor\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor_Sleep.cpp">
       <Filter>Core\Client\Objects\actor\base</Filter>
     </ClCompile>
     <ClCompile Include="Actor_Weapon.cpp">
