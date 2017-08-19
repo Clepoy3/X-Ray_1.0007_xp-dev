@@ -130,6 +130,7 @@ end
 -- выполняется
 function quick_timer:stop()
     self.sm:unsubscribe( self.slot_desc )
+	self.slot_desc = nil --KRodin: необходимо!!! Отпускаем объект для сборщика мусора.
 end
 
 -- проверка в базовом классе таймера обеспечивает сервис остановки по

@@ -253,8 +253,7 @@ function WeatherManager:select_weather(force)
 		--Из за того, что в game_cl_GameState::net_import_GameTime установка погоды была выключена (для фикса пропадающего солнца),
 		--здесь погоду необходимо устанавливать принудительно! Причём, на первом апдейте.
 		-- http://www.amk-team.ru/forum/topic/10538-x-ray-extensions/?do=findComment&comment=976375
-		level.add_call(
-			function() return true end,
+		ogse_qt.exec_on_update(
 			function()
 				level.set_weather(self.cur_weather, true)
 			end

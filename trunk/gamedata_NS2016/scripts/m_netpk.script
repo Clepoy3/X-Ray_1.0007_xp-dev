@@ -1494,7 +1494,11 @@ function do_switchings(id)
 		--/ start callback for 'online->offline->online'
 		if not actived_switchings then
 			actived_switchings = true --/ set flag
-			level.add_call(execute_switchings, function() actived_switchings = false end)
+			if ogse_qt and ogse_qt.wait_condition then
+				ogse_qt.wait_condition(execute_switchings, function() actived_switchings = false end)
+			else
+				level.add_call(execute_switchings, function() actived_switchings = false end)
+			end
 		end
 	end
 end

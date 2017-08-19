@@ -117,6 +117,7 @@ end
 function UseRemnabor(obj)
 	if obj:section() == "sh_remnabor" then		
 		EnableDevice(1)
+		return true
 	end
 end
 

@@ -1431,11 +1431,11 @@ function chk_ver(pid)
 	--if ver and ver <= 1.0004 then
 	--	return pid
 	--else
-		--if pid == -1 then
-		--	return ""
-		--else
+		if pid == -1 then
+			return ""
+		else
 			return tostring(pid)
-		--end
+		end
 	--end
 end
 

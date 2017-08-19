@@ -52,7 +52,7 @@ end
 function switch_online_offline_online(id)
 	alife():set_switch_online( id, false )
 	alife():set_switch_offline( id, true )
-	level.add_call(
+	ogse_qt.wait_condition(
 		function() return not level.object_by_id(id) end,
 		function()
 			alife():set_switch_online( id, true )
@@ -145,15 +145,10 @@ end
 -- Удаляем предмет из инвентаря
 function remove_item_from_inventory(remove_item, npc)
 	npc = npc or db.actor
-	if remove_item then
-	    npc:mark_item_dropped(remove_item)
-		local sobj = alife():object(remove_item:id())
-		if sobj then
-			alife():release(sobj, true)
-			return true
-		end
+	local sobj = alife():object(remove_item:id())
+	if sobj then
+		alife():release(sobj, true)
 	end
-	return false
 end
 
 --ogse - end

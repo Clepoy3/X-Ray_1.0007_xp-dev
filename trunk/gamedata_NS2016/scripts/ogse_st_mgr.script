@@ -368,6 +368,7 @@ end
 -- останов таймера
 function savable_timer:stop()
   self.sm:unsubscribe( self._cond_slot_desc )
+  self._cond_slot_desc = nil --KRodin: необходимо! Отпускаем объект для сборщика мусора
   registry[ self.id ] = nil
 end
 
@@ -436,7 +437,7 @@ end
 function delayed_fun_start:stop()
   if self._game_termination_time then
     self.sm:unsubscribe(self.after_time_change_signal)
-    self.after_time_change_signal = nil
+    self.after_time_change_signal = nil --KRodin: необходимо! отпускаем объект для сборщика мусора
   end
 
   savable_timer.stop(self)
@@ -532,8 +533,7 @@ function visual_timer:start(...)
 	self.on_hud_show_desc = {signal = "on_hud_show", self = self, fun = self.on_hud_show}
 	self.sm:subscribe(self.on_hud_show_desc)
 	local hud = get_hud()
-	hud:AddCustomStatic("hud_timer_2", true)
-	hud:AddCustomStatic("hud_timer_text_2", true)
+	hud:AddCustomStatic("hud_timer", true)
 
 	self.script_name = self.action_name
 
@@ -541,22 +541,18 @@ function visual_timer:start(...)
 end
 function visual_timer:stop()
 	self.sm:unsubscribe(self.on_hud_show_desc)
+	self.on_hud_show_desc = nil --KRodin: необходимо! Отпускаем объект для сборщика мусора.
 	local hud = get_hud()
-	hud:RemoveCustomStatic("hud_timer_2")
-	hud:RemoveCustomStatic("hud_timer_text_2")
+	hud:RemoveCustomStatic("hud_timer")
 
 	savable_timer.stop(self)
 end
 function visual_timer:on_hud_show()
 	local hud = get_hud()
-	if hud:GetCustomStatic("hud_timer_2") then
-		hud:RemoveCustomStatic("hud_timer_2")
+	if hud:GetCustomStatic("hud_timer") then
+		hud:RemoveCustomStatic("hud_timer")
 	end
-	hud:AddCustomStatic("hud_timer_2", true)
-	if hud:GetCustomStatic("hud_timer_text_2") then
-		hud:RemoveCustomStatic("hud_timer_text_2")
-	end
-	hud:AddCustomStatic("hud_timer_text_2", true)
+	hud:AddCustomStatic("hud_timer", true)
 end
 function visual_timer:_aux_cond()
 	savable_timer._aux_cond(self)
@@ -576,7 +572,7 @@ function visual_timer:condition()
 	local m = math.floor(dt/60 - h*60)
 	local s = math.floor(dt - h*3600 - m*60)
 	local txt = string.format("%02d:%02d:%02d", h, m, s)
-	get_hud():GetCustomStatic("hud_timer_text_2"):wnd():SetText(txt)
+	get_hud():GetCustomStatic("hud_timer"):wnd():SetText(txt)
 	return false
 end
 

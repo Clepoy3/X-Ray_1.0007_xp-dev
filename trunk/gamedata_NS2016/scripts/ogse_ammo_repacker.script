@@ -31,7 +31,7 @@ function on_take(obj, s_obj)
 		if _krodin_utils.get_ammo_size(obj) < ammo[section].box then
 			ammo[section].repack = true
 			if not update_planned then
-				level.add_call(
+				ogse_qt.wait_condition(
 					function() return not level.main_input_receiver() end,
 					this.on_update
 				)

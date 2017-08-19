@@ -1337,40 +1337,6 @@ function get_texture_info( id_name, def )
 	return task_info:get_file_name(), r
 end
 
--- DC -- а вот это все - хрень ненужна€ бесполезна€. ¬се вис€ки ловить через проверку _G.watchdog
-counter = 0
-local prev_watch, dead_sound = 0, 0
-local dead_time, dead_message = false, false
-function watch_condition()
-	counter = (bind_stalker.watch_value == prev_watch) and (counter + 1) or 0 
-	prev_watch = bind_stalker.watch_value
-	if counter > 20 and db.actor then
-		if not device():is_paused() then
-			if dead_time then
-				if dead_time + 2000 < time_global() then
-					if not dead_message then
-						dead_message = "ѕохоже, висим... или падаем ? \\(".. amk.oau_watchdog .. "\\)"
-						amk.send_tip(actor_dead, "собака страшна€", 0, 15, "gen_info")
-						-- if bind_stalker.watchdog_stage == 20 then
-						-- actor_dead = "meceni\.utils = " .. tostring(meceniy_utils.watchdog_stage) .. "\n"
-						-- amk.send_tip(actor_dead, "собака страшна€", 0, 15, "gen_info")
-						-- end
-					elseif dead_sound < time_global() then
-						local snd_obj = xr_sound.get_safe_sound_object("detectors\\da-2_beep1")
-						snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 2.5)
-						dead_sound = time_global() + 1000
-					end
-				end
-			else dead_time = time_global()
-			end
-		else bind_stalker.game_paused = bind_stalker.game_paused + 100
-		end
-	else dead_time, dead_message = false
-	end
-	return false
-end
-
-
 
 function isWeapon( obj )
 	return obj and IAmAWeapon[obj:clsid()]
@@ -1453,7 +1419,6 @@ function start_game_callback()
 	for k,v in pairs(IAmAStalker) do npc_by_clsid[k] = v end
 	for k,v in pairs(IAmAMonster) do npc_by_clsid[k] = v end
 
-	level.add_call(watch_condition, dummy_action)	-- malandrinus
 	task_manager.clear_task_manager()
 	treasure_manager.clear_treasure_manager()
 	xr_sound.clear_all_sound_object()
@@ -1462,161 +1427,10 @@ function start_game_callback()
 	amk.on_game_start()
 end
 
-local counterStatistic = {}
-function counterAdd(name)
-	counterStatistic[name] = (counterStatistic[name] or 0) + 1
+
+function counterAdd() --KRodin: TODO: ¬ырезать отовсюду!
 end
 
-
-function counterPrint()
-	local tg = time_global()/1000
-
-	get_console():execute("load ~~~ ")
-	get_console():execute("load ~~~ cached_hit_Parse_StrToTbl: "..tostring(cached_hit_Parse_StrToTbl))
-	get_console():execute("load ~~~ ")
-	get_console():execute("load ~~~ ")
-	get_console():execute("load ~~~ ")
-	get_console():execute("load ~~~ counterStatistic after "..tostring(tg).." seconds order by name:")
-	get_console():execute(string_format("load ~~~ %60s %10s %15s", string.rep("_", 60 - string.len("name")).."name", string.rep("_", 10 - string.len("count")).."count", string.rep("_", 15 - string.len("per second")).."per second"))
-	local counterStatisticNames = {}
-	for k,_ in pairs(counterStatistic) do
-		table_insert(counterStatisticNames, k)
-	end
-	table.sort(counterStatisticNames)
-	local k, v
-	for i = 1, #counterStatisticNames do
-		k = counterStatisticNames[i]
-		v = counterStatistic[k]
-		get_console():execute(string_format("load ~~~ %60s %10s %15s", string.rep("_", 60 - string.len(k))..k, string.rep("_", 10 - string.len(tostring(v)))..tostring(v), string_gsub(string_format("%015.5f", v/tg), "^0*", function(s) return string.rep("_", string.len(s)) end)))
-	end
-
-	get_console():execute("load ~~~ ")
-	get_console():execute("load ~~~ ")
-	get_console():execute("load ~~~ counterStatistic after "..tostring(tg).." seconds order by count:")
-	get_console():execute(string_format("load ~~~ %60s %10s %15s", string.rep("_", 60 - string.len("name")).."name", string.rep("_", 10 - string.len("count")).."count", string.rep("_", 15 - string.len("per second")).."per second"))
-	local counterStatisticByCount = {}
-	for k,v in pairs(counterStatistic) do
-		table_insert(counterStatisticByCount, {name = k, count = v})
-	end
-	table.sort(counterStatisticByCount, function(v1, v2) return v2.count < v1.count end)
-
-	for i = 1, #counterStatisticByCount do
-		get_console():execute(string_format("load ~~~ %60s %10s %15s", string.rep("_", 60 - string.len(counterStatisticByCount[i]["name"]))..counterStatisticByCount[i]["name"], string.rep("_", 10 - string.len(tostring(counterStatisticByCount[i]["count"])))..tostring(counterStatisticByCount[i]["count"]), string_gsub(string_format("%015.5f", counterStatisticByCount[i]["count"]/tg), "^0*", function(s) return string.rep("_", string.len(s)) end)))
-	end
-	
-	if game_options.hear_and_panic_statistic then
-		local sndInfoTotal
-		for community, communityInfo in pairs(xr_motivator.hearStatistics) do
-
-			communityInfo["total"] = {}
-			
-			for relType, relInfo in pairs(communityInfo) do
-				if relType ~= "total" then
-					for sndType, sndInfo in pairs(relInfo) do
-						sndInfo.count_s = sndInfo.count / tg
-						sndInfo.power_s = sndInfo.power / tg
-						sndInfo.power_count = sndInfo.power / sndInfo.count
-						sndInfo.moraleUp_count = sndInfo.moraleUpCount > 0 and sndInfo.moraleUp / sndInfo.moraleUpCount or 0
-						sndInfo.moraleUp_s = sndInfo.moraleUp / tg
-						sndInfo.moraleDown_count = sndInfo.moraleDownCount > 0 and sndInfo.moraleDown / sndInfo.moraleDownCount or 0
-						sndInfo.moraleDown_s = sndInfo.moraleDown / tg
-						
-						if not communityInfo["total"][sndType] then
-							communityInfo["total"][sndType] = {
-								["count"] = 0,
-								["power"] = 0,
-								["moraleUp"] = 0,
-								["moraleUpCount"] = 0,
-								["moraleDown"] = 0,
-								["moraleDownCount"] = 0
-							}
-						end
-						
-						sndInfoTotal = communityInfo["total"][sndType]
-						sndInfoTotal.count = sndInfoTotal.count + sndInfo.count
-						sndInfoTotal.power = sndInfoTotal.power + sndInfo.power
-						sndInfoTotal.moraleUp = sndInfoTotal.moraleUp + sndInfo.moraleUp
-						sndInfoTotal.moraleUpCount = sndInfoTotal.moraleUpCount + sndInfo.moraleUpCount
-						sndInfoTotal.moraleDown = sndInfoTotal.moraleDown + sndInfo.moraleDown
-						sndInfoTotal.moraleDownCount = sndInfoTotal.moraleDownCount + sndInfo.moraleDownCount
-					end
-				end
-			end
-
-			for sndType, sndInfo in pairs(communityInfo["total"]) do
-				sndInfo.count_s = sndInfo.count / tg
-				sndInfo.power_s = sndInfo.power / tg
-				sndInfo.power_count = sndInfo.power / sndInfo.count
-				sndInfo.moraleUp_s = sndInfo.moraleUp / tg
-				sndInfo.moraleUp_count = sndInfo.moraleUpCount > 0 and sndInfo.moraleUp / sndInfo.moraleUpCount or 0
-				sndInfo.moraleDown_s = sndInfo.moraleDown / tg
-				sndInfo.moraleDown_count = sndInfo.moraleDownCount > 0 and sndInfo.moraleDown / sndInfo.moraleDownCount or 0
-			end
-		end
-		
-		amk.dump_table(xr_motivator.hearStatistics, 1, "xr_motivator.hearStatistics")
-		
-		for community, communityInfo in pairs(xr_motivator.hearStatistics) do
-			get_console():execute("load ~~~ ")
-			get_console():execute("load ~~~ ")
-			get_console():execute("load ~~~ hearStatistics after "..tostring(tg).." seconds for "..community)
-			get_console():execute(string_format("load ~~~ %10s %20s %10s %10s %15s %10s %15s %10s %15s %15s %15s %10s %15s %15s %15s", string.rep("_", 10 - string.len("relation")).."relation", string.rep("_", 20 - string.len("type")).."type", string.rep("_", 10 - string.len("count")).."count", string.rep("_", 10 - string.len("count/s")).."count/s", string.rep("_", 15 - string.len("power")).."power", string.rep("_", 10 - string.len("power/s")).."power/s", string.rep("_", 15 - string.len("power/count")).."power/count", string.rep("_", 10 - string.len("morUpCnt")).."morUpCnt", string.rep("_", 15 - string.len("moraleUp")).."moraleUp", string.rep("_", 15 - string.len("moraleUp/s")).."moraleUp/s", string.rep("_", 15 - string.len("moraleUp/count")).."moraleUp/count", string.rep("_", 10 - string.len("morDownCnt")).."morDownCnt", string.rep("_", 15 - string.len("moraleDown")).."moraleDown", string.rep("_", 15 - string.len("moraleDown/s")).."moraleDown/s", string.rep("_", 15 - string.len("moraleDown/count")).."moraleDown/count"))
-			for relType, relInfo in pairs(communityInfo) do
-				for sndType, sndInfo in pairs(relInfo) do
-					get_console():execute(string_format(
-						"load ~~~ %10s %20s %10s %10s %15s %10s %15s %10s %15s %15s %15s %10s %15s %15s %15s",
-						string.rep("_", 10 - string.len(relType))..relType,
-						string.rep("_", 20 - string.len(sndType))..sndType,
-						string.rep("_", 10 - string.len(tostring(sndInfo.count)))..tostring(sndInfo.count),
-						string_gsub(string_format("%010.5f", sndInfo.count_s), "^0*", function(s) return string.rep("_", string.len(s)) end),
-						string_gsub(string_format("%015.5f", sndInfo.power), "^0*", function(s) return string.rep("_", string.len(s)) end),
-						string_gsub(string_format("%010.5f", sndInfo.power_s), "^0*", function(s) return string.rep("_", string.len(s)) end),
-						string_gsub(string_format("%015.5f", sndInfo.power_count), "^0*", function(s) return string.rep("_", string.len(s)) end),
-						string.rep("_", 10 - string.len(tostring(sndInfo.moraleUpCount)))..tostring(sndInfo.moraleUpCount),
-						string_gsub(string_format("%015.5f", sndInfo.moraleUp), "^0*", function(s) return string.rep("_", string.len(s)) end),
-						string_gsub(string_format("%015.5f", sndInfo.moraleUp_s), "^0*", function(s) return string.rep("_", string.len(s)) end),
-						string_gsub(string_format("%015.5f", sndInfo.moraleUp_count), "^0*", function(s) return string.rep("_", string.len(s)) end),
-						string.rep("_", 10 - string.len(tostring(sndInfo.moraleDownCount)))..tostring(sndInfo.moraleDownCount),
-						string_gsub(string_format("%015.5f", math.abs(sndInfo.moraleDown)), "^0*", function(s) return string.rep("_", string.len(s)-1).."-" end),
-						string_gsub(string_format("%015.5f", math.abs(sndInfo.moraleDown_s)), "^0*", function(s) return string.rep("_", string.len(s)-1).."-" end),
-						string_gsub(string_format("%015.5f", math.abs(sndInfo.moraleDown_count)), "^0*", function(s) return string.rep("_", string.len(s)-1).."-" end)
-					))
-				end
-			end
-		end
-		
-		get_console():execute("load ~~~ hearRankStatistics:")
-		local ranksCount = {}
-		for rank, npcs in pairs(xr_motivator.hearRankStatistics) do
-			ranksCount[rank] = ranksCount[rank] or 0 + 1
-		end
-		amk.dump_table(ranksCount, 1, "ranksCount")
-	end
-end
-
--- профилирование
-local ts = {}
-
-function t_start(name)
-	if not ts[name] then
-		ts[name] = {["count"] = 0, ["time_spend"] = 0}
-	end
-	
-	local t = ts[name]
-	
-	t.count = t.count + 1
-	t.current = profile_timer()
-	t.current:start()
-end
-
-function t_finish(name)
-	local t = ts[name]
-	t.current:stop()
-	local ts = t.current:time()
-	t.time_spend = t.time_spend + ts
-	t.current = nil
-	get_console():execute("load ~profiling~ TIME SPEND ["..name.."]: "..string_format("%02.4f",ts/1000000).."s, total time: "..string_format("%05.4f",t.time_spend/1000000).."s, count: "..t.count..", average: "..string_format("%02.4f",t.time_spend/1000000/t.count).."s")
-end
 
 function deepcompare(t1,t2,ignore_mt)
 	local ty1 = type(t1)
