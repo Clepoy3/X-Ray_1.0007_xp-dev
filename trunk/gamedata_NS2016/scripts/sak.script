@@ -275,15 +275,6 @@ local levelsIgnoreArts = {
 }
 
 
-function off_repair_box()
-	for a=10,65635,1 do
-	local obj=alife():object(a)
-		if obj and string.find(obj:name(),"sh_remnabor") then
-		alife():release(obj,true)
-		end
-	end
-end
-
 function add_borov_treasure(actor, npc)
 	treasure_manager.get_treasure_manager():give_treasure("mil_borov_secret", npc)
 end

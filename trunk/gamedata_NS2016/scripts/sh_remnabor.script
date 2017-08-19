@@ -4,6 +4,12 @@ Developed by Shadowman for Narodnaya Solyanka
 Copyright: © NS-Team 
 April, 2011
 ]]
+
+function attach( sm )
+  sm:subscribe({ signal = "on_use", fun = this.UseRemnabor })
+end
+
+
 local aWpn_slot1 = nil	-- table стволы в пистолетный слот
 local aWpn_slot2 = nil	-- table стволы в автоматный слот
 local aOutfits = nil	-- table броники
@@ -108,9 +114,9 @@ function DisableDevice()
 	end
 end
 
-function UseRemnabor(oItem)
-	if oItem:section() == "sh_remnabor" then		
-		amk.start_timer("UseRemnabor", 0.5, oItem:id())
+function UseRemnabor(obj)
+	if obj:section() == "sh_remnabor" then		
+		EnableDevice(1)
 	end
 end
 
@@ -683,12 +689,8 @@ function DeviceRemnabor:Quit()
 	self:GetHolder():start_stop_menu(self,true)
 end
 
---[[
 -- 	Заспавнить предмет в инвентарь к актору.
 -- 	@param  string  sItemSection  Секция предмета который нужно заспавнить.
---]]
 function amkCreateItemActor(sItemSection)
-	if alife() and sItemSection then		
-		return alife():create(sItemSection, db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id(),db.actor:id())
-	end
+	_krodin_utils.spawn_item_in_inv(sItemSection)
 end

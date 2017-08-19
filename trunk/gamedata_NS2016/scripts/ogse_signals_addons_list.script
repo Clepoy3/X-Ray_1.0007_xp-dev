@@ -9,4 +9,5 @@ addons = {
 	"ogse_campfire",
 	"ogse_metka",
 	"arc_main",
+	"sh_remnabor",
 }

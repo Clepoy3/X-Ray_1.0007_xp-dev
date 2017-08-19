@@ -723,14 +723,6 @@ local func_by_string = {}
 			amk.oAmkLauncher:AddFunc("UseAdminBook", "sysadmin.EnableDevice(1)")
 		end
  	end
-	
-	func_by_string["UseRemnabor"] = function (params_string) counterAdd("amk.UseRemnabor")
-        local id = tonumber(params_string)
-		local sobj = alife():object(id)
-		if sobj == nil then
-			amk.oAmkLauncher:AddFunc("UseRemnabor", "sh_remnabor.EnableDevice(1)")
-		end
- 	end
 
 	func_by_string["RepairEnd"] =  function (params) counterAdd("amk.RepairEnd")
 		sh_remnabor.oDevice:r_done(params)
@@ -1300,21 +1292,6 @@ function unpack_array_from_string(str) counterAdd("amk.unpack_array_from_string"
 	return {}
 end
 
---[[local unpack_array_from_string_cached = {}
-function unpack_array_from_string(str) counterAdd("amk.unpack_array_from_string")
-	if str ~= "" then
-		if unpack_array_from_string_cached[str] == nil then
-			if string_sub(str,1,1)~=string_char(1) then
-				unpack_array_from_string_cached[str] = _parse(str)	-- Старый формат упаковки
-			else
-				unpack_array_from_string_cached[str] = parse_new(string_sub(str,2,-1))	-- новый формат упаковки тэгирован символом c кодом 1.
-			end
-		end
-		return table_copy(unpack_array_from_string_cached[str])
-	end
-	return {}
-end]]
-
 
 function _assign(tbl,key,val) counterAdd("amk._assign")
 	local key0 = string_match(key,'"(.*)"')
@@ -1376,7 +1353,6 @@ function on_item_drop(obj) counterAdd("amk.on_item_drop")
 	amkII_transmutator.amkUseTransmutator(obj)
 	teleport_menu.UseTeleport(obj)
 	sysadmin.UseAdminBook(obj)
-	sh_remnabor.UseRemnabor(obj)
 	flamethrower.have_a_fire_kolobok()
 	flamethrower.have_a_trubki()
 	flamethrower.have_a_manometr()
@@ -1729,7 +1705,7 @@ function parse_ini_section_to_array_new(iniFileName, section) counterAdd("amk.pa
 	
 	local iniName = iniFileName or "system_ini"
 	if parse_ini_section_to_array_cached[iniName] and parse_ini_section_to_array_cached[iniName][section] then
-		return table_copy(parse_ini_section_to_array_cached[iniName][section])
+		return table.copy(parse_ini_section_to_array_cached[iniName][section])
 	end
 	
 	if parse_ini_section_to_array_cached[iniName] == nil then
@@ -1761,7 +1737,7 @@ function parse_ini_section_to_array_new(iniFileName, section) counterAdd("amk.pa
 	
 	parse_ini_section_to_array_cached[iniName][section] = tmp
 	
-	return table_copy(tmp)
+	return table.copy(tmp)
 end
 
 local game_milliseconds_cached, game_seconds_cached

@@ -67,32 +67,17 @@ if not string.explode then
 	end
 end
 --==============================================================================================
-function table_copy(tbl, simple) --KRodin: неплохая функция
-	if type(tbl) ~= "table" then return tbl end
+function table.copy(tbl) --Возвращает копию таблицы.
 	local mt = getmetatable(tbl)
 	local res = {}
-	if simple then
-		local v
-		for i = 1, #tbl do
-			v = tbl[i]
-			-- если значение - таблица
-			if type(v) == "table" then
-				v = table_copy(v, simple)
-			end
-			table.insert(res, v)
+	for k, v in pairs(tbl) do
+		if type(k) == "table" then
+			k = table.copy(k, simple)
 		end
-	else
-		for k,v in pairs(tbl) do
-			-- ключами могут быть и таблицы
-			if type(k) == "table" then
-				k = table_copy(k, simple)
-			end
-			-- если значение - таблица
-			if type(v) == "table" then
-				v = table_copy(v, simple)
-			end
-			res[k] = v
+		if type(v) == "table" then
+			v = table.copy(v, simple)
 		end
+		res[k] = v
 	end
 	setmetatable(res, mt)
 	return res
@@ -575,7 +560,6 @@ end
 
 -- ini reading functions by sapsan --
 
-local otherIniFiles = {}
 local valTypesAllowed = {
 	["float"] = true,
 	["u32"] = true,
@@ -593,6 +577,7 @@ sysIniLinesCached = {}
 sysIniLinesExistCached = {}
 
 
+local otherIniFiles = {}
 function g_ini_file( fileName )
 	if fileName then
 		if not otherIniFiles[fileName] then
