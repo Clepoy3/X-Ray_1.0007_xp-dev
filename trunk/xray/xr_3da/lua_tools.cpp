@@ -3,33 +3,13 @@
 
 lua_State* g_game_lua = nullptr;
 
-ENGINE_API LPCSTR get_lua_traceback(lua_State *L, int depth)
+ENGINE_API const char* get_lua_traceback(lua_State *L, int)
 {
-	if (L) g_game_lua = L;
+	if (L && !g_game_lua)
+		g_game_lua = L;
 
-	static char  buffer[32768]; // global buffer
-	int top = lua_gettop(L);
-	// alpet: Lua traceback added
-	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
-	lua_getfield(L, -1, "traceback");
-	lua_pushstring(L, "\t");
-	lua_pushinteger(L, 1);
-
-	const char *traceback = "cannot get Lua traceback ";
-	strcpy_s(buffer, 32767, traceback);
-	__try
-	{
-		if (0 == lua_pcall(L, 2, 1, 0))
-		{
-			traceback = lua_tostring(L, -1);
-			strcpy_s(buffer, 32767, traceback);
-			lua_pop(L, 1);
-		}
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		Msg("!#EXCEPTION(get_lua_traceback): buffer = %s ", buffer);
-	}
-	lua_settop (L, top);
-	return buffer;
+	luaL_traceback(g_game_lua, g_game_lua, nullptr, 0);
+	auto tb = lua_tostring(g_game_lua, -1);
+	lua_pop(g_game_lua, 1);
+	return tb;
 }
