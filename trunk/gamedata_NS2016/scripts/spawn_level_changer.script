@@ -1,3 +1,10 @@
+
+function attach( sm )
+	sm:subscribe({ signal = "on_use", fun = this.on_use })
+	sm:subscribe({ signal = "on_drop", fun = this.on_drop })
+end
+
+
 local places = {
 ["exit_kordon"] = { sid = 15000, lv = 312314, gv = 3, pos = {31.3994522094727, 16.5561962127686, 677.265319824219}, view = {-1.1717250458787, -3.09718561172485, -2.19056900618853}, lvl = "l01_escape"},
 ["exit_kordon1"] = { sid = 15001, lv = 15143, gv = 67, pos = {-241.12390136719, -0.71582686901093, 11.030144691467}, view = {0.0,0.0,0.0}, lvl = "l01_escape"},
@@ -135,7 +142,7 @@ end
 -- art - требуемый арт для телепортации (если задан - отберётся у ГГ)
 -- keep - оставлять ли телепорт
 -- goto_func - список вариантов заброски телепортом
-local teleports = {
+teleports = {
 	["science_teleport"] = {
 		art = "af_electra_moonlight",
 		sjedobniy = true,
@@ -180,22 +187,36 @@ local teleports = {
 	}
 }
 
-function checking_droped_obj(obj)
-	local actor = db.actor
-	local obj_sect = obj:section()
-	if not teleports[obj_sect] then return end -- не наш "клиент"
-	
-	-- если арт не нужен или он есть у ГГ
-	if not teleports[obj_sect].art or actor:object(teleports[obj_sect].art) then
-		-- отправляем телепорт на экспертизу
-		-- узнаем не съели ли его или выложили в нычку
-		local tbl		= {}
-		tbl.obj_id		= obj:id()
-		tbl.obj_sect	= obj_sect
-		-- amk.start_timer("timer_drop_obj_teleport", 0.2, amk.pack_array_to_string(tbl))
-		amk.start_timer("timer_drop_obj_teleport", 0.2, tbl)
+
+function on_use(obj)
+	local teleport = teleports[obj:section()]
+	if not teleport then return end -- не наш "клиент"
+
+	if not teleport.art or db.actor:object(teleport.art) then -- если арт не нужен или он есть у ГГ
+		this.teleport_start(obj:section(), obj:id(), true)
 	end
+	return true
 end
+
+function on_drop(obj)
+	local teleport = teleports[obj:section()]
+	if not teleport then return end -- не наш "клиент"
+
+	if not teleport.art or db.actor:object(teleport.art) then -- если арт не нужен или он есть у ГГ
+		ogse_qt.wait_condition(
+			function()
+				return not obj:parent() or not obj:parent():is_actor()
+			end,
+			function()
+				if not obj:parent() then --Если телепорт выбросили на землю - телепортируем.
+					this.teleport_start(obj:section(), obj:id(), false)
+				end
+			end
+		)
+	end
+	return true
+end
+
 
 function teleport_start(obj_sect, obj_id, sjeli)
 	local sim = alife()

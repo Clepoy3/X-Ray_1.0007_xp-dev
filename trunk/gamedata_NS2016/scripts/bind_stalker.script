@@ -148,7 +148,6 @@ function actor_binder:net_destroy()
 		amk.dump_table(t)
 	end
 
---	counterPrint()
  	m_icons.RemoveIcons()
 	--
 	self.sm:call("on_destroy")
@@ -515,7 +514,6 @@ function actor_binder:on_item_drop(obj)
 	amk_utils.actor_item_drop(obj)
 	inventory.on_item_drop(obj)
 	braad_test.drop_actor(obj)
-	spawn_level_changer.checking_droped_obj(obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -903,6 +901,7 @@ function actor_binder:update(delta)
 			 --if wthr then
 			  --amk.send_tip("Погода: "..wthr.." локация: "..lname,"Отладчик погоды",1,20,"gen_info")
 			-- end
+			log1("~~bind_stalker.actor_update.game_paused = 2") --Такого по-моему происходить не должно.
 			game_paused = 2
 		end
 	end

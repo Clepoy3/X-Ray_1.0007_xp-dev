@@ -220,7 +220,7 @@ function convert_timers() counterAdd("amk.convert_timers")
 			["healing_enemies"]		= true,
 			["timer_drop_obj_varka"]	= true,
 			["timer_drop_obj_transform"]	= true,
-			["timer_drop_obj_teleport"]	= true,
+			["timer_drop_obj_teleport"]	= true, --Удалить, как только переведу таймеры на свою систему.
 			["timer_drop_obj_hand_teleporter"] = true 
 		}
 		for a=1,100,1 do
@@ -350,7 +350,7 @@ end
 
 -- таблица функций для ускорения их вызовов
 -- используется ниже
-local func_by_string = {}
+local func_by_string = {} --KRodin: если удалить хоть один элемент таблицы - получается какая-то хрень. Надо переводить эти таймеры на нормальную систему, и уже потом править всё что надо.
 	func_by_string["tag_trup_to_zombie"] = function (params_string) counterAdd("amk.tag_trup_to_zombie")
 		tag_spb.trup_to_zombie(params_string)
 	end
@@ -555,25 +555,8 @@ local func_by_string = {}
 		-- else amk.send_tip("переложили","переложили",0,15,"gen_info")
 		end
  	end
-	func_by_string["timer_drop_obj_teleport"] = function (params_string) counterAdd("amk.timer_drop_obj_teleport")
-		-- для совместимости оставлен старый способ с распаковкой
-		local tbl
-		if type(params_string) == "table" then
-			tbl = params_string
-		else
-			tbl = unpack_array_from_string(params_string)
-		end
-
-		local sobj = alife():object(tbl.obj_id)
-		if sobj == nil then	-- съели
-			--amk.send_tip("съели","съели",0,15,"gen_info")
-			spawn_level_changer.teleport_start(tbl.obj_sect, tbl.obj_id, true)
-		elseif sobj.parent_id == 65535 then -- выбросили
-			--amk.send_tip("выбросили","выбросили",0,15,"gen_info")
-			-- запускаем телепорт
-			spawn_level_changer.teleport_start(tbl.obj_sect, tbl.obj_id, false)
-		-- else amk.send_tip("переложили","переложили",0,15,"gen_info")
-		end
+	
+	func_by_string["timer_drop_obj_teleport"] = function (params_string) --Удалить, как только переведу таймеры на свою систему.
  	end
 
 	func_by_string["autosave"] = function (params_string) counterAdd("amk.autosave")
@@ -722,6 +705,9 @@ local func_by_string = {}
 		if sobj == nil then
 			amk.oAmkLauncher:AddFunc("UseAdminBook", "sysadmin.EnableDevice(1)")
 		end
+ 	end
+
+	func_by_string["UseRemnabor"] = function(params_string)
  	end
 
 	func_by_string["RepairEnd"] =  function (params) counterAdd("amk.RepairEnd")
@@ -985,18 +971,13 @@ function spawn_item(spawn_item, pos, gv,lv) counterAdd("amk.spawn_item")
 end
 
 --для спавна патронов используем spawn_ammo_in_inv
-function spawn_item_in_inv(spawn_item,npc) counterAdd("amk.spawn_item_in_inv")
-	if npc==nil then npc=db.actor end
-	return alife():create(spawn_item, npc:position(), npc:level_vertex_id(),
-			npc:game_vertex_id(), npc:id())
+function spawn_item_in_inv(...)
+	return _krodin_utils.spawn_item_in_inv(...)
 end
 
 --используем для спавна патронов
-function spawn_ammo_in_inv(spawn_item,number,npc) counterAdd("amk.spawn_ammo_in_inv")
-	if npc==nil then npc=db.actor end
-	if number > 0 then return se_respawn.create_ammo(spawn_item, npc:position(),
-		npc:level_vertex_id(), npc:game_vertex_id(), npc:id(), number)
-	end
+function spawn_ammo_in_inv(...)
+	_krodin_utils.spawn_ammo_in_inv(...)
 end
 
 -- удаляем объект из игры

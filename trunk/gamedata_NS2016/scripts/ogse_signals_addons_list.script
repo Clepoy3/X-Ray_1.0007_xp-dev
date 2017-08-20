@@ -10,4 +10,5 @@ addons = {
 	"ogse_metka",
 	"arc_main",
 	"sh_remnabor",
+	"spawn_level_changer",
 }
