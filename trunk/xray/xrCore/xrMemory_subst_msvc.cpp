@@ -41,8 +41,11 @@ void*	xrMemory::mem_alloc		(size_t size
 								 )
 {
 	stat_calls++;
-	_ASSERT (size > 0);
-	R_ASSERT (size < 0x7fffFFFF);
+
+	/*_ASSERT (size > 0);
+	R_ASSERT (size < 0x7fffFFFF);*/ //KRodin: а это зачем?
+	if (size >= 0x7fffFFFF)
+		Msg("~~[xrMemory::mem_alloc] size = [%zi]", size); //Посмотрим что будет
 
 #ifdef PURE_ALLOC
 	static bool g_use_pure_alloc_initialized = false;

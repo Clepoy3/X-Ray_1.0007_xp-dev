@@ -305,7 +305,7 @@ void Startup					( )
 	destroyEngine();
 }
 
-static BOOL CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
+static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 {
 	switch( msg ){
 		case WM_DESTROY:
@@ -376,7 +376,6 @@ void	test_rtc	()
 	Msg				("* decompression: %5.2f M/s (%3.1f%%)",rD,100.f*rD/rMc);
 }
 */
-extern void	testbed	(void);
 
 // video
 /*
@@ -500,40 +499,6 @@ XRCORE_API DUMMY_STUFF	*g_temporary_stuff;
 
 //#define RUSSIAN_BUILD
 
-#if 0
-void foo	()
-{
-	typedef std::map<int,int>	TEST_MAP;
-	TEST_MAP					temp;
-	temp.insert					(std::make_pair(0,0));
-	TEST_MAP::const_iterator	I = temp.upper_bound(2);
-	if (I == temp.end())
-		OutputDebugString		("end() returned\r\n");
-	else
-		OutputDebugString		("last element returned\r\n");
-
-	typedef void*	pvoid;
-
-	LPCSTR			path = "d:\\network\\stalker_net2";
-	FILE			*f = fopen(path,"rb");
-	int				file_handle = _fileno(f);
-	u32				buffer_size = _filelength(file_handle);
-	pvoid			buffer = xr_malloc(buffer_size);
-	size_t			result = fread(buffer,buffer_size,1,f);
-	R_ASSERT3		(!buffer_size || (result && (buffer_size >= result)),"Cannot read from file",path);
-	fclose			(f);
-
-	u32				compressed_buffer_size = rtc_csize(buffer_size);
-	pvoid			compressed_buffer = xr_malloc(compressed_buffer_size);
-	u32				compressed_size = rtc_compress(compressed_buffer,compressed_buffer_size,buffer,buffer_size);
-
-	LPCSTR			compressed_path = "d:\\network\\stalker_net2.rtc";
-	FILE			*f1 = fopen(compressed_path,"wb");
-	fwrite			(compressed_buffer,compressed_size,1,f1);
-	fclose			(f1);
-}
-#endif // 0
-
 ENGINE_API	bool g_dedicated_server	= false;
 
 int APIENTRY WinMain_impl(HINSTANCE hInstance,
@@ -576,7 +541,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 #endif
 
 	// Title window
-	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), 0, logDlgProc );
+	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), nullptr, logDlgProc );
 	SetWindowPos				(
 		logoWindow,
 #ifdef  TRUE_RELEASE

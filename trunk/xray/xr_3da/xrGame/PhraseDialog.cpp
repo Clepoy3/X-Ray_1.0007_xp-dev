@@ -216,10 +216,12 @@ void CPhraseDialog::load_shared	(LPCSTR)
 	if(NULL == phrase_list_node){
 		LPCSTR func = pXML->Read(dialog_node, "init_func", 0, "");
 
-		luabind::functor<void>	lua_function;
-		bool functor_exists = ai().script_engine().functor(func ,lua_function);
-		THROW3(functor_exists, "Cannot find precondition", func);
-		lua_function	(this);
+		luabind::functor<void> lua_function;
+		bool functor_exists = ai().script_engine().functor(func, lua_function);
+		if (functor_exists)
+			lua_function(this);
+		else
+			Msg("!![PhraseDialog.cpp] Cannot find init_function [%s]", func);
 		return;
 	}
 

@@ -1,23 +1,22 @@
-#ifndef D_TRI_COLLIDER_COMMON
-#define D_TRI_COLLIDER_COMMON
+#pragma once
 
 #include "../Level.h"
 #include "../ode_include.h"
 #include "../ExtendedGeom.h"
 #include "dTriColliderMath.h"
 
+extern xr_vector< flags8 > gl_cl_tries_state;
+extern xr_vector<int>::iterator I,E,B;
 
-extern xr_vector< flags8 >			gl_cl_tries_state	;
-extern xr_vector<int>::iterator		I,E,B				;
+extern dContactGeom* CONTACT(dContactGeom* ptr, const int stride);
 
-
-#define CONTACT(Ptr, Stride) ((dContactGeom*) (((byte*)Ptr) + (Stride)))
-//#define SURFACE(Ptr, Stride) ((dSurfaceParameters*) (((byte*)Ptr) + (Stride-sizeof(dSurfaceParameters))))
-//KRodin: Фикс физики на x64. Вдруг когда-то вздумаю делать порт на х64. Так что исправлю сразу, чтоб потом не возиться.
-// http://www.gameru.net/forum/index.php?showtopic=55777&view=findpost&p=1561662
-#define SURFACE(Ptr, Stride) ((dSurfaceParameters*) (((char*)Ptr) + (Stride - offsetof(dContact, geom) + offsetof(dContact, surface))))
+inline dSurfaceParameters* SURFACE(dContactGeom* ptr, const int stride)
+{
+	const size_t count = stride / sizeof(dContact);
+	dContact* contact = (dContact*)(uintptr_t(ptr) - uintptr_t(offsetof(dContact, geom)));
+	return &(contact[count]).surface;
+}
 #define NUMC_MASK (0xffff)
 
-#define M_SIN_PI_3		REAL(0.8660254037844386467637231707529362)
-#define M_COS_PI_3		REAL(0.5000000000000000000000000000000000)
-#endif
+constexpr auto M_SIN_PI_3 = REAL(0.8660254037844386467637231707529362);
+constexpr auto M_COS_PI_3 = REAL(0.5000000000000000000000000000000000);

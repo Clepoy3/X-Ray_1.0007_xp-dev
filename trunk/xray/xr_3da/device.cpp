@@ -118,7 +118,11 @@ void 			mt_Thread	(void *ptr)	{
 #ifdef MT_OPT
 	HANDLE ht = GetCurrentThread();
 	HANDLE hp = GetCurrentProcess();
+#ifdef _WIN64
+	ULONG_PTR af_mask = 0, af_sys_mask = 0;
+#else
 	DWORD af_mask = 0, af_sys_mask = 0;
+#endif
 	GetProcessAffinityMask(hp, &af_mask, &af_sys_mask);
 	int cc = iFloor(log2((float)af_mask + 1) / 2);  // count of cores / 2
 	af_mask <<= std::min (4, cc);   // на последние ядра

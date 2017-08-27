@@ -3,8 +3,8 @@
 // given a pointer `p' to a dContactGeom, return the dContactGeom at
 // p + skip bytes.
 
-#define M_SIN_PI_3		REAL(0.8660254037844386467637231707529362)
-#define M_COS_PI_3		REAL(0.5000000000000000000000000000000000)
+constexpr auto M_SIN_PI_3 = REAL(0.8660254037844386467637231707529362);
+constexpr auto M_COS_PI_3 = REAL(0.5000000000000000000000000000000000);
 
 struct dxCylinder {	// cylinder
   dReal radius,lz;	// radius, length along y axis //
@@ -14,7 +14,7 @@ int dCylinderClassUser = -1;
 
 #define NUMC_MASK (0xffff)
 
-#define CONTACT(p,skip) ((dContactGeom*) (((char*)p) + (skip)))
+extern dContactGeom* CONTACT(dContactGeom* ptr, const int stride);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////circleIntersection//////////////////////////////////////////////////
