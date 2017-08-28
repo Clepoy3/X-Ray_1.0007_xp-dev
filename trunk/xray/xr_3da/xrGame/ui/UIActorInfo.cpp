@@ -19,19 +19,17 @@
 #include "../relation_registry.h"
 #include "../string_table.h"
 
-#define				ACTOR_STATISTIC_XML		"actor_statistic.xml"
-#define				ACTOR_CHARACTER_XML		"pda_dialog_character.xml"
-
+static constexpr const char* ACTOR_STATISTIC_XML = "actor_statistic.xml";
+static constexpr const char* ACTOR_CHARACTER_XML = "pda_dialog_character.xml";
 
 CUIActorInfoWnd::CUIActorInfoWnd()
 {}
-
 
 void CUIActorInfoWnd::Init()
 {
 	CUIXml									uiXml;
 	CUIXmlInit								xml_init;
-	uiXml.Init								(CONFIG_PATH, UI_PATH,ACTOR_STATISTIC_XML);
+	uiXml.Load(CONFIG_PATH, UI_PATH, ACTOR_STATISTIC_XML);
 
 	xml_init.InitWindow						(uiXml, "main_wnd", 0, this);
 
@@ -92,7 +90,7 @@ void CUIActorInfoWnd::Show(bool status)
 void CUIActorInfoWnd::FillPointsInfo			()
 {
 	CUIXml									uiXml;
-	uiXml.Init								(CONFIG_PATH, UI_PATH,ACTOR_STATISTIC_XML);
+	uiXml.Load(CONFIG_PATH, UI_PATH, ACTOR_STATISTIC_XML);
 
 	UIMasterList->Clear						();
 
@@ -181,7 +179,7 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 
 	UIDetailList->Clear						();
 	CUIXml									uiXml;
-	uiXml.Init								(CONFIG_PATH, UI_PATH,ACTOR_STATISTIC_XML);
+	uiXml.Load(CONFIG_PATH, UI_PATH, ACTOR_STATISTIC_XML);
 	uiXml.SetLocalRoot						(uiXml.NavigateToNode("actor_stats_wnd",0));
 	
 	string512 path;

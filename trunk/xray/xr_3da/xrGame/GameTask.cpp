@@ -82,9 +82,10 @@ void CGameTask::Load(const TASK_ID& id)
 {
 	m_ID							= id;
 
-	if(!g_gameTaskXml){
-		g_gameTaskXml				= xr_new<CUIXml>();
-		g_gameTaskXml->Init			(CONFIG_PATH, "gameplay", "game_tasks.xml");
+	if(!g_gameTaskXml)
+	{
+		g_gameTaskXml = xr_new<CUIXml>();
+		g_gameTaskXml->Load(CONFIG_PATH, "gameplay", "game_tasks.xml");
 	}
 	XML_NODE* task_node				= g_gameTaskXml->NavigateToNodeWithAttribute("game_task","id",*id);
 
@@ -102,8 +103,7 @@ void CGameTask::Load(const TASK_ID& id)
 	m_Objectives.clear		();
 	for(int i=0; i<tag_num; i++)
 	{
-		XML_NODE*	l_root = NULL;
-		l_root							= g_gameTaskXml->NavigateToNode("objective",i); 
+		XML_NODE* l_root					= g_gameTaskXml->NavigateToNode("objective",i); 
 		g_gameTaskXml->SetLocalRoot		(l_root);
 
 		m_Objectives.push_back			(SGameTaskObjective(this,i));

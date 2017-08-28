@@ -11,9 +11,9 @@
 #include "../actor.h"
 #include "../string_table.h"
 
-#define PDA_CONTACT_HEIGHT 70
+//static constexpr auto PDA_CONTACT_HEIGHT = 70;
 
-#define		PDA_CONTACTS_XML			"pda_contacts_new.xml"
+static constexpr const char* PDA_CONTACTS_XML = "pda_contacts_new.xml";
 
 CUIPdaContactsWnd::CUIPdaContactsWnd()
 {
@@ -33,9 +33,8 @@ void CUIPdaContactsWnd::Show(bool status)
 
 void CUIPdaContactsWnd::Init()
 {
-	CUIXml		uiXml;
-	bool xml_result =uiXml.Init(CONFIG_PATH, UI_PATH, PDA_CONTACTS_XML);
-	R_ASSERT3(xml_result, "xml file not found", PDA_CONTACTS_XML);
+	CUIXml uiXml;
+	uiXml.Load(CONFIG_PATH, UI_PATH, PDA_CONTACTS_XML);
 
 	CUIXmlInit	xml_init;
 

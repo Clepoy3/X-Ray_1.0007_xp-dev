@@ -46,8 +46,7 @@ void CUICellItem::init()
 {
 #ifdef INV_NEW_SLOTS_SYSTEM
 	CUIXml uiXml;
-	bool xml_result						= uiXml.Init(CONFIG_PATH, UI_PATH, "inventory_new.xml");
-	R_ASSERT3							(xml_result, "file parsing error ", uiXml.m_xml_file_name);
+	uiXml.Load(CONFIG_PATH, UI_PATH, "inventory_new.xml");
 	
 	m_text					= xr_new<CUIStatic>();
 	m_text->SetAutoDelete	( true );

@@ -56,23 +56,28 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader *F, CXml* xml )
 	}
 }
 
-bool CXml::Init(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
+void CXml::Load(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
 {
 	shared_str fn			= correct_file_name(path, _xml_filename);
 
 	string_path				str;
 	sprintf					(str,"%s\\%s", path, *fn);
-	return Init				(path_alias, str);
+	Load(path_alias, str);
 }
 
 //инициализация и загрузка XML файла
-bool CXml::Init(LPCSTR path, LPCSTR  xml_filename)
+void CXml::Load(LPCSTR path, LPCSTR  xml_filename)
 {
 	strcpy					(m_xml_file_name, xml_filename);
 	// Load and parse xml file
 
 	IReader *F				= FS.r_open(path, xml_filename);
-	if(F==NULL)				return false;
+	if (!F)
+	{
+		Msg("!!File [%s] not found in path [%s]", xml_filename, path);
+		FATAL("XML file not found!");
+		return;
+	}
 
 	CMemoryWriter			W;
 	ParseFile				(path, W, F, this);
@@ -84,12 +89,10 @@ bool CXml::Init(LPCSTR path, LPCSTR  xml_filename)
 	{
 		string1024			str;
 		sprintf				(str, "XML file:%s value:%s errDescr:%s",m_xml_file_name,m_Doc.Value(), m_Doc.ErrorDesc());
-		R_ASSERT2			(false, str);
+		FATAL(str);
 	} 
 
 	m_root					= m_Doc.FirstChildElement();
-
-	return true;
 }
 
 XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR  path, int node_index)
@@ -144,7 +147,7 @@ XML_NODE* CXml::NavigateToNode(LPCSTR  path, int node_index)
 XML_NODE* CXml::NavigateToNodeWithAttribute(LPCSTR tag_name, LPCSTR attrib_name, LPCSTR attrib_value)
 {
 
-	XML_NODE	*root		= GetLocalRoot() ? GetLocalRoot() : GetRoot();
+	XML_NODE*	root		= GetLocalRoot() ? GetLocalRoot() : GetRoot();
 	int			tabsCount	= GetNodesNum(root, tag_name);
 
 	for (int i = 0; i < tabsCount; ++i)
@@ -360,7 +363,7 @@ int CXml::GetNodesNum(LPCSTR path, int index, LPCSTR  tag_name)
 {
 	XML_NODE* node			= NULL;
 	
-	XML_NODE *root			= GetLocalRoot()?GetLocalRoot():GetRoot();
+	XML_NODE* root			= GetLocalRoot()?GetLocalRoot():GetRoot();
 	if(path!=NULL)
 	{
 		node				= NavigateToNode(path, index);
@@ -380,7 +383,7 @@ int CXml::GetNodesNum(XML_NODE* node, LPCSTR  tag_name)
 {
 	if(node == NULL)		return 0;
 
-	XML_NODE *el			= NULL;
+	XML_NODE* el			= NULL;
 
 	if (!tag_name)
 		el = node->FirstChild();
@@ -426,7 +429,7 @@ XML_NODE* CXml::SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR
 			}
 		}
 
-		XML_NODE *newEl				= start_node->FirstChild(tag_name);
+		XML_NODE* newEl				= start_node->FirstChild(tag_name);
 		newEl						= SearchForAttribute(newEl, tag_name, attrib, attrib_value_pattern);
 		if (newEl)
 			return					newEl;

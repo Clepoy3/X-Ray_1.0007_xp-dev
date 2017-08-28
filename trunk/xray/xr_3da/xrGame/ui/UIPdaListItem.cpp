@@ -15,7 +15,7 @@
 #include "UICharacterInfo.h"
 #include "UIStatic.h"
 
-#define			PDA_CONTACT_CHAR		"pda_character.xml"
+static constexpr const char* PDA_CONTACT_CHAR = "pda_character.xml";
 
 CUIPdaListItem::CUIPdaListItem()
 {
@@ -32,8 +32,7 @@ void CUIPdaListItem::Init(float x, float y, float width, float height)
 	inherited::Init								(x, y, width, height);
 
 	CUIXml uiXml;
-	bool xml_result = uiXml.Init				(CONFIG_PATH, UI_PATH, PDA_CONTACT_CHAR);
-	R_ASSERT2									(xml_result, "xml file not found");
+	uiXml.Load(CONFIG_PATH, UI_PATH, PDA_CONTACT_CHAR);
 
 	CUIXmlInit xml_init;
 	UIInfo = xr_new<CUICharacterInfo>			();

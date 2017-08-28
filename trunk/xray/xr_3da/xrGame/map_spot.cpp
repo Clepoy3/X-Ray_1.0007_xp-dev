@@ -121,7 +121,6 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 	inherited::Load(xml,path);
 
 	string256 buf;
-	XML_NODE* n = NULL;
 	
 	Frect base_rect;
 	base_rect.x1 = 0;
@@ -132,7 +131,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 	Frect _stored_rect = m_UIStaticItem.GetOriginalRect();
 
 	strconcat(sizeof(buf), buf, path, ":texture_above");
-	n = xml->NavigateToNode(buf,0);
+	XML_NODE* n = xml->NavigateToNode(buf,0);
 	if(n){
 		LPCSTR texture  = xml->Read(buf, 0, NULL);
 		CUITextureMaster::InitTexture	(texture, "hud\\default", &m_UIStaticItem);

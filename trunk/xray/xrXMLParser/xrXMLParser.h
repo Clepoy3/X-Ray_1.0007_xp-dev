@@ -1,7 +1,4 @@
-#ifndef xrXMLParserH
-#define xrXMLParserH
 #pragma once
-
 
 #ifdef XRXMLPARSER_EXPORTS
 	#define XRXMLPARSER_API __declspec(dllexport)
@@ -10,20 +7,18 @@
 	#pragma comment			(lib,"xrXMLParser.lib")
 #endif
 
-
-const LPCSTR GAMEDATA_PATH			= "$game_data$";
-const LPCSTR CONFIG_PATH			= "$game_config$";
-const LPCSTR UI_PATH				= "ui";
-const LPCSTR GAME_PATH				= "gameplay";
-const LPCSTR STRING_TABLE_PATH		= "text";
-
+//static constexpr const char* GAMEDATA_PATH = "$game_data$";
+static constexpr const char* CONFIG_PATH = "$game_config$";
+static constexpr const char* UI_PATH = "ui";
+static constexpr const char* GAME_PATH = "gameplay";
+static constexpr const char* STRING_TABLE_PATH = "text";
 
 #include "tinyxml.h"
 
 typedef TiXmlNode		XML_NODE;
 typedef TiXmlAttribute	XML_ATTRIBUTE;
 
-class XRXMLPARSER_API	CXml  
+class XRXMLPARSER_API	CXml
 {
 public:
 	string_path			m_xml_file_name;
@@ -31,8 +26,8 @@ public:
 	virtual				~CXml					();
 	void				ClearInternal			();
 
-	bool 				Init					(LPCSTR path_alias, LPCSTR path, LPCSTR  xml_filename);
-	bool 				Init					(LPCSTR path_alias, LPCSTR xml_filename);
+	void 				Load					(LPCSTR path_alias, LPCSTR path, LPCSTR  xml_filename);
+	void 				Load					(LPCSTR path_alias, LPCSTR xml_filename);
 
 
 	//чтение элементов
@@ -105,5 +100,3 @@ private:
 	typedef TiXmlElement						XML_ELEM;
 	TiXmlDocument								m_Doc;
 };
-
-#endif //xrXMLParserH

@@ -29,8 +29,7 @@ CUISleepWnd::~CUISleepWnd()
 void CUISleepWnd::Init()
 {
 	CUIXml uiXml;
-	bool xml_result = uiXml.Init(CONFIG_PATH, UI_PATH, "sleep_wnd.xml");
-	R_ASSERT2(xml_result, "xml file not found sleep_dialog_new.xml");
+	uiXml.Load(CONFIG_PATH, UI_PATH, "sleep_wnd.xml");
 
 	CUIXmlInit	xml_init;
 	

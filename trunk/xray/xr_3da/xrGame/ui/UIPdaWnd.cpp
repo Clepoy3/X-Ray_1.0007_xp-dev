@@ -27,8 +27,9 @@
 #include "UIMainIngameWnd.h"
 #include "UITabButton.h"
 
-#define		PDA_XML					"pda.xml"
-u32			g_pda_info_state		= 0;
+static constexpr const char* PDA_XML = "pda.xml";
+
+u32 g_pda_info_state = 0;
 
 void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_places);
 
@@ -64,8 +65,7 @@ CUIPdaWnd::~CUIPdaWnd()
 void CUIPdaWnd::Init()
 {
 	CUIXml uiXml;
-	bool xml_result			= uiXml.Init(CONFIG_PATH, UI_PATH,PDA_XML);
-	R_ASSERT3				(xml_result, "xml file not found", PDA_XML);
+	uiXml.Load(CONFIG_PATH, UI_PATH, PDA_XML);
 
 	CUIXmlInit xml_init;
 	

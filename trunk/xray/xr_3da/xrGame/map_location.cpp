@@ -65,13 +65,12 @@ void CMapLocation::destroy()
 CUIXml*	g_uiSpotXml=NULL;
 void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 {
-	if(!g_uiSpotXml){
-		g_uiSpotXml				= xr_new<CUIXml>();
-		bool xml_result			= g_uiSpotXml->Init(CONFIG_PATH, UI_PATH, "map_spots.xml");
-		R_ASSERT3(xml_result, "xml file not found", "map_spots.xml");
+	if(!g_uiSpotXml)
+	{
+		g_uiSpotXml = xr_new<CUIXml>();
+		g_uiSpotXml->Load(CONFIG_PATH, UI_PATH, "map_spots.xml");
 	}
 
-	XML_NODE* node = NULL;
 	string512 path_base, path;
 //	strconcat(path_base,"map_spots:",type);
 	strcpy_s		(path_base,type);
@@ -109,7 +108,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	*/
 
 	strconcat(sizeof(path),path,path_base,":level_map");
-	node = g_uiSpotXml->NavigateToNode(path,0);
+	XML_NODE* node = g_uiSpotXml->NavigateToNode(path,0);
 	if(node){
 		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
 		if( xr_strlen(str) ){

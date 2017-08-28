@@ -26,8 +26,8 @@
 #include "../script_game_object.h"
 #include "../BottleItem.h"
 
-#define				CAR_BODY_XML		"carbody_new.xml"
-#define				CARBODY_ITEM_XML	"carbody_item.xml"
+static constexpr const char* CAR_BODY_XML = "carbody_new.xml";
+static constexpr const char* CARBODY_ITEM_XML = "carbody_item.xml";
 
 void move_item (u16 from_id, u16 to_id, u16 what_id);
 
@@ -48,7 +48,7 @@ CUICarBodyWnd::~CUICarBodyWnd()
 void CUICarBodyWnd::Init()
 {
 	CUIXml						uiXml;
-	uiXml.Init					(CONFIG_PATH, UI_PATH, CAR_BODY_XML);
+	uiXml.Load(CONFIG_PATH, UI_PATH, CAR_BODY_XML);
 	
 	CUIXmlInit					xml_init;
 

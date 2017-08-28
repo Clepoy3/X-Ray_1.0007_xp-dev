@@ -122,19 +122,17 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 #define external_icon_ctrl				0
 #endif
 
-const u32	g_clWhite					= 0xffffffff;
+static constexpr auto DEFAULT_MAP_SCALE = 1.f;
+/*
+static constexpr auto C_SIZE = 0.025f;
+static constexpr auto NEAR_LIM = 0.5f;
 
-#define		DEFAULT_MAP_SCALE			1.f
-
-#define		C_SIZE						0.025f
-#define		NEAR_LIM					0.5f
-
-#define		SHOW_INFO_SPEED				0.5f
-#define		HIDE_INFO_SPEED				10.f
-#define		C_ON_ENEMY					D3DCOLOR_XRGB(0xff,0,0)
-#define		C_DEFAULT					D3DCOLOR_XRGB(0xff,0xff,0xff)
-
-#define				MAININGAME_XML				"maingame.xml"
+static constexpr auto SHOW_INFO_SPEED = 0.5f;
+static constexpr auto HIDE_INFO_SPEED = 10.f;
+static constexpr auto C_ON_ENEMY = D3DCOLOR_XRGB(0xff, 0, 0);
+static constexpr auto C_DEFAULT = D3DCOLOR_XRGB(0xff, 0xff, 0xff);
+*/
+static constexpr const char* MAININGAME_XML = "maingame.xml";
 
 CUIMainIngameWnd::CUIMainIngameWnd()
 {
@@ -173,7 +171,7 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 void CUIMainIngameWnd::Init()
 {
 	CUIXml						uiXml;
-	uiXml.Init					(CONFIG_PATH, UI_PATH, MAININGAME_XML);
+	uiXml.Load(CONFIG_PATH, UI_PATH, MAININGAME_XML);
 	
 	CUIXmlInit					xml_init;
 	CUIWindow::Init				(0,0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
@@ -1336,7 +1334,7 @@ void test_key	(int dik)
 		if(!pUIFrame)
 		{
 			CUIXml uiXML;
-			uiXML.Init(CONFIG_PATH, UI_PATH, "talk.xml");
+			uiXML.Load(CONFIG_PATH, UI_PATH, "talk.xml");
 
 			pUIFrame					= xr_new<CUIFrameWindow>();
 			CUIXmlInit::InitFrameWindow	(uiXML, "frame_window", 0, pUIFrame);

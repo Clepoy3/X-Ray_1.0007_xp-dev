@@ -7,9 +7,8 @@
 #include "UI3tButton.h"
 #include "../UI.h"
 
-
-#define				TALK_XML				"talk.xml"
-#define				TRADE_CHARACTER_XML		"trade_character.xml"
+static constexpr const char* TALK_XML = "talk.xml";
+static constexpr const char* TRADE_CHARACTER_XML = "trade_character.xml";
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -27,8 +26,7 @@ CUITalkDialogWnd::~CUITalkDialogWnd()
 void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 {
 	m_uiXml						= xr_new<CUIXml>();
-	bool xml_result				= m_uiXml->Init(CONFIG_PATH, UI_PATH, TALK_XML);
-	R_ASSERT3					(xml_result, "xml file not found", TALK_XML);
+	m_uiXml->Load(CONFIG_PATH, UI_PATH, TALK_XML);
 	CUIXmlInit					ml_init;
 
 	inherited::Init				(x, y, width, height);

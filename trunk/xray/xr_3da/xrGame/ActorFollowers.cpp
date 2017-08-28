@@ -11,7 +11,7 @@
 CActorFollowerMngr::CActorFollowerMngr()
 {
 	CUIXml uiXml;
-	uiXml.Init(CONFIG_PATH, UI_PATH, "follower_panel.xml");
+	uiXml.Load(CONFIG_PATH, UI_PATH, "follower_panel.xml");
 
 	m_uiPanel = xr_new<CUIFollowerPanel>	();
 	m_uiPanel->Init							(&uiXml,"followers_panel",0);

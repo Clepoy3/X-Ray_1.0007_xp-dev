@@ -30,32 +30,26 @@
 #include "UITextureMaster.h"
 #include "UIDragDropListEx.h"
 
-extern int keyname_to_dik(LPCSTR);
+//static constexpr const char* ARIAL_FONT_NAME = "arial";
 
-#define ARIAL_FONT_NAME			"arial"
+static constexpr const char* MEDIUM_FONT_NAME = "medium";
+static constexpr const char* SMALL_FONT_NAME = "small";
 
-#define MEDIUM_FONT_NAME		"medium"
-#define SMALL_FONT_NAME			"small"
+static constexpr const char* GRAFFITI19_FONT_NAME = "graffiti19";
+static constexpr const char* GRAFFITI22_FONT_NAME = "graffiti22";
+static constexpr const char* GRAFFITI32_FONT_NAME = "graffiti32";
+static constexpr const char* GRAFFITI50_FONT_NAME = "graffiti50";
 
-#define GRAFFITI19_FONT_NAME	"graffiti19"
-#define GRAFFITI22_FONT_NAME	"graffiti22"
-#define GRAFFITI32_FONT_NAME	"graffiti32"
-#define GRAFFITI50_FONT_NAME	"graffiti50"
+static constexpr const char* LETTERICA16_FONT_NAME = "letterica16";
+static constexpr const char* LETTERICA18_FONT_NAME = "letterica18";
+static constexpr const char* LETTERICA25_FONT_NAME = "letterica25";
 
-#define LETTERICA16_FONT_NAME	"letterica16"
-#define LETTERICA18_FONT_NAME	"letterica18"
-#define LETTERICA25_FONT_NAME	"letterica25"
-
-#define DI_FONT_NAME			"di"
-
-
-////
+static constexpr const char* DI_FONT_NAME = "di";
 
 //////////////////////////////////////////////////////////////////////////
 
-const char * const		COLOR_DEFINITIONS					= "color_defs.xml";
+static constexpr const char* COLOR_DEFINITIONS = "color_defs.xml";
 CUIXmlInit::ColorDefs		*CUIXmlInit::m_pColorDefs			= NULL;
-
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -302,7 +296,6 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, const char* path, int index, IUITextC
 	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-extern int keyname_to_dik(LPCSTR);
 
 bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd){
 	R_ASSERT3(xml_doc.NavigateToNode(path,index), "XML node not found", path);
@@ -882,8 +875,8 @@ bool CUIXmlInit::InitTextBanner(CUIXml &xml_doc, const char *path, int index, CU
 
 	int animationsCount = xml_doc.GetNodesNum(path, index, "animation");
 
-	XML_NODE *tab_node = xml_doc.NavigateToNode(path, index);
-	XML_NODE *old_node = xml_doc.GetLocalRoot();
+	XML_NODE* tab_node = xml_doc.NavigateToNode(path, index);
+	XML_NODE* old_node = xml_doc.GetLocalRoot();
 	xml_doc.SetLocalRoot(tab_node);
 
 	shared_str a;
@@ -1185,8 +1178,7 @@ void CUIXmlInit::InitColorDefs()
 	m_pColorDefs = xr_new<ColorDefs>();
 
 	CUIXml uiXml;
-	bool flag = uiXml.Init(CONFIG_PATH, UI_PATH, COLOR_DEFINITIONS);
-	R_ASSERT3(flag, "xml file not found", COLOR_DEFINITIONS);
+	uiXml.Load(CONFIG_PATH, UI_PATH, COLOR_DEFINITIONS);
 
 	int num = uiXml.GetNodesNum("colors", 0, "color");
 

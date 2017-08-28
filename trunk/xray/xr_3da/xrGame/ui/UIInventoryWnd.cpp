@@ -34,10 +34,8 @@ using namespace InventoryUtilities;
 #include "UI3tButton.h"
 #include "../../../build_config_defines.h"
 
-#define				INVENTORY_ITEM_XML		"inventory_item.xml"
-#define				INVENTORY_XML			"inventory_new.xml"
-
-
+static constexpr const char* INVENTORY_ITEM_XML = "inventory_item.xml";
+static constexpr const char* INVENTORY_XML = "inventory_new.xml";
 
 CUIInventoryWnd*	g_pInvWnd = NULL;
 
@@ -56,8 +54,7 @@ CUIInventoryWnd::CUIInventoryWnd()
 void CUIInventoryWnd::Init()
 {
 	CUIXml								uiXml;
-	bool xml_result						= uiXml.Init(CONFIG_PATH, UI_PATH, INVENTORY_XML);
-	R_ASSERT3							(xml_result, "file parsing error ", uiXml.m_xml_file_name);
+	uiXml.Load(CONFIG_PATH, UI_PATH, INVENTORY_XML);
 
 	CUIXmlInit							xml_init;
 

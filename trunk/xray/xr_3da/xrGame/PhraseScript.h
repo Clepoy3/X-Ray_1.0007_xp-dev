@@ -13,7 +13,7 @@ class CInventoryOwner;
 class TiXmlNode;
 class CUIXml;
 
-typedef TiXmlNode		XML_NODE;
+typedef TiXmlNode XML_NODE;
 
 class CPhraseScript
 {
