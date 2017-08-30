@@ -1,15 +1,11 @@
 ﻿# Precompiled Headers
-*.gch
-*.pch
 *.ipch
 
 # KRodin: всякий ненужный мусор:
 *.VC.*
 *.suo
-*.user
-*.aps
 
 /binaries
 /intermediate
 /libraries
-ReadMe.txt
+/ReadMe.txt
