@@ -58,6 +58,7 @@ public:
 
 	virtual bool	IsNecessaryItem	    (const shared_str& item_sect);
 	virtual float	Weight() /*const*/;
+	void			SetAmmoElapsed2(int ammo_count);
 
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimShow();

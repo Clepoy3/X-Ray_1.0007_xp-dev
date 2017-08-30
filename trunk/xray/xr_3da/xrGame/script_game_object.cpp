@@ -19,7 +19,7 @@
 #include "inventoryowner.h"
 #include "movement_manager.h"
 #include "entity_alive.h"
-#include "weaponmagazined.h"
+#include "weaponmagazinedwgrenade.h"
 #include "xrmessages.h"
 #include "inventory.h"
 #include "script_ini_file.h"
@@ -322,7 +322,6 @@ u32 CScriptGameObject::GetAmmoElapsed()
 		return		(0);
 	return			(weapon->GetAmmoElapsed());
 }
-
 void CScriptGameObject::SetAmmoElapsed(int ammo_elapsed)
 {
 	CWeapon	*weapon = smart_cast<CWeapon*>(&object());
@@ -338,6 +337,50 @@ u32 CScriptGameObject::GetAmmoCurrent() const
 	return			(weapon->GetAmmoCurrent(true));
 }
 
+u32 CScriptGameObject::get_ammo_in_gl() const
+{
+	const auto* weapon = smart_cast<const CWeaponMagazinedWGrenade*>(&object());
+	if (!weapon)
+		return 0;
+	return weapon->m_magazine2.size();
+}
+void CScriptGameObject::set_ammo_in_gl(int ammo_size)
+{
+	auto weapon = smart_cast<CWeaponMagazinedWGrenade*>(&object());
+	if (!weapon)
+		return;
+	weapon->SetAmmoElapsed2(ammo_size);
+}
+
+u32 CScriptGameObject::get_magazine_ammo_type() const
+{
+	const auto* weapon = smart_cast<const CWeapon*>(&object());
+	if (!weapon)
+		return 0;
+	return weapon->m_ammoType;
+}
+void CScriptGameObject::set_magazine_ammo_type(int ammo_type)
+{
+	auto weapon = smart_cast<CWeapon*>(&object());
+	if (!weapon)
+		return;
+	weapon->m_ammoType = ammo_type;
+}
+
+u32 CScriptGameObject::get_gl_ammo_type() const
+{
+	const auto* weapon = smart_cast<const CWeaponMagazinedWGrenade*>(&object());
+	if (!weapon)
+		return 0;
+	return weapon->m_ammoType2;
+}
+void CScriptGameObject::set_gl_ammo_type(int ammo_type)
+{
+	auto weapon = smart_cast<CWeaponMagazinedWGrenade*>(&object());
+	if (!weapon)
+		return;
+	weapon->m_ammoType2 = ammo_type;
+}
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

@@ -745,9 +745,30 @@ float CWeaponMagazinedWGrenade::Weight() //const //KRodin: const убрано, т.к. вы
 	return res;
 }
 
+void CWeaponMagazinedWGrenade::SetAmmoElapsed2(int ammo_count)
+{
+	u32 uAmmo = u32(ammo_count);
+
+	if (uAmmo != m_magazine2.size())
+	{
+		if (uAmmo > m_magazine2.size())
+		{
+			CCartridge l_cartridge;
+			l_cartridge.Load(*m_ammoTypes2[m_ammoType2], u8(m_ammoType2));
+			while (uAmmo > m_magazine2.size())
+				m_magazine2.push_back(l_cartridge);
+		}
+		else
+		{
+			while (uAmmo < m_magazine2.size())
+				m_magazine2.pop_back();
+		};
+	};
+}
+
 bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)
 {
-	return (	std::find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end() ||
-				std::find(m_ammoTypes2.begin(), m_ammoTypes2.end(), item_sect) != m_ammoTypes2.end() 
-			);
+	return std::find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end()
+		|| std::find(m_ammoTypes2.begin(), m_ammoTypes2.end(), item_sect) != m_ammoTypes2.end() 
+	;
 }

@@ -360,9 +360,15 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 			LPCSTR				GetPatrolPathName	();
+			u32					GetAmmoCurrent		() const;
 			u32					GetAmmoElapsed		();
 			void				SetAmmoElapsed		(int ammo_elapsed);
-			u32					GetAmmoCurrent		() const;
+			u32					get_ammo_in_gl() const;
+			void				set_ammo_in_gl(int ammo_size);
+			u32					get_magazine_ammo_type() const;
+			void				set_magazine_ammo_type(int ammo_type);
+			u32					get_gl_ammo_type() const;
+			void				set_gl_ammo_type(int ammo_type);
 			void				SetQueueSize		(u32 queue_size);
 			CScriptGameObject	*GetBestEnemy		();
 			const CDangerObject	*GetBestDanger		();
