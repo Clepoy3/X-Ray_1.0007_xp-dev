@@ -30,23 +30,27 @@ function get_gl_mode( obj )
 	return data.upd.grenade_mode ~= 0
 end
 
+--[=[ --KRodin: добавил в движок метод get_magazine_ammo_type()
 -- индекс типа патронов для текущего типа зарядов
-function get_active_ammo_type( obj ) 
+function get_active_ammo_type( obj )
 	local pk = get_netpk( obj, 2 )
 	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
 	local data = pk:get()
 	ASSERT( data.upd and data.upd.ammo_type, "ammo_type not found in [%s]", obj:name() )
 	return data.upd.ammo_type
 end
+--]=]
 
 --Получить кол-во патронов в пачке.
---Надо потестить, говорят что глючно работает. Надо городить движковую функцию.
 function get_ammo_size( obj )
+--[=[
 	local pk = get_netpk( obj, 2 )
 	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", obj:name() )
 	local data = pk:get()
 	ASSERT( data.upd and data.upd.ammo_left, "ammo_left not found in [%s]", obj:name() )
 	return data.upd.ammo_left
+--]=]
+	return obj:get_ammo_box_curr()
 end
 
 function switch_online_offline_online(id)

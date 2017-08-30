@@ -8,6 +8,7 @@ addons = {
 	"ogse_qt",
 	"ogse_campfire",
 	"ogse_metka",
+	"dsh_rukzak",
 	"arc_main",
 	"sh_remnabor",
 	"spawn_level_changer",

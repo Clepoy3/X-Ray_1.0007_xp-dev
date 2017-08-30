@@ -22,13 +22,13 @@ function on_item_drop(obj)
 			return true
 		end
 		--
-		level.add_call(
+		ogse_qt.wait_condition(
 			function()
 				return not obj:parent() or not obj:parent():is_actor()
 			end,
 			function()
 				if not gps_wnd then
-					level.start_stop_menu(setup_gps_beacon(obj), true) -- ставим метку
+					level.start_stop_menu(setup_gps_beacon(obj:id()), true) -- ставим метку
 				end
 			end
 		)
@@ -49,18 +49,18 @@ end
 -- инициализация
 class "setup_gps_beacon" (CUIScriptWnd)
 
-function setup_gps_beacon:__init(gps_obj) super()
-	self.gps_obj = gps_obj
+function setup_gps_beacon:__init(gps_obj_id) super()
+	self.gps_obj_id = gps_obj_id
 	self:InitControls()
 	self:InitCallBacks()
 	gps_wnd = self
 	self:SetWindowName("gps_metka")
 	
-	log1("--setup_gps_beacon:__init")
+	--log1("--setup_gps_beacon:__init")
 end
 
 function setup_gps_beacon:__finalize()
-	log1("--setup_gps_beacon:__finalize")
+	--log1("--setup_gps_beacon:__finalize")
 end
 
 function setup_gps_beacon:InitControls()
@@ -112,7 +112,7 @@ function setup_gps_beacon:OnKeyboard(dik, keyboard_action)
 end
 
 function setup_gps_beacon:set_gps()
-	level.map_add_object_spot_ser( gps_wnd.gps_obj:id(), "red_location", "%c[red]"..gps_wnd.edit_box:GetText() )
+	level.map_add_object_spot_ser( gps_wnd.gps_obj_id, "red_location", "%c[red]"..gps_wnd.edit_box:GetText() )
 	gps_wnd:on_quit()
 end
 

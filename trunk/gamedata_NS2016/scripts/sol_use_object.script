@@ -149,20 +149,6 @@ object_use['suvorotka'] = function()
 	db.actor.psy_health = 1.0 
 end
 
---' рюкзак:
--- заспавнит возле ГГ рюкзак
-object_use['treasure_item'] = function() --KRodin: при добавлении волшебных рюкзаков удалить это нафиг!!!
-	local actor = db.actor
-	local sobj = alife():create("m_inventory_box",actor:position(),actor:level_vertex_id(),actor:game_vertex_id())
-	--
-	local pk = get_netpk( sobj, 1 )
-	ASSERT( ( pk and pk:isOk() ), "can't read netpacket of %s", sobj:name() )
-	local data = pk:get()
-	data.custom_data:set( "[logic]\ncfg = scripts\\treasure_inventory_box.ltx" ) --TODO: посмотреть, какая логика в этом файле находится!
-	pk:set( data )
-	--
-end
-
 ---' Вспомогательные функции '---
 
 -- проверяет счетчик времени "без_сна"
