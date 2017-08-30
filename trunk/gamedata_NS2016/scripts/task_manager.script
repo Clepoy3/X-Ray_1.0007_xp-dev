@@ -1178,10 +1178,14 @@ function CRandomTask:on_first_update()
 				if type == "defend_lager" then
 					local sm_ini = sobj:spawn_ini()
 					self.task_info[v].defend_target = utils.cfg_get_number(sm_ini, "random_task", "defend_target", nil, true)
+					if not self.task_info[v].defend_target then
+						goto CONTINUE
+					end
 				end
 				if not self.task_info[v].target_objects then self.task_info[v].target_objects = {} end
 				table.insert(self.task_info[v].target_objects, sobj.id)
 			end
+			::CONTINUE::
 		end
 	end
 end
