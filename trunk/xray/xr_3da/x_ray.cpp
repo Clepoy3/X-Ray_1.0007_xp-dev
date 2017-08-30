@@ -23,10 +23,6 @@
 
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= nullptr;
-BOOL	g_bIntroFinished			= FALSE;
-extern	void	Intro				( void* fn );
-extern	void	Intro_DSHOW			( void* fn );
-extern	int PASCAL IntroDSHOW_wnd	(HINSTANCE hInstC, HINSTANCE hInstP, LPSTR lpCmdLine, int nCmdShow);
 int		max_load_stage = 0;
 
 // computing build id
@@ -94,7 +90,7 @@ struct _SoundProcessor	: public pureFrame
 //////////////////////////////////////////////////////////////////////////
 // global variables
 ENGINE_API	CApplication*	pApp			= NULL;
-static		HWND			logoWindow		= NULL;
+static		HWND			logoWindow		= nullptr;
 
 			void			doBenchmark		(LPCSTR name);
 ENGINE_API	bool			g_bBenchmark	= false;
@@ -139,7 +135,6 @@ void InitEngine		()
 	//}
 #endif
 	Engine.Initialize			( );
-	while (!g_bIntroFinished)	Sleep	(100);
 	Device.Initialize			( );
 }
 
@@ -275,7 +270,7 @@ void Startup					( )
 	
 	// Destroy LOGO
 	DestroyWindow				(logoWindow);
-	logoWindow					= NULL;
+	logoWindow					= nullptr;
 
 	// Main cycle
 	Memory.mem_usage();
@@ -322,75 +317,10 @@ static INT_PTR CALLBACK logDlgProc( HWND hw, UINT msg, WPARAM wp, LPARAM lp )
 	}
 	return TRUE;
 }
-/*
-void	test_rtc	()
-{
-	CStatTimer		tMc,tM,tC,tD;
-	u32				bytes=0;
-	tMc.FrameStart	();
-	tM.FrameStart	();
-	tC.FrameStart	();
-	tD.FrameStart	();
-	::Random.seed	(0x12071980);
-	for		(u32 test=0; test<10000; test++)
-	{
-		u32			in_size			= ::Random.randI(1024,256*1024);
-		u32			out_size_max	= rtc_csize		(in_size);
-		u8*			p_in			= xr_alloc<u8>	(in_size);
-		u8*			p_in_tst		= xr_alloc<u8>	(in_size);
-		u8*			p_out			= xr_alloc<u8>	(out_size_max);
-		for (u32 git=0; git<in_size; git++)			p_in[git] = (u8)::Random.randI	(8);	// garbage
-		bytes		+= in_size;
 
-		tMc.Begin	();
-		memcpy		(p_in_tst,p_in,in_size);
-		tMc.End		();
-
-		tM.Begin	();
-		std::memcpy(p_in_tst,p_in,in_size);
-		tM.End		();
-
-		tC.Begin	();
-		u32			out_size		= rtc_compress	(p_out,out_size_max,p_in,in_size);
-		tC.End		();
-
-		tD.Begin	();
-		u32			in_size_tst		= rtc_decompress(p_in_tst,in_size,p_out,out_size);
-		tD.End		();
-
-		// sanity check
-		R_ASSERT	(in_size == in_size_tst);
-		for (u32 tit=0; tit<in_size; tit++)			R_ASSERT(p_in[tit] == p_in_tst[tit]);	// garbage
-
-		xr_free		(p_out);
-		xr_free		(p_in_tst);
-		xr_free		(p_in);
-	}
-	tMc.FrameEnd	();	float rMc		= 1000.f*(float(bytes)/tMc.result)/(1024.f*1024.f);
-	tM.FrameEnd		(); float rM		= 1000.f*(float(bytes)/tM.result)/(1024.f*1024.f);
-	tC.FrameEnd		(); float rC		= 1000.f*(float(bytes)/tC.result)/(1024.f*1024.f);
-	tD.FrameEnd		(); float rD		= 1000.f*(float(bytes)/tD.result)/(1024.f*1024.f);
-	Msg				("* memcpy:        %5.2f M/s (%3.1f%%)",rMc,100.f*rMc/rMc);
-	Msg				("* mm-memcpy:     %5.2f M/s (%3.1f%%)",rM,100.f*rM/rMc);
-	Msg				("* compression:   %5.2f M/s (%3.1f%%)",rC,100.f*rC/rMc);
-	Msg				("* decompression: %5.2f M/s (%3.1f%%)",rD,100.f*rD/rMc);
-}
-*/
-
-// video
-/*
-static	HINSTANCE	g_hInstance		;
-static	HINSTANCE	g_hPrevInstance	;
-static	int			g_nCmdShow		;
-void	__cdecl		intro_dshow_x	(void*)
-{
-	IntroDSHOW_wnd		(g_hInstance,g_hPrevInstance,"GameData\\Stalker_Intro.avi",g_nCmdShow);
-	g_bIntroFinished	= TRUE	;
-}
-*/
-#define dwStickyKeysStructSize sizeof( STICKYKEYS )
-#define dwFilterKeysStructSize sizeof( FILTERKEYS )
-#define dwToggleKeysStructSize sizeof( TOGGLEKEYS )
+static constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
+static constexpr auto dwFilterKeysStructSize = sizeof(FILTERKEYS);
+static constexpr auto dwToggleKeysStructSize = sizeof(TOGGLEKEYS);
 
 struct damn_keys_filter {
 	BOOL bScreenSaverState;
@@ -485,10 +415,6 @@ struct damn_keys_filter {
 	}
 };
 
-#undef dwStickyKeysStructSize
-#undef dwFilterKeysStructSize
-#undef dwToggleKeysStructSize
-
 #include "xr_ioc_cmd.h"
 
 typedef void DUMMY_STUFF (const void*,const u32&,void*);
@@ -510,7 +436,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 #ifndef DEDICATED_SERVER
 	// Check for another instance
 #ifdef NO_MULTI_INSTANCES
-	#define STALKER_PRESENCE_MUTEX "STALKER-SoC"
+	static constexpr const char* STALKER_PRESENCE_MUTEX = "STALKER-SoC";
 	
 	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
 	hCheckPresenceMutex = OpenMutex( READ_CONTROL , FALSE ,  STALKER_PRESENCE_MUTEX );
@@ -541,23 +467,8 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 #endif
 
 	// Title window
-	logoWindow					= CreateDialog(GetModuleHandle(NULL),	MAKEINTRESOURCE(IDD_STARTUP), nullptr, logDlgProc );
-	SetWindowPos				(
-		logoWindow,
-#ifdef  TRUE_RELEASE
-		HWND_TOPMOST,
-#else
-		HWND_NOTOPMOST,
-#endif
-		0,
-		0,
-		0,
-		0,
-		SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW
-	);
-
-	// AVI
-	g_bIntroFinished			= TRUE;
+	logoWindow = CreateDialog(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDD_STARTUP), nullptr, logDlgProc);
+	SetWindowPos(logoWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 
 	g_sLaunchOnExit_app[0]		= NULL;
 	g_sLaunchOnExit_params[0]	= NULL;

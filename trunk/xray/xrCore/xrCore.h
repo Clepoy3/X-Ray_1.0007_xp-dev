@@ -5,13 +5,16 @@
 #define XR_USE_BLACKBOX 1//0
 
 #if (defined(_DEBUG) || defined(MIXED) || defined(DEBUG)) && !defined(FORCE_NO_EXCEPTIONS)
-#if !defined(_CPPUNWIND)
-#	error Please enable exceptions...
-#endif
-
+#	if !defined(_CPPUNWIND)
+#		error Please enable exceptions...
+#	endif
+#	define _HAS_EXCEPTIONS 1 // STL
+#	define XRAY_EXCEPTIONS 1 // XRAY
 #	define XR_NOEXCEPT noexcept
 #	define XR_NOEXCEPT_OP(x) noexcept(x)
 #else
+//#	define _HAS_EXCEPTIONS 1 // STL //KRodin: ???
+#	define XRAY_EXCEPTIONS 0 // XRAY
 #	define XR_NOEXCEPT throw()
 #	define XR_NOEXCEPT_OP(x)
 #endif
