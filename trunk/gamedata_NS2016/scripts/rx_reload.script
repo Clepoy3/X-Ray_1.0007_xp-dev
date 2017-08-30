@@ -7,6 +7,7 @@ function evaluator_reload:__init(npc,name,storage) super (nil,name) counterAdd("
 	self.st = storage
 end
 function evaluator_reload:evaluate() counterAdd("rx_reload.evaluator_reload:evaluate")
+do return false end --KRodin: выключаю вместе с оружейным менеджером. Возможно, из-за этой схемы НПС бесконечно перезаряжают оружие в некоторых случаях.
 	local npc = self.object
 	if npc:best_enemy() then
 		self.st.do_id = nil
