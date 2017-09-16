@@ -379,10 +379,8 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 		g_temporary_stuff		= g_temporary_stuff_subst;
 }
 
-void CLocatorAPI::ProcessOne	(const char* path, void* _F)
+void CLocatorAPI::ProcessOne	(const char* path, _finddata_t& F)
 {
-	_finddata_t& F	= *((_finddata_t*)_F);
-
 	string_path	N;
 	strcpy_s	(N,sizeof(N),path);
 	strcat_s		(N,F.name);
@@ -441,6 +439,8 @@ bool CLocatorAPI::Recurse		(const char* path)
 	strcpy_s		(N,sizeof(N),path);
 	strcat			(N,"*.*");
 
+	using FFVec = xr_vector<_finddata_t>;
+	FFVec						rec_files;
 	rec_files.reserve(256);
 
 	// find all files    
@@ -484,16 +484,9 @@ bool CLocatorAPI::Recurse		(const char* path)
 
 	_findclose		( hFile );
 
-	u32				count = rec_files.size();
-	_finddata_t		*buffer = (_finddata_t*)_alloca(count*sizeof(_finddata_t));
-	std::copy		(&*rec_files.begin(), &*rec_files.begin() + count, buffer);
-
-//.	std::copy		(&*rec_files.begin(),&*rec_files.end(),buffer);
-
-	rec_files.clear_not_free();
-	std::sort		(buffer, buffer + count, pred_str_ff);
-	for (_finddata_t *I = buffer, *E = buffer + count; I != E; ++I)
-		ProcessOne	(path,I);
+	std::sort(rec_files.begin(), rec_files.end(), pred_str_ff);
+	for (auto& el : rec_files)
+		ProcessOne(path, el);
 
 	// insert self
     if (path&&path[0])\
@@ -679,12 +672,9 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		int x=0;
 		x=x;
 	}
-
-	rec_files.clear	();
 	//-----------------------------------------------------------
 
 	CreateLog		(0!=strstr(Core.Params,"-nolog"));
-
 }
 
 void CLocatorAPI::_destroy		()

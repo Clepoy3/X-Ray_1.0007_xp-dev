@@ -40,8 +40,6 @@ private:
 	using files_set = xr_set<file, file_pred>;
 	using files_it = files_set::iterator;
 	using archives_vec = xr_vector<archive>;
-	using FFVec = xr_vector<_finddata_t>;
-	FFVec						rec_files;
 
     int							m_iLockRescan	; 
     void						rescan_path		(LPCSTR full_path, BOOL bRecurse);
@@ -56,7 +54,7 @@ private:
 
 	void						Register		(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, u32 modif);
 	void						ProcessArchive	(LPCSTR path, LPCSTR base_path=NULL);
-	void						ProcessOne		(LPCSTR path, void* F);
+	void						ProcessOne		(LPCSTR path, _finddata_t& F);
 	bool						Recurse			(LPCSTR path);	
 //	bool						CheckExistance	(LPCSTR path);
 
