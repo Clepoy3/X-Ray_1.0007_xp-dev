@@ -20,8 +20,6 @@ struct dxRayMotions
 
 int dRayMotionsClassUser = -1;
 
-extern dContactGeom* CONTACT(dContactGeom* ptr, const int stride);
-
 int dCollideRMB (dxGeom *o1, dxGeom *o2, int flags,
 				  dContactGeom *contact, int skip)
 {

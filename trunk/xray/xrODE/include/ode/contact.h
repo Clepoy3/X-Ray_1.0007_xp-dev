@@ -20,8 +20,7 @@
  *                                                                       *
  *************************************************************************/
 
-#ifndef _ODE_CONTACT_H_
-#define _ODE_CONTACT_H_
+#pragma once
 
 #include "common.h"
 
@@ -65,7 +64,6 @@ typedef struct dSurfaceParameters {
 
 
 /* contact info set by collision functions */
-
 typedef struct dContactGeom {
   dVector3 pos;
   dVector3 normal;
@@ -75,16 +73,38 @@ typedef struct dContactGeom {
 
 
 /* contact info used by contact joint */
-
 typedef struct dContact {
   dSurfaceParameters surface;
   dContactGeom geom;
   dVector3 fdir1;
 } dContact;
 
-
 #ifdef __cplusplus
 }
 #endif
 
+
+//KRodin: вытащил эти две функции сюда, пусть будут в одном месте и инклудятся по-нормальному без всяких extern. Форсинлайн заюзал потому что вызываются они очень часто.
+#ifdef ODE_BUILD //Дефайн должен быть определён в настройках проекта ode
+#	define ODE_API __declspec(dllexport)
+#else
+#	define ODE_API __declspec(dllimport)
 #endif
+
+#include <stddef.h>
+
+// given a pointer `p' to a dContactGeom, return the dContactGeom at p + skip bytes.
+// NOTE: stride is sizeof(dContact) * N, where N is [0, ...)
+__forceinline ODE_API dContactGeom* CONTACT(dContactGeom* ptr, const int stride)
+{
+	const size_t count = stride / sizeof(dContact);
+	dContact* contact = (dContact*)(uintptr_t(ptr) - uintptr_t(offsetof(dContact, geom)));
+	return &(contact[count]).geom;
+}
+
+__forceinline ODE_API dSurfaceParameters* SURFACE(dContactGeom* ptr, const int stride)
+{
+	const size_t count = stride / sizeof(dContact);
+	dContact* contact = (dContact*)(uintptr_t(ptr) - uintptr_t(offsetof(dContact, geom)));
+	return &(contact[count]).surface;
+}
