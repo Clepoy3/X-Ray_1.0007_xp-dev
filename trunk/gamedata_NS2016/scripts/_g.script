@@ -67,15 +67,53 @@ if not string.explode then
 	end
 end
 --==============================================================================================
+-- ‘орматирование текста по ширине
+-- http://www.amk-team.ru/forum/topic/13216-sborochnyy-ceh/?do=findComment&comment=959286
+function string.width(str, width, return_table, indent, paragrapf)
+    indent    = indent    or 0
+    paragrapf = paragrapf or 0
+    width     = (width or 80) - indent
+    
+    local i = string.rep(' ', indent)
+    local t = {}
+    local line = string.rep(' ', paragrapf)
+    
+    for exp, word in str:gmatch('(%s-(%S+))') do
+        if line == '' and #t ~= 0 then
+            exp = word
+        end
+
+        local l_len = #line
+        local len = l_len + #exp
+        
+        if len > width then
+            t[#t+1], line = line, word
+        else
+            line = line .. exp
+            if l_len == width then
+                t[#t+1], line = line, ''
+            end
+        end
+    end
+
+    t[#t+1] = line
+
+	if return_table then
+		return t
+	else
+		return i .. table.concat(t, '\n' .. i)
+	end
+end
+--==============================================================================================
 function table.copy(tbl) --¬озвращает копию таблицы.
 	local mt = getmetatable(tbl)
 	local res = {}
 	for k, v in pairs(tbl) do
 		if type(k) == "table" then
-			k = table.copy(k, simple)
+			k = table.copy(k)
 		end
 		if type(v) == "table" then
-			v = table.copy(v, simple)
+			v = table.copy(v)
 		end
 		res[k] = v
 	end
@@ -102,6 +140,12 @@ if not math.similar then
 end
 --==============================================================================================
 math.randomseed(os.time())
+--=================================[CUIScriptWnd Extension]=====================================
+--KRodin: после последнего аргумента теперь можно передавать множество дополнительных. Ѕез движковой правки не работает!
+function CUIScriptWnd:AddCallback(name, event, func, ...)
+	local args = {...}
+	return self:_AddCallback( name, event, function() func(unpack(args)) end )
+end
 --==============================================================================================
 --KRodin: TODO: может добавить пр€м в движок?
 --Ќекоторые недостающие DIK_keys:
