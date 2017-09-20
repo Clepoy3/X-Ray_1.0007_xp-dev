@@ -9,15 +9,11 @@
 #include "pch_script.h"
 #include "script_engine.h"
 #include "ai_space.h"
-#include "script_debugger.h"
 //#include <ostream>
 #include "xr_level_controller.h"
 #include "../x_ray.h"
 
 using namespace luabind;
-
-void verify_if_thread_is_running()
-{ THROW2(ai().script_engine().current_thread(),"coroutine.yield() is called outside the LUA thread!"); }
 
 bool editor()
 {
@@ -147,7 +143,6 @@ void CScriptEngine::script_register(lua_State *L)
 		.def("set_load_texture", &CApplication::SetLoadTexture),
 		def("get_application", &get_application),
 		def("prefetch", &prefetch_module),
-		def("verify_if_thread_is_running", &verify_if_thread_is_running), //KRodin: это вообще ЧТО?
 		def("editor", &editor),
 		def("bit_and", &bit_and),
 		def("bit_or", &bit_or),

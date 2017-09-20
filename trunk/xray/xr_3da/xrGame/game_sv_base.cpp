@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "xrServer.h"
 #include "LevelGameDef.h"
-#include "script_process.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "script_engine.h"
 #include "level.h"
@@ -529,15 +528,6 @@ void game_sv_GameState::Update		()
 		xrClientData*	C			= (xrClientData*)	m_server->client_Get(it);
 		C->ps->ping					= u16(C->stats.getPing());
 	}
-	
-	if (!g_dedicated_server)
-	{
-		if (Level().game) {
-			CScriptProcess				*script_process = ai().script_engine().script_process(ScriptEngine::eScriptProcessorGame);
-			if (script_process)
-				script_process->update	();
-		}
-	}
 }
 
 game_sv_GameState::game_sv_GameState()
@@ -557,8 +547,6 @@ game_sv_GameState::game_sv_GameState()
 
 game_sv_GameState::~game_sv_GameState()
 {
-	if (!g_dedicated_server)
-		ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
 	xr_delete(m_event_queue);
 
 	SaveMapList();

@@ -7,7 +7,6 @@
 #include "xrMessages.h"
 #include "xrserver.h"
 #include "level.h"
-#include "script_debugger.h"
 #include "ai_debug.h"
 #include "alife_simulator.h"
 #include "game_cl_base.h"
@@ -19,7 +18,6 @@
 #include "Actor_Flags.h"
 #include "customzone.h"
 #include "script_engine.h"
-#include "script_process.h"
 #include "xrServer_Objects.h"
 #include "ui/UIMainIngameWnd.h"
 #include "PhysicsGamePars.h"
@@ -35,7 +33,6 @@
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
 #include "../resourcemanager.h"
-#include "doug_lea_memory_allocator.h"
 #include "cameralook.h"
 
 #ifdef DEBUG
@@ -58,7 +55,6 @@ extern	u64		g_qwEStartGameTime;
 ENGINE_API
 extern	float	psHUD_FOV;
 extern	float	psSqueezeVelocity;
-extern	int		psLUA_GCSTEP;
 
 extern	int		x_m_x;
 extern	int		x_m_z;
@@ -583,62 +579,7 @@ public:
 };
 
 
-//#ifndef MASTER_GOLD
-class CCC_Script : public IConsole_Command {
-public:
-	CCC_Script(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR args) {
-		string256	S;
-		S[0]		= 0;
-		sscanf		(args ,"%s",S);
-		if (!xr_strlen(S))
-			Log("* Specify script name!");
-		else {
-			// rescan pathes
-			FS_Path* P = FS.get_path("$game_scripts$");
-			P->m_Flags.set	(FS_Path::flNeedRescan,TRUE);
-			FS.rescan_pathes();
-			// run script
-			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
-				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(S,false,true);
-		}
-	}
-};
-
-class CCC_ScriptCommand : public IConsole_Command {
-public:
-	CCC_ScriptCommand	(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void	Execute				(LPCSTR args) {
-		if (!xr_strlen(args))
-			Log("* Specify string to run!");
-		else {
-#if 1
-			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
-				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(args,true,true);
-#else
-			string4096		S;
-			shared_str		m_script_name = "console command";
-			sprintf_s			(S,"%s\n",args);
-			int				l_iErrorCode = luaL_loadbuffer(ai().script_engine().lua(),S,xr_strlen(S),"@console_command");
-			if (!l_iErrorCode) {
-				l_iErrorCode = lua_pcall(ai().script_engine().lua(),0,0,0);
-				if (l_iErrorCode) {
-					ai().script_engine().print_output(ai().script_engine().lua(),*m_script_name,l_iErrorCode);
-					return;
-				}
-			}
-			else {
-				ai().script_engine().print_output(ai().script_engine().lua(),*m_script_name,l_iErrorCode);
-				return;
-			}
-#endif
-		}
-	}
-};
-//#endif // MASTER_GOLD
-
 #ifdef DEBUG
-
 class CCC_DrawGameGraphAll : public IConsole_Command {
 public:
 				 CCC_DrawGameGraphAll	(LPCSTR N) : IConsole_Command(N)
@@ -1335,7 +1276,6 @@ void CCC_RegisterCommands()
 #endif // MASTER_GOLD
 
 #ifdef DEBUG
-	CMD4(CCC_Integer,			"lua_gcstep",			&psLUA_GCSTEP,	1, 1000);
 	CMD3(CCC_Mask,				"ai_debug",				&psAI_Flags,	aiDebug);
 	CMD3(CCC_Mask,				"ai_dbg_brain",			&psAI_Flags,	aiBrain);
 	CMD3(CCC_Mask,				"ai_dbg_motion",		&psAI_Flags,	aiMotion);
@@ -1422,8 +1362,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_JumpToLevel,	"jump_to_level"		);
 	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	);
 	CMD3(CCC_Mask,			"g_unlimitedammo",	&psActorFlags,	AF_UNLIMITEDAMMO);
-	CMD1(CCC_Script,		"run_script");
-	CMD1(CCC_ScriptCommand,	"run_string");
 	CMD1(CCC_TimeFactor,	"time_factor");		
 //#endif // MASTER_GOLD
 
