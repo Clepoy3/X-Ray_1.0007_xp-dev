@@ -24,7 +24,7 @@
 
 #include <luabind/detail/pcall.hpp>
 #include <luabind/error.hpp>
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 
 namespace luabind { namespace detail
 {

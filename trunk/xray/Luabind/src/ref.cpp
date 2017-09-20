@@ -25,7 +25,7 @@
 #include <algorithm>
 #include <luabind/config.hpp>
 #include <luabind/detail/ref.hpp>
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 #include <luabind/detail/debug.hpp>
 
 namespace luabind { namespace detail

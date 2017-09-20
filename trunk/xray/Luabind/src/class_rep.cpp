@@ -22,7 +22,7 @@
 
 #include "pch.h"
 
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 
 #include <luabind/detail/stack_utils.hpp>
 #include <luabind/luabind.hpp>

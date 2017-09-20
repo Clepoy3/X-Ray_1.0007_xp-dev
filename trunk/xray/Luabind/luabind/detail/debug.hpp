@@ -24,7 +24,7 @@
 
 #ifndef NDEBUG
 
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 #include <cassert>
 
 namespace luabind { namespace detail

@@ -26,7 +26,7 @@
 #include <algorithm>
 
 #include <luabind/config.hpp>
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 
 struct lua_State;
 

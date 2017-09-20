@@ -24,7 +24,7 @@
 
 #include <algorithm>
 
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 
 #include <luabind/config.hpp>
 #include <luabind/weak_ref.hpp>

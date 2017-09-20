@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 #include <luabind/wrapper_base.hpp>
 
 #include <type_traits>

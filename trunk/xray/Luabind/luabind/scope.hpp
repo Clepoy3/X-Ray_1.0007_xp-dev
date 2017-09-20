@@ -24,7 +24,7 @@
 
 #include <luabind/prefix.hpp>
 #include <luabind/config.hpp>
-#include <luabind/lua_include.hpp>
+#include <lua.hpp>
 
 namespace luabind { 
     
