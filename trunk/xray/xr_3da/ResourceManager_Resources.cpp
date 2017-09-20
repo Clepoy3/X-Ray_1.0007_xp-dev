@@ -3,7 +3,7 @@
 
 #include <d3dx9.h>
 #ifndef _EDITOR
-	#pragma comment( lib, "d3dx9.lib"		)
+	#pragma comment( lib, "d3dx9.lib" )
     #include "render.h"
 #endif
 

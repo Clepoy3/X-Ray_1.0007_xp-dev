@@ -491,10 +491,6 @@ void CGamePersistent::OnRenderPPUI_PP()
 void CGamePersistent::LoadTitle(LPCSTR str)
 {
 	string512			buff;	
-	LPCSTR alt_text = try_call_luafunc("on_load_title", str); // позволяет дополнительно менять загрузочные экраны
-	if (strstr(alt_text, "#ERROR") || strstr(alt_text, "#OK"));
-	else
-		str = alt_text;
 	sprintf_s			(buff, "%s...", CStringTable().translate(str).c_str());
 	pApp->LoadTitleInt	(buff);
 	

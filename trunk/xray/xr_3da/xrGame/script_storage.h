@@ -21,50 +21,27 @@ namespace ScriptStorage {
 		eLuaMessageTypeHookTailReturn = u32(-1),
 	};
 }
+using namespace ScriptStorage;
 
 struct lua_State;
-class CScriptThread;
-
-//KRodin: !!!НЕ ВКЛЮЧАТЬ!!! ТАМ ни один файл под новый луабинд не адаптирован!!!
-//#define USE_DEBUGGER // alpet: полезно при отладке модов и интеграции 1.0007 (!). Позволяет использовать scriptDbgIde, не собирая ТОРМОЗНОЙ отладочный билд.
-
-using namespace ScriptStorage;
 
 class CScriptStorage {
 private:
-	lua_State					*m_virtual_machine	;
-	CScriptThread				*m_current_thread	;
-	BOOL						m_jit				;
-
-	char *scriptBuffer = nullptr;
-	size_t scriptBufferSize = 0;
-
+	lua_State *m_virtual_machine;
 protected:
-	//bool parse_namespace(LPCSTR caNamespaceName, LPSTR b, u32 b_size, LPSTR c, u32 c_size);
-	bool parse_namespace(LPCSTR caNamespaceName, LPSTR b, LPSTR c);
-	bool				do_file						(LPCSTR	caScriptName, LPCSTR caNameSpaceName);
-			void				reinit						(lua_State *LSVM);
-
+	bool do_file(const char* caScriptName, const char* caNameSpaceName);
+	bool load_buffer(lua_State *L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName);
+	bool namespace_loaded(const char* caName, bool remove_from_stack = true);
+	bool object(const char* caIdentifier, int type);
+	bool object(const char* caNamespaceName, const char* caIdentifier, int type);
+	luabind::object name_space(const char* namespace_name);
+	void reinit(lua_State *LSVM);
 public:
-	//
 	lua_State *lua() { return m_virtual_machine; };
-	void current_thread(CScriptThread *thread)
-	{
-		VERIFY(thread && !m_current_thread || !thread);
-		m_current_thread = thread;
-	}
-	CScriptThread *current_thread() const { return m_current_thread; }
-	//
-	CScriptStorage				();
-	virtual						~CScriptStorage				();
-			bool				load_buffer					(lua_State *L, LPCSTR caBuffer, size_t tSize, LPCSTR caScriptName, LPCSTR caNameSpaceName = 0);
-			bool				load_file_into_namespace	(LPCSTR	caScriptName, LPCSTR caNamespaceName);
-			bool				namespace_loaded			(LPCSTR	caName, bool remove_from_stack = true);
-			bool				object						(LPCSTR	caIdentifier, int type);
-			bool				object						(LPCSTR	caNamespaceName, LPCSTR	caIdentifier, int type);
-			luabind/*::adl*/::object name_space					(LPCSTR	namespace_name);
-	void	script_log					(ELuaMessageType message,	LPCSTR	caFormat, ...);
-	static	bool				print_output				(lua_State *L,		LPCSTR	caScriptName,		int		iErorCode = 0);
-	static const char *const GlobalNamespace;
+	CScriptStorage();
+	virtual ~CScriptStorage();
+	void script_log(ScriptStorage::ELuaMessageType message, const char* caFormat, ...);
+	static bool print_output(lua_State *L, const char* caScriptName, int iErorCode = 0);
+	static constexpr const char* GlobalNamespace = "_G";
 	void print_stack();
 };

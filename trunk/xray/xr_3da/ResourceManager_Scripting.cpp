@@ -1,21 +1,19 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#include	"render.h"
-#include	"ResourceManager.h"
-#include	"tss.h"
-#include	"blenders\blender.h"
-#include	"blenders\blender_recorder.h"
+#include "render.h"
+#include "ResourceManager.h"
+#include "tss.h"
+#include "blenders\blender.h"
+#include "blenders\blender_recorder.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// На скорую руку написал скриптовый движок. KRodin (c)
-// Когда-то надо будет скриптовый двигатель сделать общим и для рендера и для xr_Game. В отдельном dll.
-
+//KRodin: На скорую руку вынес весь скриптовый движок для шейдеров сюда.
 #include "lua_tools.h"
 
-bool CResourceManager::print_output(lua_State *L, LPCSTR caScriptFileName, int errorCode)
+bool CResourceManager::print_output(lua_State *L, const char* caScriptFileName, int errorCode)
 {
-	LPCSTR Prefix = "";
+	auto Prefix = "";
 	if (errorCode) {
 		switch (errorCode) {
 		case LUA_ERRRUN: {
@@ -45,7 +43,7 @@ bool CResourceManager::print_output(lua_State *L, LPCSTR caScriptFileName, int e
 		default: NODEFAULT;
 		}
 	}
-	LPCSTR traceback = get_lua_traceback(L, 0);
+	auto traceback = get_lua_traceback(L, 0);
 	if (!lua_isstring(L, -1)) //НЕ УДАЛЯТЬ! Иначе будут вылeты без лога!
 	{
 		Msg("----------------------------------------------");
@@ -53,169 +51,67 @@ bool CResourceManager::print_output(lua_State *L, LPCSTR caScriptFileName, int e
 		Msg("----------------------------------------------");
 		return false;
 	}
-	LPCSTR S = lua_tostring(L, -1);
+	auto S = lua_tostring(L, -1);
 	Msg("----------------------------------------------");
 	Msg("[ResourceManager_Scripting.print_output(%s)] %s:\n%s\n%s", caScriptFileName, Prefix, S, traceback);
 	Msg("----------------------------------------------");
-#ifdef LUAICP_COMPAT
-	lua_getglobal(L, "DebugDumpAll");
-	lua_pcall(L, 0, 0, -1);
-#endif
-	/*#ifdef USE_DEBUGGER
-	if (ai().script_engine().debugger() && ai().script_engine().debugger()->Active())
-	{
-	ai().script_engine().debugger()->Write(S);
-	ai().script_engine().debugger()->ErrorBreak();
-	}
-	#endif*/
 	return true;
 }
 
-bool CResourceManager::parse_namespace(LPCSTR caNamespaceName, LPSTR b, LPSTR c)
+bool CResourceManager::load_buffer(lua_State *L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName)
 {
-	strcpy(b, "");
-	strcpy(c, "");
-	LPSTR S2 = xr_strdup(caNamespaceName);
-	LPSTR S = S2;
-	for (int i = 0;; ++i)
-	{
-		if (!xr_strlen(S))
-		{
-			Msg("[ResourceManager_Scripting.parse_namespace] the namespace name %s is incorrect!", caNamespaceName);
-			xr_free(S2);
-			return false;
-		}
-		LPSTR S1 = strchr(S, '.');
-		if (S1)
-			*S1 = 0;
-
-		if (i)
-			strcat(b, "{");
-		strcat(b, S);
-		strcat(b, "=");
-		if (i)
-			strcat(c, "}");
-		if (S1)
-			S = ++S1;
-		else
-			break;
-	}
-	xr_free(S2);
-	return true;
-}
-
-bool CResourceManager::load_buffer(lua_State *L, LPCSTR caBuffer, size_t tSize, LPCSTR caScriptName, LPCSTR caNameSpaceName)
-{
-	int l_iErrorCode;
-	if (caNameSpaceName && xr_strcmp(GlobalNamespace, caNameSpaceName))
-	{
-		string512 insert, a, b;
-		LPCSTR header;
-		if (strstr(Core.Params, "-_g"))
-			header = file_header_new;
-		else
-			header = file_header_old;
-
-		if (!parse_namespace(caNameSpaceName, a, /*sizeof(a),*/ b/*, sizeof(b)*/))
-		{
-			Msg("! [ResourceManager_Scripting.load_buffer] Can't parse namespace: [%s]", caNameSpaceName);
-			return false;
-		}
-		//Msg("! [CScriptStorage::load_buffer] before xr_sprintf: insert: [%s], header: [%s], caNameSpaceName: [%s], a: [%s], b: [%s]", insert, header, caNameSpaceName, a, b);
-		xr_sprintf(insert, header, caNameSpaceName, a, b);
-		//Msg("! [CScriptStorage::load_buffer] insert after xr_sprintf: [%s]", insert);
-		u32 str_len = xr_strlen(insert);
-		u32 const total_size = str_len + tSize;
-		if (total_size >= scriptBufferSize)
-		{
-			scriptBufferSize = total_size;
-			scriptBuffer = (char *)xr_realloc(scriptBuffer, scriptBufferSize);
-		}
-		xr_strcpy(scriptBuffer, total_size, insert);
-		std::memcpy(scriptBuffer + str_len, caBuffer, u32(tSize));
-		//Msg("[CScriptStorage::load_buffer(1)] Loading buffer: %s", scriptBuffer);
-		l_iErrorCode = luaL_loadbuffer(L, scriptBuffer, tSize + str_len, caScriptName);
-	}
-	else
-		//Msg("[CScriptStorage::load_buffer(2)] Loading buffer: %s", caBuffer);
-		l_iErrorCode = luaL_loadbuffer(L, caBuffer, tSize, caScriptName);
+	//KRodin: Переделал, т.к. в оригинале тут происходило нечто, на мой взгляд, странное.
+	int buf_len = std::snprintf(nullptr, 0, FILE_HEADER, caNameSpaceName, caNameSpaceName, caBuffer);
+	auto strBuf = std::make_unique<char[]>(buf_len + 1);
+	std::snprintf(strBuf.get(), buf_len + 1, FILE_HEADER, caNameSpaceName, caNameSpaceName, caBuffer);
+	//Log("[CResourceManager::load_buffer] Loading buffer:");
+	//Log(strBuf.get());
+	int l_iErrorCode = luaL_loadbuffer(L, strBuf.get(), buf_len /*+ 1 Нуль-терминатор на конце мешает походу*/, caScriptName);
 	if (l_iErrorCode)
 	{
 		print_output(L, caScriptName, l_iErrorCode);
-		R_ASSERT(0);
+		R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
 		return false;
 	}
 	return true;
 }
 
-bool CResourceManager::do_file(lua_State* LSVM, LPCSTR caScriptName, LPCSTR caNameSpaceName) //KRodin: fixed
+bool CResourceManager::do_file(lua_State* LSVM, const char* caScriptName, const char* caNameSpaceName) //KRodin: fixed
 {
-	int start = lua_gettop(LSVM);
 	string_path l_caLuaFileName;
-	IReader *l_tpFileReader = FS.r_open(caScriptName);
-	if (!l_tpFileReader) {
-		Msg("[ResourceManager_Scripting.do_file] Cannot open file: [%s]", caScriptName);
+	auto l_tpFileReader = FS.r_open(caScriptName);
+	if (!l_tpFileReader) { //заменить на ассерт?
+		Msg("!![CResourceManager::do_file] Cannot open file [%s]", caScriptName);
 		return false;
 	}
-	strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName);
-	if (!load_buffer(LSVM, static_cast<LPCSTR>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->length(), l_caLuaFileName, caNameSpaceName))
-	{
-		//		VERIFY(lua_gettop(LSVM) >= 4);
-		//		lua_pop(LSVM,4);
-		//		VERIFY(lua_gettop(LSVM) == start - 3);
-		lua_settop(LSVM, start);
-		FS.r_close(l_tpFileReader);
-		return false;
-	}
+	strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); //KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\class_registrator.script
+	//
+	//KRodin: исправлено. Теперь содержимое скрипта сразу читается нормально, без мусора на конце.
+	auto strBuf = std::make_unique<char[]>(l_tpFileReader->length() + 1);
+	strncpy(strBuf.get(), (const char*)l_tpFileReader->pointer(), l_tpFileReader->length());
+	strBuf.get()[l_tpFileReader->length()] = 0;
+	//
+	load_buffer(LSVM, strBuf.get(), (size_t)l_tpFileReader->length(), l_caLuaFileName, caNameSpaceName);
 	FS.r_close(l_tpFileReader);
 
-	int errFuncId = -1;
-#ifdef LUAICP_COMPAT2 // exception dangerous
-	lua_getglobal(LSVM, "AtPanicHandler");
-	if (lua_isfunction(LSVM, -1))
-		errFuncId = lua_gettop(LSVM);
-	else
-		lua_pop(LSVM, 1);
-#endif
-	/*#ifdef USE_DEBUGGER
-	if (ai().script_engine().debugger() && errFuncId < 0)
-	errFuncId = ai().script_engine().debugger()->PrepareLua(LSVM);
-	#endif*/
-	int	l_iErrorCode = lua_pcall(LSVM, 0, 0, (-1 == errFuncId) ? 0 : errFuncId);
-	/*#ifdef USE_DEBUGGER
-	if (ai().script_engine().debugger())
-	ai().script_engine().debugger()->UnPrepareLua(LSVM, errFuncId);
-	#endif*/
+	int	l_iErrorCode = lua_pcall(LSVM, 0, 0, 0); //KRodin: без этого скрипты не работают!
 	if (l_iErrorCode)
 	{
 		print_output(LSVM, caScriptName, l_iErrorCode);
-		R_ASSERT(0);
-		lua_settop(LSVM, start);
+		R_ASSERT(false); //НЕ ЗАКОММЕНТИРОВАТЬ!
 		return false;
 	}
 	return true;
 }
 
-bool CResourceManager::load_file_into_namespace(lua_State* LSVM, LPCSTR caScriptName, LPCSTR caNamespaceName) //KRodin: fixed
-{
-	int start = lua_gettop(LSVM);
-	if (!do_file(LSVM, caScriptName, caNamespaceName))
-	{
-		lua_settop(LSVM, start);
-		return false;
-	}
-	VERIFY(lua_gettop(LSVM) == start);
-	return true;
-}
-
-bool CResourceManager::namespace_loaded(lua_State* LSVM, LPCSTR name, bool remove_from_stack) //KRodin: fixed
+bool CResourceManager::namespace_loaded(lua_State* LSVM, const char* name, bool remove_from_stack) //KRodin: fixed
 {
 	int start = lua_gettop(LSVM);
 	lua_pushstring(LSVM, GlobalNamespace);
 	lua_rawget(LSVM, LUA_GLOBALSINDEX);
 	string256 S2;
 	xr_strcpy(S2, name);
-	LPSTR S = S2;
+	auto S = S2;
 	for (;;)
 	{
 		if (!xr_strlen(S))
@@ -225,7 +121,7 @@ bool CResourceManager::namespace_loaded(lua_State* LSVM, LPCSTR name, bool remov
 			VERIFY(start == lua_gettop(LSVM));
 			return false;
 		}
-		LPSTR S1 = strchr(S, '.');
+		auto S1 = strchr(S, '.');
 		if (S1)
 			*S1 = 0;
 		lua_pushstring(LSVM, S);
@@ -244,7 +140,7 @@ bool CResourceManager::namespace_loaded(lua_State* LSVM, LPCSTR name, bool remov
 			VERIFY(lua_gettop(LSVM) >= 1);
 			lua_pop(LSVM, 1);
 			VERIFY(start == lua_gettop(LSVM));
-			Debug.fatal(DEBUG_INFO, " Error : the namespace name %s is already being used by the non-table object!\n", S);
+			R_ASSERT3(false, "Error : the namespace is already being used by the non-table object! Name: ", S);
 			return false;
 		}
 		lua_remove(LSVM, -2);
@@ -264,7 +160,7 @@ bool CResourceManager::namespace_loaded(lua_State* LSVM, LPCSTR name, bool remov
 	return true;
 }
 
-bool CResourceManager::OBJECT_1(lua_State* LSVM, LPCSTR identifier, int type)
+bool CResourceManager::OBJECT_1(lua_State* LSVM, const char* identifier, int type)
 {
 	int start = lua_gettop(LSVM);
 	lua_pushnil(LSVM);
@@ -285,7 +181,7 @@ bool CResourceManager::OBJECT_1(lua_State* LSVM, LPCSTR identifier, int type)
 	return false;
 }
 
-bool CResourceManager::OBJECT_2(lua_State* LSVM, LPCSTR namespace_name, LPCSTR identifier, int type)
+bool CResourceManager::OBJECT_2(lua_State* LSVM, const char* namespace_name, const char* identifier, int type)
 {
 	int start = lua_gettop(LSVM);
 	if (xr_strlen(namespace_name) && !namespace_loaded(LSVM, namespace_name, false))
@@ -416,27 +312,24 @@ static void *__cdecl luabind_allocator(luabind::memory_allocation_function_param
 void CResourceManager::LS_Load()
 {
 //**************************************************************//
-	Msg("[CResourceManager] Starting LuaJIT");
+	//Msg("[CResourceManager] Starting LuaJIT");
 	R_ASSERT2(!LSVM, "! LuaJIT is already running"); //На всякий случай
 	//
-	luabind::allocator = &luabind_allocator; //Без этого игра валится при открытии луабинда
+	luabind::allocator = &luabind_allocator; //Аллокатор инитится только здесь и только один раз!
 	luabind::allocator_parameter = nullptr;
 	LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
 	luaL_openlibs(LSVM); //Инициализация функций LuaJIT
 	R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); //Надо проверить, случается ли такое.
 	luabind::open(LSVM); //Запуск луабинда
 	//
-	//LSVM = ScriptEngine.init(false); //При выносе скриптового движка в отдельную длл, запускать JIT только так.
 //--------------Установка калбеков------------------//
 #ifdef LUABIND_NO_EXCEPTIONS
-	luabind::set_error_callback(LuaError); //Калбек на ошибки. После тестов подумать, надо ли делать раздельные калбеки для скриптового и шейдерного движков.
+	luabind::set_error_callback(LuaError); //Калбек на ошибки.
 	//luabind::set_cast_failed_callback(lua_cast_failed);
 #endif
 	luabind::set_pcall_callback(lua_pcall_failed); //KRodin: НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!!
 	lua_atpanic(LSVM, lua_panic);
-	scriptBufferSize = 1024 * 1024; //KRodin: вопхнул сюда, пущай тут будет
-	scriptBuffer = xr_alloc<char>(scriptBufferSize);
-	Msg("[CResourceManager] LuaJIT Started!");
+	//Msg("[CResourceManager] LuaJIT Started!");
 	//-----------------------------------------------------//
 //***************************************************************//
 	module(LSVM)
@@ -507,19 +400,17 @@ void CResourceManager::LS_Load()
 		if		(0==namesp[0])			strcpy_s	(namesp, GlobalNamespace);
 		strconcat						(sizeof(fn),fn,::Render->getShaderPath(),*it);
 		FS.update_path					(fn,"$game_shaders$",fn);
-		load_file_into_namespace(LSVM, fn, namesp);
+		do_file(LSVM, fn, namesp);
 	}
 	FS.file_list_close			(folder);
 }
 
-void CResourceManager::LS_Unload() //Закрытие надо тоже вынести отсюда, наверно. Или нет?
+void CResourceManager::LS_Unload()
 {
-	Msg("[CResourceManager] Closing LuaJIT - start");
+	//Msg("[CResourceManager] Closing LuaJIT - start");
 	lua_close(LSVM); //JIT работу закончил
 	LSVM = nullptr;
-	if (scriptBuffer)
-		xr_free(scriptBuffer);
-	Msg("[CResourceManager] Closing LuaJIT - end");
+	//Msg("[CResourceManager] Closing LuaJIT - end");
 }
 
 BOOL	CResourceManager::_lua_HasShader	(LPCSTR s_shader)
@@ -632,7 +523,6 @@ ShaderElement*		CBlender_Compile::_lua_Compile	(LPCSTR namesp, LPCSTR name)
 	LPCSTR				t_d		= detail_texture			? detail_texture : "null" ;
 	lua_State*			LSVM	= Device.Resources->LSVM;
 	object				shader  = get_globals(LSVM)[namesp];
-	//object				element = object_cast<object>(shader[name]); //С форума - не тестил, но тоже вроде бы рабочий вариант
 	object				element = shader[name];
 	adopt_compiler		ac		= adopt_compiler(this);
 	element						(ac,t_0,t_1,t_d);

@@ -2,50 +2,34 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef ResourceManagerH
-#define ResourceManagerH
 #pragma once
 
-#include	"shader.h"
-#include	"tss_def.h"
-#include	"TextureDescrManager.h"
+#include "shader.h"
+#include "tss_def.h"
+#include "TextureDescrManager.h"
 
-struct		lua_State;
+struct lua_State;
 
 // defs
 class ENGINE_API CResourceManager {
 private:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// На скорую руку написал скриптовый движок. KRodin (c)
-// Когда-то надо будет скриптовый двигатель сделать общим и для рендера и для xr_Game. В отдельном dll.
-const char *const GlobalNamespace = "_G";
-size_t scriptBufferSize = 0;
-char *scriptBuffer = nullptr;
-LPCSTR file_header_old = "\
+//KRodin: На скорую руку вынес весь скриптовый движок для шейдеров сюда.
+static constexpr const char* GlobalNamespace = "_G";
+static constexpr const char* FILE_HEADER = "\
 local function script_name() \
-return \"%s\" \
-end \
-local this = {} \
-%s this %s \
-setmetatable(this, {__index = _G}) \
-setfenv(1, this) ";
-LPCSTR file_header_new = "\
-local function script_name() \
-return \"%s\" \
-end \
-local this = {} \
-this._G = _G \
-%s this %s \
-setfenv(1, this) ";
-bool load_file_into_namespace(lua_State* LSVM, LPCSTR caScriptName, LPCSTR caNamespaceName);
-bool OBJECT_2(lua_State* LSVM, LPCSTR namespace_name, LPCSTR identifier, int type);
-bool OBJECT_1(lua_State* LSVM, LPCSTR identifier, int type);
-bool do_file(lua_State* LSVM, LPCSTR caScriptName, LPCSTR caNameSpaceName);
-static bool print_output(lua_State *L, LPCSTR caScriptFileName, int errorCode);
-bool namespace_loaded(lua_State* LSVM, LPCSTR name, bool remove_from_stack);
-bool load_buffer(lua_State *L, LPCSTR caBuffer, size_t tSize, LPCSTR caScriptName, LPCSTR caNameSpaceName);
-bool parse_namespace(LPCSTR caNamespaceName, LPSTR b, LPSTR c);
+return '%s' \
+end; \
+local this; \
+module('%s', package.seeall, function(m) this = m end); \
+%s";
+bool OBJECT_2(lua_State* LSVM, const char* namespace_name, const char* identifier, int type);
+bool OBJECT_1(lua_State* LSVM, const char* identifier, int type);
+bool do_file(lua_State* LSVM, const char* caScriptName, const char* caNameSpaceName);
+static bool print_output(lua_State *L, const char* caScriptFileName, int errorCode);
+bool namespace_loaded(lua_State* LSVM, const char* name, bool remove_from_stack);
+bool load_buffer(lua_State *L, const char* caBuffer, size_t tSize, const char* caScriptName, const char* caNameSpaceName);
 static void LuaError(lua_State* L);
 //void lua_cast_failed(lua_State *L, const luabind::type_id &info);
 static int lua_pcall_failed(lua_State *L);
@@ -213,4 +197,3 @@ public:
 	map_Texture		&textures				() { return m_textures;  }
 };
 
-#endif //ResourceManagerH

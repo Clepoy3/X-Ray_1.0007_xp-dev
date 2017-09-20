@@ -335,7 +335,7 @@ void CResourceManager::DeferredUpload()
 		else
 		{
 			u32 th_count = (m_textures.size() / 100) + 1;
-			std::thread* th_arr = new std::thread[th_count];
+			auto th_arr = std::make_unique<std::thread[]>(th_count);
 			for (auto tex : m_textures)
 				tex_to_load.push_back(tex.second);
 
@@ -348,7 +348,7 @@ void CResourceManager::DeferredUpload()
 			tex_to_load.clear();
 		}
 
-		Msg("texture loading time: %d", timer.GetElapsed_ms());
+		Msg("texture loading time: %.2f s.", timer.GetElapsed_sec());
 	}
 }
 
