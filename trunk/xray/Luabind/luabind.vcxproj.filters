@@ -279,5 +279,8 @@
     <ClInclude Include="luabind\luabind\yield_policy.hpp">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="luabind\lua_extensions.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

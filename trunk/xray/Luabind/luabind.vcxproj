@@ -173,6 +173,7 @@
     <ClInclude Include="luabind\intrusive_ptr_converter.hpp" />
     <ClInclude Include="luabind\iterator_policy.hpp" />
     <ClInclude Include="luabind\luabind.hpp" />
+    <ClInclude Include="luabind\lua_extensions.hpp" />
     <ClInclude Include="luabind\lua_include.hpp" />
     <ClInclude Include="luabind\lua_state_fwd.hpp" />
     <ClInclude Include="luabind\make_function.hpp" />

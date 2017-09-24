@@ -3,6 +3,7 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <luabind/make_function.hpp>
+#include <luabind/lua_extensions.hpp>
 
 namespace luabind { namespace detail {
 
@@ -102,6 +103,8 @@ void invoke_context::format_error(
     char const* function_name =
         overloads->name.empty() ? "<unknown>" : overloads->name.c_str();
 
+	int stacksize = lua_gettop(L);
+
     if (candidate_index == 0)
     {
         lua_pushliteral(L, "No matching overload found, candidates:");
@@ -109,9 +112,9 @@ void invoke_context::format_error(
         {
             lua_pushliteral(L, "\n");
             f->format_signature(L, function_name);
-            lua_concat(L, 3); // Inefficient, but does not use up the stack.
         }
-    }
+		lua_pushliteral(L, "\n");
+	}
     else
     {
         // Ambiguous
@@ -120,16 +123,38 @@ void invoke_context::format_error(
         {
             lua_pushliteral(L, "\n");
             candidates[i]->format_signature(L, function_name);
-            lua_concat(L, 3); // Inefficient, but does not use up the stack.
         }
         if (additional_candidates)
         {
             BOOST_ASSERT(candidate_index == max_candidates);
             lua_pushfstring(L, "\nand %d additional overload(s) not shown",
                 additional_candidates);
-            lua_concat(L, 2);
         }
-    }
+		lua_pushliteral(L, "\n");
+	}
+
+	// Print all passed arguments and their types
+	lua_pushfstring(L, "\nPassed arguments [%d]: ", stacksize); // Args total cnt
+	if (stacksize == 0)
+		lua_pushstring(L, "<zero arguments>\n");
+	else
+	{
+		for (int _index = 1; _index <= stacksize; _index++)
+		{
+			if (_index > 1)
+				lua_pushstring(L, ", ");
+
+			// Arg Type
+			lua_pushstring(L, lua_typename(L, lua_type(L, _index)));
+			// Arg Value
+			lua_pushstring(L, " (");
+			auto text = lua52L_tolstring(L, _index, NULL); // automatically pushed to stack
+			lua_pushstring(L, ")");
+		}
+		lua_pushstring(L, "\n");
+	}
+
+	lua_concat(L, lua_gettop(L) - stacksize);
 }
 
 }} // namespace luabind::detail
