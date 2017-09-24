@@ -75,9 +75,16 @@ namespace detail
           }
 #endif
 
-          if (error)
-              lua_error(L);
-          return results;
+		  if (error)
+		  {
+			  assert(results >= 0);
+			  return lua_error(L);
+		  }
+		  if (results < 0)
+		  {
+			  return lua_yield(L, -results - 1);
+		  }
+		  return results;
       }
 
       F f;

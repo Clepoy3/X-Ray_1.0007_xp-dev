@@ -243,9 +243,6 @@
     <ClInclude Include="luabind\detail\object_rep.hpp">
       <Filter>include\detail</Filter>
     </ClInclude>
-    <ClInclude Include="luabind\detail\open.hpp">
-      <Filter>include\detail</Filter>
-    </ClInclude>
     <ClInclude Include="luabind\detail\operator_id.hpp">
       <Filter>include\detail</Filter>
     </ClInclude>

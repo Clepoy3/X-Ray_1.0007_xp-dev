@@ -148,7 +148,6 @@
     <ClInclude Include="luabind\detail\object.hpp" />
     <ClInclude Include="luabind\detail\object_call.hpp" />
     <ClInclude Include="luabind\detail\object_rep.hpp" />
-    <ClInclude Include="luabind\detail\open.hpp" />
     <ClInclude Include="luabind\detail\operator_id.hpp" />
     <ClInclude Include="luabind\detail\other.hpp" />
     <ClInclude Include="luabind\detail\pcall.hpp" />

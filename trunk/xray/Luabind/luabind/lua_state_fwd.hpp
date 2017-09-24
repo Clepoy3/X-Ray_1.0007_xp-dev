@@ -23,15 +23,9 @@
 #ifndef LUABIND_LUA_STATE_FWD_HPP
 #define LUABIND_LUA_STATE_FWD_HPP
 
-#ifndef LUABIND_CPLUSPLUS_LUA
 extern "C"
 {
-#endif
-
-struct lua_State;
-
-#ifndef LUABIND_CPLUSPLUS_LUA
+	struct lua_State;
 }
-#endif
 
 #endif // LUABIND_BACK_REFERENCE_FWD_040510_HPP
