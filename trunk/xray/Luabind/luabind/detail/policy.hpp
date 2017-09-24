@@ -798,8 +798,22 @@ struct default_converter<std::string>
 {
     static int compute_score(lua_State* L, int index)
     {
-        return lua_type(L, index) == LUA_TSTRING ? 0 : -1;
-    }
+#ifndef LUABIND_XRAY_DISABLE_BACKWARD_COMPATIBILITY
+		int type = lua_type(L, index);
+
+		if (type == LUA_TSTRING)
+			return 0;
+
+		if (type == LUA_TNUMBER)
+			return 1;
+
+		//TODO: xxx: LUA_TNIL too?
+
+		return -1;
+#else
+		return lua_type(L, index) == LUA_TSTRING ? 0 : -1;
+#endif	
+	}
 
     std::string from(lua_State* L, int index)
     {
@@ -843,7 +857,19 @@ struct default_converter<char const*>
     static int match(lua_State* L, U, int index)
     {
         int type = lua_type(L, index);
-        return (type == LUA_TSTRING || type == LUA_TNIL) ? 0 : -1;
+#ifndef LUABIND_XRAY_DISABLE_BACKWARD_COMPATIBILITY
+		if (type == LUA_TSTRING)
+			return 0;
+
+		if (type == LUA_TNUMBER)
+			return 1;
+
+		//TODO: xxx: LUA_TNIL too?
+
+		return -1;
+#else
+		return (type == LUA_TSTRING || type == LUA_TNIL) ? 0 : -1;
+#endif	
     }
 
     template <class U>

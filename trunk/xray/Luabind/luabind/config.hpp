@@ -31,7 +31,20 @@
 //KRodin: настройки теперь здесь:
 #define LUABIND_DYNAMIC_LINK
 #define LUABIND_NO_ERROR_CHECKING //KRodin: НЕ ЗАКОММЕНТИРОВАТЬ! С некоторыми скриптами проверка ошибок несовместима, т.к воспринимает как ошибки то, что ошибками не является.
+#define LUABIND_NO_EXCEPTIONS //KRodin: попробуем так
+//
+// https://github.com/ShokerStlk/luabind-deboostified/commit/a549f40ae35bd93e6cdc0fd2b4cd2e7578b08510
+// Backward compatibility with old.lua code from X Ray 1.6.02: Added na tive converter from number to string\char*.
+// Removed native converter from nil to string\char* (to prevent undefined behavior in C - code)
+//#define LUABIND_XRAY_DISABLE_BACKWARD_COMPATIBILITY //KRodin: не раскомментировать! Посмотрим.
+//
 #pragma comment(lib, "LuaJIT.lib") //LuaJIT подключается только здесь и больше нигде!
+//
+#pragma warning(push)
+#pragma warning(disable:4595)
+#include "../xrCore/xrCore.h" //KRodin: попробуем заинклудить оператор new из xrCore
+#pragma warning(pop)
+#pragma comment(lib, "xrCore.lib")
 //
 
 #ifdef BOOST_MSVC

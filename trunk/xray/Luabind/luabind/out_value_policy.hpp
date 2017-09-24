@@ -36,7 +36,7 @@
 #include <boost/mpl/or.hpp>             // for or_
 #include <boost/type_traits/is_same.hpp>  // for is_same
 
-#include <new>                          // for operator new
+//#include <new>                          // for operator new
 
 namespace luabind { namespace detail
 {
