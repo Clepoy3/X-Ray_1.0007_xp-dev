@@ -20,18 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+#ifndef POINTEE_SIZEOF_040211_HPP
+#define POINTEE_SIZEOF_040211_HPP
 
-#include <type_traits>
+#include <boost/mpl/int.hpp>
 
 namespace luabind {
 
-// returns the indirect sizeof U, as in
-//    sizeof(T*) = sizeof(T)
-//    sizeof(T&) = sizeof(T)
-//    sizeof(T)  = sizeof(T)
-template <typename T>
-struct pointee_sizeof : public std::integral_constant<size_t, sizeof(std::remove_pointer_t<std::remove_reference_t<T>>)> {
-};
+    namespace detail {
+
+    template<class T> T& deref_type(T(*)(), int);
+    template<class T> T& deref_type(T*(*)(), long);
+
+    } // namespace detail
+
+    // returns the indirect sizeof U, as in
+    //    sizeof(T*) = sizeof(T)
+    //    sizeof(T&) = sizeof(T)
+    //    sizeof(T)  = sizeof(T)
+    template<class T>
+    struct pointee_sizeof
+    {
+        BOOST_STATIC_CONSTANT(int, value = (
+            sizeof(detail::deref_type(static_cast<T(*)()>(0)), 0L)
+        ));
+
+        typedef boost::mpl::int_<value> type;
+    };
 
 } // namespace luabind
+
+#endif // POINTEE_SIZEOF_040211_HPP

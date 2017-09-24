@@ -20,50 +20,65 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+
+#ifndef LUABIND_RAW_POLICY_HPP_INCLUDED
+#define LUABIND_RAW_POLICY_HPP_INCLUDED
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
 
 namespace luabind { namespace detail  {
 
-	struct raw_converter
-	{
-		lua_State* apply(lua_State* L, by_pointer<lua_State>, int)
-		{
-			return L;
-		}
+    struct raw_converter
+    {
+        int consumed_args() const
+        {
+            return 0;
+        }
 
-		static int match(...)
-		{
-			return 0;
-		}
+        lua_State* apply(lua_State* L, by_pointer<lua_State>, int)
+        {
+            return L;
+        }
 
-		void converter_postcall(lua_State*, by_pointer<lua_State>, int) {}
-	};
+        static int match(...)
+        {
+            return 0;
+        }
 
-	template<int N>
-	struct raw_policy : conversion_policy<N, false>
-	{
-		static void precall(lua_State*, const index_map&) {}
-		static void postcall(lua_State*, const index_map&) {}
+        void converter_postcall(lua_State*, by_pointer<lua_State>, int) {}
+    };
 
-		template<typename T, Direction>
-		struct generate_converter
-		{
-			typedef raw_converter type;
-		};
-	};
+    template<int N>
+    struct raw_policy : conversion_policy<N, false>
+    {
+        static void precall(lua_State*, const index_map&) {}
+        static void postcall(lua_State*, const index_map&) {}
+
+        template<class T, class Direction>
+        struct apply
+        {
+            typedef raw_converter type;
+        };
+    };
 
 }} // namespace luabind::detail
 
 namespace luabind {
 
-	template<size_t N>
-	detail::policy_cons<detail::raw_policy<N>>
-	inline raw()
-	{ 
-		return detail::policy_cons<detail::raw_policy<N>>(); 
-	}
+    template<int N>
+    detail::policy_cons<
+        detail::raw_policy<N>
+      , detail::null_type
+    >
+    inline raw(LUABIND_PLACEHOLDER_ARG(N))
+    {
+        return detail::policy_cons<
+            detail::raw_policy<N>
+          , detail::null_type
+        >();
+    }
 
 } // namespace luabind
+
+#endif // LUABIND_RAW_POLICY_HPP_INCLUDED

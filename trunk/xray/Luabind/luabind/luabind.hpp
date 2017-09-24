@@ -20,10 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
 
-#include <luabind/config.hpp>
+#ifndef LUABIND_BIND_HPP_INCLUDED
+#define LUABIND_BIND_HPP_INCLUDED
+
 #include <luabind/class.hpp>
+#include <luabind/config.hpp>
 #include <luabind/function.hpp>
-#include <luabind/functor.hpp>
 #include <luabind/open.hpp>
+
+#endif // LUABIND_BIND_HPP_INCLUDED

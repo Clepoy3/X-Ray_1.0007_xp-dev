@@ -20,14 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+#ifndef LUABIND_PCALL_HPP_INCLUDED
+#define LUABIND_PCALL_HPP_INCLUDED
 
 #include <luabind/config.hpp>
 
-struct lua_State;
+#include <luabind/lua_state_fwd.hpp>
 
 namespace luabind { namespace detail
 {
-	LUABIND_API int pcall(lua_State *L, int nargs, int nresults);
-	LUABIND_API int resume_impl(lua_State *L, int nargs, int nresults);
+    LUABIND_API int pcall(lua_State *L, int nargs, int nresults);
+    LUABIND_API int resume_impl(lua_State *L, int nargs, int nresults);
 }}
+
+#endif

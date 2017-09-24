@@ -1,96 +1,108 @@
-// Copyright (c) 2003 Daniel Wallin and Arvid Norberg
+// Copyright Daniel Wallin 2008. Use, modification and distribution is
+// subject to the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the "Software"),
-// to deal in the Software without restriction, including without limitation
-// the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the
-// Software is furnished to do so, subject to the following conditions:
+#if !BOOST_PP_IS_ITERATING
 
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
+# ifndef LUABIND_DETAIL_CONSTRUCTOR_081018_HPP
+#  define LUABIND_DETAIL_CONSTRUCTOR_081018_HPP
 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
-// ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
-// SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
-// ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-// OR OTHER DEALINGS IN THE SOFTWARE.
+#  include <luabind/detail/inheritance.hpp>
+#  include <luabind/get_main_thread.hpp>
+#  include <luabind/detail/object.hpp>
+#  include <luabind/wrapper_base.hpp>
 
-#pragma once
+#  include <boost/preprocessor/iteration/iterate.hpp>
+#  include <boost/preprocessor/iteration/local.hpp>
+#  include <boost/preprocessor/repetition/enum_binary_params.hpp>
+#  include <boost/preprocessor/repetition/enum_params.hpp>
 
-#include <luabind/config.hpp>
-#include <luabind/wrapper_base.hpp>
-#include <luabind/detail/policy.hpp>
-#include <luabind/detail/signature_match.hpp>
-#include <luabind/detail/call_member.hpp>
-#include <luabind/wrapper_base.hpp>
-#include <luabind/weak_ref.hpp>
+namespace luabind { namespace detail {
 
-namespace luabind { namespace detail
+inline void inject_backref(lua_State*, void*, void*)
+{}
+
+template <class T>
+void inject_backref(lua_State* L, T* p, wrap_base*)
 {
-    template<typename T, typename... Policies>
-    struct construct_class
+    weak_ref(get_main_thread(L), L, 1).swap(wrap_access::ref(*p));
+}
+
+template <std::size_t Arity, class T, class Pointer, class Signature>
+struct construct_aux;
+
+template <class T, class Pointer, class Signature>
+struct construct
+  : construct_aux<mpl::size<Signature>::value - 2, T, Pointer, Signature>
+{};
+
+template <class T, class Pointer, class Signature>
+struct construct_aux<0, T, Pointer, Signature>
+{
+    typedef pointer_holder<Pointer, T> holder_type;
+
+    void operator()(argument const& self_) const
     {
-    private:
+        object_rep* self = touserdata<object_rep>(self_);
 
-        template <typename U, size_t Index>
-        static decltype(auto) applyArg(lua_State* L)
-        {
-            using converter_policy = typename find_conversion_policy<Index + 1, Policies...>::type;
-            using c_t = typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type;
-            typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type c;
+        std::auto_ptr<T> instance(new T);
+        inject_backref(self_.interpreter(), instance.get(), instance.get());
 
-            return c.c_t::apply(L, decorated_type<U>::get(), Index + 2);
-        }
+        void* naked_ptr = instance.get();
+        Pointer ptr(instance.release());
 
-        template <typename... ConstructorArgs, size_t... Indices>
-        static T* applyImpl(lua_State* L, std::index_sequence<Indices...>)
-        {
-            return luabind::luabind_new<T>(applyArg<ConstructorArgs, Indices>(L)...);
-        }
+        void* storage = self->allocate(sizeof(holder_type));
 
-    public:
+        self->set_instance(new (storage) holder_type(
+            ptr, registered_class<T>::id, naked_ptr));
+    }
+};
 
-        template <typename... ConstructorArgs>
-        static void* apply(lua_State* L, weak_ref const&)
-        {
-            return applyImpl<ConstructorArgs...>(L, std::make_index_sequence<sizeof...(ConstructorArgs)>());
-        }
-    };
+#  define BOOST_PP_ITERATION_PARAMS_1 \
+    (3, (1, LUABIND_MAX_ARITY, <luabind/detail/constructor.hpp>))
+#  include BOOST_PP_ITERATE()
 
-    template<typename T, typename W, typename... Policies>
-    struct construct_wrapped_class
+}} // namespace luabind::detail
+
+# endif // LUABIND_DETAIL_CONSTRUCTOR_081018_HPP
+
+#else // !BOOST_PP_IS_ITERATING
+
+# define N BOOST_PP_ITERATION()
+
+template <class T, class Pointer, class Signature>
+struct construct_aux<N, T, Pointer, Signature>
+{
+    typedef typename mpl::begin<Signature>::type first;
+    typedef typename mpl::next<first>::type iter0;
+
+# define BOOST_PP_LOCAL_MACRO(n) \
+    typedef typename mpl::next< \
+        BOOST_PP_CAT(iter,BOOST_PP_DEC(n))>::type BOOST_PP_CAT(iter,n); \
+    typedef typename BOOST_PP_CAT(iter,n)::type BOOST_PP_CAT(a,BOOST_PP_DEC(n));
+
+# define BOOST_PP_LOCAL_LIMITS (1,N)
+# include BOOST_PP_LOCAL_ITERATE()
+
+    typedef pointer_holder<Pointer, T> holder_type;
+
+    void operator()(argument const& self_, BOOST_PP_ENUM_BINARY_PARAMS(N,a,_)) const
     {
-    private:
+        object_rep* self = touserdata<object_rep>(self_);
 
-        template <typename U, size_t Index>
-        static decltype(auto) applyArg(lua_State* L)
-        {
-            using converter_policy = typename find_conversion_policy<Index + 1, Policies...>::type;
-            using c_t = typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type;
-            typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type c;
+        std::auto_ptr<T> instance(new T(BOOST_PP_ENUM_PARAMS(N,_)));
+        inject_backref(self_.interpreter(), instance.get(), instance.get());
 
-            return c.c_t::apply(L, decorated_type<U>::get(), Index + 2);
-        }
+        void* naked_ptr = instance.get();
+        Pointer ptr(instance.release());
 
-        template <typename... ConstructorArgs, size_t... Indices>
-        static T* applyImpl(lua_State* L, weak_ref const& ref, std::index_sequence<Indices...>)
-        {
-            W* result = luabind::luabind_new<W>(applyArg<ConstructorArgs, Indices>(L)...);
-            static_cast<weak_ref&>(wrap_access::ref(*result)) = ref;
-            return result;
-        }
+        void* storage = self->allocate(sizeof(holder_type));
 
-    public:
+        self->set_instance(new (storage) holder_type(
+            ptr, registered_class<T>::id, naked_ptr));
+    }
+};
 
-        template <typename... ConstructorArgs>
-        static void* apply(lua_State* L, weak_ref const& ref)
-        {
-            return applyImpl<ConstructorArgs...>(L, ref, std::make_index_sequence<sizeof...(ConstructorArgs)>());
-        }
-    };
-}}
+# undef N
+
+#endif

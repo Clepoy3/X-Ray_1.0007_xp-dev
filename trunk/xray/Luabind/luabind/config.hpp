@@ -20,68 +20,147 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
 
-//***************************************[KRodin: Настройки]***************************************
-#define LUABIND_NO_ERROR_CHECKING //Закомментировать только при отладке проблемных мест или для дампа lua_help! С некоторыми скриптами проверка ошибок несовместима, т.к воспринимает как ошибки то, что ошибками не является, да и производительность жрёт довольно сильно.
-#define LUABIND_NO_EXCEPTIONS //!!!НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!! В нескольких местах я заменил try - catch на __try - __except, т.ч. теперь неизвестно, как там будут обрабатываться C++ исключения.
-#ifdef LUABIND_NO_EXCEPTIONS
-#	define LUABIND_DTOR_NOEXCEPT noexcept
+#ifndef LUABIND_CONFIG_HPP_INCLUDED
+#define LUABIND_CONFIG_HPP_INCLUDED
+
+#include <boost/config.hpp>
+#include <boost/version.hpp>
+#include <boost/detail/workaround.hpp>
+
+//KRodin: настройки теперь здесь:
+#define LUABIND_DYNAMIC_LINK
+#define LUABIND_NO_ERROR_CHECKING //KRodin: НЕ ЗАКОММЕНТИРОВАТЬ! С некоторыми скриптами проверка ошибок несовместима, т.к воспринимает как ошибки то, что ошибками не является.
+#pragma comment(lib, "LuaJIT.lib") //LuaJIT подключается только здесь и больше нигде!
+//
+
+#ifdef BOOST_MSVC
+    #define LUABIND_ANONYMOUS_FIX static
 #else
-#	define LUABIND_DTOR_NOEXCEPT
+    #define LUABIND_ANONYMOUS_FIX
 #endif
-#pragma comment(lib, "LuaJIT.lib") //LuaJIT теперь подключается только здесь и больше нигде.
-#define LUABIND_DONT_COPY_STRINGS // ?
-//*************************************************************************************************
 
-//#define LUABIND_NOT_THREADSAFE
+#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+    #error "Support for your version of Visual C++ has been removed from this version of Luabind"
+#endif
+
+// the maximum number of arguments of functions that's
+// registered. Must at least be 2
+#ifndef LUABIND_MAX_ARITY
+    #define LUABIND_MAX_ARITY 10
+#elif LUABIND_MAX_ARITY <= 1
+    #undef LUABIND_MAX_ARITY
+    #define LUABIND_MAX_ARITY 2
+#endif
+
+// the maximum number of classes one class
+// can derive from
+// max bases must at least be 1
+#ifndef LUABIND_MAX_BASES
+    #define LUABIND_MAX_BASES 4
+#elif LUABIND_MAX_BASES <= 0
+    #undef LUABIND_MAX_BASES
+    #define LUABIND_MAX_BASES 1
+#endif
+
+// LUABIND_NO_ERROR_CHECKING
+// define this to remove all error checks
+// this will improve performance and memory
+// footprint.
+// if it is defined matchers will only be called on
+// overloaded functions, functions that's
+// not overloaded will be called directly. The
+// parameters on the lua stack are assumed
+// to match those of the function.
+// exceptions will still be catched when there's
+// no error checking.
+
+// LUABIND_NOT_THREADSAFE
 // this define will make luabind non-thread safe. That is,
 // it will rely on a static variable. You can still have
 // multiple lua states and use coroutines, but only
 // one of your real threads may run lua code.
 
-// If you don't want to use the rtti supplied by C++
-// you can supply your own type-info structure with the
-// LUABIND_TYPE_INFO define. Your type-info structure
-// must be copyable and it must be able to compare itself
-// against other type-info structures. You supply the compare
-// function through the LUABIND_TYPE_INFO_EQUAL()
-// define. It should compare the two type-info structures
-// it is given and return true if they represent the same type
-// and false otherwise. You also have to supply a function
-// to generate your type-info structure. You do this through
-// the LUABIND_TYPEID() define. It takes a type as it's
-// parameter. That is, a compile time parameter. To use it
-// you probably have to make a traits class with specializations
-// for all classes that you have type-info for.
+// LUABIND_NO_EXCEPTIONS
+// this define will disable all usage of try, catch and throw in
+// luabind. This will in many cases disable runtime-errors, such
+// as invalid casts, when calling lua-functions that fails or
+// returns values that cannot be converted by the given policy.
+// Luabind requires that no function called directly or indirectly
+// by luabind throws an exception (throwing exceptions through
+// C code has undefined behavior, lua is written in C).
 
-#ifndef LUABIND_TYPE_INFO
-#	define LUABIND_TYPE_INFO const type_info*
-#	define LUABIND_TYPEID(t) &typeid(t)
-#	define LUABIND_TYPE_INFO_EQUAL(i1, i2) *i1 == *i2
-#	define LUABIND_INVALID_TYPE_INFO &typeid(detail::null_type)
-#	include <typeinfo>
+#ifdef LUABIND_DYNAMIC_LINK
+# if defined (BOOST_WINDOWS)
+#  ifdef LUABIND_BUILDING
+#   define LUABIND_API __declspec(dllexport)
+#  else
+#   define LUABIND_API __declspec(dllimport)
+#  endif
+# elif defined (__CYGWIN__)
+#  ifdef LUABIND_BUILDING
+#   define LUABIND_API __attribute__ ((dllexport))
+#  else
+#   define LUABIND_API __attribute__ ((dllimport))
+#  endif
+# else
+#  if defined(__GNUC__) && __GNUC__ >=4
+#   define LUABIND_API __attribute__ ((visibility("default")))
+#  endif
+# endif
 #endif
 
-// If you're building luabind as a dll on windows with devstudio
-// you can set LUABIND_EXPORT to __declspec(dllexport)
-// and LUABIND_IMPORT to __declspec(dllimport)
-
-// this define is set if we're currently building a luabind file
-// select import or export depending on it
-#ifdef LUABIND_BUILDING
-#	define LUABIND_API 		__declspec(dllexport)
-#else
-#	define LUABIND_API		__declspec(dllimport)
+#ifndef LUABIND_API
+# define LUABIND_API
 #endif
 
-#include <luabind/luabind_memory.h>
+// C++11 features //
 
-#define string_class			luabind::internal_string
-#define vector_class			luabind::internal_vector
-#define list_class				luabind::internal_list
-#define map_class				luabind::internal_map
-#define set_class				luabind::internal_set
-#define multimap_class			luabind::internal_multimap
-#define multiset_class			luabind::internal_multiset
-#define stringstream_class		luabind::internal_stringstream
+#if (   defined(BOOST_NO_CXX11_SCOPED_ENUMS) \
+     || defined(BOOST_NO_SCOPED_ENUMS)                 \
+     || BOOST_VERSION < 105600                         \
+        && (   defined(BOOST_NO_CXX11_HDR_TYPE_TRAITS) \
+            || defined(BOOST_NO_0X_HDR_TYPE_TRAITS)))
+#    define LUABIND_NO_SCOPED_ENUM
+#endif
+
+#if (   defined(BOOST_NO_CXX11_RVALUE_REFERENCES) \
+     || defined(BOOST_NO_RVALUE_REFERENCES))
+#    define LUABIND_NO_RVALUE_REFERENCES
+#endif
+
+// If you use Boost <= 1.46 but your compiler is C++11 compliant and marks
+// destructors as noexcept by default, you need to define LUABIND_USE_NOEXCEPT.
+#if (   !defined(BOOST_NO_NOEXCEPT) \
+     && !defined(BOOST_NO_CXX11_NOEXCEPT) \
+     && BOOST_VERSION >= 104700)
+#    define LUABIND_USE_NOEXCEPT
+#endif
+
+#ifndef LUABIND_MAY_THROW
+#    ifdef BOOST_NOEXCEPT_IF
+#        define LUABIND_MAY_THROW BOOST_NOEXCEPT_IF(false)
+#    elif defined(LUABIND_USE_NOEXCEPT)
+#        define LUABIND_MAY_THROW noexcept(false)
+#    else
+#       define LUABIND_MAY_THROW
+#    endif
+#endif
+
+#ifndef LUABIND_NOEXCEPT
+#    ifdef BOOST_NOEXCEPT_OR_NOTHROW
+#        define LUABIND_NOEXCEPT BOOST_NOEXCEPT_OR_NOTHROW
+#    elif defined(LUABIND_USE_NOEXCEPT)
+#        define LUABIND_NOEXCEPT noexcept
+#    else
+#       define LUABIND_NOEXCEPT throw()
+#    endif
+#endif
+
+namespace luabind {
+
+LUABIND_API void disable_super_deprecation();
+
+} // namespace luabind
+
+#endif // LUABIND_CONFIG_HPP_INCLUDED

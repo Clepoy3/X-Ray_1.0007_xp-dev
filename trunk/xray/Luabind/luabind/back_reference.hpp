@@ -20,110 +20,89 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+#ifndef LUABIND_BACK_REFERENCE_040510_HPP
+#define LUABIND_BACK_REFERENCE_040510_HPP
 
-#include <lua.hpp>
+#include <luabind/detail/has_get_pointer.hpp>
+#include <luabind/get_pointer.hpp>
 #include <luabind/wrapper_base.hpp>
 
-#include <type_traits>
+#include <boost/mpl/bool.hpp>
+#include <boost/type_traits/is_polymorphic.hpp>
+#include <luabind/lua_state_fwd.hpp>
 
 namespace luabind {
-    template<class T>
-    T* get_pointer(T& ref)
+  struct wrap_base;
+
+namespace detail
+{
+  namespace mpl = boost::mpl;
+
+  template<class T>
+  wrap_base const* get_back_reference_aux0(T const* p, mpl::true_)
+  {
+      return dynamic_cast<wrap_base const*>(p);
+  }
+
+  template<class T>
+  wrap_base const* get_back_reference_aux0(T const*, mpl::false_)
+  {
+      return 0;
+  }
+
+  template<class T>
+  wrap_base const* get_back_reference_aux1(T const* p)
+  {
+      return get_back_reference_aux0(p, boost::is_polymorphic<T>());
+  }
+
+  template<class T>
+  wrap_base const* get_back_reference_aux2(T const& x, mpl::true_)
+  {
+      return get_back_reference_aux1(get_pointer(x));
+  }
+
+  template<class T>
+  wrap_base const* get_back_reference_aux2(T const& x, mpl::false_)
+  {
+      return get_back_reference_aux1(&x);
+  }
+
+  template<class T>
+  wrap_base const* get_back_reference(T const& x)
+  {
+      return detail::get_back_reference_aux2(
+          x
+        , has_get_pointer<T>()
+      );
+  }
+
+} // namespace detail
+
+template<class T>
+bool get_back_reference(lua_State* L, T const& x)
+{
+    if (wrap_base const* w = detail::get_back_reference(x))
     {
-        return &ref;
+        detail::wrap_access::ref(*w).get(L);
+        return true;
     }
+    return false;
+}
 
-    namespace detail {
-
-    template<class T>
-    struct extract_wrap_base
-    {     
-       static wrap_base const* extract(T const* ptr)
-        {
-            return dynamic_cast<wrap_base const*>(get_pointer(*ptr));
-        }
-
-        static wrap_base* extract(T* ptr)
-        {
-            return dynamic_cast<wrap_base*>(get_pointer(*ptr));
-        }
-    };
-
-    struct default_back_reference {};
-
-    template<class T>
-    struct back_reference_impl : default_back_reference
+template<class T>
+bool move_back_reference(lua_State* L, T const& x)
+{
+    if (wrap_base* w = const_cast<wrap_base*>(detail::get_back_reference(x)))
     {
-        static bool extract(lua_State* L, T const* ptr)
-        {
-            if (!has_wrapper) return false;
-
-            if (wrap_base const* p = extract_wrap_base<T>::extract(ptr))
-            {
-                wrap_access::ref(*p).get(L);
-                return true;
-            }
-
-            return false;
-        }
-
-        static bool move(lua_State* L, T* ptr)
-        {
-            if (!has_wrapper) return false;
-
-            if (wrap_base* p = extract_wrap_base<T>::extract(ptr))
-            {
-                assert(wrap_access::ref(*p).m_strong_ref.is_valid());
-                wrap_access::ref(*p).get(L);
-                wrap_access::ref(*p).m_strong_ref.reset();
-                return true;
-            }
-
-            return false;
-        }
-
-        static bool has_wrapper;
-    };
-
-    template<class T>
-    bool back_reference_impl<T>::has_wrapper = false;
-
-    template<class T>
-    struct back_reference_do_nothing
-    {
-        static bool extract(lua_State*, T const*)
-        {
-            return false;
-        }
-
-        static bool move(lua_State*, T*)
-        {
-            return false;
-        }
-    };
-
-    } // namespace detail
-
-#ifndef LUABIND_NO_RTTI
-
-    template<class T>
-    struct back_reference
-        : std::conditional_t<std::is_polymorphic_v<T>,
-            detail::back_reference_impl<T>,
-            detail::back_reference_do_nothing<T>
-        >
-    {
-    };
-
-#else
-
-    template<class T>
-    struct back_reference
-        : detail::back_reference_do_nothing<T>
-    {
-    };
-
-#endif
+        assert(detail::wrap_access::ref(*w).m_strong_ref.is_valid());
+        detail::wrap_access::ref(*w).get(L);
+        detail::wrap_access::ref(*w).m_strong_ref.reset();
+        return true;
+    }
+    return false;
+}
 
 } // namespace luabind
+
+#endif // LUABIND_BACK_REFERENCE_040510_HPP

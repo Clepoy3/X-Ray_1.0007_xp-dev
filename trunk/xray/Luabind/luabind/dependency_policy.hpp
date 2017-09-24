@@ -20,45 +20,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#pragma once
+
+#ifndef LUABIND_DEPENDENCY_POLICY_HPP_INCLUDED
+#define LUABIND_DEPENDENCY_POLICY_HPP_INCLUDED
 
 #include <luabind/config.hpp>
-#include <luabind/detail/policy.hpp>
+#include <luabind/detail/object_rep.hpp>  // for object_rep
+#include <luabind/detail/policy.hpp>    // for policy_cons, etc
+#include <luabind/detail/primitives.hpp>  // for null_type
 
-namespace luabind { namespace detail 
+namespace luabind { namespace detail
 {
-	// makes A dependent on B, meaning B will outlive A.
-	// internally A stores a reference to B
-	template<size_t A, size_t B>
-	struct dependency_policy
-	{
-		static void postcall(lua_State* L, const index_map& indices)
-		{
-			const int nurse_index = indices[A];
-			const int patient = indices[B];
+    // makes A dependent on B, meaning B will outlive A.
+    // internally A stores a reference to B
+    template<int A, int B>
+    struct dependency_policy
+    {
+        static void postcall(lua_State* L, const index_map& indices)
+        {
+            int nurse_index = indices[A];
+            int patient = indices[B];
 
-			object_rep* nurse = static_cast<object_rep*>(lua_touserdata(L, nurse_index));
-			assert((nurse != 0) && "internal error, please report"); // internal error
+            object_rep* nurse = static_cast<object_rep*>(lua_touserdata(L, nurse_index));
 
-			nurse->add_dependency(L, patient);
-		}
-	};
+            // If the nurse isn't an object_rep, just make this a nop.
+            if (nurse == 0)
+                return;
+
+            nurse->add_dependency(L, patient);
+        }
+    };
 
 }}
 
 namespace luabind
 {
-	template<size_t A, size_t B>
-	detail::policy_cons<detail::dependency_policy<A, B>>
-	dependency()
-	{
-		return detail::policy_cons<detail::dependency_policy<A, B>>();
-	}
+    template<int A, int B>
+    detail::policy_cons<detail::dependency_policy<A, B>, detail::null_type>
+    dependency(LUABIND_PLACEHOLDER_ARG(A), LUABIND_PLACEHOLDER_ARG(B))
+    {
+        return detail::policy_cons<detail::dependency_policy<A, B>, detail::null_type>();
+    }
 
-	template<size_t A>
-	detail::policy_cons<detail::dependency_policy<0, A>>
-	return_internal_reference()
-	{
-		return detail::policy_cons<detail::dependency_policy<0, A>>();
-	}
+    template<int A>
+    detail::policy_cons<detail::dependency_policy<0, A>, detail::null_type>
+    return_internal_reference(LUABIND_PLACEHOLDER_ARG(A))
+    {
+        return detail::policy_cons<detail::dependency_policy<0, A>, detail::null_type>();
+    }
 }
+
+#endif // LUABIND_DEPENDENCY_POLICY_HPP_INCLUDED
