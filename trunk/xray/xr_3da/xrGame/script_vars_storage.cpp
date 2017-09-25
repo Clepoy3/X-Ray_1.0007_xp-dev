@@ -6,9 +6,11 @@
 //	Description : global script vars class, with saving content to savegame
 ////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
+#include "script_vars_storage.h"
+#ifdef SCRIPT_VARS_STORAGE
+
 #include "pch_script.h"
 #include "alife_space.h"
-#include "script_vars_storage.h"
 #include "script_net_packet.h"
 #include "script_engine.h"
 #include "../lua_tools.h"
@@ -707,3 +709,5 @@ void CScriptVarsStorage::script_register(lua_State *L)
 			def("vars_table_import"				,			&script_vars_import	, raw<1>())
 		];
 }
+
+#endif

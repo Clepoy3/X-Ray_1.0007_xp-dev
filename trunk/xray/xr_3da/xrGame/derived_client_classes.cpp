@@ -232,9 +232,9 @@ void CInventoryScript::script_register(lua_State *L)
 			.property("inv_name_short"					,			&get_item_name_short, &set_item_name_short)
 			.property("cost"							,			&CInventoryItem::Cost,  &CInventoryItem::SetCost)
 			.property("slot"							,			&CInventoryItem::GetSlot, &CInventoryItem::SetSlot)
-/*#if defined(INV_NEW_SLOTS_SYSTEM) && defined(LUABIND_NO_ERROR_CHECKING) //KRodin: при отключенном LUABIND_NO_ERROR_CHECKING почему-то выдаёт ошибку error C2672: "luabind::detail::gen_set_matcher": не найдена соответствующая перегруженная функция
-			.property("slots"							,			&get_slots,    &fake_set_slots, raw<2>())
-#endif*/ //KRodin: да мне этот метод пока и не нужен. Будет нужен - тогда и буду думать, как это исправлять.
+#if defined(INV_NEW_SLOTS_SYSTEM) && defined(LUABIND_09)
+			.property("slots"							,			&get_slots, &fake_set_slots, raw(_2))
+#endif
 			.property("description"						,			&get_item_description, &set_item_description)
 			,
 			class_<CInventoryItemObject, bases<CInventoryItem, CGameObject>>("CInventoryItemObject"),
@@ -248,9 +248,15 @@ void CInventoryScript::script_register(lua_State *L)
 			.property	  ("selected_item"				,			&inventory_selected_item)
 			.property	  ("target"						,			&get_inventory_target)
 			.property	  ("class_name"					,			&get_lua_class_name)
+#ifdef LUABIND_09
+			.def("to_belt", &item_to_slot, raw(_2))
+			.def("to_slot", &item_to_slot, raw(_2))
+			.def("to_ruck", &item_to_ruck, raw(_2))
+#else
 			.def		  ("to_belt"					,			&item_to_slot, raw<2>())
 			.def		  ("to_slot"					,			&item_to_slot, raw<2>())
 			.def		  ("to_ruck"					,			&item_to_ruck, raw<2>())
+#endif
 			,
 			class_<CInventoryOwner>("CInventoryOwner")
 			.def_readonly ("inventory"					,			&CInventoryOwner::m_inventory)
@@ -341,10 +347,18 @@ luabind::object CWeaponScript::get_fire_modes(CWeaponMagazined *wpn)
 
 void CWeaponScript::set_fire_modes(CWeaponMagazined *wpn, luabind::object const& t)
 {
+#ifdef LUABIND_09
+	if (LUA_TTABLE != luabind::type(t)) return;
+#else
 	if (LUA_TTABLE != t.type()) return;
+#endif
 	auto &vector = wpn->m_aFireModes;
 	vector.clear();
+#ifdef LUABIND_09
+	for (luabind::iterator it(t), E; it != E; ++it)
+#else
 	for (auto it = t.begin(); it != t.end(); ++it)
+#endif
 	{
 		int m = object_cast<int>(*it);
 		vector.push_back(m);
@@ -367,7 +381,11 @@ luabind::object CWeaponScript::get_hit_power(CWeapon *wpn)
 
 void CWeaponScript::set_hit_power(CWeapon *wpn, luabind::object const& t)
 {
+#ifdef LUABIND_09
+	if (LUA_TTABLE != luabind::type(t)) return;
+#else
 	if (LUA_TTABLE != t.type()) return;
+#endif
 	auto &vector = wpn->fvHitPower;
 
 	vector.x = object_cast<float>(t[1]);

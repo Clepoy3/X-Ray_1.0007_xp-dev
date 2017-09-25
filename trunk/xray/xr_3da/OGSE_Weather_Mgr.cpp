@@ -8,8 +8,6 @@
 #include "xr_efflensflare.h"
 #include "thunderbolt.h"
 
-float DEG2RAD(float deg) { return (M_PI * deg / 180.f); }
-
 bool str2vect2(const char* s, _vector2<float> &v)
 {
 	return 2 == sscanf(s, "%f,%f", &v.x, &v.y);
@@ -66,7 +64,7 @@ void InitEnvDescriptor(CEnvDescriptor *env_desc, luabind::object const& table)
 	R_ASSERT2( str2vect3( object_cast<const char*>(table["sky_color"]), env_desc->sky_color), "SetEnvDescData: invalid 'sky_color' parameter!" );
 	env_desc->sky_color.mul(.5f);
 
-	env_desc->sky_rotation = DEG2RAD(object_cast<float>(table["sky_rotation"]));
+	env_desc->sky_rotation = deg2rad(object_cast<float>(table["sky_rotation"]));
 
 	env_desc->far_plane = object_cast<float>(table["far_plane"]);
 	//Msg("Far_plane: %f", object_cast<float>(table["far_plane"]));
@@ -81,7 +79,7 @@ void InitEnvDescriptor(CEnvDescriptor *env_desc, luabind::object const& table)
 	//KRodin: params_ex закомментированы, т.к в этом движке это всё не поддерживается.
 	//R_ASSERT2(str2vect3(object_cast<const char*>(table["rain_color"]), env_desc->params_ex->rain_color), "SetEnvDescData: invalid 'rain_color' parameter!");
 
-	//env_desc->params_ex->rain_max_drop_angle = DEG2RAD(object_cast<float>(table["rain_max_drop_angle"]));
+	//env_desc->params_ex->rain_max_drop_angle = deg2rad(object_cast<float>(table["rain_max_drop_angle"]));
 
 	//env_desc->params_ex->sun_shafts = object_cast<float>(table["sun_shafts"]);
 
@@ -93,7 +91,7 @@ void InitEnvDescriptor(CEnvDescriptor *env_desc, luabind::object const& table)
 
 	env_desc->wind_velocity = object_cast<float>(table["wind_velocity"]);
 
-	env_desc->wind_direction = DEG2RAD(object_cast<float>(table["wind_direction"]));
+	env_desc->wind_direction = deg2rad(object_cast<float>(table["wind_direction"]));
 
 	R_ASSERT2( str2vect3(object_cast<const char*>(table["ambient"]), env_desc->ambient), "SetEnvDescData: invalid 'ambient' parameter!" );
 
@@ -103,7 +101,7 @@ void InitEnvDescriptor(CEnvDescriptor *env_desc, luabind::object const& table)
 
 	_vector2<float> vector;
 	R_ASSERT2( str2vect2(object_cast<const char*>(table["sun_dir"]), vector), "SetEnvDescData: invalid 'sun_dir' parameter!" );
-	env_desc->sun_dir.setHP(DEG2RAD(vector.y), DEG2RAD(vector.x));
+	env_desc->sun_dir.setHP(deg2rad(vector.y), deg2rad(vector.x));
 
 	auto flares_name = object_cast<const char*>(table["flares"]);
 	//Msg("flares_name: %s", flares_name);
@@ -134,8 +132,13 @@ void InitEnvDescriptor(CEnvDescriptor *env_desc, luabind::object const& table)
 
 void ENGINE_API SetEnvDescData(luabind::object const& t1, luabind::object const& t2)
 {
+#ifdef LUABIND_09
+	R_ASSERT(LUA_TTABLE == luabind::type(t1));
+	R_ASSERT(LUA_TTABLE == luabind::type(t2));
+#else
 	R_ASSERT(LUA_TTABLE == t1.type());
 	R_ASSERT(LUA_TTABLE == t2.type());
+#endif
 
 	CEnvironment &env = g_pGamePersistent->Environment(); // получаем объект погоды
 

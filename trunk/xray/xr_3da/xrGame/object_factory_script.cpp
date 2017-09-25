@@ -79,7 +79,11 @@ void CObjectFactory::register_script	() const
 	const_iterator				I = clsids().begin(), B = I;
 	const_iterator				E = clsids().end();
 	for ( ; I != E; ++I)
+#ifdef LUABIND_09
+		instance.enum_("_clsid")[luabind::value(*(*I)->script_clsid(), int(I - B))];
+#else
 		instance = std::move(instance).enum_("_clsid")[luabind::value(*(*I)->script_clsid(),int(I - B))];
+#endif
 
 	lua_State *L				= ai().script_engine().lua();
 	luabind::module				(L)[std::move(instance)]; // это представление нельзя обработать как таблицу

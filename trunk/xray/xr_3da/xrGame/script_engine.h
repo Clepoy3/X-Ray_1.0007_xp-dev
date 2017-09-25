@@ -63,7 +63,11 @@ IC bool CScriptEngine::functor(const char* function_to_call, luabind::functor<TR
 	if (!function_object(function_to_call, object))
 		return false;
 	try {
+#ifdef LUABIND_09
+		lua_function = luabind::functor<TResult>(object);
+#else
 		lua_function = luabind::object_cast<luabind::functor<TResult>>(object);
+#endif
 	}
 	catch (...) {
 		return false;

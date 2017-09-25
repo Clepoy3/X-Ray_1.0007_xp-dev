@@ -79,7 +79,7 @@ int CScriptEngine::lua_pcall_failed(lua_State *L) //Fixed
 }
 
 #ifdef LUABIND_NO_EXCEPTIONS
-void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info) //fixed
+void lua_cast_failed(lua_State *L, const luabind::type_id& info)
 {
 	CScriptEngine::print_output(L, "", LUA_ERRRUN);
 	//Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info.name()); //KRodin: Тут наверное вылетать не надо.
@@ -117,6 +117,9 @@ void CScriptEngine::init() //Fixed
 	lua_State* LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
 	R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!");
 	reinit(LSVM);
+#ifdef LUABIND_09
+	luabind::disable_super_deprecation();
+#endif
 	luabind::open(LSVM); //Запуск луабинда
 //--------------Установка калбеков------------------//
 #ifdef LUABIND_NO_EXCEPTIONS

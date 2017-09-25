@@ -69,8 +69,10 @@ void game_sv_GameState::script_register(lua_State *L)
 		.def(						constructor<const xrTime&>())
 		.def(const_self <			xrTime()					)
 		.def(const_self <=			xrTime()					)
+#ifndef LUABIND_09
 		.def(const_self >			xrTime()					)
 		.def(const_self >=			xrTime()					)
+#endif
 		.def(const_self ==			xrTime()					)
 		.def(self +					xrTime()					)
 		.def(self -					xrTime()					)
@@ -82,7 +84,11 @@ void game_sv_GameState::script_register(lua_State *L)
 		.def("setHMS"				,&xrTime::setHMS)
 		.def("setHMSms"				,&xrTime::setHMSms)
 		.def("set"					,&xrTime::set)
+#ifdef LUABIND_09
+		.def("get"					,&xrTime::get, pure_out_value(_2) + pure_out_value(_3) + pure_out_value(_4) + pure_out_value(_5) + pure_out_value(_6) + pure_out_value(_7) + pure_out_value(_8))
+#else
 		.def("get"					,&xrTime::get, out_value<2>() + out_value<3>() + out_value<4>() + out_value<5>() + out_value<6>() + out_value<7>() + out_value<8>())
+#endif
 		.def("dateToString"			,&xrTime::dateToString)
 		.def("timeToString"			,&xrTime::timeToString),
 		// declarations
@@ -91,7 +97,7 @@ void game_sv_GameState::script_register(lua_State *L)
 //	def("get_object_by_name",Game::get_object_by_name),
 	def("get_game_time",		get_time_struct),
 
- /*/KRodin: error C3330: "luabind::detail::returns<R>::callApply": функция не может вернуть массив "char [64]"
+#ifdef LUABIND_09
 	class_< game_sv_GameState, game_GameState >("game_sv_GameState")
 		.def("get_eid",				&game_sv_GameState::get_eid)
 		.def("get_id",				&game_sv_GameState::get_id)
@@ -110,8 +116,9 @@ void game_sv_GameState::script_register(lua_State *L)
 
 		.def("GenerateGameMessage",	&game_sv_GameState::GenerateGameMessage)
 		.def("getRP",				&game_sv_GameState::getRP)
-		.def("getRPcount",			&game_sv_GameState::getRPcount),
-*/
+		.def("getRPcount",			&game_sv_GameState::getRPcount)
+	,
+#endif
 	def("start_tutorial",		&start_tutorial),
 	def("has_active_tutorial",	&has_active_tutotial),
 	def("translate_string",		&translate_string)

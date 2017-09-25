@@ -186,15 +186,28 @@ CGameObject *lua_togameobject(lua_State *L, int index)
 
 	if (lua_isuserdata(L, index))
 	{
+#ifdef LUABIND_09
+		object_rep* rep = get_instance(L, index);
+#else
 		object_rep* rep = is_class_object(L, index);
+#endif
 		if (rep && strstr(rep->crep()->name(), "game_object"))
 		{
+#ifdef LUABIND_09
+			Msg("~~[lua_togameobject] Called for [%s]", rep->crep()->name());
+			// http://lua.2524044.n2.nabble.com/Casting-Upvalues-to-luabind-specific-objects-td7645897.html
+			//Вроде как, Instance.first должно содержать указатель на то, что нам надо.
+			const auto Instance = rep->get_instance(rep->crep()->classes().get(rep->crep()->type()));
+			script_obj = static_cast<CScriptGameObject*>(Instance.first); //KRodin: Попробуем так получить объект по указателю.
+			//script_obj = (CScriptGameObject *)rep; //KRodin: попробуем так, что-ли, надо подумать, может статик каст заюзать, или смарт каст или придумать какой-то ещё способ.
+#else
 			script_obj = (CScriptGameObject *)rep->ptr();
+#endif
 			obj = &script_obj->object();
+			Msg("~~[lua_togameobject] Returns object with name [%s]", obj->Name());
 		}
-
 	}
-	if (lua_isnumber(L, index))
+	else if (lua_isnumber(L, index))
 	{
 		u32 id = lua_tointeger(L, index);
 		if (id < 0xFFFF)
@@ -261,7 +274,11 @@ LPCSTR script_object_class_name(lua_State *L) // для raw-функции. Так-же см. get
 
 	if (lua_isuserdata(L, 1))
 	{
+#ifdef LUABIND_09
+		object_rep* rep = get_instance(L, 1);
+#else
 		object_rep* rep = is_class_object(L, 1);
+#endif
 		if (rep)
 			strcpy_s(class_name, 63, rep->crep()->name());
 	}
@@ -297,7 +314,11 @@ using namespace luabind;
 
 void get_interface(object O)
 {	
+#ifdef LUABIND_09
+	lua_State *L = O.interpreter();
+#else
 	lua_State *L = O.lua_state();
+#endif
 	dynamic_engine_object(L);	
 }
 
@@ -350,7 +371,11 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def("get_grenade",					&script_game_object_cast<CGrenade>)
 		.def("get_inventory_item",			&script_game_object_cast<CInventoryItemObject>)
 		.def("get_inventory_owner",			&script_game_object_cast<CInventoryOwner>)
+#ifdef LUABIND_09
+		.def("get_interface",				&raw_get_interface, raw(_2))
+#else
 		.def("get_interface",				&raw_get_interface, raw<2>())
+#endif
 		.def("get_missile",					&script_game_object_cast<CMissile>)
 		.def("get_outfit",					&script_game_object_cast<CCustomOutfit>)
 		.def("get_space_restrictor",		&script_game_object_cast<CSpaceRestrictor>)
@@ -361,9 +386,9 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def("get_weapon_hud",				&CScriptGameObject::GetWeaponHUD)
 		.def("get_hud_visual",				&CScriptGameObject::GetWeaponHUD_Visual)
 		.def("load_hud_visual",				&CScriptGameObject::LoadWeaponHUD_Visual)
-/*#ifdef LUABIND_NO_ERROR_CHECKING //KRodin: при отключенном LUABIND_NO_ERROR_CHECKING почему-то выдаёт ошибку error C2672: "luabind::detail::gen_set_matcher": не найдена соответствующая перегруженная функция
-		.property("interface",				&get_interface,  &fake_set_interface, raw<2>())
-#endif*/ //KRodin: да мне этот метод пока и не нужен. Будет нужен - тогда и буду думать, как это исправлять.
+#ifdef LUABIND_09
+		.property("interface",				&get_interface, &fake_set_interface, raw(_2))
+#endif
 		.property("inventory",				&get_obj_inventory)
 		.property("immunities",				&get_obj_immunities)
 		.property("is_alive",				&get_obj_alive)
@@ -377,8 +402,13 @@ void script_register_game_object3_global(lua_State *L) //KRodin: вынес регистрац
 {
 	module(L)
 	[
+#ifdef LUABIND_09 //KRodin: эти две функции вообще не предназначены для использования в скриптах, они же принимают аргументом луастейт! Надо попытаться исправить!
+		def("script_object_class_name", &script_object_class_name, raw(_1)),
+		def("engine_object", &dynamic_engine_object, raw(_1)),
+#else
 		def("script_object_class_name", &script_object_class_name, raw<1>()),
 		def("engine_object", &dynamic_engine_object, raw<1>()),
+#endif
 		def("get_actor_obj", &Actor),
 		def("get_level_id", &get_level_id)
 	];

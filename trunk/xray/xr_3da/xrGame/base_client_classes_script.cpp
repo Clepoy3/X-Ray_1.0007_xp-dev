@@ -149,7 +149,11 @@ DLL_API LPCSTR raw_lua_class_name(lua_State *L)
 	for (int i = lua_gettop(L) - 1; i > 0; i--) // обычно аргумент (-2) ,    int(CSE_ALifeObject:: объект
 	if (lua_isuserdata(L, i))
 	{
-		object_rep *rep = is_class_object(L, i); 
+#ifdef LUABIND_09
+		object_rep *rep = get_instance(L, i);
+#else
+		object_rep *rep = is_class_object(L, i);
+#endif
 		if (rep)			
 			return rep->crep()->name();		
 	}
@@ -159,7 +163,11 @@ DLL_API LPCSTR raw_lua_class_name(lua_State *L)
 
 LPCSTR get_lua_class_name(luabind::object O)
 {			
+#ifdef LUABIND_09
+	lua_State *L = O.interpreter();
+#else
 	lua_State *L = O.lua_state();
+#endif
 	if (L)
 		return raw_lua_class_name(L);	
 	return "?";
@@ -653,7 +661,11 @@ void CTextureScript::script_register(lua_State *L)
 			.def("get_name",			&script_texture_getname)
 			.def("set_name",			&script_texture_setname)
 			.def("get_surface",			&CTexture::surface_get)
+#ifdef LUABIND_09
+			.def("cast_texture",		&script_texture_cast, raw(_1))
+#else
 			.def("cast_texture",		&script_texture_cast, raw<1>())
+#endif
 			.def_readonly("ref_count",  &CTexture::dwReference)
 			
 		];
@@ -712,9 +724,13 @@ void CResourceManagerScript::script_register(lua_State *L)
 	module(L) [ 
 		// added by alpet
 		class_<CResourceManager>("CResourceManager")
-		.def("get_loaded_textures",  &get_loaded_textures, raw<2>())
-		,
+#ifdef LUABIND_09
+		.def("get_loaded_textures",	&get_loaded_textures, raw(_2)),
+		def("cast_ptr_CTexture",	&cast_ptr_CTexture, raw(_1)),
+#else
+		.def("get_loaded_textures",	&get_loaded_textures, raw<2>()),
 		def("cast_ptr_CTexture",	&cast_ptr_CTexture, raw<1>()),
+#endif
 		def("get_resource_manager", &get_resource_manager),
 		def("texture_create",		&script_texture_create),
 		def("texture_delete",		&script_texture_delete),

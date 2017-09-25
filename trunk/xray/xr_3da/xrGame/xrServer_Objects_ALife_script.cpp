@@ -82,10 +82,10 @@ void CSE_ALifeObject::script_register(lua_State *L)
 		.def_readwrite	("m_game_vertex_id",	&CSE_ALifeObject::m_tGraphID)
 		.def_readonly	("m_story_id",			&CSE_ALifeObject::m_story_id)
 		// .def_readwrite	("m_flags",				&CSE_ALifeObject::m_flags)
-		.property		("m_flags",				&get_flags_ref)
+		/*.property		("m_flags",				&get_flags_ref)
 		.property		("level_id",			&se_obj_level_id)
 		.property		("level_name",			&se_obj_level_name)
-		.property		("is_alive",			&se_obj_is_alive)
+		.property		("is_alive",			&se_obj_is_alive)*/
 	];
 }
 

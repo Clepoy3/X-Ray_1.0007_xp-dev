@@ -991,7 +991,11 @@ void CUIMainIngameWnd::script_register(lua_State *L)
 	module(L)
 		[
 			class_<CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd")
-			.def("GetStatic",		 &GetStaticRaw, raw<2>()),
+#ifdef LUABIND_09
+			.def("GetStatic", &GetStaticRaw, raw(_2)),
+#else
+			.def("GetStatic", &GetStaticRaw, raw<2>()),
+#endif
 			// .def("turn_off_icon", &TurnOffWarningIcon),
 			def("get_main_window",   &GetMainIngameWindow) // get_mainingame_window better??
 #ifdef SCRIPT_ICONS_CONTROL

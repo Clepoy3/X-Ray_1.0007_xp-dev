@@ -710,9 +710,14 @@ extern void	lua_pushgameobject(lua_State *L, CGameObject *obj);
 template <typename T>
 IC bool test_pushobject(lua_State *L, CGameObject* obj)
 {	
+	Msg("~~Called test_pushobject for [%s]", obj->Name());
 	using namespace luabind::detail;
 	T *pObj = smart_cast<T*> (obj);
+#ifdef LUABIND_09
+	if (pObj)
+#else
 	if (pObj && get_class_rep<T>(L))
+#endif
 	{
 		convert_to_lua<T*>(L, pObj);  // обязательно конвертировать указатель, а не значение. Иначе вызов деструктора при сборке мусора!
 		return true;		

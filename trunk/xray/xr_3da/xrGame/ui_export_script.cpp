@@ -26,7 +26,7 @@ void UIRegistrator::script_register(lua_State *L)
 			.def("addCustomMessage",	&CUICaption::addCustomMessage)
 			.def("setCaption",			&CUICaption::setCaption),
 
-		class_<CMainMenu>("CMainMenu")
+		class_<CMainMenu, CDialogHolder>("CMainMenu")
 			.def("GetGSVer",				&CMainMenu::GetGSVer)
 	],
 	module(L,"main_menu")

@@ -418,7 +418,11 @@ void CALifeSimulator::script_register			(lua_State *L)
 		class_<class_exporter<CALifeSimulator> > instance("story_ids");
 
 		for (const auto& pair : story_ids)
+#ifdef LUABIND_09
+			instance.enum_("_story_ids")[luabind::value(*pair.first, pair.second)];
+#else
 			instance = std::move(instance).enum_("_story_ids")[luabind::value(*pair.first, pair.second)];
+#endif
 
 		luabind::module(L)[std::move(instance)];
 	}
@@ -438,7 +442,11 @@ void CALifeSimulator::script_register			(lua_State *L)
 		class_<class_exporter<class_exporter<CALifeSimulator> > >	instance("spawn_story_ids");
 
 		for (const auto& pair : spawn_story_ids)
+#ifdef LUABIND_09
+			instance.enum_("_spawn_story_ids")[luabind::value(*pair.first, pair.second)];
+#else
 			instance = std::move(instance).enum_("_spawn_story_ids")[luabind::value(*pair.first, pair.second)];
+#endif
 
 		luabind::module(L)[std::move(instance)];
 	}

@@ -27,18 +27,13 @@ using namespace luabind;
 
 ALife::_STORY_ID	story_id	(LPCSTR story_id)
 {
-	int res=
-							(
-		object_cast<int>(
-			luabind::object(
-				luabind::get_globals(
-					ai().script_engine().lua()
-				)
-				["story_ids"]
-			)
-			[story_id]
-		)
-	);
+#ifdef LUABIND_09
+	auto sid = luabind::object(luabind::globals(ai().script_engine().lua())["story_ids"][story_id]);
+#else
+	auto sid = luabind::object(luabind::get_globals(ai().script_engine().lua())["story_ids"][story_id]);
+#endif
+	R_ASSERT3(sid, "SID not found: ", story_id);
+	int res = object_cast<int>( sid );
 	return ALife::_STORY_ID(res);
 }
 

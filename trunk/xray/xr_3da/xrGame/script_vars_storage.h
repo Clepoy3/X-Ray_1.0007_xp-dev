@@ -9,6 +9,7 @@
 #include "script_export_space.h"
 #include "../../build_config_defines.h"
 
+#ifdef SCRIPT_VARS_STORAGE
 
 
 #define		LUA_TNETPACKET		0x00000100
@@ -102,3 +103,5 @@ add_to_type_list(CScriptVarsStorage)
 
 extern CScriptVarsStorage g_ScriptVars;
 extern int lua_pushsvt(lua_State *L, CScriptVarsTable *T);
+
+#endif

@@ -30,7 +30,11 @@ bool CScriptPropertyEvaluatorWrapper::evaluate		()
 #ifndef LUABIND_NO_EXCEPTIONS //KRodin: изменил дефайн под новые реалии
 	catch(luabind::cast_failed &exception) {
 //#ifdef LOG_ACTION
+#ifdef LUABIND_09
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "SCRIPT RUNTIME ERROR : evaluator [%s] returns value with not a %s type!", m_evaluator_name, exception.info().name());
+#else
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR : evaluator [%s] returns value with not a %s type!", m_evaluator_name, exception.info()->name());
+#endif
 //#else
 //		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR : evaluator returns value with not a %s type!",exception.info()->name());
 //#endif
