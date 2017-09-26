@@ -69,10 +69,8 @@ void game_sv_GameState::script_register(lua_State *L)
 		.def(						constructor<const xrTime&>())
 		.def(const_self <			xrTime()					)
 		.def(const_self <=			xrTime()					)
-#ifndef LUABIND_09
 		.def(const_self >			xrTime()					)
 		.def(const_self >=			xrTime()					)
-#endif
 		.def(const_self ==			xrTime()					)
 		.def(self +					xrTime()					)
 		.def(self -					xrTime()					)
