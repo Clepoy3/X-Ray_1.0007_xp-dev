@@ -50,10 +50,11 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <ExceptionHandling />
     </ClCompile>
     <Link>
       <ImportLibrary>..\..\..\..\libraries\$(ProjectName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>..\..\luajit\bin\$(PlatformShortName)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\luajit\bin\$(PlatformShortName);..\..\..\..\libraries\</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -70,6 +71,7 @@
 			cd "..\..\luajit\src"
 			call "msvcbuild_all.bat"
 		)
+		cd $(ProjectDir)
 		if not exist "$(OutDir)LuaJIT.dll" (
 			if not exist "$(OutDir)*.*" (
 				md "$(OutDir)"

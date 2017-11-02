@@ -23,15 +23,29 @@
 #pragma once
 
 //***************************************[KRodin: Настройки]***************************************
-#define LUABIND_NO_ERROR_CHECKING //Закомментировать только при отладке проблемных мест или для дампа lua_help! С некоторыми скриптами проверка ошибок несовместима, т.к воспринимает как ошибки то, что ошибками не является, да и производительность жрёт довольно сильно.
-#define LUABIND_NO_EXCEPTIONS //!!!НЕ ЗАКОММЕНТИРОВАТЬ НИ В КОЕМ СЛУЧАЕ!!! В нескольких местах я заменил try - catch на __try - __except, т.ч. теперь неизвестно, как там будут обрабатываться C++ исключения.
+//#define ENABLE_DUMP_LUA_HELP //KRodin: раскомментировать для дампа Lua_help
+
+#ifdef ENABLE_DUMP_LUA_HELP
+#	undef NDEBUG
+#else
+#	define LUABIND_NO_ERROR_CHECKING //Закомментировать только при отладке проблемных мест или для дампа lua_help! С некоторыми скриптами проверка ошибок несовместима, т.к воспринимает как ошибки то, что ошибками не является, да и производительность жрёт довольно сильно.
+#endif
+#define LUABIND_NO_EXCEPTIONS //Не рекомендую закомментировать.
 #ifdef LUABIND_NO_EXCEPTIONS
 #	define LUABIND_DTOR_NOEXCEPT noexcept
 #else
 #	define LUABIND_DTOR_NOEXCEPT
 #endif
-#pragma comment(lib, "LuaJIT.lib") //LuaJIT теперь подключается только здесь и больше нигде.
 #define LUABIND_DONT_COPY_STRINGS // ?
+//
+#pragma comment(lib, "LuaJIT.lib") //LuaJIT теперь подключается только здесь и больше нигде.
+//
+#pragma warning(push)
+#pragma warning(disable:4595)
+#include "../xrCore/xrCore.h" //KRodin: Чтобы использовались операторы new/delete из xrCore. Иначе могут возникать проблемы при освобождении памяти.
+#pragma warning(pop)
+#pragma comment(lib, "xrCore.lib")
+//
 //*************************************************************************************************
 
 //#define LUABIND_NOT_THREADSAFE

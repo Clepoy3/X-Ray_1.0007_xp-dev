@@ -286,3 +286,10 @@ DLL_API lua_State* game_lua() //Fixed
 	R_ASSERT(g_game_lua);
 	return g_game_lua;
 }
+
+void CScriptEngine::collect_all_garbage()
+{
+	lua_gc(lua(), LUA_GCCOLLECT, 0);
+	lua_gc(lua(), LUA_GCCOLLECT, 0);
+	lua_gc(lua(), LUA_GCCOLLECT, 0);
+}

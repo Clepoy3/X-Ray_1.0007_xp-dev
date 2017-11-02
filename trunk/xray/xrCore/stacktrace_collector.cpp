@@ -6,7 +6,11 @@
 
 #include "stacktrace_collector.h"
 
-#include <dbghelp.h>
+#pragma warning(push)
+#pragma warning(disable : 4091) // 'typedef ': ignored on left of '' when no variable is declared
+#include <DbgHelp.h>
+#pragma warning(pop)
+
 #pragma comment(lib, "dbghelp.lib")
 
 thread_local static void* stack[MaxStackTraceDepth];
@@ -57,7 +61,7 @@ void BuildStackTrace(StackTraceInfo& stackTrace) {
 		SymGetLineFromAddr64(processHandle, addr, &displacement, &lineInfo);
 		SymGetModuleInfo64(processHandle, addr, &moduleInfo);
 #endif
-		auto* dst = stackTrace.frames + (MaxFrameLength + 1) * i;
+		auto dst = stackTrace.frames + (MaxFrameLength + 1) * i;
 		std::snprintf(dst, MaxFrameLength + 1, "[%zi]: [%s]: [%s()] at [%s:%u]", framesCount - i, moduleInfo.ImageName, symbolInfo->Name, lineInfo.FileName, lineInfo.LineNumber);
 	}
 

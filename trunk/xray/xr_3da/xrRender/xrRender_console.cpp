@@ -453,14 +453,4 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,			"r__actor_shadow",		&ps_common_flags,			RFLAG_ACTOR_SHADOW	);
 }
 
-void	xrRender_apply_tf		()
-{
-	Console->Execute	("r__tf_aniso"	);
-#if RENDER==R_R1
-	Console->Execute	("r1_tf_mipbias");
-#else
-	Console->Execute	("r2_tf_mipbias");
-#endif
-}
-
 #endif
